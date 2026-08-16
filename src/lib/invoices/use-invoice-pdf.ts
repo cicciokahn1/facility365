@@ -39,6 +39,7 @@ export function useInvoicePdf(): InvoicePdfApi {
   const customers = useCollectionItems('customers');
   const properties = useCollectionItems('properties');
   const orders = useCollectionItems('orders');
+  const quotes = useCollectionItems('quotes');
   const reports = useCollectionItems('reports');
 
   const data = useCallback(
@@ -46,6 +47,7 @@ export function useInvoicePdf(): InvoicePdfApi {
       const customer = customers.find((entry) => entry.id === invoice.customerId);
       const property = properties.find((entry) => entry.id === invoice.propertyId);
       const order = orders.find((entry) => entry.id === invoice.orderId);
+      const quote = quotes.find((entry) => entry.id === invoice.quoteId);
       const report = reports.find((entry) => entry.id === invoice.reportId);
       const currency = invoice.currency || settings.currency;
       const totals = lineItemTotals(invoice.items);
@@ -62,6 +64,7 @@ export function useInvoicePdf(): InvoicePdfApi {
         dueDate: invoice.dueDate ? formatDate(invoice.dueDate, settings.language) : '',
         reportNumber: report?.number ?? '',
         orderLabel: order ? `${order.number} · ${order.title}` : '',
+        quoteNumber: quote?.number ?? '',
         propertyLabel: property?.name ?? '',
         customerName,
         billingLines: [
@@ -82,7 +85,7 @@ export function useInvoicePdf(): InvoicePdfApi {
         notes: invoice.notes,
       };
     },
-    [customers, orders, properties, reports, settings.currency, settings.language],
+    [customers, orders, properties, quotes, reports, settings.currency, settings.language],
   );
 
   const labels = useCallback(
@@ -93,6 +96,7 @@ export function useInvoicePdf(): InvoicePdfApi {
       dueDate: t('invoice.dueDate'),
       report: t('module.reports.singular'),
       order: t('module.orders.singular'),
+      quote: t('module.quotes.singular'),
       property: t('module.properties.singular'),
       billTo: t('invoice.billTo'),
       position: t('tab.items'),

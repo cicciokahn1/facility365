@@ -150,6 +150,7 @@ export const emptyOrder = (): Omit<Order, 'id' | 'number'> => ({
   buildingId: '',
   roomId: '',
   assetId: '',
+  quoteId: '',
   assignee: '',
   dueDate: '',
   startedAt: '',

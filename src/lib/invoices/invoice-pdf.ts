@@ -24,6 +24,8 @@ export interface InvoicePdfData {
   dueDate: string;
   reportNumber: string;
   orderLabel: string;
+  /** Offerte, aus der der Weg gestartet ist; leer bei freier Erfassung. */
+  quoteNumber: string;
   propertyLabel: string;
   customerName: string;
   billingLines: string[];
@@ -41,6 +43,7 @@ export interface InvoicePdfLabels {
   dueDate: string;
   report: string;
   order: string;
+  quote: string;
   property: string;
   billTo: string;
   position: string;
@@ -167,6 +170,7 @@ const drawAddress = (doc: jsPDF, data: InvoicePdfData, labels: InvoicePdfLabels,
   const references = [
     data.reportNumber ? `${labels.report}: ${data.reportNumber}` : '',
     data.orderLabel ? `${labels.order}: ${data.orderLabel}` : '',
+    data.quoteNumber ? `${labels.quote}: ${data.quoteNumber}` : '',
     data.propertyLabel ? `${labels.property}: ${data.propertyLabel}` : '',
   ].filter(Boolean);
   doc.setFont('helvetica', 'normal');
