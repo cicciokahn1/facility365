@@ -226,6 +226,7 @@ const ordersConfig: ModuleConfig<'orders'> = {
       parentKey: 'buildingId',
     },
     { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    { kind: 'relation', name: 'quoteId', labelKey: 'module.quotes.singular', collection: 'quotes' },
     text('assignee', 'common.assignee'),
     { kind: 'date', name: 'dueDate', labelKey: 'common.dueDate' },
     { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },

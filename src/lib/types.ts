@@ -218,6 +218,8 @@ export interface Order extends BaseEntity {
   buildingId: string;
   roomId: string;
   assetId: string;
+  /** Offerte, aus der der Auftrag entstanden ist; leer bei freier Erfassung. */
+  quoteId: string;
   assignee: string;
   dueDate: string;
   startedAt: string;

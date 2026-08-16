@@ -68,6 +68,7 @@ const servicesOf = (report: Report): string =>
 
 export function useInvoiceFromReport(): (report: Report, workLabel: string) => Invoice {
   const { create } = useCollection('invoices');
+  const { items: orders } = useCollection('orders');
   const { settings } = useSettings();
 
   return useCallback(
@@ -78,6 +79,8 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
         customerId: report.customerId,
         propertyId: report.propertyId,
         orderId: report.orderId,
+        /** Stammt der Auftrag aus einer Offerte, bleibt sie bis in die Rechnung sichtbar. */
+        quoteId: orders.find((order) => order.id === report.orderId)?.quoteId ?? '',
         reportId: report.id,
         date: report.date || today(),
         items: invoiceItemsFromReport(
@@ -89,6 +92,6 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
         currency: settings.currency,
         notes: servicesOf(report),
       }),
-    [create, settings.currency, settings.hourlyRate, settings.vatRate],
+    [create, orders, settings.currency, settings.hourlyRate, settings.vatRate],
   );
 }
