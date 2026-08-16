@@ -534,6 +534,18 @@ export const dictionary = {
   'settings.companyName': { de: 'Firmenname', fr: 'Raison sociale', it: 'Ragione sociale', en: 'Company name' },
   'settings.logo': { de: 'Logo', fr: 'Logo', it: 'Logo', en: 'Logo' },
   'settings.vatNumber': { de: 'MwSt.-Nummer', fr: 'Numéro TVA', it: 'Numero IVA', en: 'VAT number' },
+  'settings.logoHint': {
+    de: 'Gilt für Navigation, Dashboard sowie Rapport-, Rechnungs- und Anlagenkarten-PDF. Ohne eigenes Logo erscheint das Facility365-Logo.',
+    fr: 'Vaut pour la navigation, le tableau de bord et les PDF de rapport, facture et fiche. Sans logo propre, le logo Facility365 s’affiche.',
+    it: 'Vale per navigazione, dashboard e PDF di rapporto, fattura e scheda. Senza logo proprio compare il logo Facility365.',
+    en: 'Applies to navigation, dashboard and report, invoice and asset card PDFs. Without an own logo the Facility365 logo is used.',
+  },
+  'settings.logoReset': {
+    de: 'Facility365-Logo verwenden',
+    fr: 'Utiliser le logo Facility365',
+    it: 'Usa il logo Facility365',
+    en: 'Use Facility365 logo',
+  },
   'settings.profile': { de: 'Profil', fr: 'Profil', it: 'Profilo', en: 'Profile' },
   'settings.profileName': { de: 'Anzeigename', fr: 'Nom affiché', it: 'Nome visualizzato', en: 'Display name' },
   'settings.role': { de: 'Rolle', fr: 'Rôle', it: 'Ruolo', en: 'Role' },

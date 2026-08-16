@@ -1,0 +1,195 @@
+/**
+ * Modulverzeichnis.
+ *
+ * Eine einzige Liste bestimmt Navigation, Adressen, Symbole und Gruppierung.
+ * Ein neues Modul wird hier eingetragen und erscheint ueberall - in der
+ * Seitenleiste, in der Telefonnavigation und in der globalen Suche.
+ */
+import {
+  Boxes,
+  Building2,
+  ClipboardList,
+  DoorClosed,
+  FileSpreadsheet,
+  FileText,
+  Files,
+  Home,
+  LayoutDashboard,
+  type LucideIcon,
+  Receipt,
+  Settings,
+  ShieldAlert,
+  Users,
+  Wrench,
+} from 'lucide-react';
+
+import { TranslationKey } from '@/lib/i18n/dictionary';
+import { CollectionKey, ModuleKey } from '@/lib/types';
+
+export type NavGroup = 'overview' | 'objects' | 'work' | 'business' | 'system';
+
+export interface ModuleDefinition {
+  key: ModuleKey;
+  /** Sammlung in der Datenschicht; fehlt bei Dashboard, Berichte und Einstellungen. */
+  collection?: CollectionKey;
+  path: string;
+  icon: LucideIcon;
+  group: NavGroup;
+  labelKey: TranslationKey;
+  singularKey: TranslationKey;
+}
+
+export const MODULES: ModuleDefinition[] = [
+  {
+    key: 'dashboard',
+    path: '/dashboard',
+    icon: LayoutDashboard,
+    group: 'overview',
+    labelKey: 'module.dashboard',
+    singularKey: 'module.dashboard',
+  },
+  {
+    key: 'customers',
+    collection: 'customers',
+    path: '/customers',
+    icon: Users,
+    group: 'objects',
+    labelKey: 'module.customers',
+    singularKey: 'module.customers.singular',
+  },
+  {
+    key: 'properties',
+    collection: 'properties',
+    path: '/properties',
+    icon: Home,
+    group: 'objects',
+    labelKey: 'module.properties',
+    singularKey: 'module.properties.singular',
+  },
+  {
+    key: 'buildings',
+    collection: 'buildings',
+    path: '/buildings',
+    icon: Building2,
+    group: 'objects',
+    labelKey: 'module.buildings',
+    singularKey: 'module.buildings.singular',
+  },
+  {
+    key: 'rooms',
+    collection: 'rooms',
+    path: '/rooms',
+    icon: DoorClosed,
+    group: 'objects',
+    labelKey: 'module.rooms',
+    singularKey: 'module.rooms.singular',
+  },
+  {
+    key: 'assets',
+    collection: 'assets',
+    path: '/assets',
+    icon: Boxes,
+    group: 'objects',
+    labelKey: 'module.assets',
+    singularKey: 'module.assets.singular',
+  },
+  {
+    key: 'documents',
+    collection: 'documents',
+    path: '/documents',
+    icon: Files,
+    group: 'objects',
+    labelKey: 'module.documents',
+    singularKey: 'module.documents.singular',
+  },
+  {
+    key: 'orders',
+    collection: 'orders',
+    path: '/orders',
+    icon: ClipboardList,
+    group: 'work',
+    labelKey: 'module.orders',
+    singularKey: 'module.orders.singular',
+  },
+  {
+    key: 'maintenances',
+    collection: 'maintenances',
+    path: '/maintenances',
+    icon: Wrench,
+    group: 'work',
+    labelKey: 'module.maintenances',
+    singularKey: 'module.maintenances.singular',
+  },
+  {
+    key: 'damages',
+    collection: 'damages',
+    path: '/damages',
+    icon: ShieldAlert,
+    group: 'work',
+    labelKey: 'module.damages',
+    singularKey: 'module.damages.singular',
+  },
+  {
+    key: 'reports',
+    collection: 'reports',
+    path: '/reports',
+    icon: FileText,
+    group: 'work',
+    labelKey: 'module.reports',
+    singularKey: 'module.reports.singular',
+  },
+  {
+    key: 'quotes',
+    collection: 'quotes',
+    path: '/quotes',
+    icon: FileSpreadsheet,
+    group: 'business',
+    labelKey: 'module.quotes',
+    singularKey: 'module.quotes.singular',
+  },
+  {
+    key: 'invoices',
+    collection: 'invoices',
+    path: '/invoices',
+    icon: Receipt,
+    group: 'business',
+    labelKey: 'module.invoices',
+    singularKey: 'module.invoices.singular',
+  },
+  {
+    key: 'analytics',
+    path: '/analytics',
+    icon: FileSpreadsheet,
+    group: 'business',
+    labelKey: 'module.analytics',
+    singularKey: 'module.analytics',
+  },
+  {
+    key: 'settings',
+    path: '/settings',
+    icon: Settings,
+    group: 'system',
+    labelKey: 'module.settings',
+    singularKey: 'module.settings',
+  },
+];
+
+export const NAV_GROUPS: { key: NavGroup; labelKey: TranslationKey }[] = [
+  { key: 'overview', labelKey: 'nav.overview' },
+  { key: 'objects', labelKey: 'nav.objects' },
+  { key: 'work', labelKey: 'nav.work' },
+  { key: 'business', labelKey: 'nav.business' },
+  { key: 'system', labelKey: 'nav.system' },
+];
+
+/** Vier Module in der Telefonnavigation; alles Weitere liegt unter «Mehr». */
+export const MOBILE_NAV_KEYS: ModuleKey[] = ['dashboard', 'orders', 'damages', 'assets'];
+
+export const moduleByKey = (key: ModuleKey): ModuleDefinition => {
+  const found = MODULES.find((module) => module.key === key);
+  if (!found) throw new Error(`Unbekanntes Modul: ${key}`);
+  return found;
+};
+
+export const moduleByCollection = (collection: CollectionKey): ModuleDefinition =>
+  moduleByKey(collection);

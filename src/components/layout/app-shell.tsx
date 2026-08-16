@@ -1,0 +1,110 @@
+'use client';
+
+/**
+ * Rahmen der Anwendung.
+ *
+ * Desktop: feste Seitenleiste. Tablet und Telefon: Kopfzeile mit Menue und
+ * Navigation am unteren Rand. Der Inhalt bleibt in allen Faellen gleich.
+ */
+import { Suspense, useEffect, useState } from 'react';
+import { Menu, WifiOff } from 'lucide-react';
+
+import { BottomNav } from '@/components/layout/bottom-nav';
+import { GlobalSearch } from '@/components/layout/global-search';
+import { Sidebar } from '@/components/layout/sidebar';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { BRAND_MARK_SRC, isBrandLogo } from '@/lib/branding/logo';
+import { useStorageError } from '@/lib/data/store';
+import { useT } from '@/lib/i18n/provider';
+import { useSettings } from '@/lib/settings/provider';
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const t = useT();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [offline, setOffline] = useState(false);
+  const storageError = useStorageError();
+  const { settings } = useSettings();
+
+  useEffect(() => {
+    const update = () => setOffline(!navigator.onLine);
+    update();
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+    };
+  }, []);
+
+  return (
+    <div className="flex min-h-dvh w-full bg-background">
+      <aside className="hidden w-64 shrink-0 border-r lg:block">
+        <div className="sticky top-0 h-dvh">
+          <Sidebar />
+        </div>
+      </aside>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="safe-top sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-card/95 px-3 backdrop-blur lg:px-6">
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                aria-label={t('nav.menu')}
+                data-testid="menu-button"
+              >
+                <Menu className="size-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 p-0">
+              <SheetTitle className="sr-only">{t('nav.menu')}</SheetTitle>
+              <Sidebar onNavigate={() => setMenuOpen(false)} />
+            </SheetContent>
+          </Sheet>
+
+          <span className="flex min-w-0 items-center gap-2 lg:hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element -- Data-URL aus den Einstellungen */}
+            <img
+              src={isBrandLogo(settings.companyLogo) ? BRAND_MARK_SRC : settings.companyLogo}
+              alt=""
+              className="size-7 shrink-0 rounded object-contain dark:bg-white/95 dark:p-0.5"
+            />
+            <span className="truncate font-semibold">{settings.companyName || t('app.name')}</span>
+          </span>
+
+          <div className="ml-auto flex flex-1 items-center justify-end gap-2 lg:ml-0 lg:justify-start">
+            <GlobalSearch />
+          </div>
+        </header>
+
+        {offline ? (
+          <p
+            data-testid="offline-banner"
+            className="flex items-center gap-2 bg-warning/20 px-4 py-2 text-sm text-warning-foreground"
+          >
+            <WifiOff className="size-4" aria-hidden />
+            {t('offline.text')}
+          </p>
+        ) : null}
+
+        {storageError ? (
+          <p data-testid="storage-banner" className="bg-destructive/10 px-4 py-2 text-sm text-destructive">
+            {t('toast.storageFull')}
+          </p>
+        ) : null}
+
+        {/* Grenze fuer Seiten, die Adressparameter lesen (z. B. ?new=1). */}
+        <main className="min-w-0 flex-1 px-3 pb-24 pt-4 sm:px-4 lg:px-6 lg:pb-8">
+          <Suspense fallback={<p className="text-sm text-muted-foreground">{t('common.loading')}</p>}>
+            {children}
+          </Suspense>
+        </main>
+      </div>
+
+      <BottomNav />
+    </div>
+  );
+}

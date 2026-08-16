@@ -6,6 +6,8 @@
  */
 import { jsPDF } from 'jspdf';
 
+import { drawLogo } from '@/lib/branding/pdf-logo';
+
 export interface InvoicePdfItem {
   position: number;
   description: string;
@@ -90,13 +92,10 @@ const drawHeader = (
   labels: InvoicePdfLabels,
   branding: InvoicePdfBranding,
 ): number => {
-  if (branding.logo) {
-    try {
-      doc.addImage(branding.logo, 'PNG', MARGIN, MARGIN, 30, 14, undefined, 'FAST');
-    } catch {
-      /* Ein unlesbares Logo darf die Rechnung nicht verhindern. */
-    }
-  } else {
+  const logoHeight = branding.logo
+    ? drawLogo(doc, branding.logo, { x: MARGIN, y: MARGIN, width: 34, height: 18 })
+    : 0;
+  if (logoHeight === 0) {
     doc.setFillColor(...ACCENT);
     doc.roundedRect(MARGIN, MARGIN, 12, 12, 2.5, 2.5, 'F');
     doc.setTextColor(255, 255, 255);
@@ -105,12 +104,15 @@ const drawHeader = (
     doc.text('F3', MARGIN + 6, MARGIN + 7.8, { align: 'center' });
   }
 
-  const textX = branding.logo ? MARGIN : MARGIN + 15;
-  const textY = branding.logo ? MARGIN + 19 : MARGIN + 5;
-  doc.setTextColor(...INK);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
-  doc.text('Facility365', textX, textY);
+  const textX = logoHeight > 0 ? MARGIN : MARGIN + 15;
+  const textY = logoHeight > 0 ? MARGIN + logoHeight + 5 : MARGIN + 5;
+  /** Der Schriftzug steht bereits im Logo und wird nur ohne Logo gesetzt. */
+  if (logoHeight === 0) {
+    doc.setTextColor(...INK);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('Facility365', textX, textY);
+  }
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
   doc.setTextColor(...MUTED);
