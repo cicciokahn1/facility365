@@ -51,7 +51,10 @@ export interface EntityDetailProps<K extends CollectionKey> {
   id: string;
   /** Zusaetzliche Bereiche des Moduls, z. B. Ansprechpartner oder Plaene. */
   extraTabs?: (entity: EntityOf<K>, update: (values: Partial<EntityOf<K>>, action?: string) => void) => ExtraTab[];
-  headerExtra?: (entity: EntityOf<K>) => React.ReactNode;
+  headerExtra?: (
+    entity: EntityOf<K>,
+    update: (values: Partial<EntityOf<K>>, action?: string) => void,
+  ) => React.ReactNode;
   /** Zuerst gezeigter Bereich; ohne Angabe die Stammdaten. */
   defaultTab?: string;
 }
@@ -117,7 +120,7 @@ export function EntityDetail<K extends CollectionKey>({
                 options={config.statusOptions}
               />
             ) : null}
-            {headerExtra?.(entity)}
+            {headerExtra?.(entity, applyUpdate)}
           </div>
         </div>
         <div className="flex gap-2">
