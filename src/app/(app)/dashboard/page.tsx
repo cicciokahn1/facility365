@@ -30,6 +30,7 @@ import { useT } from '@/lib/i18n/provider';
 import { DAMAGE_STATUS_OPTIONS, MAINTENANCE_STATUS_OPTIONS, ORDER_STATUS_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import { formatDate, daysUntil, today } from '@/lib/utils/format';
+import { isDone } from '@/lib/workflow/complete';
 
 const QUICK_ACTIONS: { href: string; labelKey: TranslationKey; icon: typeof Plus }[] = [
   { href: '/orders?new=1', labelKey: 'dashboard.quick.order', icon: ClipboardList },
@@ -46,9 +47,11 @@ export default function DashboardPage() {
   const maintenances = useCollectionItems('maintenances');
   const damages = useCollectionItems('damages');
 
-  const openOrders = orders.filter((order) => !['done', 'invoiced'].includes(order.status));
-  const openMaintenances = maintenances.filter((maintenance) => maintenance.status !== 'done');
-  const openDamages = damages.filter((damage) => !['fixed', 'rejected'].includes(damage.status));
+  const openOrders = orders.filter((order) => !isDone('orders', order.status));
+  const openMaintenances = maintenances.filter(
+    (maintenance) => !isDone('maintenances', maintenance.status),
+  );
+  const openDamages = damages.filter((damage) => !isDone('damages', damage.status));
 
   const appointments = [
     ...openOrders

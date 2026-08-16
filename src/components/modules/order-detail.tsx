@@ -5,6 +5,7 @@ import { FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { ChecklistEditor } from '@/components/module/checklist-editor';
+import { DoneButton } from '@/components/module/done-button';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
@@ -25,23 +26,26 @@ export function OrderDetail({ id }: { id: string }) {
       headerExtra={(order) => {
         const existing = reports.existing(order.id);
         return (
-          <Button
-            size="sm"
-            variant={existing ? 'outline' : 'default'}
-            onClick={() => {
-              if (existing) {
-                router.push(`/reports/${existing.id}`);
-                return;
-              }
-              const report = reports.create(order);
-              toast.success(t('report.created'));
-              router.push(`/reports/${report.id}`);
-            }}
-            data-testid="order-create-report"
-          >
-            <FileText className="size-4" aria-hidden />
-            {existing ? t('report.openExisting') : t('report.fromOrder')}
-          </Button>
+          <>
+            <DoneButton collection="orders" id={order.id} status={order.status} />
+            <Button
+              size="sm"
+              variant={existing ? 'outline' : 'default'}
+              onClick={() => {
+                if (existing) {
+                  router.push(`/reports/${existing.id}`);
+                  return;
+                }
+                const report = reports.create(order);
+                toast.success(t('report.created'));
+                router.push(`/reports/${report.id}`);
+              }}
+              data-testid="order-create-report"
+            >
+              <FileText className="size-4" aria-hidden />
+              {existing ? t('report.openExisting') : t('report.fromOrder')}
+            </Button>
+          </>
         );
       }}
       extraTabs={(order, update) => [

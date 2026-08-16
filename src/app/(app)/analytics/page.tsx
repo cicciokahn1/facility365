@@ -17,6 +17,7 @@ import { useT } from '@/lib/i18n/provider';
 import { DAMAGE_STATUS_OPTIONS, ORDER_STATUS_OPTIONS, PRIORITY_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import { formatDate } from '@/lib/utils/format';
+import { isDone } from '@/lib/workflow/complete';
 
 export default function AnalyticsPage() {
   const t = useT();
@@ -31,7 +32,7 @@ export default function AnalyticsPage() {
   const assets = useCollectionItems('assets');
 
   const upcoming = maintenances
-    .filter((maintenance) => maintenance.nextDate && maintenance.status !== 'done')
+    .filter((maintenance) => maintenance.nextDate && !isDone('maintenances', maintenance.status))
     .sort((a, b) => a.nextDate.localeCompare(b.nextDate))
     .slice(0, 8);
 
