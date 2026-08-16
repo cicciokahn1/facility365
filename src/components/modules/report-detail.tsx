@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { EntityDetail } from '@/components/module/entity-detail';
 import { MaterialEditor } from '@/components/module/material-editor';
+import { ReportAssistant } from '@/components/modules/report-assistant';
 import { ReportPdfPanel } from '@/components/modules/report-pdf-panel';
 import { ReportSignDialog } from '@/components/modules/report-sign-dialog';
 import { ReportSignature } from '@/components/modules/report-signature';
@@ -51,6 +52,11 @@ export function ReportDetail({ id }: { id: string }) {
         </>
       )}
       extraTabs={(report, update) => [
+        {
+          value: 'assistant',
+          labelKey: 'tab.assistant',
+          content: <ReportAssistant report={report} onChange={update} />,
+        },
         {
           value: 'materials',
           labelKey: 'tab.material',
