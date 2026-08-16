@@ -9,6 +9,7 @@
 /** Modulschluessel; zugleich Sammlung in der Datenschicht und Teil der Adresse. */
 export type ModuleKey =
   | 'dashboard'
+  | 'calendar'
   | 'customers'
   | 'properties'
   | 'buildings'
@@ -25,7 +26,10 @@ export type ModuleKey =
   | 'settings';
 
 /** Sammlungen, die Datensaetze fuehren. */
-export type CollectionKey = Exclude<ModuleKey, 'dashboard' | 'analytics' | 'settings'>;
+export type CollectionKey = Exclude<
+  ModuleKey,
+  'dashboard' | 'calendar' | 'analytics' | 'settings'
+>;
 
 export interface Photo {
   id: string;
