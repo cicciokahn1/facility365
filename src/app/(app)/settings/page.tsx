@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { BRAND_LOGO_DATA_URL, BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding/logo';
 import { STORAGE_BUDGET, storageUsage } from '@/lib/data/repository';
 import { useClearAllData } from '@/lib/data/store';
 import { LANGUAGES, useT } from '@/lib/i18n/provider';
@@ -114,6 +115,43 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               onChange={(event) => set('companyEmail', event.target.value)}
             />
           </Field>
+          <div className="sm:col-span-2">
+            <Field label={t('settings.logo')}>
+              <div className="flex flex-wrap items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element -- Data-URL aus den Einstellungen */}
+                <img
+                  src={isBrandLogo(draft.companyLogo) ? BRAND_LOGO_SRC : draft.companyLogo}
+                  alt=""
+                  data-testid="settings-logo"
+                  className="h-14 w-auto max-w-[180px] rounded border bg-white object-contain p-1"
+                />
+                <Input
+                  type="file"
+                  accept="image/png,image/jpeg,image/svg+xml"
+                  className="h-11 max-w-xs"
+                  data-testid="logo-upload"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => set('companyLogo', String(reader.result));
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                {isBrandLogo(draft.companyLogo) ? null : (
+                  <Button
+                    variant="outline"
+                    className="h-11"
+                    data-testid="logo-reset"
+                    onClick={() => set('companyLogo', BRAND_LOGO_DATA_URL)}
+                  >
+                    {t('settings.logoReset')}
+                  </Button>
+                )}
+              </div>
+            </Field>
+            <p className="pt-1 text-xs text-muted-foreground">{t('settings.logoHint')}</p>
+          </div>
         </CardContent>
       </Card>
 

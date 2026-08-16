@@ -4,6 +4,7 @@
 import { useCallback } from 'react';
 
 import { lineItemTotals } from '@/components/module/line-item-editor';
+import { logoOf } from '@/lib/branding/logo';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import {
@@ -117,7 +118,7 @@ export function useInvoicePdf(): InvoicePdfApi {
         .join(', '),
       companyContact: [settings.companyPhone, settings.companyEmail].filter(Boolean).join(' · '),
       companyVat: settings.companyVat,
-      logo: settings.companyLogo,
+      logo: logoOf(settings.companyLogo),
     };
   }, [settings]);
 
