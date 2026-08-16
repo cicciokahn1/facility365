@@ -8,6 +8,7 @@
 import {
   Boxes,
   Building2,
+  CalendarDays,
   ClipboardList,
   DoorClosed,
   FileSpreadsheet,
@@ -47,6 +48,14 @@ export const MODULES: ModuleDefinition[] = [
     group: 'overview',
     labelKey: 'module.dashboard',
     singularKey: 'module.dashboard',
+  },
+  {
+    key: 'calendar',
+    path: '/calendar',
+    icon: CalendarDays,
+    group: 'overview',
+    labelKey: 'module.calendar',
+    singularKey: 'module.calendar',
   },
   {
     key: 'customers',
