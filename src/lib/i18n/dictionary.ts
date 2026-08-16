@@ -245,6 +245,19 @@ export const dictionary = {
   'history.created': { de: 'Erstellt', fr: 'Créé', it: 'Creato', en: 'Created' },
   'history.updated': { de: 'Bearbeitet', fr: 'Modifié', it: 'Modificato', en: 'Updated' },
   'history.completed': { de: 'Erledigt', fr: 'Terminé', it: 'Completato', en: 'Completed' },
+  'history.signed': { de: 'Unterschrieben', fr: 'Signé', it: 'Firmato', en: 'Signed' },
+  'report.signCustomer': {
+    de: 'Kunde unterschreiben',
+    fr: 'Faire signer le client',
+    it: 'Far firmare il cliente',
+    en: 'Customer signature',
+  },
+  'report.signDialogHint': {
+    de: 'Der Kunde unterschreibt mit dem Finger auf diesem Gerät; danach ist der Rapport abgeschlossen.',
+    fr: 'Le client signe au doigt sur cet appareil ; le rapport est ensuite clôturé.',
+    it: 'Il cliente firma con il dito su questo dispositivo; il rapporto è poi concluso.',
+    en: 'The customer signs with a finger on this device; the report is then completed.',
+  },
   'action.markDone': { de: 'Erledigt', fr: 'Terminé', it: 'Completato', en: 'Mark done' },
   'action.markedDone': {
     de: 'Als erledigt gesetzt',

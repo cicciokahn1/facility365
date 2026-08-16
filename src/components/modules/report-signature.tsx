@@ -19,20 +19,24 @@ import { useSettings } from '@/lib/settings/provider';
 import { Report } from '@/lib/types';
 import { formatDateTime } from '@/lib/utils/format';
 
-export function ReportSignature({
+/**
+ * Erfassung der Unterschrift: Name, Zeichenflaeche, Bestaetigung.
+ *
+ * Wird sowohl im Bereich „Unterschrift“ als auch im Kopf des Rapports
+ * verwendet, damit beide Wege denselben Ablauf und dasselbe Ergebnis haben.
+ */
+export function SignatureForm({
   report,
   onChange,
+  onSigned,
 }: {
   report: Report;
   onChange: (values: Partial<Report>, action?: string) => void;
+  onSigned?: () => void;
 }) {
   const t = useT();
-  const { settings } = useSettings();
   const [drawing, setDrawing] = useState('');
   const [name, setName] = useState(report.signedBy);
-  const [again, setAgain] = useState(false);
-
-  const signed = Boolean(report.signature) && !again;
 
   const confirm = () => {
     if (!drawing || !name.trim()) {
@@ -44,14 +48,49 @@ export function ReportSignature({
         signature: drawing,
         signedBy: name.trim(),
         signedAt: new Date().toISOString(),
+        /** Mit der Unterschrift ist der Rapport definitiv. */
         status: 'final',
       },
-      'history.updated',
+      'history.signed',
     );
-    setAgain(false);
     setDrawing('');
     toast.success(t('report.signedDone'));
+    onSigned?.();
   };
+
+  return (
+    <section className="flex flex-col gap-4" data-testid="report-signature">
+      <p className="text-sm text-muted-foreground">{t('report.signNoAccount')}</p>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="signer-name">{t('report.signerName')}</Label>
+        <Input
+          id="signer-name"
+          className="h-11"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          data-testid="signer-name"
+        />
+      </div>
+      <SignaturePad onChange={setDrawing} />
+      <Button className="h-12 text-base" onClick={confirm} data-testid="sign-confirm">
+        {t('report.signConfirm')}
+      </Button>
+    </section>
+  );
+}
+
+export function ReportSignature({
+  report,
+  onChange,
+}: {
+  report: Report;
+  onChange: (values: Partial<Report>, action?: string) => void;
+}) {
+  const t = useT();
+  const { settings } = useSettings();
+  const [again, setAgain] = useState(false);
+
+  const signed = Boolean(report.signature) && !again;
 
   if (signed) {
     return (
@@ -85,11 +124,7 @@ export function ReportSignature({
           <Button
             variant="outline"
             className="h-11 self-start"
-            onClick={() => {
-              setAgain(true);
-              setName(report.signedBy);
-              setDrawing('');
-            }}
+            onClick={() => setAgain(true)}
             data-testid="sign-again"
           >
             {t('report.signAgain')}
@@ -99,23 +134,5 @@ export function ReportSignature({
     );
   }
 
-  return (
-    <section className="flex flex-col gap-4" data-testid="report-signature">
-      <p className="text-sm text-muted-foreground">{t('report.signNoAccount')}</p>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="signer-name">{t('report.signerName')}</Label>
-        <Input
-          id="signer-name"
-          className="h-11"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          data-testid="signer-name"
-        />
-      </div>
-      <SignaturePad onChange={setDrawing} />
-      <Button className="h-12 text-base" onClick={confirm} data-testid="sign-confirm">
-        {t('report.signConfirm')}
-      </Button>
-    </section>
-  );
+  return <SignatureForm report={report} onChange={onChange} onSigned={() => setAgain(false)} />;
 }
