@@ -28,7 +28,7 @@ export function InvoicePdfPanel({ invoice }: { invoice: Invoice }) {
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <Button
           className="h-12"
-          onClick={() => pdf.download(invoice)}
+          onClick={() => void pdf.download(invoice)}
           data-testid="invoice-pdf-download"
         >
           <Download className="size-4" aria-hidden />
@@ -37,7 +37,7 @@ export function InvoicePdfPanel({ invoice }: { invoice: Invoice }) {
         <Button
           variant="outline"
           className="h-12"
-          onClick={() => pdf.print(invoice)}
+          onClick={() => void pdf.print(invoice)}
           data-testid="invoice-pdf-print"
         >
           <Printer className="size-4" aria-hidden />

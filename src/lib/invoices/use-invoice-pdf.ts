@@ -7,13 +7,10 @@ import { lineItemTotals } from '@/components/module/line-item-editor';
 import { logoOf } from '@/lib/branding/logo';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
-import {
+import type {
   InvoicePdfBranding,
   InvoicePdfData,
   InvoicePdfLabels,
-  downloadInvoicePdf,
-  invoicePdfFileName,
-  printInvoicePdf,
 } from '@/lib/invoices/invoice-pdf';
 import { useSettings } from '@/lib/settings/provider';
 import { Address, Invoice } from '@/lib/types';
@@ -21,10 +18,13 @@ import { formatDate, formatMoney } from '@/lib/utils/format';
 
 export interface InvoicePdfApi {
   data: (invoice: Invoice) => InvoicePdfData;
-  download: (invoice: Invoice) => void;
-  print: (invoice: Invoice) => void;
-  fileName: (invoice: Invoice) => string;
+  download: (invoice: Invoice) => Promise<void>;
+  print: (invoice: Invoice) => Promise<void>;
+  fileName: (invoice: Invoice) => Promise<string>;
 }
+
+/** Die PDF-Erzeugung wird erst beim Klick geladen, nicht beim Oeffnen der Seite. */
+const pdfModule = () => import('@/lib/invoices/invoice-pdf');
 
 const addressLines = (address: Address | undefined): string[] =>
   address
@@ -128,8 +128,17 @@ export function useInvoicePdf(): InvoicePdfApi {
 
   return {
     data,
-    download: (invoice) => downloadInvoicePdf(data(invoice), labels(), branding()),
-    print: (invoice) => printInvoicePdf(data(invoice), labels(), branding()),
-    fileName: (invoice) => invoicePdfFileName(data(invoice)),
+    download: async (invoice) => {
+      const { downloadInvoicePdf } = await pdfModule();
+      downloadInvoicePdf(data(invoice), labels(), branding());
+    },
+    print: async (invoice) => {
+      const { printInvoicePdf } = await pdfModule();
+      printInvoicePdf(data(invoice), labels(), branding());
+    },
+    fileName: async (invoice) => {
+      const { invoicePdfFileName } = await pdfModule();
+      return invoicePdfFileName(data(invoice));
+    },
   };
 }

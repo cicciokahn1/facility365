@@ -35,7 +35,7 @@ export function ReportDetail({ id }: { id: string }) {
               onClick={() => {
                 const invoice = createInvoice(report, t('report.workPosition'));
                 /** Die Rechnung ist gespeichert; das PDF folgt direkt aus demselben Datensatz. */
-                invoicePdf.download(invoice);
+                void invoicePdf.download(invoice);
                 toast.success(t('report.invoiceCreated'), { description: t('report.invoiceHint') });
                 router.push(`/invoices/${invoice.id}`);
               }}

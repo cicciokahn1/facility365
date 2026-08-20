@@ -6,13 +6,10 @@ import { useCallback } from 'react';
 import { logoOf } from '@/lib/branding/logo';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
-import {
+import type {
   ReportPdfBranding,
   ReportPdfData,
   ReportPdfLabels,
-  downloadReportPdf,
-  printReportPdf,
-  reportPdfFileName,
 } from '@/lib/reports/report-pdf';
 import { formatWorkTime, hasWorkTime } from '@/lib/reports/work-time';
 import { useSettings } from '@/lib/settings/provider';
@@ -21,13 +18,16 @@ import { formatDate, formatDateTime, formatMoney } from '@/lib/utils/format';
 
 export interface ReportPdfApi {
   data: (report: Report) => ReportPdfData;
-  download: (report: Report) => void;
-  print: (report: Report) => void;
+  download: (report: Report) => Promise<void>;
+  print: (report: Report) => Promise<void>;
   /** Empfaengeradresse des Kunden; leer, wenn keine erfasst ist. */
   recipient: (report: Report) => string;
   mailtoUrl: (report: Report) => string;
-  fileName: (report: Report) => string;
+  fileName: (report: Report) => Promise<string>;
 }
+
+/** Die PDF-Erzeugung wird erst beim Klick geladen, nicht beim Oeffnen der Seite. */
+const pdfModule = () => import('@/lib/reports/report-pdf');
 
 export function useReportPdf(): ReportPdfApi {
   const t = useT();
@@ -171,10 +171,19 @@ export function useReportPdf(): ReportPdfApi {
 
   return {
     data,
-    download: (report) => downloadReportPdf(data(report), labels(), branding()),
-    print: (report) => printReportPdf(data(report), labels(), branding()),
+    download: async (report) => {
+      const { downloadReportPdf } = await pdfModule();
+      downloadReportPdf(data(report), labels(), branding());
+    },
+    print: async (report) => {
+      const { printReportPdf } = await pdfModule();
+      printReportPdf(data(report), labels(), branding());
+    },
     recipient,
     mailtoUrl,
-    fileName: (report) => reportPdfFileName(data(report)),
+    fileName: async (report) => {
+      const { reportPdfFileName } = await pdfModule();
+      return reportPdfFileName(data(report));
+    },
   };
 }

@@ -6,7 +6,7 @@
  * Enthaelt Suche, Filter, Sortierung und das Anlegen neuer Datensaetze - fuer
  * jedes Modul identisch aufgebaut.
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Plus } from 'lucide-react';
@@ -18,7 +18,7 @@ import { EntityForm } from '@/components/module/entity-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useCollection } from '@/lib/data/store';
+import { useCollection, useCollectionItems, useEntityIndex } from '@/lib/data/store';
 import { fieldValue, stringField } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
 import { configOf, titleOfEntity } from '@/lib/module-config';
@@ -46,44 +46,63 @@ export function ModuleList({ collection }: { collection: CollectionKey }) {
   /** Schnellaktionen des Dashboards oeffnen das Formular direkt: ?new=1 */
   const [formOpen, setFormOpen] = useState(useSearchParams().get('new') === '1');
 
-  const statusField = config.fields.find(
-    (field): field is SelectField => field.kind === 'select' && field.name === config.statusField,
+  const statusField = useMemo(
+    () =>
+      config.fields.find(
+        (field): field is SelectField =>
+          field.kind === 'select' && field.name === config.statusField,
+      ),
+    [config],
   );
-  const relationFilterFields = config.fields.filter(
-    (field) => field.kind === 'relation' && field.filter,
+  const relationFilterFields = useMemo(
+    () => config.fields.filter((field) => field.kind === 'relation' && field.filter),
+    [config],
   );
 
-  const filtered = (() => {
+  const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const searchOf = config.searchOf as (entity: (typeof items)[number]) => string;
+    const active = Object.entries(relationFilters).filter(
+      ([, value]) => value && value !== 'all',
+    );
     const result = items.filter((item) => {
       if (needle && !searchOf(item).toLowerCase().includes(needle)) return false;
       if (statusFilter !== 'all' && config.statusField) {
         if (stringField(item, config.statusField) !== statusFilter) return false;
       }
-      return Object.entries(relationFilters).every(
-        ([name, value]) => !value || value === 'all' || stringField(item, name) === value,
-      );
+      return active.every(([name, value]) => stringField(item, name) === value);
     });
     const titleOf = config.titleOf as (entity: (typeof items)[number]) => string;
-    return [...result].sort((a, b) => {
+    return result.sort((a, b) => {
       if (sort === 'name') return titleOf(a).localeCompare(titleOf(b));
       if (sort === 'oldest') return a.createdAt.localeCompare(b.createdAt);
       return b.createdAt.localeCompare(a.createdAt);
     });
-  })();
+  }, [config, items, query, relationFilters, sort, statusFilter]);
 
-  const initialValues = (() => {
+  /** Anzahl je Status in einem Durchgang statt einer Suche je Auswahl. */
+  const statusCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    if (!statusField) return counts;
+    items.forEach((item) => {
+      const value = stringField(item, statusField.name);
+      counts.set(value, (counts.get(value) ?? 0) + 1);
+    });
+    return counts;
+  }, [items, statusField]);
+
+  const initialValues = useMemo(() => {
     const defaults: FormValues = {};
     config.fields.forEach((field) => {
       if (field.kind === 'select') defaults[field.name] = field.options[0]?.value ?? '';
       else if (field.kind === 'address')
         defaults[field.name] = { street: '', zip: '', city: '', country: 'Schweiz' };
       else if (field.kind === 'switch') defaults[field.name] = false;
+      else if (field.kind === 'suggest') defaults[field.name] = field.suggestionsOf(defaults)[0] ?? '';
       else defaults[field.name] = '';
     });
     return defaults;
-  })();
+  }, [config]);
 
   const handleCreate = (values: FormValues) => {
     const entity = create(values as never, settings.profileName || settings.companyName);
@@ -123,20 +142,15 @@ export function ModuleList({ collection }: { collection: CollectionKey }) {
               count={items.length}
               onClick={() => setStatusFilter('all')}
             />
-            {statusField.options.map((option) => {
-              const count = items.filter(
-                (item) => stringField(item, statusField.name) === option.value,
-              ).length;
-              return (
-                <FilterChip
-                  key={option.value}
-                  active={statusFilter === option.value}
-                  label={t(option.labelKey)}
-                  count={count}
-                  onClick={() => setStatusFilter(option.value)}
-                />
-              );
-            })}
+            {statusField.options.map((option) => (
+              <FilterChip
+                key={option.value}
+                active={statusFilter === option.value}
+                label={t(option.labelKey)}
+                count={statusCounts.get(option.value) ?? 0}
+                onClick={() => setStatusFilter(option.value)}
+              />
+            ))}
           </div>
         ) : null}
 
@@ -270,7 +284,7 @@ function RelationFilter({
   onChange: (value: string) => void;
 }) {
   const t = useT();
-  const { items } = useCollection(collection);
+  const items = useCollectionItems(collection);
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="w-full" data-testid={`filter-${collection}`}>
@@ -323,12 +337,12 @@ function MetaRow({
   entity: Parameters<typeof fieldValue>[0];
   language: Parameters<typeof formatDate>[1];
 }) {
-  const items = useCollection(field.kind === 'relation' ? field.collection : 'customers');
+  const index = useEntityIndex(field.kind === 'relation' ? field.collection : 'customers');
   const raw = fieldValue(entity, field.name);
 
   let display = '';
   if (field.kind === 'relation') {
-    const target = items.items.find((item) => item.id === asString(raw));
+    const target = index.get(asString(raw));
     display = target ? titleOfEntity(field.collection, target) : '';
   } else if (field.kind === 'date') {
     display = asString(raw) ? formatDate(asString(raw), language) : '';

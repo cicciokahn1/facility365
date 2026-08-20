@@ -27,13 +27,20 @@ import { newId, nextNumber } from '@/lib/utils/id';
 
 const COLLECTIONS: CollectionKey[] = [
   'customers',
+  'suppliers',
   'properties',
   'buildings',
   'rooms',
   'assets',
   'documents',
+  'energy',
   'orders',
   'maintenances',
+  'legionella',
+  'rcd',
+  'keys',
+  'stock',
+  'contracts',
   'damages',
   'reports',
   'quotes',
@@ -47,6 +54,9 @@ const emptyStore = (): Store =>
     acc[key] = [];
     return acc;
   }, {} as Store);
+
+/** Ein einziger leerer Speicher: solange nichts geladen ist, bleibt die Referenz gleich. */
+const EMPTY_STORE: Store = emptyStore();
 
 interface DataContextValue {
   store: Store;
@@ -76,7 +86,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   /** Nie Daten eines anderen Kontos zeigen, auch nicht kurz waehrend des Ladens. */
   const current = loaded.scope === scope && scope !== '';
-  const store = current ? loaded.store : emptyStore();
+  const store = current ? loaded.store : EMPTY_STORE;
   const ready = current;
 
   useEffect(() => {
@@ -190,8 +200,9 @@ export interface CollectionApi<K extends CollectionKey> {
 export function useCollection<K extends CollectionKey>(collection: K): CollectionApi<K> {
   const { store, ready, setCollection, saveItem, removeItem } = useData();
   const items = store[collection] as EntityOf<K>[];
+  const index = useEntityIndex(collection);
 
-  const get = useCallback((id: string) => items.find((item) => item.id === id), [items]);
+  const get = useCallback((id: string) => index.get(id), [index]);
 
   const create = useCallback(
     (values: Partial<EntityOf<K>>, user = 'System') => {
@@ -218,7 +229,7 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
   const update = useCallback(
     (id: string, values: Partial<EntityOf<K>>, action = 'history.updated', user = 'System') => {
       const now = new Date().toISOString();
-      const current = items.find((item) => item.id === id);
+      const current = index.get(id);
       if (!current) return;
       const next = {
         ...current,
@@ -232,7 +243,7 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
       };
       saveItem(collection, next as BaseEntity);
     },
-    [collection, items, saveItem],
+    [collection, index, saveItem],
   );
 
   const remove = useCallback(
@@ -245,7 +256,18 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
     [collection, setCollection],
   );
 
-  return { items, ready, get, create, update, remove, replaceAll };
+  return useMemo(
+    () => ({ items, ready, get, create, update, remove, replaceAll }),
+    [create, get, items, ready, remove, replaceAll, update],
+  );
+}
+
+/** Nachschlagewerk einer Sammlung: Zugriff ueber die Kennung ohne Suchlauf. */
+export function useEntityIndex<K extends CollectionKey>(
+  collection: K,
+): Map<string, EntityOf<K>> {
+  const items = useCollectionItems(collection);
+  return useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
 }
 
 /** Nur-lesender Zugriff auf eine Sammlung, z. B. fuer Auswahllisten. */

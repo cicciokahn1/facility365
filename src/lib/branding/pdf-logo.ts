@@ -1,5 +1,5 @@
 /** Logo in ein PDF zeichnen, ohne es zu verzerren. */
-import { jsPDF } from 'jspdf';
+import type { jsPDF } from 'jspdf';
 
 export interface LogoBox {
   x: number;

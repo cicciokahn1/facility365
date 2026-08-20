@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AuditTone, countTones, useAuditSections } from '@/lib/audit/audit';
-import { AuditPdfLabels, downloadAuditPdf } from '@/lib/audit/audit-pdf';
+import type { AuditPdfLabels } from '@/lib/audit/audit-pdf';
 import { logoOf } from '@/lib/branding/logo';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
@@ -58,7 +58,7 @@ export function AuditView() {
   );
 
   const sections = useAuditSections(filter);
-  const tones = countTones(sections);
+  const tones = useMemo(() => countTones(sections), [sections]);
   const total = tones.green + tones.amber + tones.red;
 
   const locationText = [
@@ -70,7 +70,7 @@ export function AuditView() {
 
   const periodText = `${formatDate(from, settings.language)} – ${formatDate(to, settings.language)}`;
 
-  const createPdf = () => {
+  const createPdf = async () => {
     const labels: AuditPdfLabels = {
       title: t('audit.reportTitle'),
       location: t('audit.location'),
@@ -87,6 +87,8 @@ export function AuditView() {
       empty: t('audit.sectionEmpty'),
     };
 
+    /** Die PDF-Erzeugung wird erst beim Klick geladen, nicht beim Oeffnen der Seite. */
+    const { downloadAuditPdf } = await import('@/lib/audit/audit-pdf');
     downloadAuditPdf(
       {
         location: locationText,
@@ -127,7 +129,7 @@ export function AuditView() {
       <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-base">{t('module.audit')}</CardTitle>
-          <Button onClick={createPdf} data-testid="audit-pdf">
+          <Button onClick={() => void createPdf()} data-testid="audit-pdf">
             <FileDown className="size-4" aria-hidden />
             {t('audit.createReport')}
           </Button>
