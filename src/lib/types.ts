@@ -11,24 +11,32 @@ export type ModuleKey =
   | 'dashboard'
   | 'calendar'
   | 'customers'
+  | 'suppliers'
   | 'properties'
   | 'buildings'
   | 'rooms'
   | 'assets'
   | 'documents'
+  | 'energy'
   | 'orders'
   | 'maintenances'
+  | 'legionella'
+  | 'rcd'
+  | 'keys'
+  | 'stock'
+  | 'contracts'
   | 'damages'
   | 'reports'
   | 'quotes'
   | 'invoices'
   | 'analytics'
+  | 'audit'
   | 'settings';
 
 /** Sammlungen, die Datensaetze fuehren. */
 export type CollectionKey = Exclude<
   ModuleKey,
-  'dashboard' | 'calendar' | 'analytics' | 'settings'
+  'dashboard' | 'calendar' | 'analytics' | 'audit' | 'settings'
 >;
 
 export interface Photo {
@@ -126,6 +134,19 @@ export interface Customer extends BaseEntity {
   contracts: Contract[];
 }
 
+/** Lieferant oder Dienstleister, z. B. Heizungsservice oder Materialhandel. */
+export interface Supplier extends BaseEntity {
+  name: string;
+  contactPerson: string;
+  address: Address;
+  phone: string;
+  mobile: string;
+  email: string;
+  website: string;
+  category: string;
+  status: ActiveStatus;
+}
+
 export type PropertyStatus = 'active' | 'inactive' | 'archived';
 
 export interface Property extends BaseEntity {
@@ -192,6 +213,72 @@ export interface Asset extends BaseEntity {
   warrantyUntil: string;
   warrantyNote: string;
   maintenanceInterval: string;
+  /** Lieferant oder Servicepartner der Anlage. */
+  supplierId: string;
+}
+
+export type EnergyType =
+  | 'electricity'
+  | 'water'
+  | 'oil'
+  | 'gas'
+  | 'pellets'
+  | 'districtHeating'
+  | 'wood'
+  | 'solar'
+  | 'heatPump'
+  | 'other';
+
+/** Verbrauch eines Monats fuer eine Liegenschaft oder ein Gebaeude. */
+export interface EnergyEntry extends BaseEntity {
+  type: EnergyType;
+  /** Eigene Bezeichnung, wenn die Art "Sonstiges" ist. */
+  typeOther: string;
+  propertyId: string;
+  buildingId: string;
+  /** Monat als YYYY-MM. */
+  month: string;
+  consumption?: number;
+  unit: string;
+  cost?: number;
+}
+
+/** Artikel der Lagerverwaltung. */
+export interface StockItem extends BaseEntity {
+  /** Bezeichnung des Materials. */
+  title: string;
+  articleNumber: string;
+  quantity?: number;
+  minQuantity?: number;
+  unit: string;
+  /** Lagerort, z. B. Regal oder Fahrzeug. */
+  location: string;
+  supplierId: string;
+  price?: number;
+}
+
+/** Stand eines Vertrags. */
+export type ContractStatus = 'active' | 'terminated' | 'expired';
+
+/** Vertrag der Vertragsverwaltung. */
+export interface ContractEntity extends BaseEntity {
+  title: string;
+  /** Vertragspartner, z. B. Firma oder Person. */
+  partner: string;
+  supplierId: string;
+  customerId: string;
+  /** Vertragsart, z. B. Wartungsvertrag. */
+  type: string;
+  contractNumber: string;
+  start: string;
+  end: string;
+  /** Kuendigungsfrist in Monaten vor Vertragsende. */
+  noticeMonths: string;
+  cost?: number;
+  /** Zustaendiger Standort. */
+  propertyId: string;
+  buildingId: string;
+  status: ContractStatus;
 }
 
 export type Priority = 'low' | 'medium' | 'high' | 'critical';
@@ -224,6 +311,8 @@ export interface Order extends BaseEntity {
   assetId: string;
   /** Offerte, aus der der Auftrag entstanden ist; leer bei freier Erfassung. */
   quoteId: string;
+  /** Beauftragter Lieferant oder Dienstleister. */
+  supplierId: string;
   assignee: string;
   dueDate: string;
   startedAt: string;
@@ -259,10 +348,112 @@ export interface Maintenance extends BaseEntity {
   buildingId: string;
   assetId: string;
   company: string;
+  supplierId: string;
   responsible: string;
   lastDate: string;
   nextDate: string;
   checklist: ChecklistItem[];
+}
+
+/** Bewertung einer Legionellenkontrolle. */
+export type LegionellaResult = 'pending' | 'ok' | 'warning' | 'critical';
+
+/** Einzelne Messstelle einer Kontrolle. */
+export interface LegionellaSample {
+  id: string;
+  point: string;
+  /** Warmwasser in Grad Celsius. */
+  hotTemp?: number;
+  /** Kaltwasser in Grad Celsius. */
+  coldTemp?: number;
+  /** Legionellen in KBE je Liter. */
+  cfu?: number;
+  note: string;
+}
+
+/** Kontrolle einer Wasseranlage auf Legionellen. */
+export interface LegionellaCheck extends BaseEntity {
+  title: string;
+  propertyId: string;
+  buildingId: string;
+  /** Wasseranlage, z. B. Boiler Ost oder Zirkulation Steigzone A. */
+  system: string;
+  /** Leitende Messstelle; weitere Stellen stehen in samples. */
+  measuringPoint: string;
+  date: string;
+  hotTemp?: number;
+  coldTemp?: number;
+  cfu?: number;
+  result: LegionellaResult;
+  measures: string;
+  responsible: string;
+  interval: MaintenanceInterval;
+  nextDate: string;
+  samples: LegionellaSample[];
+  /** Laborbericht als PDF. */
+  labReport?: DocumentFile;
+}
+
+/** Stand einer FI-Kontrolle. */
+export type RcdStatus = 'open' | 'done';
+
+/** Ergebnis einer FI-Kontrolle. */
+export type RcdResult = 'pending' | 'passed' | 'failed';
+
+/** Pruefung eines Fehlerstromschutzschalters (FI/RCD). */
+export interface RcdCheck extends BaseEntity {
+  title: string;
+  propertyId: string;
+  buildingId: string;
+  assetId: string;
+  /** Verteiler oder Unterverteilung. */
+  distribution: string;
+  /** Bezeichnung des FI/RCD, z. B. FI 1 Steigzone A. */
+  device: string;
+  date: string;
+  tester: string;
+  /** Bemessungsdifferenzstrom in mA. */
+  ratedCurrent?: number;
+  /** Gemessener Ausloesestrom in mA. */
+  tripCurrent?: number;
+  /** Gemessene Ausloesezeit in ms. */
+  tripTime?: number;
+  result: RcdResult;
+  status: RcdStatus;
+  interval: MaintenanceInterval;
+  nextDate: string;
+}
+
+/** Stand eines Schluessels. */
+export type KeyStatus = 'available' | 'issued' | 'lost' | 'retired';
+
+/** Ausgabe oder Ruecknahme eines Schluessels. */
+export interface KeyMovement {
+  id: string;
+  type: 'issue' | 'return';
+  date: string;
+  /** Person oder Firma, die den Schluessel erhalten oder zurueckgegeben hat. */
+  person: string;
+  note: string;
+}
+
+/** Schluessel der Schluesselverwaltung. */
+export interface KeyEntity extends BaseEntity {
+  title: string;
+  /** Aufgedruckte oder eigene Schluesselnummer. */
+  keyNumber: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  /** Aufbewahrungsort, z. B. Schluesselschrank. */
+  location: string;
+  status: KeyStatus;
+  /** Aktuell ausgegeben an. */
+  issuedTo: string;
+  issuedAt: string;
+  returnedAt: string;
+  /** Alle Ausgaben und Ruecknahmen. */
+  movements: KeyMovement[];
 }
 
 export type DamageStatus = 'reported' | 'inspection' | 'inProgress' | 'fixed' | 'rejected';
@@ -368,7 +559,10 @@ export interface DocumentEntity extends BaseEntity {
   customerId: string;
   propertyId: string;
   buildingId: string;
+  roomId: string;
   assetId: string;
+  orderId: string;
+  maintenanceId: string;
   validUntil: string;
 }
 
@@ -448,6 +642,12 @@ export interface AppSettings {
   currency: string;
   hourlyRate?: number;
   vatRate: number;
+  /** Grenzwerte und Intervall der Legionellenkontrolle. */
+  legionellaHotMin: number;
+  legionellaColdMax: number;
+  legionellaWarnCfu: number;
+  legionellaLimitCfu: number;
+  legionellaIntervalMonths: number;
   notificationsEnabled: boolean;
   emailNotifications: boolean;
 }
@@ -455,13 +655,20 @@ export interface AppSettings {
 /** Zuordnung von Sammlung zu Datensatztyp. */
 export interface CollectionMap {
   customers: Customer;
+  suppliers: Supplier;
   properties: Property;
   buildings: Building;
   rooms: Room;
   assets: Asset;
   documents: DocumentEntity;
+  energy: EnergyEntry;
   orders: Order;
   maintenances: Maintenance;
+  legionella: LegionellaCheck;
+  rcd: RcdCheck;
+  keys: KeyEntity;
+  stock: StockItem;
+  contracts: ContractEntity;
   damages: Damage;
   reports: Report;
   quotes: Quote;
