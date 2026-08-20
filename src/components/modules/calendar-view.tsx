@@ -9,13 +9,25 @@
  */
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Bell, BellRing, ChevronLeft, ChevronRight, ClipboardList, Repeat, Wrench } from 'lucide-react';
+import {
+  Bell,
+  BellRing,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  Droplets,
+  FileSignature,
+  type LucideIcon,
+  Repeat,
+  Wrench,
+  Zap,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { Button } from '@/components/ui/button';
-import { CalendarEvent, eventsOn, useCalendarEvents } from '@/lib/calendar/events';
-import { useCollectionItems } from '@/lib/data/store';
+import { CalendarEvent, CalendarEventKind, useCalendarEvents } from '@/lib/calendar/events';
+import { useEntityIndex } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { usePushPermission } from '@/lib/notifications/reminders';
 import { useSettings } from '@/lib/settings/provider';
@@ -31,6 +43,15 @@ const WEEKDAY_KEYS = [
   'calendar.sat',
   'calendar.sun',
 ] as const;
+
+/** Symbol je Terminart. */
+const EVENT_ICONS: Record<CalendarEventKind, LucideIcon> = {
+  order: ClipboardList,
+  maintenance: Wrench,
+  legionella: Droplets,
+  rcd: Zap,
+  contract: FileSignature,
+};
 
 const iso = (date: Date): string =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -65,8 +86,22 @@ export function CalendarView() {
     { month: 'long', year: 'numeric' },
   ).format(new Date(cursor.year, cursor.month, 1));
 
-  const upcoming = events.filter((event) => event.date >= today()).slice(0, 12);
-  const dayEvents = eventsOn(events, selected);
+  /** Termine einmal nach Tag gruppieren statt je Rasterfeld zu durchsuchen. */
+  const byDay = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+    events.forEach((event) => {
+      const list = map.get(event.date);
+      if (list) list.push(event);
+      else map.set(event.date, [event]);
+    });
+    return map;
+  }, [events]);
+
+  const upcoming = useMemo(
+    () => events.filter((event) => event.date >= today()).slice(0, 12),
+    [events],
+  );
+  const dayEvents = byDay.get(selected) ?? [];
 
   const step = (delta: number) =>
     setCursor((current) => {
@@ -132,7 +167,7 @@ export function CalendarView() {
 
         <div className="mt-1 grid grid-cols-7 gap-1">
           {days.map((day) => {
-            const count = eventsOn(events, day).length;
+            const count = byDay.get(day)?.length ?? 0;
             const inMonth = Number(day.slice(5, 7)) === cursor.month + 1;
             return (
               <button
@@ -197,19 +232,19 @@ export function CalendarView() {
 function EventRow({ event, showDate = false }: { event: CalendarEvent; showDate?: boolean }) {
   const t = useT();
   const { settings } = useSettings();
-  const customers = useCollectionItems('customers');
-  const properties = useCollectionItems('properties');
-  const buildings = useCollectionItems('buildings');
-  const assets = useCollectionItems('assets');
+  const customers = useEntityIndex('customers');
+  const properties = useEntityIndex('properties');
+  const buildings = useEntityIndex('buildings');
+  const assets = useEntityIndex('assets');
 
   const context = [
-    customers.find((customer) => customer.id === event.customerId)?.name,
-    properties.find((property) => property.id === event.propertyId)?.name,
-    buildings.find((building) => building.id === event.buildingId)?.name,
-    assets.find((asset) => asset.id === event.assetId)?.name,
+    customers.get(event.customerId)?.name,
+    properties.get(event.propertyId)?.name,
+    buildings.get(event.buildingId)?.name,
+    assets.get(event.assetId)?.name,
   ].filter(Boolean);
 
-  const Icon = event.kind === 'maintenance' ? Wrench : ClipboardList;
+  const Icon = EVENT_ICONS[event.kind];
 
   return (
     <li>

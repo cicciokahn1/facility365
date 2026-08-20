@@ -7,6 +7,7 @@
  * fuenf haeufigsten Schnellaktionen. Keine Kennzahlen zu Umsatz, Stunden oder
  * Rechnungen - die gehoeren in die spaeteren Auswertungen.
  */
+import { useMemo } from 'react';
 import Link from 'next/link';
 import {
   AlertTriangle,
@@ -24,6 +25,7 @@ import { EmptyState } from '@/components/common/empty-state';
 import { StatusBadge } from '@/components/common/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding/logo';
+import { isReminderDue } from '@/lib/contracts/reminder';
 import { useCollectionItems } from '@/lib/data/store';
 import { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
@@ -46,65 +48,137 @@ export default function DashboardPage() {
   const orders = useCollectionItems('orders');
   const maintenances = useCollectionItems('maintenances');
   const damages = useCollectionItems('damages');
+  const legionella = useCollectionItems('legionella');
+  const rcd = useCollectionItems('rcd');
+  const contracts = useCollectionItems('contracts');
 
-  const openOrders = orders.filter((order) => !isDone('orders', order.status));
-  const openMaintenances = maintenances.filter(
-    (maintenance) => !isDone('maintenances', maintenance.status),
+  const openOrders = useMemo(
+    () => orders.filter((order) => !isDone('orders', order.status)),
+    [orders],
   );
-  const openDamages = damages.filter((damage) => !isDone('damages', damage.status));
+  const openMaintenances = useMemo(
+    () => maintenances.filter((maintenance) => !isDone('maintenances', maintenance.status)),
+    [maintenances],
+  );
+  const openDamages = useMemo(
+    () => damages.filter((damage) => !isDone('damages', damage.status)),
+    [damages],
+  );
 
-  const appointments = [
-    ...openOrders
-      .filter((order) => order.dueDate)
-      .map((order) => ({
-        id: order.id,
-        href: `/orders/${order.id}`,
-        title: order.title,
-        date: order.dueDate,
-        labelKey: 'module.orders.singular' as TranslationKey,
-      })),
-    ...openMaintenances
-      .filter((maintenance) => maintenance.nextDate)
-      .map((maintenance) => ({
-        id: maintenance.id,
-        href: `/maintenances/${maintenance.id}`,
-        title: maintenance.title,
-        date: maintenance.nextDate,
-        labelKey: 'module.maintenances.singular' as TranslationKey,
-      })),
-  ]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, 6);
+  const appointments = useMemo(
+    () =>
+      [
+        ...openOrders
+          .filter((order) => order.dueDate)
+          .map((order) => ({
+            id: order.id,
+            href: `/orders/${order.id}`,
+            title: order.title,
+            date: order.dueDate,
+            labelKey: 'module.orders.singular' as TranslationKey,
+          })),
+        ...openMaintenances
+          .filter((maintenance) => maintenance.nextDate)
+          .map((maintenance) => ({
+            id: maintenance.id,
+            href: `/maintenances/${maintenance.id}`,
+            title: maintenance.title,
+            date: maintenance.nextDate,
+            labelKey: 'module.maintenances.singular' as TranslationKey,
+          })),
+        ...legionella
+          .filter((check) => check.nextDate)
+          .map((check) => ({
+            id: check.id,
+            href: `/legionella/${check.id}`,
+            title: check.title || check.system,
+            date: check.nextDate,
+            labelKey: 'module.legionella.singular' as TranslationKey,
+          })),
+        ...rcd
+          .filter((check) => check.status !== 'done' && check.nextDate)
+          .map((check) => ({
+            id: check.id,
+            href: `/rcd/${check.id}`,
+            title: check.title || check.device,
+            date: check.nextDate,
+            labelKey: 'module.rcd.singular' as TranslationKey,
+          })),
+      ]
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, 6),
+    [legionella, openMaintenances, openOrders, rcd],
+  );
 
-  const notifications = [
-    ...openOrders
-      .filter((order) => order.dueDate && order.dueDate < today())
-      .map((order) => ({
-        id: `order-${order.id}`,
-        href: `/orders/${order.id}`,
-        textKey: 'dashboard.overdueOrder' as TranslationKey,
-        title: order.title,
-      })),
-    ...openMaintenances
-      .filter((maintenance) => {
-        const days = daysUntil(maintenance.nextDate);
-        return days !== null && days <= 14;
-      })
-      .map((maintenance) => ({
-        id: `maintenance-${maintenance.id}`,
-        href: `/maintenances/${maintenance.id}`,
-        textKey: 'dashboard.dueMaintenance' as TranslationKey,
-        title: maintenance.title,
-      })),
-    ...openDamages
-      .filter((damage) => damage.priority === 'critical' || damage.priority === 'high')
-      .map((damage) => ({
-        id: `damage-${damage.id}`,
-        href: `/damages/${damage.id}`,
-        textKey: 'dashboard.urgentDamage' as TranslationKey,
-        title: damage.title,
-      })),
-  ].slice(0, 8);
+  const notifications = useMemo(
+    () =>
+      [
+        ...openOrders
+          .filter((order) => order.dueDate && order.dueDate < today())
+          .map((order) => ({
+            id: `order-${order.id}`,
+            href: `/orders/${order.id}`,
+            textKey: 'dashboard.overdueOrder' as TranslationKey,
+            title: order.title,
+          })),
+        ...openMaintenances
+          .filter((maintenance) => {
+            const days = daysUntil(maintenance.nextDate);
+            return days !== null && days <= 14;
+          })
+          .map((maintenance) => ({
+            id: `maintenance-${maintenance.id}`,
+            href: `/maintenances/${maintenance.id}`,
+            textKey: 'dashboard.dueMaintenance' as TranslationKey,
+            title: maintenance.title,
+          })),
+        ...openDamages
+          .filter((damage) => damage.priority === 'critical' || damage.priority === 'high')
+          .map((damage) => ({
+            id: `damage-${damage.id}`,
+            href: `/damages/${damage.id}`,
+            textKey: 'dashboard.urgentDamage' as TranslationKey,
+            title: damage.title,
+          })),
+        ...legionella
+          .filter((check) => {
+            const days = daysUntil(check.nextDate);
+            return days !== null && days <= 14;
+          })
+          .map((check) => ({
+            id: `legionella-${check.id}`,
+            href: `/legionella/${check.id}`,
+            textKey: 'dashboard.dueLegionella' as TranslationKey,
+            title: check.title || check.system,
+          })),
+        ...rcd
+          .filter((check) => {
+            if (check.status === 'done') return false;
+            const days = daysUntil(check.nextDate);
+            return days !== null && days <= 14;
+          })
+          .map((check) => ({
+            id: `rcd-${check.id}`,
+            href: `/rcd/${check.id}`,
+            textKey: 'dashboard.dueRcd' as TranslationKey,
+            title: check.title || check.device,
+          })),
+        ...contracts
+          .filter((contract) => isReminderDue(contract, today()))
+          .map((contract) => ({
+            id: `contract-${contract.id}`,
+            href: `/contracts/${contract.id}`,
+            textKey: 'dashboard.expiringContract' as TranslationKey,
+            title: contract.title || contract.partner,
+          })),
+      ].slice(0, 8),
+    [contracts, legionella, openDamages, openMaintenances, openOrders, rcd],
+  );
+
+  const criticalOrders = useMemo(
+    () => openOrders.filter((order) => order.priority === 'critical').length,
+    [openOrders],
+  );
 
   return (
     <div className="flex flex-col gap-5">
@@ -146,7 +220,7 @@ export default function DashboardPage() {
         <StatCard
           href="/orders"
           labelKey="dashboard.criticalOrders"
-          value={openOrders.filter((order) => order.priority === 'critical').length}
+          value={criticalOrders}
           icon={AlertTriangle}
         />
       </section>

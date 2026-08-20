@@ -14,13 +14,13 @@ export function ReportPdfPanel({ report }: { report: Report }) {
   const pdf = useReportPdf();
   const recipient = pdf.recipient(report);
 
-  const send = () => {
+  const send = async () => {
     if (!recipient) {
       toast.error(t('report.sendNoEmail'));
       return;
     }
     /** Ohne Mailanbieter kann der Browser keine Datei anhaengen: erst laden, dann Entwurf oeffnen. */
-    pdf.download(report);
+    await pdf.download(report);
     window.location.href = pdf.mailtoUrl(report);
   };
 
@@ -37,20 +37,20 @@ export function ReportPdfPanel({ report }: { report: Report }) {
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <Button className="h-12" onClick={() => pdf.download(report)} data-testid="pdf-download">
+        <Button className="h-12" onClick={() => void pdf.download(report)} data-testid="pdf-download">
           <Download className="size-4" aria-hidden />
           {t('action.download')}
         </Button>
         <Button
           variant="outline"
           className="h-12"
-          onClick={() => pdf.print(report)}
+          onClick={() => void pdf.print(report)}
           data-testid="pdf-print"
         >
           <Printer className="size-4" aria-hidden />
           {t('action.print')}
         </Button>
-        <Button variant="outline" className="h-12" onClick={send} data-testid="pdf-send">
+        <Button variant="outline" className="h-12" onClick={() => void send()} data-testid="pdf-send">
           <Mail className="size-4" aria-hidden />
           {t('report.send')}
         </Button>

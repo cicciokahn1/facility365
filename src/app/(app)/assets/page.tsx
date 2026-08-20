@@ -1,17 +1,23 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CreditCard, QrCode } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { ModuleList } from '@/components/module/module-list';
 import { AssetCardExport } from '@/components/modules/asset-card-export';
-import { CodeScanner } from '@/components/modules/code-scanner';
 import { Button } from '@/components/ui/button';
 import { findAsset } from '@/lib/assets/passport';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
+
+/** Die Kamerabibliothek wird erst geladen, wenn der Scanner geoeffnet wird. */
+const CodeScanner = dynamic(
+  () => import('@/components/modules/code-scanner').then((module) => module.CodeScanner),
+  { ssr: false },
+);
 
 export default function AssetsPage() {
   const t = useT();
@@ -20,6 +26,13 @@ export default function AssetsPage() {
   /** ?scan=1 oeffnet den Scanner direkt, z. B. aus der QR-Ansicht einer Anlage. */
   const [scanning, setScanning] = useState(useSearchParams().get('scan') === '1');
   const [exporting, setExporting] = useState(false);
+  /** Erst nach dem ersten Oeffnen bleibt der Scanner eingehaengt. */
+  const [scannerUsed, setScannerUsed] = useState(scanning);
+
+  const openScanner = () => {
+    setScannerUsed(true);
+    setScanning(true);
+  };
 
   /**
    * Der Code traegt die dauerhafte Anlagen-ID; aeltere Etiketten mit der
@@ -38,13 +51,15 @@ export default function AssetsPage() {
           <CreditCard className="size-4" aria-hidden />
           {t('asset.cardExport')}
         </Button>
-        <Button variant="outline" onClick={() => setScanning(true)} data-testid="scan-button">
+        <Button variant="outline" onClick={openScanner} data-testid="scan-button">
           <QrCode className="size-4" aria-hidden />
           {t('action.scan')}
         </Button>
       </div>
       <ModuleList collection="assets" />
-      <CodeScanner open={scanning} onOpenChange={setScanning} onResult={handleResult} />
+      {scannerUsed ? (
+        <CodeScanner open={scanning} onOpenChange={setScanning} onResult={handleResult} />
+      ) : null}
       <AssetCardExport open={exporting} onOpenChange={setExporting} />
     </div>
   );

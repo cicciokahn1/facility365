@@ -41,10 +41,22 @@ const parse = <T>(raw: string | null): T[] => {
   }
 };
 
+/**
+ * Zuletzt gelesener oder geschriebener Stand je Sammlung.
+ *
+ * Ohne den Spiegel muesste jedes Speichern die ganze Sammlung erneut aus dem
+ * Browserspeicher lesen und auswerten - auf dem Smartphone der teuerste Teil.
+ */
+const cache = new Map<CollectionKey, unknown[]>();
+
 export const localRepository: Repository = {
   async read<K extends CollectionKey>(collection: K): Promise<EntityOf<K>[]> {
     if (typeof window === 'undefined') return [];
-    return parse<EntityOf<K>>(window.localStorage.getItem(PREFIX + collection));
+    const cached = cache.get(collection);
+    if (cached) return cached as EntityOf<K>[];
+    const items = parse<EntityOf<K>>(window.localStorage.getItem(PREFIX + collection));
+    cache.set(collection, items);
+    return items;
   },
 
   async save<K extends CollectionKey>(collection: K, item: EntityOf<K>): Promise<void> {
@@ -68,7 +80,9 @@ export const localRepository: Repository = {
     if (typeof window === 'undefined') return;
     try {
       window.localStorage.setItem(PREFIX + collection, JSON.stringify(items));
+      cache.set(collection, items);
     } catch {
+      cache.delete(collection);
       throw new StorageFullError();
     }
   },
@@ -94,6 +108,7 @@ export const localRepository: Repository = {
   },
 
   async clear(): Promise<void> {
+    cache.clear();
     if (typeof window === 'undefined') return;
     const keys: string[] = [];
     for (let index = 0; index < window.localStorage.length; index += 1) {

@@ -21,13 +21,20 @@ import { CollectionKey } from '@/lib/types';
 
 const SEARCHABLE: CollectionKey[] = [
   'customers',
+  'suppliers',
   'properties',
   'buildings',
   'rooms',
   'assets',
   'documents',
+  'energy',
   'orders',
   'maintenances',
+  'legionella',
+  'rcd',
+  'keys',
+  'stock',
+  'contracts',
   'damages',
   'reports',
   'quotes',
@@ -77,29 +84,79 @@ function SearchDialog({
 }) {
   const t = useT();
   const [query, setQuery] = useState('');
-  const collections = {
-    customers: useCollectionItems('customers'),
-    properties: useCollectionItems('properties'),
-    buildings: useCollectionItems('buildings'),
-    rooms: useCollectionItems('rooms'),
-    assets: useCollectionItems('assets'),
-    documents: useCollectionItems('documents'),
-    orders: useCollectionItems('orders'),
-    maintenances: useCollectionItems('maintenances'),
-    damages: useCollectionItems('damages'),
-    reports: useCollectionItems('reports'),
-    quotes: useCollectionItems('quotes'),
-    invoices: useCollectionItems('invoices'),
-  };
+  const customers = useCollectionItems('customers');
+  const suppliers = useCollectionItems('suppliers');
+  const properties = useCollectionItems('properties');
+  const buildings = useCollectionItems('buildings');
+  const rooms = useCollectionItems('rooms');
+  const assets = useCollectionItems('assets');
+  const documents = useCollectionItems('documents');
+  const energy = useCollectionItems('energy');
+  const orders = useCollectionItems('orders');
+  const maintenances = useCollectionItems('maintenances');
+  const legionella = useCollectionItems('legionella');
+  const rcd = useCollectionItems('rcd');
+  const keys = useCollectionItems('keys');
+  const stock = useCollectionItems('stock');
+  const contracts = useCollectionItems('contracts');
+  const damages = useCollectionItems('damages');
+  const reports = useCollectionItems('reports');
+  const quotes = useCollectionItems('quotes');
+  const invoices = useCollectionItems('invoices');
 
-  const results = (() => {
+  const collections = useMemo(
+    () => ({
+      customers,
+      suppliers,
+      properties,
+      buildings,
+      rooms,
+      assets,
+      documents,
+      energy,
+      orders,
+      maintenances,
+      legionella,
+      rcd,
+      keys,
+      stock,
+      contracts,
+      damages,
+      reports,
+      quotes,
+      invoices,
+    }),
+    [
+      assets,
+      buildings,
+      contracts,
+      customers,
+      damages,
+      documents,
+      energy,
+      invoices,
+      keys,
+      legionella,
+      maintenances,
+      orders,
+      properties,
+      quotes,
+      rcd,
+      reports,
+      rooms,
+      stock,
+      suppliers,
+    ],
+  );
+
+  const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
+    if (!open || !needle) return [];
     return SEARCHABLE.map((collection) => {
       const config = configOf(collection);
       const items = collections[collection];
       const matches = items
         .filter((item) => {
-          if (!needle) return false;
           const searchOf = config.searchOf as (value: typeof item) => string;
           return searchOf(item).toLowerCase().includes(needle);
         })
@@ -111,7 +168,7 @@ function SearchDialog({
         }));
       return { collection, matches };
     }).filter((group) => group.matches.length > 0);
-  })();
+  }, [collections, open, query]);
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange} shouldFilter={false}>
