@@ -30,6 +30,13 @@ export type ModuleKey =
   | 'reports'
   | 'quotes'
   | 'invoices'
+  | 'cleaning'
+  | 'cleaningareas'
+  | 'cleaners'
+  | 'cleaningplans'
+  | 'cleaningtasks'
+  | 'cleaningchecks'
+  | 'cleaningcomplaints'
   | 'analytics'
   | 'audit'
   | 'settings';
@@ -37,7 +44,7 @@ export type ModuleKey =
 /** Sammlungen, die Datensaetze fuehren. */
 export type CollectionKey = Exclude<
   ModuleKey,
-  'dashboard' | 'calendar' | 'analytics' | 'audit' | 'settings'
+  'dashboard' | 'calendar' | 'cleaning' | 'analytics' | 'audit' | 'settings'
 >;
 
 export interface Photo {
@@ -587,6 +594,140 @@ export interface DocumentEntity extends BaseEntity {
   validUntil: string;
 }
 
+/** Rolle einer Person der Reinigung. */
+export type CleanerRole = 'cleaner' | 'lead' | 'caretaker' | 'external';
+
+/** Reinigungskraft, Reinigungsleitung oder Hauswart. */
+export interface Cleaner extends BaseEntity {
+  name: string;
+  firstName: string;
+  role: CleanerRole;
+  phone: string;
+  mobile: string;
+  email: string;
+  /** Externe Reinigungsfirma; leer bei eigenem Personal. */
+  supplierId: string;
+  status: ActiveStatus;
+}
+
+/**
+ * Reinigungsbereich.
+ *
+ * Ein Bereich beschreibt, was gereinigt wird: ein ganzes Gebaeude, ein
+ * Stockwerk oder ein einzelner Raum. Die Checkliste dient als Vorlage fuer
+ * jede Aufgabe des Bereichs.
+ */
+export interface CleaningArea extends BaseEntity {
+  name: string;
+  /** Art des Bereichs, z. B. Treppenhaus oder Sanitaer. */
+  type: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  /** Stockwerk oder naehere Ortsangabe. */
+  location: string;
+  area?: number;
+  /** Verantwortliche Person der Reinigung. */
+  responsibleId: string;
+  status: ActiveStatus;
+  description: string;
+  /** Standard-Checkliste des Bereichs. */
+  checklist: ChecklistItem[];
+}
+
+/** Reinigungsintervall; "custom" rechnet mit einer eigenen Anzahl Tage. */
+export type CleaningInterval = 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'custom';
+
+export type CleaningPlanStatus = 'active' | 'paused';
+
+/** Wiederkehrende Reinigung eines Bereichs. */
+export interface CleaningPlan extends BaseEntity {
+  title: string;
+  areaId: string;
+  /** Zugewiesene Reinigungskraft. */
+  cleanerId: string;
+  /** Verantwortliche Person, z. B. Reinigungsleitung. */
+  responsibleId: string;
+  interval: CleaningInterval;
+  /** Abstand in Tagen, wenn das Intervall "custom" ist. */
+  intervalDays?: number;
+  /** Geplante Uhrzeit als HH:MM; leer, wenn nur der Tag feststeht. */
+  timeStart: string;
+  startDate: string;
+  nextDate: string;
+  status: CleaningPlanStatus;
+  /** Checkliste des Plans; ohne eigene gilt die des Bereichs. */
+  checklist: ChecklistItem[];
+}
+
+export type CleaningTaskStatus = 'open' | 'inProgress' | 'done';
+
+/** Einzelne Reinigungsaufgabe. */
+export interface CleaningTask extends BaseEntity {
+  title: string;
+  /** Plan, aus dem die Aufgabe entstanden ist; leer bei freier Erfassung. */
+  planId: string;
+  areaId: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  cleanerId: string;
+  responsibleId: string;
+  date: string;
+  status: CleaningTaskStatus;
+  /** Arbeitsbeginn als HH:MM; optional. */
+  workStart: string;
+  /** Arbeitsende als HH:MM; optional. */
+  workEnd: string;
+  breakMinutes: number;
+  completedAt: string;
+  checklist: ChecklistItem[];
+  /** Reinigungsmittel und Material. */
+  materials: MaterialItem[];
+}
+
+/** Ergebnis einer Reinigungskontrolle. */
+export type CleaningCheckResult = 'pending' | 'ok' | 'minor' | 'major';
+
+/** Kontrolle durch Hauswart oder Reinigungsleitung. */
+export interface CleaningCheck extends BaseEntity {
+  title: string;
+  areaId: string;
+  /** Kontrollierte Aufgabe; leer bei einer freien Begehung. */
+  taskId: string;
+  date: string;
+  /** Kontrollierende Person aus den Reinigungskraeften. */
+  inspectorId: string;
+  /** Name der kontrollierenden Person, wenn sie nicht erfasst ist. */
+  inspector: string;
+  result: CleaningCheckResult;
+  /** Bewertung von 1 bis 6; leer, wenn nicht benotet. */
+  rating?: number;
+  measures: string;
+}
+
+export type CleaningComplaintStatus = 'open' | 'inProgress' | 'resolved' | 'rejected';
+
+/** Reklamation zu einer Reinigung. */
+export interface CleaningComplaint extends BaseEntity {
+  title: string;
+  areaId: string;
+  taskId: string;
+  customerId: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  reportedBy: string;
+  reportedAt: string;
+  description: string;
+  priority: Priority;
+  status: CleaningComplaintStatus;
+  /** Bearbeitende Person aus den Reinigungskraeften. */
+  assignedId: string;
+  resolution: string;
+  resolvedAt: string;
+}
+
 /** Plantypen der Gebaeude- und Liegenschaftsplaene. */
 export type PlanType =
   | 'floorPlan'
@@ -671,6 +812,10 @@ export interface AppSettings {
   legionellaIntervalMonths: number;
   notificationsEnabled: boolean;
   emailNotifications: boolean;
+  /** Eigene Reinigungskraft des angemeldeten Geraets. */
+  cleaningCleanerId: string;
+  /** Nur die eigenen Reinigungsaufgaben zeigen. */
+  cleaningOwnTasksOnly: boolean;
 }
 
 /** Zuordnung von Sammlung zu Datensatztyp. */
@@ -695,6 +840,12 @@ export interface CollectionMap {
   reports: Report;
   quotes: Quote;
   invoices: Invoice;
+  cleaningareas: CleaningArea;
+  cleaners: Cleaner;
+  cleaningplans: CleaningPlan;
+  cleaningtasks: CleaningTask;
+  cleaningchecks: CleaningCheck;
+  cleaningcomplaints: CleaningComplaint;
 }
 
 export type EntityOf<K extends CollectionKey> = CollectionMap[K];

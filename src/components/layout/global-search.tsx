@@ -40,6 +40,12 @@ const SEARCHABLE: CollectionKey[] = [
   'reports',
   'quotes',
   'invoices',
+  'cleaningareas',
+  'cleaners',
+  'cleaningplans',
+  'cleaningtasks',
+  'cleaningchecks',
+  'cleaningcomplaints',
 ];
 
 export function GlobalSearch() {
@@ -105,6 +111,12 @@ function SearchDialog({
   const reports = useCollectionItems('reports');
   const quotes = useCollectionItems('quotes');
   const invoices = useCollectionItems('invoices');
+  const cleaningareas = useCollectionItems('cleaningareas');
+  const cleaners = useCollectionItems('cleaners');
+  const cleaningplans = useCollectionItems('cleaningplans');
+  const cleaningtasks = useCollectionItems('cleaningtasks');
+  const cleaningchecks = useCollectionItems('cleaningchecks');
+  const cleaningcomplaints = useCollectionItems('cleaningcomplaints');
 
   const collections = useMemo(
     () => ({
@@ -128,10 +140,22 @@ function SearchDialog({
       reports,
       quotes,
       invoices,
+      cleaningareas,
+      cleaners,
+      cleaningplans,
+      cleaningtasks,
+      cleaningchecks,
+      cleaningcomplaints,
     }),
     [
       assets,
       buildings,
+      cleaners,
+      cleaningareas,
+      cleaningchecks,
+      cleaningcomplaints,
+      cleaningplans,
+      cleaningtasks,
       contracts,
       customers,
       damages,

@@ -9,6 +9,13 @@ import {
   ACTIVE_OPTIONS,
   ASSET_CATEGORY_OPTIONS,
   ASSET_STATUS_OPTIONS,
+  CLEANER_ROLE_OPTIONS,
+  CLEANING_AREA_TYPE_OPTIONS,
+  CLEANING_CHECK_RESULT_OPTIONS,
+  CLEANING_COMPLAINT_STATUS_OPTIONS,
+  CLEANING_INTERVAL_OPTIONS,
+  CLEANING_PLAN_STATUS_OPTIONS,
+  CLEANING_TASK_STATUS_OPTIONS,
   CUSTOMER_TYPE_OPTIONS,
   DAMAGE_STATUS_OPTIONS,
   DOCUMENT_CATEGORY_OPTIONS,
@@ -750,6 +757,328 @@ const invoicesConfig: ModuleConfig<'invoices'> = {
   searchOf: (invoice) => [invoice.number, invoice.title].filter(Boolean).join(' '),
 };
 
+/** Der naechste Termin eines Plans liegt nie vor dem Startdatum. */
+const withNextCleaning = (values: FormValues): FormValues => {
+  const start = asString(values.startDate);
+  if (!start) return values;
+  const next = asString(values.nextDate);
+  return next && next >= start ? values : { ...values, nextDate: start };
+};
+
+const cleaningAreasConfig: ModuleConfig<'cleaningareas'> = {
+  collection: 'cleaningareas',
+  titleOf: (area) => area.name || area.number,
+  statusField: 'status',
+  statusOptions: ACTIVE_OPTIONS,
+  fields: [
+    text('name', 'cleaning.areaName', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'type',
+      labelKey: 'cleaning.areaTypeLabel',
+      options: CLEANING_AREA_TYPE_OPTIONS,
+      filter: true,
+    },
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: ACTIVE_OPTIONS, filter: true },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
+    text('location', 'cleaning.location'),
+    { kind: 'number', name: 'area', labelKey: 'cleaning.areaSize' },
+    {
+      kind: 'relation',
+      name: 'responsibleId',
+      labelKey: 'cleaning.responsible',
+      collection: 'cleaners',
+      filter: true,
+    },
+    { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (area) =>
+    [area.number, area.name, area.location, area.description].filter(Boolean).join(' '),
+};
+
+const cleanersConfig: ModuleConfig<'cleaners'> = {
+  collection: 'cleaners',
+  titleOf: (cleaner) =>
+    [cleaner.firstName, cleaner.name].filter(Boolean).join(' ') || cleaner.number,
+  statusField: 'status',
+  statusOptions: ACTIVE_OPTIONS,
+  fields: [
+    text('firstName', 'customer.firstName'),
+    text('name', 'customer.lastName', { required: true }),
+    { kind: 'select', name: 'role', labelKey: 'cleaning.roleLabel', options: CLEANER_ROLE_OPTIONS, filter: true },
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: ACTIVE_OPTIONS, filter: true },
+    { kind: 'tel', name: 'phone', labelKey: 'common.phone' },
+    { kind: 'tel', name: 'mobile', labelKey: 'common.mobile' },
+    { kind: 'email', name: 'email', labelKey: 'common.email' },
+    {
+      kind: 'relation',
+      name: 'supplierId',
+      labelKey: 'cleaning.company',
+      collection: 'suppliers',
+      filter: true,
+    },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (cleaner) =>
+    [cleaner.number, cleaner.firstName, cleaner.name, cleaner.email, cleaner.phone]
+      .filter(Boolean)
+      .join(' '),
+};
+
+const cleaningPlansConfig: ModuleConfig<'cleaningplans'> = {
+  collection: 'cleaningplans',
+  titleOf: (plan) => plan.title || plan.number,
+  statusField: 'status',
+  statusOptions: CLEANING_PLAN_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'relation',
+      name: 'areaId',
+      labelKey: 'module.cleaningareas.singular',
+      collection: 'cleaningareas',
+      required: true,
+      filter: true,
+    },
+    {
+      kind: 'select',
+      name: 'status',
+      labelKey: 'common.status',
+      options: CLEANING_PLAN_STATUS_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: 'select',
+      name: 'interval',
+      labelKey: 'cleaning.intervalLabel',
+      options: CLEANING_INTERVAL_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: 'number',
+      name: 'intervalDays',
+      labelKey: 'cleaning.intervalDays',
+      visibleWhen: (values) => values.interval === 'custom',
+    },
+    {
+      kind: 'relation',
+      name: 'cleanerId',
+      labelKey: 'cleaning.assignee',
+      collection: 'cleaners',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'responsibleId',
+      labelKey: 'cleaning.responsible',
+      collection: 'cleaners',
+    },
+    {
+      kind: 'date',
+      name: 'startDate',
+      labelKey: 'cleaning.startDate',
+      applyChange: (value, values) => withNextCleaning({ ...values, startDate: value }),
+    },
+    { kind: 'date', name: 'nextDate', labelKey: 'cleaning.nextDate' },
+    text('timeStart', 'cleaning.timeStart'),
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (plan) => [plan.number, plan.title, plan.notes].filter(Boolean).join(' '),
+};
+
+const cleaningTasksConfig: ModuleConfig<'cleaningtasks'> = {
+  collection: 'cleaningtasks',
+  titleOf: (task) => task.title || task.number,
+  statusField: 'status',
+  statusOptions: CLEANING_TASK_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'status',
+      labelKey: 'common.status',
+      options: CLEANING_TASK_STATUS_OPTIONS,
+      filter: true,
+    },
+    { kind: 'date', name: 'date', labelKey: 'common.date' },
+    {
+      kind: 'relation',
+      name: 'areaId',
+      labelKey: 'module.cleaningareas.singular',
+      collection: 'cleaningareas',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'cleanerId',
+      labelKey: 'cleaning.assignee',
+      collection: 'cleaners',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'responsibleId',
+      labelKey: 'cleaning.responsible',
+      collection: 'cleaners',
+    },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties' },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+    },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
+    {
+      kind: 'relation',
+      name: 'planId',
+      labelKey: 'module.cleaningplans.singular',
+      collection: 'cleaningplans',
+    },
+    text('workStart', 'work.start'),
+    text('workEnd', 'work.end'),
+    { kind: 'number', name: 'breakMinutes', labelKey: 'work.break' },
+    { kind: 'textarea', name: 'notes', labelKey: 'cleaning.remarks', span: 2 },
+  ],
+  searchOf: (task) => [task.number, task.title, task.notes].filter(Boolean).join(' '),
+};
+
+const cleaningChecksConfig: ModuleConfig<'cleaningchecks'> = {
+  collection: 'cleaningchecks',
+  titleOf: (check) => check.title || check.number,
+  statusField: 'result',
+  statusOptions: CLEANING_CHECK_RESULT_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'result',
+      labelKey: 'cleaning.result',
+      options: CLEANING_CHECK_RESULT_OPTIONS,
+      filter: true,
+    },
+    { kind: 'date', name: 'date', labelKey: 'common.date' },
+    {
+      kind: 'relation',
+      name: 'areaId',
+      labelKey: 'module.cleaningareas.singular',
+      collection: 'cleaningareas',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'taskId',
+      labelKey: 'module.cleaningtasks.singular',
+      collection: 'cleaningtasks',
+    },
+    {
+      kind: 'relation',
+      name: 'inspectorId',
+      labelKey: 'cleaning.inspector',
+      collection: 'cleaners',
+      filter: true,
+    },
+    text('inspector', 'cleaning.inspectorName'),
+    { kind: 'number', name: 'rating', labelKey: 'cleaning.rating' },
+    { kind: 'textarea', name: 'measures', labelKey: 'cleaning.measures', span: 2 },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (check) =>
+    [check.number, check.title, check.inspector, check.measures].filter(Boolean).join(' '),
+};
+
+const cleaningComplaintsConfig: ModuleConfig<'cleaningcomplaints'> = {
+  collection: 'cleaningcomplaints',
+  titleOf: (complaint) => complaint.title || complaint.number,
+  statusField: 'status',
+  statusOptions: CLEANING_COMPLAINT_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'status',
+      labelKey: 'common.status',
+      options: CLEANING_COMPLAINT_STATUS_OPTIONS,
+      filter: true,
+    },
+    { kind: 'select', name: 'priority', labelKey: 'common.priority', options: PRIORITY_OPTIONS, filter: true },
+    {
+      kind: 'relation',
+      name: 'areaId',
+      labelKey: 'module.cleaningareas.singular',
+      collection: 'cleaningareas',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'taskId',
+      labelKey: 'module.cleaningtasks.singular',
+      collection: 'cleaningtasks',
+    },
+    { kind: 'relation', name: 'customerId', labelKey: 'module.customers.singular', collection: 'customers' },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties' },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+    },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
+    text('reportedBy', 'cleaning.reportedBy'),
+    { kind: 'date', name: 'reportedAt', labelKey: 'cleaning.reportedAt' },
+    {
+      kind: 'relation',
+      name: 'assignedId',
+      labelKey: 'cleaning.assignee',
+      collection: 'cleaners',
+      filter: true,
+    },
+    { kind: 'date', name: 'resolvedAt', labelKey: 'cleaning.resolvedAt' },
+    { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },
+    { kind: 'textarea', name: 'resolution', labelKey: 'cleaning.resolution', span: 2 },
+  ],
+  searchOf: (complaint) =>
+    [complaint.number, complaint.title, complaint.description, complaint.reportedBy]
+      .filter(Boolean)
+      .join(' '),
+};
+
 export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   customers: customersConfig,
   suppliers: suppliersConfig,
@@ -771,6 +1100,12 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   reports: reportsConfig,
   quotes: quotesConfig,
   invoices: invoicesConfig,
+  cleaningareas: cleaningAreasConfig,
+  cleaners: cleanersConfig,
+  cleaningplans: cleaningPlansConfig,
+  cleaningtasks: cleaningTasksConfig,
+  cleaningchecks: cleaningChecksConfig,
+  cleaningcomplaints: cleaningComplaintsConfig,
 };
 
 export const configOf = <K extends CollectionKey>(collection: K): ModuleConfig<K> =>

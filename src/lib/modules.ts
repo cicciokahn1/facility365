@@ -7,7 +7,9 @@
  */
 import {
   Boxes,
+  Brush,
   Building2,
+  CalendarClock,
   CalendarDays,
   ClipboardCheck,
   ClipboardList,
@@ -21,12 +23,15 @@ import {
   Home,
   KeyRound,
   LayoutDashboard,
+  ListChecks,
   MapPin,
+  MessageSquareWarning,
   PackageSearch,
   type LucideIcon,
   Receipt,
   Settings,
   ShieldAlert,
+  SprayCan,
   Truck,
   Users,
   Wrench,
@@ -36,7 +41,7 @@ import {
 import { TranslationKey } from '@/lib/i18n/dictionary';
 import { CollectionKey, ModuleKey } from '@/lib/types';
 
-export type NavGroup = 'overview' | 'objects' | 'work' | 'business' | 'system';
+export type NavGroup = 'overview' | 'objects' | 'work' | 'cleaning' | 'business' | 'system';
 
 export interface ModuleDefinition {
   key: ModuleKey;
@@ -247,6 +252,68 @@ export const MODULES: ModuleDefinition[] = [
     singularKey: 'module.invoices.singular',
   },
   {
+    key: 'cleaning',
+    path: '/cleaning',
+    icon: SprayCan,
+    group: 'cleaning',
+    labelKey: 'module.cleaning',
+    singularKey: 'module.cleaning',
+  },
+  {
+    key: 'cleaningtasks',
+    collection: 'cleaningtasks',
+    path: '/cleaning/tasks',
+    icon: ListChecks,
+    group: 'cleaning',
+    labelKey: 'module.cleaningtasks',
+    singularKey: 'module.cleaningtasks.singular',
+  },
+  {
+    key: 'cleaningplans',
+    collection: 'cleaningplans',
+    path: '/cleaning/plans',
+    icon: CalendarClock,
+    group: 'cleaning',
+    labelKey: 'module.cleaningplans',
+    singularKey: 'module.cleaningplans.singular',
+  },
+  {
+    key: 'cleaningareas',
+    collection: 'cleaningareas',
+    path: '/cleaning/areas',
+    icon: Brush,
+    group: 'cleaning',
+    labelKey: 'module.cleaningareas',
+    singularKey: 'module.cleaningareas.singular',
+  },
+  {
+    key: 'cleaners',
+    collection: 'cleaners',
+    path: '/cleaning/staff',
+    icon: Users,
+    group: 'cleaning',
+    labelKey: 'module.cleaners',
+    singularKey: 'module.cleaners.singular',
+  },
+  {
+    key: 'cleaningchecks',
+    collection: 'cleaningchecks',
+    path: '/cleaning/checks',
+    icon: ClipboardCheck,
+    group: 'cleaning',
+    labelKey: 'module.cleaningchecks',
+    singularKey: 'module.cleaningchecks.singular',
+  },
+  {
+    key: 'cleaningcomplaints',
+    collection: 'cleaningcomplaints',
+    path: '/cleaning/complaints',
+    icon: MessageSquareWarning,
+    group: 'cleaning',
+    labelKey: 'module.cleaningcomplaints',
+    singularKey: 'module.cleaningcomplaints.singular',
+  },
+  {
     key: 'analytics',
     path: '/analytics',
     icon: FileSpreadsheet,
@@ -276,6 +343,7 @@ export const NAV_GROUPS: { key: NavGroup; labelKey: TranslationKey }[] = [
   { key: 'overview', labelKey: 'nav.overview' },
   { key: 'objects', labelKey: 'nav.objects' },
   { key: 'work', labelKey: 'nav.work' },
+  { key: 'cleaning', labelKey: 'nav.cleaning' },
   { key: 'business', labelKey: 'nav.business' },
   { key: 'system', labelKey: 'nav.system' },
 ];

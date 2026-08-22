@@ -27,7 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { BRAND_LOGO_DATA_URL, BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding/logo';
 import { STORAGE_BUDGET, storageUsage } from '@/lib/data/repository';
-import { useClearAllData } from '@/lib/data/store';
+import { useClearAllData, useCollectionItems } from '@/lib/data/store';
 import { LANGUAGES, useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
 import { AppSettings, Language, ThemeMode } from '@/lib/types';
@@ -45,6 +45,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
   const t = useT();
   const { save } = useSettings();
   const clearAll = useClearAllData();
+  const cleaners = useCollectionItems('cleaners');
   const [draft, setDraft] = useState<AppSettings>(settings);
   const [usage] = useState(() => storageUsage());
   const [resetOpen, setResetOpen] = useState(false);
@@ -244,6 +245,94 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               }
             />
           </Field>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('settings.legionella')}</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-2">
+          <Field label={`${t('legionella.hotTemp')} (min. °C)`}>
+            <Input
+              type="number"
+              step="1"
+              data-testid="legionella-hot-min"
+              value={draft.legionellaHotMin}
+              onChange={(event) => set('legionellaHotMin', Number(event.target.value))}
+            />
+          </Field>
+          <Field label={`${t('legionella.coldTemp')} (max. °C)`}>
+            <Input
+              type="number"
+              step="1"
+              data-testid="legionella-cold-max"
+              value={draft.legionellaColdMax}
+              onChange={(event) => set('legionellaColdMax', Number(event.target.value))}
+            />
+          </Field>
+          <Field label={`${t('legionella.cfu')} (${t('legionella.warning')})`}>
+            <Input
+              type="number"
+              step="10"
+              data-testid="legionella-warn-cfu"
+              value={draft.legionellaWarnCfu}
+              onChange={(event) => set('legionellaWarnCfu', Number(event.target.value))}
+            />
+          </Field>
+          <Field label={`${t('legionella.cfu')} (${t('legionella.critical')})`}>
+            <Input
+              type="number"
+              step="10"
+              data-testid="legionella-limit-cfu"
+              value={draft.legionellaLimitCfu}
+              onChange={(event) => set('legionellaLimitCfu', Number(event.target.value))}
+            />
+          </Field>
+          <Field label={t('legionella.intervalMonths')}>
+            <Input
+              type="number"
+              step="1"
+              data-testid="legionella-interval"
+              value={draft.legionellaIntervalMonths}
+              onChange={(event) => set('legionellaIntervalMonths', Number(event.target.value))}
+            />
+          </Field>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('settings.cleaning')}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          <p className="text-sm text-muted-foreground">{t('settings.cleaningHint')}</p>
+          <Field label={t('settings.cleaningCleaner')}>
+            <Select
+              value={draft.cleaningCleanerId || 'none'}
+              onValueChange={(value) => set('cleaningCleanerId', value === 'none' ? '' : value)}
+            >
+              <SelectTrigger data-testid="settings-cleaner">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">{t('common.none')}</SelectItem>
+                {cleaners.map((cleaner) => (
+                  <SelectItem key={cleaner.id} value={cleaner.id}>
+                    {[cleaner.firstName, cleaner.name].filter(Boolean).join(' ') || cleaner.number}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <label className="flex items-center justify-between gap-4">
+            <span className="text-sm">{t('settings.cleaningOwnOnly')}</span>
+            <Switch
+              checked={draft.cleaningOwnTasksOnly}
+              onCheckedChange={(checked) => set('cleaningOwnTasksOnly', checked)}
+              data-testid="settings-cleaning-own"
+            />
+          </label>
         </CardContent>
       </Card>
 
