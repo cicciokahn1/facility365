@@ -21,6 +21,7 @@ import {
   Home,
   KeyRound,
   LayoutDashboard,
+  MapPin,
   PackageSearch,
   type LucideIcon,
   Receipt,
@@ -82,6 +83,15 @@ export const MODULES: ModuleDefinition[] = [
     group: 'objects',
     labelKey: 'module.suppliers',
     singularKey: 'module.suppliers.singular',
+  },
+  {
+    key: 'sites',
+    collection: 'sites',
+    path: '/sites',
+    icon: MapPin,
+    group: 'objects',
+    labelKey: 'module.sites',
+    singularKey: 'module.sites.singular',
   },
   {
     key: 'properties',

@@ -12,6 +12,7 @@ export type ModuleKey =
   | 'calendar'
   | 'customers'
   | 'suppliers'
+  | 'sites'
   | 'properties'
   | 'buildings'
   | 'rooms'
@@ -149,8 +150,28 @@ export interface Supplier extends BaseEntity {
 
 export type PropertyStatus = 'active' | 'inactive' | 'archived';
 
+/**
+ * Standort einer Organisation.
+ *
+ * Oberste Ebene der Objektstruktur: Standort → Liegenschaft → Gebäude → Raum →
+ * Anlage. Liegenschaften ohne Standort bleiben gueltig und erscheinen in der
+ * Uebersicht als nicht zugeordnet.
+ */
+export interface Site extends BaseEntity {
+  name: string;
+  shortName: string;
+  customerId: string;
+  address: Address;
+  manager: string;
+  phone: string;
+  email: string;
+  status: PropertyStatus;
+  description: string;
+}
+
 export interface Property extends BaseEntity {
   name: string;
+  siteId: string;
   customerId: string;
   address: Address;
   status: PropertyStatus;
@@ -656,6 +677,7 @@ export interface AppSettings {
 export interface CollectionMap {
   customers: Customer;
   suppliers: Supplier;
+  sites: Site;
   properties: Property;
   buildings: Building;
   rooms: Room;

@@ -10,17 +10,25 @@ import {
   BaseEntity,
   Building,
   CollectionKey,
+  ContractEntity,
   Customer,
   Damage,
   DocumentEntity,
+  EnergyEntry,
   EntityOf,
   Invoice,
+  KeyEntity,
+  LegionellaCheck,
   Maintenance,
   Order,
   Property,
   Quote,
+  RcdCheck,
   Report,
   Room,
+  Site,
+  StockItem,
+  Supplier,
 } from '@/lib/types';
 
 export const emptyAddress = (): Address => ({ street: '', zip: '', city: '', country: 'Schweiz' });
@@ -37,13 +45,21 @@ const base = (): Omit<BaseEntity, 'id' | 'number'> => ({
 /** Praefix der laufenden Nummer je Sammlung. */
 export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   customers: 'KD',
+  suppliers: 'LF',
+  sites: 'ST',
   properties: 'LI',
   buildings: 'GB',
   rooms: 'RM',
   assets: 'ANL',
   documents: 'DK',
+  energy: 'EN',
   orders: 'AU',
   maintenances: 'WA',
+  legionella: 'LEG',
+  rcd: 'FI',
+  keys: 'SL',
+  stock: 'LA',
+  contracts: 'VT',
   damages: 'SC',
   reports: 'RP',
   quotes: 'OF',
@@ -75,9 +91,23 @@ export const emptyCustomer = (): Omit<Customer, 'id' | 'number'> => ({
   contracts: [],
 });
 
+export const emptySite = (): Omit<Site, 'id' | 'number'> => ({
+  ...base(),
+  name: '',
+  shortName: '',
+  customerId: '',
+  address: emptyAddress(),
+  manager: '',
+  phone: '',
+  email: '',
+  status: 'active',
+  description: '',
+});
+
 export const emptyProperty = (): Omit<Property, 'id' | 'number'> => ({
   ...base(),
   name: '',
+  siteId: '',
   customerId: '',
   address: emptyAddress(),
   status: 'active',
@@ -126,6 +156,20 @@ export const emptyAsset = (): Omit<Asset, 'id' | 'number'> => ({
   warrantyUntil: '',
   warrantyNote: '',
   maintenanceInterval: '',
+  supplierId: '',
+});
+
+export const emptySupplier = (): Omit<Supplier, 'id' | 'number'> => ({
+  ...base(),
+  name: '',
+  contactPerson: '',
+  address: emptyAddress(),
+  phone: '',
+  mobile: '',
+  email: '',
+  website: '',
+  category: '',
+  status: 'active',
 });
 
 export const emptyDocument = (): Omit<DocumentEntity, 'id' | 'number'> => ({
@@ -135,8 +179,93 @@ export const emptyDocument = (): Omit<DocumentEntity, 'id' | 'number'> => ({
   customerId: '',
   propertyId: '',
   buildingId: '',
+  roomId: '',
   assetId: '',
+  orderId: '',
+  maintenanceId: '',
   validUntil: '',
+});
+
+export const emptyEnergyEntry = (): Omit<EnergyEntry, 'id' | 'number'> => ({
+  ...base(),
+  type: 'electricity',
+  typeOther: '',
+  propertyId: '',
+  buildingId: '',
+  month: new Date().toISOString().slice(0, 7),
+  unit: 'kWh',
+});
+
+export const emptyLegionellaCheck = (): Omit<LegionellaCheck, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  propertyId: '',
+  buildingId: '',
+  system: '',
+  measuringPoint: '',
+  date: new Date().toISOString().slice(0, 10),
+  result: 'pending',
+  measures: '',
+  responsible: '',
+  interval: 'annual',
+  nextDate: '',
+  samples: [],
+});
+
+export const emptyRcdCheck = (): Omit<RcdCheck, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  propertyId: '',
+  buildingId: '',
+  assetId: '',
+  distribution: '',
+  device: '',
+  date: new Date().toISOString().slice(0, 10),
+  tester: '',
+  result: 'pending',
+  status: 'open',
+  interval: 'annual',
+  nextDate: '',
+});
+
+export const emptyKey = (): Omit<KeyEntity, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  keyNumber: '',
+  propertyId: '',
+  buildingId: '',
+  roomId: '',
+  location: '',
+  status: 'available',
+  issuedTo: '',
+  issuedAt: '',
+  returnedAt: '',
+  movements: [],
+});
+
+export const emptyStockItem = (): Omit<StockItem, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  articleNumber: '',
+  unit: 'Stk',
+  location: '',
+  supplierId: '',
+});
+
+export const emptyContract = (): Omit<ContractEntity, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  partner: '',
+  supplierId: '',
+  customerId: '',
+  type: 'maintenance',
+  contractNumber: '',
+  start: '',
+  end: '',
+  noticeMonths: '3',
+  propertyId: '',
+  buildingId: '',
+  status: 'active',
 });
 
 export const emptyOrder = (): Omit<Order, 'id' | 'number'> => ({
@@ -151,6 +280,7 @@ export const emptyOrder = (): Omit<Order, 'id' | 'number'> => ({
   roomId: '',
   assetId: '',
   quoteId: '',
+  supplierId: '',
   assignee: '',
   dueDate: '',
   startedAt: '',
@@ -175,6 +305,7 @@ export const emptyMaintenance = (): Omit<Maintenance, 'id' | 'number'> => ({
   buildingId: '',
   assetId: '',
   company: '',
+  supplierId: '',
   responsible: '',
   lastDate: '',
   nextDate: '',
@@ -254,13 +385,21 @@ export const emptyInvoice = (): Omit<Invoice, 'id' | 'number'> => ({
 
 const FACTORIES = {
   customers: emptyCustomer,
+  suppliers: emptySupplier,
+  sites: emptySite,
   properties: emptyProperty,
   buildings: emptyBuilding,
   rooms: emptyRoom,
   assets: emptyAsset,
   documents: emptyDocument,
+  energy: emptyEnergyEntry,
   orders: emptyOrder,
   maintenances: emptyMaintenance,
+  legionella: emptyLegionellaCheck,
+  rcd: emptyRcdCheck,
+  keys: emptyKey,
+  stock: emptyStockItem,
+  contracts: emptyContract,
   damages: emptyDamage,
   reports: emptyReport,
   quotes: emptyQuote,
