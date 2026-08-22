@@ -46,13 +46,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="safe-top sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-card/95 px-3 backdrop-blur lg:px-6">
+        <header className="safe-top sticky top-0 z-30 flex h-11 items-center gap-1 border-b bg-card/95 px-2 backdrop-blur lg:h-14 lg:gap-2 lg:px-6">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden"
+                className="size-9 lg:hidden"
                 aria-label={t('nav.menu')}
                 data-testid="menu-button"
               >
@@ -65,14 +65,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <span className="flex min-w-0 items-center gap-2 lg:hidden">
+          <span className="flex min-w-0 items-center gap-1.5 lg:hidden">
             {/* eslint-disable-next-line @next/next/no-img-element -- Data-URL aus den Einstellungen */}
             <img
               src={isBrandLogo(settings.companyLogo) ? BRAND_MARK_SRC : settings.companyLogo}
               alt=""
-              className="size-7 shrink-0 rounded object-contain dark:bg-white/95 dark:p-0.5"
+              className="size-6 shrink-0 rounded object-contain dark:bg-white/95 dark:p-0.5"
             />
-            <span className="truncate font-semibold">{settings.companyName || t('app.name')}</span>
+            <span className="truncate text-sm font-semibold">
+              {settings.companyName || t('app.name')}
+            </span>
           </span>
 
           <div className="ml-auto flex flex-1 items-center justify-end gap-2 lg:ml-0 lg:justify-start">
@@ -97,7 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ) : null}
 
         {/* Grenze fuer Seiten, die Adressparameter lesen (z. B. ?new=1). */}
-        <main className="min-w-0 flex-1 px-3 pb-24 pt-4 sm:px-4 lg:px-6 lg:pb-8">
+        <main className="min-w-0 flex-1 px-3 pb-24 pt-3 sm:px-4 lg:px-6 lg:pb-8 lg:pt-4">
           <Suspense fallback={<p className="text-sm text-muted-foreground">{t('common.loading')}</p>}>
             {children}
           </Suspense>
