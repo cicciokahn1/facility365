@@ -70,10 +70,11 @@ export function GlobalSearch() {
         type="button"
         data-testid="global-search-trigger"
         onClick={() => setOpen(true)}
-        className="flex h-10 w-full max-w-sm items-center gap-2 rounded-lg border bg-card px-3 text-sm text-muted-foreground"
+        aria-label={t('action.search')}
+        className="flex items-center justify-center gap-2 rounded-lg text-sm text-muted-foreground max-lg:size-9 lg:h-10 lg:w-full lg:max-w-sm lg:justify-start lg:border lg:bg-card lg:px-3"
       >
         <Search className="size-4" aria-hidden />
-        <span className="truncate">{t('list.searchPlaceholder')}</span>
+        <span className="hidden truncate lg:inline">{t('list.searchPlaceholder')}</span>
       </button>
       <SearchDialog open={open} onOpenChange={setOpen} onSelect={(path) => router.push(path)} />
     </>
