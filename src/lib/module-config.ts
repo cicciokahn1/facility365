@@ -7,22 +7,39 @@
 import { TranslationKey } from '@/lib/i18n/dictionary';
 import {
   ACTIVE_OPTIONS,
+  ASSET_CATEGORY_OPTIONS,
   ASSET_STATUS_OPTIONS,
   CUSTOMER_TYPE_OPTIONS,
   DAMAGE_STATUS_OPTIONS,
+  DOCUMENT_CATEGORY_OPTIONS,
+  ENERGY_KNOWN_UNITS,
+  ENERGY_TYPE_OPTIONS,
+  ENERGY_UNITS,
+  ENERGY_UNIT_SUGGESTIONS,
   FieldDef,
+  FormValues,
   INTERVAL_OPTIONS,
+  CONTRACT_STATUS_OPTIONS,
+  CONTRACT_TYPE_OPTIONS,
   INVOICE_STATUS_OPTIONS,
+  KEY_STATUS_OPTIONS,
+  NOTICE_PERIOD_OPTIONS,
+  LEGIONELLA_RESULT_OPTIONS,
   MAINTENANCE_STATUS_OPTIONS,
   ORDER_STATUS_OPTIONS,
   PRIORITY_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
   QUOTE_STATUS_OPTIONS,
+  RCD_RESULT_OPTIONS,
+  RCD_STATUS_OPTIONS,
   REPORT_STATUS_OPTIONS,
   REPORT_TYPE_OPTIONS,
   SelectOption,
+  SUPPLIER_CATEGORY_OPTIONS,
+  asString,
 } from '@/lib/schema';
-import { BaseEntity, CollectionKey, EntityOf } from '@/lib/types';
+import { INTERVAL_MONTHS, nextControlDate } from '@/lib/legionella/evaluate';
+import { BaseEntity, CollectionKey, EntityOf, MaintenanceInterval } from '@/lib/types';
 
 export interface ModuleConfig<K extends CollectionKey> {
   collection: K;
@@ -78,6 +95,58 @@ const customersConfig: ModuleConfig<'customers'> = {
       .join(' '),
 };
 
+const suppliersConfig: ModuleConfig<'suppliers'> = {
+  collection: 'suppliers',
+  titleOf: (supplier) => supplier.name || supplier.number,
+  statusField: 'status',
+  statusOptions: ACTIVE_OPTIONS,
+  fields: [
+    text('name', 'supplier.company', { required: true, span: 2 }),
+    text('contactPerson', 'supplier.contactPerson'),
+    {
+      kind: 'select',
+      name: 'category',
+      labelKey: 'supplier.category',
+      options: SUPPLIER_CATEGORY_OPTIONS,
+      filter: true,
+    },
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: ACTIVE_OPTIONS, filter: true },
+    { kind: 'address', name: 'address', labelKey: 'common.address', span: 2 },
+    { kind: 'tel', name: 'phone', labelKey: 'common.phone' },
+    { kind: 'tel', name: 'mobile', labelKey: 'common.mobile' },
+    { kind: 'email', name: 'email', labelKey: 'common.email' },
+    text('website', 'common.website'),
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (supplier) =>
+    [supplier.number, supplier.name, supplier.contactPerson, supplier.category, supplier.email, supplier.phone, supplier.address.city]
+      .filter(Boolean)
+      .join(' '),
+};
+
+const sitesConfig: ModuleConfig<'sites'> = {
+  collection: 'sites',
+  titleOf: (site) => site.name || site.number,
+  statusField: 'status',
+  statusOptions: PROPERTY_STATUS_OPTIONS,
+  fields: [
+    text('name', 'common.name', { required: true, span: 2 }),
+    text('shortName', 'site.shortName'),
+    { kind: 'relation', name: 'customerId', labelKey: 'module.customers.singular', collection: 'customers', filter: true },
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: PROPERTY_STATUS_OPTIONS, filter: true },
+    { kind: 'address', name: 'address', labelKey: 'common.address', span: 2 },
+    text('manager', 'site.manager'),
+    { kind: 'tel', name: 'phone', labelKey: 'common.phone' },
+    { kind: 'email', name: 'email', labelKey: 'common.email' },
+    { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (site) =>
+    [site.number, site.name, site.shortName, site.manager, site.address.street, site.address.city]
+      .filter(Boolean)
+      .join(' '),
+};
+
 const propertiesConfig: ModuleConfig<'properties'> = {
   collection: 'properties',
   titleOf: (property) => property.name || property.number,
@@ -85,6 +154,7 @@ const propertiesConfig: ModuleConfig<'properties'> = {
   statusOptions: PROPERTY_STATUS_OPTIONS,
   fields: [
     text('name', 'common.name', { required: true, span: 2 }),
+    { kind: 'relation', name: 'siteId', labelKey: 'module.sites.singular', collection: 'sites', filter: true },
     { kind: 'relation', name: 'customerId', labelKey: 'module.customers.singular', collection: 'customers', filter: true },
     { kind: 'select', name: 'status', labelKey: 'common.status', options: PROPERTY_STATUS_OPTIONS, filter: true },
     { kind: 'address', name: 'address', labelKey: 'common.address', span: 2 },
@@ -139,7 +209,13 @@ const assetsConfig: ModuleConfig<'assets'> = {
   statusOptions: ASSET_STATUS_OPTIONS,
   fields: [
     text('name', 'common.name', { required: true, span: 2 }),
-    text('category', 'common.category'),
+    {
+      kind: 'select',
+      name: 'category',
+      labelKey: 'common.category',
+      options: ASSET_CATEGORY_OPTIONS,
+      filter: true,
+    },
     { kind: 'select', name: 'status', labelKey: 'common.status', options: ASSET_STATUS_OPTIONS, filter: true },
     { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
     {
@@ -165,6 +241,13 @@ const assetsConfig: ModuleConfig<'assets'> = {
     text('manufacturedYear', 'asset.year'),
     { kind: 'date', name: 'installedAt', labelKey: 'asset.installedAt' },
     { kind: 'date', name: 'warrantyUntil', labelKey: 'asset.warrantyUntil' },
+    {
+      kind: 'relation',
+      name: 'supplierId',
+      labelKey: 'module.suppliers.singular',
+      collection: 'suppliers',
+      filter: true,
+    },
     text('warrantyNote', 'asset.warrantyNote', { span: 2 }),
     { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
   ],
@@ -179,7 +262,13 @@ const documentsConfig: ModuleConfig<'documents'> = {
   titleOf: (document) => document.title || document.file?.name || document.number,
   fields: [
     text('title', 'common.title', { required: true, span: 2 }),
-    text('category', 'common.category'),
+    {
+      kind: 'select',
+      name: 'category',
+      labelKey: 'common.category',
+      options: DOCUMENT_CATEGORY_OPTIONS,
+      filter: true,
+    },
     { kind: 'date', name: 'validUntil', labelKey: 'documents.validUntil' },
     { kind: 'relation', name: 'customerId', labelKey: 'module.customers.singular', collection: 'customers', filter: true },
     { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
@@ -191,11 +280,77 @@ const documentsConfig: ModuleConfig<'documents'> = {
       parentValueField: 'propertyId',
       parentKey: 'propertyId',
     },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
     { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    { kind: 'relation', name: 'orderId', labelKey: 'module.orders.singular', collection: 'orders' },
+    {
+      kind: 'relation',
+      name: 'maintenanceId',
+      labelKey: 'module.maintenances.singular',
+      collection: 'maintenances',
+    },
     { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
   ],
   searchOf: (document) =>
     [document.number, document.title, document.category, document.file?.name].filter(Boolean).join(' '),
+};
+
+const energyConfig: ModuleConfig<'energy'> = {
+  collection: 'energy',
+  titleOf: (entry) => entry.month || entry.number,
+  statusField: 'type',
+  statusOptions: ENERGY_TYPE_OPTIONS,
+  fields: [
+    {
+      kind: 'select',
+      name: 'type',
+      labelKey: 'energy.type',
+      options: ENERGY_TYPE_OPTIONS,
+      filter: true,
+      // Einheit der neuen Art vorschlagen, sofern keine eigene erfasst ist.
+      applyChange: (value, values) => {
+        const previous = asString(values.unit).trim();
+        const known = ENERGY_KNOWN_UNITS.includes(previous);
+        if (previous && !known) return {};
+        return { unit: ENERGY_UNITS[asString(value)] ?? previous };
+      },
+    },
+    {
+      kind: 'text',
+      name: 'typeOther',
+      labelKey: 'energy.typeOther',
+      visibleWhen: (values) => values.type === 'other',
+    },
+    { kind: 'month', name: 'month', labelKey: 'energy.month', required: true },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    { kind: 'number', name: 'consumption', labelKey: 'energy.consumption' },
+    {
+      kind: 'suggest',
+      name: 'unit',
+      labelKey: 'energy.unit',
+      suggestionsOf: (values) => ENERGY_UNIT_SUGGESTIONS[asString(values.type)] ?? [],
+    },
+    { kind: 'money', name: 'cost', labelKey: 'energy.cost' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (entry) =>
+    [entry.number, entry.month, entry.typeOther, entry.unit, entry.notes].filter(Boolean).join(' '),
 };
 
 const ordersConfig: ModuleConfig<'orders'> = {
@@ -227,6 +382,13 @@ const ordersConfig: ModuleConfig<'orders'> = {
     },
     { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
     { kind: 'relation', name: 'quoteId', labelKey: 'module.quotes.singular', collection: 'quotes' },
+    {
+      kind: 'relation',
+      name: 'supplierId',
+      labelKey: 'module.suppliers.singular',
+      collection: 'suppliers',
+      filter: true,
+    },
     text('assignee', 'common.assignee'),
     { kind: 'date', name: 'dueDate', labelKey: 'common.dueDate' },
     { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },
@@ -254,6 +416,13 @@ const maintenancesConfig: ModuleConfig<'maintenances'> = {
       parentKey: 'propertyId',
     },
     { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    {
+      kind: 'relation',
+      name: 'supplierId',
+      labelKey: 'module.suppliers.singular',
+      collection: 'suppliers',
+      filter: true,
+    },
     text('company', 'settings.company'),
     text('responsible', 'common.responsible'),
     { kind: 'date', name: 'lastDate', labelKey: 'common.date' },
@@ -262,6 +431,206 @@ const maintenancesConfig: ModuleConfig<'maintenances'> = {
   ],
   searchOf: (maintenance) =>
     [maintenance.number, maintenance.title, maintenance.company, maintenance.responsible]
+      .filter(Boolean)
+      .join(' '),
+};
+
+/** Naechsten Termin aus Datum und Intervall vorschlagen. */
+const withNextDate = (values: FormValues): FormValues => {
+  const date = asString(values.date);
+  const months = INTERVAL_MONTHS[asString(values.interval) as MaintenanceInterval] ?? 12;
+  const next = nextControlDate(date, months);
+  return next ? { nextDate: next } : {};
+};
+
+const legionellaConfig: ModuleConfig<'legionella'> = {
+  collection: 'legionella',
+  titleOf: (check) => check.title || check.system || check.number,
+  statusField: 'result',
+  statusOptions: LEGIONELLA_RESULT_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'result',
+      labelKey: 'legionella.result',
+      options: LEGIONELLA_RESULT_OPTIONS,
+      filter: true,
+    },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    text('system', 'legionella.system'),
+    text('measuringPoint', 'legionella.point'),
+    {
+      kind: 'date',
+      name: 'date',
+      labelKey: 'common.date',
+      applyChange: (value, values) => withNextDate({ ...values, date: value }),
+    },
+    {
+      kind: 'select',
+      name: 'interval',
+      labelKey: 'legionella.interval',
+      options: INTERVAL_OPTIONS,
+      filter: true,
+      applyChange: (value, values) => withNextDate({ ...values, interval: value }),
+    },
+    { kind: 'date', name: 'nextDate', labelKey: 'legionella.nextControl' },
+    text('responsible', 'common.responsible'),
+    { kind: 'number', name: 'hotTemp', labelKey: 'legionella.hotTemp' },
+    { kind: 'number', name: 'coldTemp', labelKey: 'legionella.coldTemp' },
+    { kind: 'number', name: 'cfu', labelKey: 'legionella.cfu' },
+    { kind: 'textarea', name: 'measures', labelKey: 'legionella.measures', span: 2 },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (check) =>
+    [check.number, check.title, check.system, check.measuringPoint, check.responsible]
+      .filter(Boolean)
+      .join(' '),
+};
+
+const rcdConfig: ModuleConfig<'rcd'> = {
+  collection: 'rcd',
+  titleOf: (check) => check.title || check.device || check.number,
+  statusField: 'status',
+  statusOptions: RCD_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: RCD_STATUS_OPTIONS, filter: true },
+    { kind: 'select', name: 'result', labelKey: 'rcd.result', options: RCD_RESULT_OPTIONS, filter: true },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    text('distribution', 'rcd.distribution'),
+    text('device', 'rcd.device'),
+    {
+      kind: 'date',
+      name: 'date',
+      labelKey: 'rcd.testDate',
+      applyChange: (value, values) => withNextDate({ ...values, date: value }),
+    },
+    text('tester', 'rcd.tester'),
+    {
+      kind: 'select',
+      name: 'interval',
+      labelKey: 'legionella.interval',
+      options: INTERVAL_OPTIONS,
+      filter: true,
+      applyChange: (value, values) => withNextDate({ ...values, interval: value }),
+    },
+    { kind: 'date', name: 'nextDate', labelKey: 'rcd.nextControl' },
+    { kind: 'number', name: 'ratedCurrent', labelKey: 'rcd.ratedCurrent' },
+    { kind: 'number', name: 'tripCurrent', labelKey: 'rcd.tripCurrent' },
+    { kind: 'number', name: 'tripTime', labelKey: 'rcd.tripTime' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (check) =>
+    [check.number, check.title, check.device, check.distribution, check.tester]
+      .filter(Boolean)
+      .join(' '),
+};
+
+const keysConfig: ModuleConfig<'keys'> = {
+  collection: 'keys',
+  titleOf: (key) => key.title || key.keyNumber || key.number,
+  statusField: 'status',
+  statusOptions: KEY_STATUS_OPTIONS,
+  fields: [
+    text('title', 'keys.name', { required: true, span: 2 }),
+    text('keyNumber', 'keys.keyNumber'),
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: KEY_STATUS_OPTIONS, filter: true },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
+    text('location', 'keys.location'),
+    text('issuedTo', 'keys.issuedTo'),
+    { kind: 'date', name: 'issuedAt', labelKey: 'keys.issuedAt' },
+    { kind: 'date', name: 'returnedAt', labelKey: 'keys.returnedAt' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (key) =>
+    [key.number, key.title, key.keyNumber, key.location, key.issuedTo].filter(Boolean).join(' '),
+};
+
+const stockConfig: ModuleConfig<'stock'> = {
+  collection: 'stock',
+  titleOf: (item) => item.title || item.articleNumber || item.number,
+  fields: [
+    text('title', 'stock.material', { required: true, span: 2 }),
+    text('articleNumber', 'stock.articleNumber'),
+    { kind: 'number', name: 'quantity', labelKey: 'stock.quantity' },
+    { kind: 'number', name: 'minQuantity', labelKey: 'stock.minQuantity' },
+    text('unit', 'stock.unit'),
+    text('location', 'stock.location'),
+    { kind: 'relation', name: 'supplierId', labelKey: 'module.suppliers.singular', collection: 'suppliers', filter: true },
+    { kind: 'number', name: 'price', labelKey: 'stock.price' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (item) =>
+    [item.number, item.title, item.articleNumber, item.location].filter(Boolean).join(' '),
+};
+
+const contractsConfig: ModuleConfig<'contracts'> = {
+  collection: 'contracts',
+  titleOf: (contract) => contract.title || contract.partner || contract.number,
+  statusField: 'status',
+  statusOptions: CONTRACT_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    text('partner', 'contracts.partner', { required: true }),
+    { kind: 'select', name: 'type', labelKey: 'contracts.type', options: CONTRACT_TYPE_OPTIONS, filter: true },
+    text('contractNumber', 'contracts.contractNumber'),
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: CONTRACT_STATUS_OPTIONS, filter: true },
+    { kind: 'date', name: 'start', labelKey: 'contracts.start' },
+    { kind: 'date', name: 'end', labelKey: 'contracts.end' },
+    { kind: 'select', name: 'noticeMonths', labelKey: 'contracts.notice', options: NOTICE_PERIOD_OPTIONS },
+    { kind: 'money', name: 'cost', labelKey: 'contracts.cost' },
+    { kind: 'relation', name: 'supplierId', labelKey: 'module.suppliers.singular', collection: 'suppliers', filter: true },
+    { kind: 'relation', name: 'customerId', labelKey: 'module.customers.singular', collection: 'customers' },
+    { kind: 'relation', name: 'propertyId', labelKey: 'contracts.location', collection: 'properties', filter: true },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+    },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (contract) =>
+    [contract.number, contract.title, contract.partner, contract.contractNumber]
       .filter(Boolean)
       .join(' '),
 };
@@ -383,13 +752,21 @@ const invoicesConfig: ModuleConfig<'invoices'> = {
 
 export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   customers: customersConfig,
+  suppliers: suppliersConfig,
+  sites: sitesConfig,
   properties: propertiesConfig,
   buildings: buildingsConfig,
   rooms: roomsConfig,
   assets: assetsConfig,
   documents: documentsConfig,
+  energy: energyConfig,
   orders: ordersConfig,
   maintenances: maintenancesConfig,
+  legionella: legionellaConfig,
+  rcd: rcdConfig,
+  keys: keysConfig,
+  stock: stockConfig,
+  contracts: contractsConfig,
   damages: damagesConfig,
   reports: reportsConfig,
   quotes: quotesConfig,

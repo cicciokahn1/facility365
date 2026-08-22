@@ -28,6 +28,7 @@ import { newId, nextNumber } from '@/lib/utils/id';
 const COLLECTIONS: CollectionKey[] = [
   'customers',
   'suppliers',
+  'sites',
   'properties',
   'buildings',
   'rooms',
