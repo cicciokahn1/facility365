@@ -19,6 +19,7 @@ import {
   FileSignature,
   type LucideIcon,
   Repeat,
+  SprayCan,
   Wrench,
   Zap,
 } from 'lucide-react';
@@ -51,6 +52,7 @@ const EVENT_ICONS: Record<CalendarEventKind, LucideIcon> = {
   legionella: Droplets,
   rcd: Zap,
   contract: FileSignature,
+  cleaning: SprayCan,
 };
 
 const iso = (date: Date): string =>

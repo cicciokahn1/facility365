@@ -9,6 +9,12 @@ import {
   Asset,
   BaseEntity,
   Building,
+  Cleaner,
+  CleaningArea,
+  CleaningCheck,
+  CleaningComplaint,
+  CleaningPlan,
+  CleaningTask,
   CollectionKey,
   ContractEntity,
   Customer,
@@ -64,6 +70,12 @@ export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   reports: 'RP',
   quotes: 'OF',
   invoices: 'RE',
+  cleaningareas: 'RB',
+  cleaners: 'RK',
+  cleaningplans: 'RPL',
+  cleaningtasks: 'RA',
+  cleaningchecks: 'RKO',
+  cleaningcomplaints: 'RKL',
 };
 
 /**
@@ -383,6 +395,97 @@ export const emptyInvoice = (): Omit<Invoice, 'id' | 'number'> => ({
   qrReference: '',
 });
 
+export const emptyCleaningArea = (): Omit<CleaningArea, 'id' | 'number'> => ({
+  ...base(),
+  name: '',
+  type: 'office',
+  propertyId: '',
+  buildingId: '',
+  roomId: '',
+  location: '',
+  responsibleId: '',
+  status: 'active',
+  description: '',
+  checklist: [],
+});
+
+export const emptyCleaner = (): Omit<Cleaner, 'id' | 'number'> => ({
+  ...base(),
+  name: '',
+  firstName: '',
+  role: 'cleaner',
+  phone: '',
+  mobile: '',
+  email: '',
+  supplierId: '',
+  status: 'active',
+});
+
+export const emptyCleaningPlan = (): Omit<CleaningPlan, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  areaId: '',
+  cleanerId: '',
+  responsibleId: '',
+  interval: 'weekly',
+  timeStart: '',
+  startDate: new Date().toISOString().slice(0, 10),
+  nextDate: new Date().toISOString().slice(0, 10),
+  status: 'active',
+  checklist: [],
+});
+
+export const emptyCleaningTask = (): Omit<CleaningTask, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  planId: '',
+  areaId: '',
+  propertyId: '',
+  buildingId: '',
+  roomId: '',
+  cleanerId: '',
+  responsibleId: '',
+  date: new Date().toISOString().slice(0, 10),
+  status: 'open',
+  workStart: '',
+  workEnd: '',
+  breakMinutes: 0,
+  completedAt: '',
+  checklist: [],
+  materials: [],
+});
+
+export const emptyCleaningCheck = (): Omit<CleaningCheck, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  areaId: '',
+  taskId: '',
+  date: new Date().toISOString().slice(0, 10),
+  inspectorId: '',
+  inspector: '',
+  result: 'pending',
+  measures: '',
+});
+
+export const emptyCleaningComplaint = (): Omit<CleaningComplaint, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  areaId: '',
+  taskId: '',
+  customerId: '',
+  propertyId: '',
+  buildingId: '',
+  roomId: '',
+  reportedBy: '',
+  reportedAt: new Date().toISOString().slice(0, 10),
+  description: '',
+  priority: 'medium',
+  status: 'open',
+  assignedId: '',
+  resolution: '',
+  resolvedAt: '',
+});
+
 const FACTORIES = {
   customers: emptyCustomer,
   suppliers: emptySupplier,
@@ -404,6 +507,12 @@ const FACTORIES = {
   reports: emptyReport,
   quotes: emptyQuote,
   invoices: emptyInvoice,
+  cleaningareas: emptyCleaningArea,
+  cleaners: emptyCleaner,
+  cleaningplans: emptyCleaningPlan,
+  cleaningtasks: emptyCleaningTask,
+  cleaningchecks: emptyCleaningCheck,
+  cleaningcomplaints: emptyCleaningComplaint,
 } as const;
 
 /** Leerer Datensatz einer Sammlung, noch ohne Kennung und Nummer. */

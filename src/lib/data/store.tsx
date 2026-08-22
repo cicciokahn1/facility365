@@ -46,6 +46,12 @@ const COLLECTIONS: CollectionKey[] = [
   'reports',
   'quotes',
   'invoices',
+  'cleaningareas',
+  'cleaners',
+  'cleaningplans',
+  'cleaningtasks',
+  'cleaningchecks',
+  'cleaningcomplaints',
 ];
 
 type Store = Record<CollectionKey, BaseEntity[]>;

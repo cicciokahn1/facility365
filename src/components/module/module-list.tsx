@@ -31,7 +31,19 @@ import { formatDate } from '@/lib/utils/format';
 
 type SortKey = 'newest' | 'oldest' | 'name';
 
-export function ModuleList({ collection }: { collection: CollectionKey }) {
+/** Feste Einschraenkung der Liste, z. B. auf die eigenen Reinigungsaufgaben. */
+export interface ListRestriction {
+  field: string;
+  value: string;
+}
+
+export function ModuleList({
+  collection,
+  only,
+}: {
+  collection: CollectionKey;
+  only?: ListRestriction;
+}) {
   const t = useT();
   const router = useRouter();
   const moduleDef = moduleByCollection(collection);
@@ -66,6 +78,7 @@ export function ModuleList({ collection }: { collection: CollectionKey }) {
       ([, value]) => value && value !== 'all',
     );
     const result = items.filter((item) => {
+      if (only && stringField(item, only.field) !== only.value) return false;
       if (needle && !searchOf(item).toLowerCase().includes(needle)) return false;
       if (statusFilter !== 'all' && config.statusField) {
         if (stringField(item, config.statusField) !== statusFilter) return false;
@@ -78,7 +91,7 @@ export function ModuleList({ collection }: { collection: CollectionKey }) {
       if (sort === 'oldest') return a.createdAt.localeCompare(b.createdAt);
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [config, items, query, relationFilters, sort, statusFilter]);
+  }, [config, items, only, query, relationFilters, sort, statusFilter]);
 
   /** Anzahl je Status in einem Durchgang statt einer Suche je Auswahl. */
   const statusCounts = useMemo(() => {

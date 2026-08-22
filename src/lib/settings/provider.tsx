@@ -29,8 +29,15 @@ export const defaultSettings: AppSettings = {
   profileRole: '',
   currency: 'CHF',
   vatRate: 8.1,
+  legionellaHotMin: 60,
+  legionellaColdMax: 25,
+  legionellaWarnCfu: 100,
+  legionellaLimitCfu: 1000,
+  legionellaIntervalMonths: 12,
   notificationsEnabled: true,
   emailNotifications: false,
+  cleaningCleanerId: '',
+  cleaningOwnTasksOnly: false,
 };
 
 interface SettingsContextValue {
