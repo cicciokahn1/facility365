@@ -672,6 +672,7 @@ export const dictionary = {
   },
   'dashboard.quick.damage': { de: 'Neuer Schaden', fr: 'Nouveau dommage', it: 'Nuovo danno', en: 'New damage' },
   'dashboard.quick.report': { de: 'Neuer Rapport', fr: 'Nouveau rapport', it: 'Nuovo rapporto', en: 'New report' },
+  'dashboard.quick.cleaning': { de: 'Reinigung', fr: 'Nettoyage', it: 'Pulizia', en: 'Cleaning' },
   'dashboard.overdue': { de: 'überfällig', fr: 'en retard', it: 'in ritardo', en: 'overdue' },
   'dashboard.emptyState': {
     de: 'Noch keine Daten erfasst. Beginnen Sie mit einem Kunden oder einer Liegenschaft.',

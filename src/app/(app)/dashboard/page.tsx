@@ -4,7 +4,7 @@
  * Startseite.
  *
  * Bewusst knapp gehalten: offene Arbeit, naechste Termine, Hinweise und die
- * fuenf haeufigsten Schnellaktionen. Keine Kennzahlen zu Umsatz, Stunden oder
+ * haeufigsten Schnellaktionen. Keine Kennzahlen zu Umsatz, Stunden oder
  * Rechnungen - die gehoeren in die spaeteren Auswertungen.
  */
 import { useMemo } from 'react';
@@ -17,6 +17,7 @@ import {
   FileText,
   Plus,
   ShieldAlert,
+  SprayCan,
   UserPlus,
   Wrench,
 } from 'lucide-react';
@@ -40,6 +41,7 @@ const QUICK_ACTIONS: { href: string; labelKey: TranslationKey; icon: typeof Plus
   { href: '/maintenances?new=1', labelKey: 'dashboard.quick.maintenance', icon: Wrench },
   { href: '/damages?new=1', labelKey: 'dashboard.quick.damage', icon: ShieldAlert },
   { href: '/reports?new=1', labelKey: 'dashboard.quick.report', icon: FileText },
+  { href: '/cleaning', labelKey: 'dashboard.quick.cleaning', icon: SprayCan },
 ];
 
 export default function DashboardPage() {
