@@ -24,6 +24,7 @@ export type ModuleKey =
   | 'maintenances'
   | 'legionella'
   | 'rcd'
+  | 'inspections'
   | 'keys'
   | 'stock'
   | 'contracts'
@@ -478,6 +479,41 @@ export interface RcdCheck extends BaseEntity {
   status: RcdStatus;
   interval: MaintenanceInterval;
   nextDate: string;
+}
+
+/** Art einer Kontrolle; frei erweiterbar ueber 'custom'. */
+export type InspectionType =
+  | 'fire'
+  | 'emergencyLight'
+  | 'escapeRoute'
+  | 'safety'
+  | 'elevator'
+  | 'ladder'
+  | 'playground'
+  | 'custom';
+
+/** Wiederkehrende Kontrolle der Betreiberpflichten. */
+export interface Inspection extends BaseEntity {
+  title: string;
+  type: InspectionType;
+  /** Eigene Bezeichnung, wenn die Art 'custom' ist. */
+  customType: string;
+  organizationId: string;
+  siteId: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  assetId: string;
+  date: string;
+  tester: string;
+  supplierId: string;
+  assigneeUserId: string;
+  assigneeTeam: string;
+  interval: MaintenanceInterval;
+  nextDate: string;
+  result: RcdResult;
+  status: RcdStatus;
+  measures: string;
 }
 
 /** Stand eines Schluessels. */
@@ -939,6 +975,7 @@ export interface CollectionMap {
   maintenances: Maintenance;
   legionella: LegionellaCheck;
   rcd: RcdCheck;
+  inspections: Inspection;
   keys: KeyEntity;
   stock: StockItem;
   contracts: ContractEntity;

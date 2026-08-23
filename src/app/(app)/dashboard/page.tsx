@@ -52,6 +52,7 @@ export default function DashboardPage() {
   const damages = useCollectionItems('damages');
   const legionella = useCollectionItems('legionella');
   const rcd = useCollectionItems('rcd');
+  const inspections = useCollectionItems('inspections');
   const contracts = useCollectionItems('contracts');
 
   const openOrders = useMemo(
@@ -106,10 +107,19 @@ export default function DashboardPage() {
             date: check.nextDate,
             labelKey: 'module.rcd.singular' as TranslationKey,
           })),
+        ...inspections
+          .filter((check) => check.status !== 'done' && check.nextDate)
+          .map((check) => ({
+            id: check.id,
+            href: `/inspections/${check.id}`,
+            title: check.title || check.customType,
+            date: check.nextDate,
+            labelKey: 'module.inspections.singular' as TranslationKey,
+          })),
       ]
         .sort((a, b) => a.date.localeCompare(b.date))
         .slice(0, 6),
-    [legionella, openMaintenances, openOrders, rcd],
+    [inspections, legionella, openMaintenances, openOrders, rcd],
   );
 
   const notifications = useMemo(
@@ -165,6 +175,18 @@ export default function DashboardPage() {
             textKey: 'dashboard.dueRcd' as TranslationKey,
             title: check.title || check.device,
           })),
+        ...inspections
+          .filter((check) => {
+            if (check.status === 'done') return false;
+            const days = daysUntil(check.nextDate);
+            return days !== null && days <= 14;
+          })
+          .map((check) => ({
+            id: `inspection-${check.id}`,
+            href: `/inspections/${check.id}`,
+            textKey: 'dashboard.dueInspection' as TranslationKey,
+            title: check.title || check.customType,
+          })),
         ...contracts
           .filter((contract) => isReminderDue(contract, today()))
           .map((contract) => ({
@@ -174,7 +196,7 @@ export default function DashboardPage() {
             title: contract.title || contract.partner,
           })),
       ].slice(0, 8),
-    [contracts, legionella, openDamages, openMaintenances, openOrders, rcd],
+    [contracts, inspections, legionella, openDamages, openMaintenances, openOrders, rcd],
   );
 
   const criticalOrders = useMemo(

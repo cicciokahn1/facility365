@@ -20,6 +20,7 @@ const COLLECTION_OF: Record<CalendarEventKind, CollectionKey> = {
   maintenance: 'maintenances',
   legionella: 'legionella',
   rcd: 'rcd',
+  inspection: 'inspections',
   contract: 'contracts',
   cleaning: 'cleaningtasks',
 };
@@ -31,6 +32,7 @@ export function useRelevantEvents(): CalendarEvent[] {
   const maintenances = useCollectionItems('maintenances');
   const legionella = useCollectionItems('legionella');
   const rcd = useCollectionItems('rcd');
+  const inspections = useCollectionItems('inspections');
   const contracts = useCollectionItems('contracts');
   const cleaningtasks = useCollectionItems('cleaningtasks');
 
@@ -42,10 +44,11 @@ export function useRelevantEvents(): CalendarEvent[] {
     add('maintenances', maintenances);
     add('legionella', legionella);
     add('rcd', rcd);
+    add('inspections', inspections);
     add('contracts', contracts);
     add('cleaningtasks', cleaningtasks);
     return map;
-  }, [cleaningtasks, contracts, legionella, maintenances, orders, rcd]);
+  }, [cleaningtasks, contracts, inspections, legionella, maintenances, orders, rcd]);
 
   return useMemo(
     () =>

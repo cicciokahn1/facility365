@@ -42,6 +42,7 @@ const COLLECTIONS: CollectionKey[] = [
   'maintenances',
   'legionella',
   'rcd',
+  'inspections',
   'keys',
   'stock',
   'contracts',
@@ -66,6 +67,7 @@ const COLLECTIONS: CollectionKey[] = [
  * `activities` festgehalten - dort wird nur angehaengt, nie geaendert.
  */
 const TRACKED: CollectionKey[] = [
+  'inspections',
   'orders',
   'maintenances',
   'damages',
