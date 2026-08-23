@@ -321,6 +321,18 @@ export const RCD_RESULT_OPTIONS: SelectOption[] = [
   { value: 'failed', labelKey: 'rcd.failed', tone: 'danger' },
 ];
 
+/** Arten der Betreiberkontrollen; 'custom' traegt eine eigene Bezeichnung. */
+export const INSPECTION_TYPE_OPTIONS: SelectOption[] = [
+  option('fire', 'inspection.type.fire'),
+  option('emergencyLight', 'inspection.type.emergencyLight'),
+  option('escapeRoute', 'inspection.type.escapeRoute'),
+  option('safety', 'inspection.type.safety'),
+  option('elevator', 'inspection.type.elevator'),
+  option('ladder', 'inspection.type.ladder'),
+  option('playground', 'inspection.type.playground'),
+  option('custom', 'inspection.type.custom'),
+];
+
 export const DAMAGE_STATUS_OPTIONS: SelectOption[] = [
   option('reported', 'status.reported'),
   option('inspection', 'status.inspection'),

@@ -21,6 +21,7 @@ export type CalendarEventKind =
   | 'maintenance'
   | 'legionella'
   | 'rcd'
+  | 'inspection'
   | 'contract'
   | 'cleaning';
 
@@ -85,6 +86,7 @@ export function useCalendarEvents(): CalendarEvent[] {
   const maintenances = useCollectionItems('maintenances');
   const legionella = useCollectionItems('legionella');
   const rcd = useCollectionItems('rcd');
+  const inspections = useCollectionItems('inspections');
   const contracts = useCollectionItems('contracts');
   const cleaningTasks = useCollectionItems('cleaningtasks');
   const cleaningPlans = useCollectionItems('cleaningplans');
@@ -183,6 +185,26 @@ export function useCalendarEvents(): CalendarEvent[] {
         });
       });
 
+    inspections
+      .filter((check) => check.status !== 'done' && check.nextDate)
+      .forEach((check) => {
+        events.push({
+          id: `inspection-${check.id}`,
+          kind: 'inspection',
+          sourceId: check.id,
+          href: `/inspections/${check.id}`,
+          labelKey: 'module.inspections.singular',
+          title: check.title || check.customType || check.number,
+          date: check.nextDate,
+          time: '',
+          customerId: '',
+          propertyId: check.propertyId,
+          buildingId: check.buildingId,
+          assetId: check.assetId,
+          recurring: false,
+        });
+      });
+
     /** Vertraege: Erinnerung vor Ablauf der Kuendigungsfrist und das Vertragsende. */
     contracts.filter(isContractOpen).forEach((contract) => {
       const title = contract.title || contract.partner || contract.number;
@@ -261,6 +283,7 @@ export function useCalendarEvents(): CalendarEvent[] {
     cleaningPlans,
     cleaningTasks,
     contracts,
+    inspections,
     legionella,
     maintenances,
     orders,

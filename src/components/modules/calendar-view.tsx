@@ -14,6 +14,7 @@ import {
   BellRing,
   ChevronLeft,
   ChevronRight,
+  ClipboardCheck,
   ClipboardList,
   Droplets,
   FileSignature,
@@ -52,6 +53,7 @@ const EVENT_ICONS: Record<CalendarEventKind, LucideIcon> = {
   maintenance: Wrench,
   legionella: Droplets,
   rcd: Zap,
+  inspection: ClipboardCheck,
   contract: FileSignature,
   cleaning: SprayCan,
 };

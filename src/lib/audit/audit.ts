@@ -61,6 +61,7 @@ const inRange = (filter: AuditFilter, date: string): boolean =>
 export function useAuditSections(filter: AuditFilter): AuditSection[] {
   const legionella = useCollectionItems('legionella');
   const rcd = useCollectionItems('rcd');
+  const inspections = useCollectionItems('inspections');
   const maintenances = useCollectionItems('maintenances');
   const orders = useCollectionItems('orders');
   const damages = useCollectionItems('damages');
@@ -122,6 +123,34 @@ export function useAuditSections(filter: AuditFilter): AuditSection[] {
             ? ('audit.overdue' as TranslationKey)
             : (`rcd.${check.result}` as TranslationKey),
           detail: check.distribution,
+        };
+      });
+
+    const inspectionRows: AuditRow[] = inspections
+      .filter(
+        (check) =>
+          atLocation(filter, check.propertyId, check.buildingId) &&
+          (inRange(filter, check.date) || inRange(filter, check.nextDate)),
+      )
+      .map((check) => {
+        const overdue = check.status !== 'done' && Boolean(check.nextDate) && check.nextDate < now;
+        const tone: AuditTone =
+          check.result === 'failed' || overdue
+            ? 'red'
+            : check.result === 'passed'
+              ? 'green'
+              : 'amber';
+        return {
+          id: check.id,
+          href: `/inspections/${check.id}`,
+          number: check.number,
+          title: check.title || check.customType || check.number,
+          date: check.date,
+          tone,
+          statusKey: overdue
+            ? ('audit.overdue' as TranslationKey)
+            : (`rcd.${check.result}` as TranslationKey),
+          detail: check.tester,
         };
       });
 
@@ -211,12 +240,13 @@ export function useAuditSections(filter: AuditFilter): AuditSection[] {
     return [
       { key: 'legionella', labelKey: 'module.legionella' as TranslationKey, rows: legionellaRows },
       { key: 'rcd', labelKey: 'module.rcd' as TranslationKey, rows: rcdRows },
+      { key: 'inspections', labelKey: 'module.inspections' as TranslationKey, rows: inspectionRows },
       { key: 'maintenances', labelKey: 'module.maintenances' as TranslationKey, rows: maintenanceRows },
       { key: 'orders', labelKey: 'module.orders' as TranslationKey, rows: orderRows },
       { key: 'damages', labelKey: 'audit.openDamages' as TranslationKey, rows: damageRows },
       { key: 'contracts', labelKey: 'audit.openContracts' as TranslationKey, rows: contractRows },
     ];
-  }, [contracts, damages, filter, legionella, maintenances, orders, rcd]);
+  }, [contracts, damages, filter, inspections, legionella, maintenances, orders, rcd]);
 }
 
 /** Zaehlt die Ampeln ueber alle Bereiche. */

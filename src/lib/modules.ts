@@ -237,6 +237,15 @@ export const MODULES: ModuleDefinition[] = [
     singularKey: 'module.rcd.singular',
   },
   {
+    key: 'inspections',
+    collection: 'inspections',
+    path: '/inspections',
+    icon: ClipboardCheck,
+    group: 'work',
+    labelKey: 'module.inspections',
+    singularKey: 'module.inspections.singular',
+  },
+  {
     key: 'damages',
     collection: 'damages',
     path: '/damages',

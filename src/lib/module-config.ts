@@ -37,6 +37,7 @@ import {
   PRIORITY_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
   QUOTE_STATUS_OPTIONS,
+  INSPECTION_TYPE_OPTIONS,
   RCD_RESULT_OPTIONS,
   USER_ROLE_OPTIONS,
   USER_STATUS_OPTIONS,
@@ -599,6 +600,75 @@ const rcdConfig: ModuleConfig<'rcd'> = {
     [check.number, check.title, check.device, check.distribution, check.tester]
       .filter(Boolean)
       .join(' '),
+};
+
+const inspectionsConfig: ModuleConfig<'inspections'> = {
+  collection: 'inspections',
+  titleOf: (check) => check.title || check.customType || check.number,
+  statusField: 'status',
+  statusOptions: RCD_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'type',
+      labelKey: 'inspection.kind',
+      options: INSPECTION_TYPE_OPTIONS,
+      filter: true,
+    },
+    text('customType', 'inspection.customType', {
+      visibleWhen: (values) => values.type === 'custom',
+    }),
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: RCD_STATUS_OPTIONS, filter: true },
+    { kind: 'select', name: 'result', labelKey: 'rcd.result', options: RCD_RESULT_OPTIONS, filter: true },
+    {
+      kind: 'relation',
+      name: 'propertyId',
+      labelKey: 'module.properties.singular',
+      collection: 'properties',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
+    { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    {
+      kind: 'date',
+      name: 'date',
+      labelKey: 'rcd.testDate',
+      applyChange: (value, values) => withNextDate({ ...values, date: value }),
+    },
+    text('tester', 'rcd.tester'),
+    { kind: 'relation', name: 'supplierId', labelKey: 'module.suppliers.singular', collection: 'suppliers' },
+    {
+      kind: 'select',
+      name: 'interval',
+      labelKey: 'legionella.interval',
+      options: INTERVAL_OPTIONS,
+      filter: true,
+      applyChange: (value, values) => withNextDate({ ...values, interval: value }),
+    },
+    { kind: 'date', name: 'nextDate', labelKey: 'rcd.nextControl' },
+    { kind: 'relation', name: 'assigneeUserId', labelKey: 'user.assignee', collection: 'users' },
+    { kind: 'textarea', name: 'measures', labelKey: 'legionella.measures', span: 2 },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (check) =>
+    [check.number, check.title, check.customType, check.tester].filter(Boolean).join(' '),
 };
 
 const keysConfig: ModuleConfig<'keys'> = {
@@ -1217,6 +1287,7 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   maintenances: maintenancesConfig,
   legionella: legionellaConfig,
   rcd: rcdConfig,
+  inspections: inspectionsConfig,
   keys: keysConfig,
   stock: stockConfig,
   contracts: contractsConfig,

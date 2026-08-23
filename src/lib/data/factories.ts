@@ -24,6 +24,7 @@ import {
   DocumentEntity,
   EnergyEntry,
   EntityOf,
+  Inspection,
   Invoice,
   KeyEntity,
   LegionellaCheck,
@@ -67,6 +68,7 @@ export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   maintenances: 'WA',
   legionella: 'LEG',
   rcd: 'FI',
+  inspections: 'KO',
   keys: 'SL',
   stock: 'LA',
   contracts: 'VT',
@@ -258,6 +260,29 @@ export const emptyRcdCheck = (): Omit<RcdCheck, 'id' | 'number'> => ({
   status: 'open',
   interval: 'annual',
   nextDate: '',
+});
+
+export const emptyInspection = (): Omit<Inspection, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  type: 'fire',
+  customType: '',
+  organizationId: '',
+  siteId: '',
+  propertyId: '',
+  buildingId: '',
+  roomId: '',
+  assetId: '',
+  date: new Date().toISOString().slice(0, 10),
+  tester: '',
+  supplierId: '',
+  assigneeUserId: '',
+  assigneeTeam: '',
+  interval: 'annual',
+  nextDate: '',
+  result: 'pending',
+  status: 'open',
+  measures: '',
 });
 
 export const emptyKey = (): Omit<KeyEntity, 'id' | 'number'> => ({
@@ -556,6 +581,7 @@ const FACTORIES = {
   maintenances: emptyMaintenance,
   legionella: emptyLegionellaCheck,
   rcd: emptyRcdCheck,
+  inspections: emptyInspection,
   keys: emptyKey,
   stock: emptyStockItem,
   contracts: emptyContract,

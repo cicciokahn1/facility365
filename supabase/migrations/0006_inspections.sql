@@ -1,0 +1,46 @@
+-- Facility365 – Kontrollen der Betreiberpflichten
+--
+-- Brandschutz, Notbeleuchtung, Fluchtwege, Sicherheits- und individuelle
+-- Pruefungen. Die bestehenden Legionellen- und FI-Kontrollen bleiben
+-- unveraendert; diese Tabelle ergaenzt sie und folgt demselben Muster.
+
+create table if not exists public.inspections (
+  id text not null,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  number text not null default '',
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, id)
+);
+
+create unique index if not exists inspections_user_number_idx
+  on public.inspections (user_id, number) where number <> '';
+
+create index if not exists inspections_user_updated_idx on public.inspections (user_id, updated_at desc);
+
+alter table public.inspections enable row level security;
+alter table public.inspections force row level security;
+
+drop policy if exists inspections_select_own on public.inspections;
+create policy inspections_select_own on public.inspections
+  for select to authenticated using (auth.uid() = user_id);
+
+drop policy if exists inspections_insert_own on public.inspections;
+create policy inspections_insert_own on public.inspections
+  for insert to authenticated with check (auth.uid() = user_id);
+
+drop policy if exists inspections_update_own on public.inspections;
+create policy inspections_update_own on public.inspections
+  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+drop policy if exists inspections_delete_own on public.inspections;
+create policy inspections_delete_own on public.inspections
+  for delete to authenticated using (auth.uid() = user_id);
+
+grant select, insert, update, delete on public.inspections to authenticated;
+revoke all on public.inspections from anon;
+
+drop trigger if exists inspections_touch_updated_at on public.inspections;
+create trigger inspections_touch_updated_at before update on public.inspections
+  for each row execute function public.touch_updated_at();
