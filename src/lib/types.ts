@@ -45,6 +45,7 @@ export type ModuleKey =
   | 'analytics'
   | 'audit'
   | 'handover'
+  | 'portal'
   | 'today'
   | 'users'
   | 'activities'
@@ -59,6 +60,7 @@ export type CollectionKey = Exclude<
   | 'analytics'
   | 'audit'
   | 'handover'
+  | 'portal'
   | 'today'
   | 'settings'
 >;

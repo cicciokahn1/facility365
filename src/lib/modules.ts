@@ -20,6 +20,7 @@ import {
   FileText,
   Files,
   Gauge,
+  Handshake,
   Home,
   KeyRound,
   LayoutDashboard,
@@ -393,6 +394,14 @@ export const MODULES: ModuleDefinition[] = [
     group: 'work',
     labelKey: 'module.handover',
     singularKey: 'module.handover',
+  },
+  {
+    key: 'portal',
+    path: '/portal',
+    icon: Handshake,
+    group: 'business',
+    labelKey: 'module.portal',
+    singularKey: 'module.portal',
   },
   {
     key: 'users',

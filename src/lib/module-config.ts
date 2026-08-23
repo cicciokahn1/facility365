@@ -313,6 +313,7 @@ const documentsConfig: ModuleConfig<'documents'> = {
       filter: true,
     },
     { kind: 'date', name: 'validUntil', labelKey: 'documents.validUntil' },
+    { kind: 'switch', name: 'sharedWithCustomer', labelKey: 'portal.shared' },
     {
       kind: 'relation',
       name: 'organizationId',
@@ -983,6 +984,7 @@ const reportsConfig: ModuleConfig<'reports'> = {
     text('workStart', 'work.start'),
     text('workEnd', 'work.end'),
     { kind: 'number', name: 'breakMinutes', labelKey: 'work.break' },
+    { kind: 'switch', name: 'sharedWithCustomer', labelKey: 'portal.shared' },
     { kind: 'textarea', name: 'summary', labelKey: 'common.summary', span: 2 },
     { kind: 'textarea', name: 'workDescription', labelKey: 'report.work', span: 2 },
   ],
