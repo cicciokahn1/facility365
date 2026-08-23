@@ -18,9 +18,11 @@ import {
   ClipboardList,
   Droplets,
   FileSignature,
+  FileText,
   type LucideIcon,
   Repeat,
   SprayCan,
+  Truck,
   Wrench,
   Zap,
 } from 'lucide-react';
@@ -54,6 +56,8 @@ const EVENT_ICONS: Record<CalendarEventKind, LucideIcon> = {
   legionella: Droplets,
   rcd: Zap,
   inspection: ClipboardCheck,
+  vehicle: Truck,
+  document: FileText,
   contract: FileSignature,
   cleaning: SprayCan,
 };

@@ -26,6 +26,9 @@ export type ModuleKey =
   | 'rcd'
   | 'inspections'
   | 'keys'
+  | 'inventory'
+  | 'vehicles'
+  | 'tools'
   | 'stock'
   | 'contracts'
   | 'damages'
@@ -530,7 +533,18 @@ export interface KeyMovement {
 }
 
 /** Schluessel der Schluesselverwaltung. */
-export interface KeyEntity extends BaseEntity {
+/** Gemeinsame Felder von Gegenstaenden, die ausgegeben und zurueckgenommen werden. */
+export interface Issuable {
+  status: KeyStatus;
+  /** Aktuell ausgegeben an. */
+  issuedTo: string;
+  issuedAt: string;
+  returnedAt: string;
+  /** Alle Ausgaben und Ruecknahmen. */
+  movements: KeyMovement[];
+}
+
+export interface KeyEntity extends BaseEntity, Issuable {
   title: string;
   /** Aufgedruckte oder eigene Schluesselnummer. */
   keyNumber: string;
@@ -539,13 +553,77 @@ export interface KeyEntity extends BaseEntity {
   roomId: string;
   /** Aufbewahrungsort, z. B. Schluesselschrank. */
   location: string;
-  status: KeyStatus;
-  /** Aktuell ausgegeben an. */
-  issuedTo: string;
-  issuedAt: string;
-  returnedAt: string;
-  /** Alle Ausgaben und Ruecknahmen. */
-  movements: KeyMovement[];
+}
+
+/** Zustand eines Inventar- oder Werkzeugbestands. */
+export type ConditionStatus = 'new' | 'good' | 'used' | 'defect' | 'disposed';
+
+/** Inventargegenstand mit Inventarnummer und QR-Code. */
+export interface InventoryItem extends BaseEntity {
+  title: string;
+  /** Eigene Inventarnummer, zusaetzlich zur laufenden Nummer. */
+  inventoryNumber: string;
+  category: string;
+  organizationId: string;
+  siteId: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  /** Genauer Aufbewahrungsort im Raum. */
+  location: string;
+  manufacturer: string;
+  model: string;
+  serial: string;
+  condition: ConditionStatus;
+  purchaseDate: string;
+  price?: number;
+  supplierId: string;
+  warrantyUntil: string;
+}
+
+/** Stand eines Fahrzeugs. */
+export type VehicleStatus = 'active' | 'service' | 'retired';
+
+/** Firmenfahrzeug mit Service-, Reifen- und Pruefterminen. */
+export interface Vehicle extends BaseEntity {
+  title: string;
+  /** Kontrollschild. */
+  plate: string;
+  brand: string;
+  model: string;
+  year: string;
+  vin: string;
+  status: VehicleStatus;
+  /** Kilometerstand. */
+  mileage?: number;
+  driver: string;
+  assigneeUserId: string;
+  siteId: string;
+  propertyId: string;
+  nextService: string;
+  /** Naechster Reifenwechsel. */
+  tireChange: string;
+  /** Naechste amtliche Pruefung (MFK). */
+  nextInspection: string;
+  insurer: string;
+  policyNumber: string;
+  insuranceUntil: string;
+}
+
+/** Werkzeug oder Geraet, das ausgegeben und zurueckgenommen wird. */
+export interface Tool extends BaseEntity, Issuable {
+  title: string;
+  /** Eigene Werkzeugnummer. */
+  toolNumber: string;
+  category: string;
+  manufacturer: string;
+  serial: string;
+  condition: ConditionStatus;
+  propertyId: string;
+  buildingId: string;
+  /** Aufbewahrungsort, z. B. Werkstatt. */
+  location: string;
+  nextCheck: string;
 }
 
 export type DamageStatus = 'reported' | 'inspection' | 'inProgress' | 'fixed' | 'rejected';
@@ -648,10 +726,26 @@ export interface Invoice extends BaseEntity {
 }
 
 /** Eigenstaendiger Dokumenteneintrag des Moduls "Dokumente". */
+/** Frühere Fassung eines Dokuments. */
+export interface DocumentVersion {
+  id: string;
+  /** Fortlaufende Fassungsnummer, beginnend bei 1. */
+  version: number;
+  file: DocumentFile;
+  /** Grund oder Aenderungshinweis zur Fassung. */
+  note: string;
+  replacedAt: string;
+  replacedBy: string;
+}
+
 export interface DocumentEntity extends BaseEntity {
   title: string;
   category: string;
   file?: DocumentFile;
+  /** Frühere Fassungen; die aktuelle Fassung steht in `file`. */
+  versions: DocumentVersion[];
+  organizationId: string;
+  siteId: string;
   customerId: string;
   propertyId: string;
   buildingId: string;
@@ -977,6 +1071,9 @@ export interface CollectionMap {
   rcd: RcdCheck;
   inspections: Inspection;
   keys: KeyEntity;
+  inventory: InventoryItem;
+  vehicles: Vehicle;
+  tools: Tool;
   stock: StockItem;
   contracts: ContractEntity;
   damages: Damage;

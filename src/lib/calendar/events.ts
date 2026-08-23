@@ -22,6 +22,8 @@ export type CalendarEventKind =
   | 'legionella'
   | 'rcd'
   | 'inspection'
+  | 'document'
+  | 'vehicle'
   | 'contract'
   | 'cleaning';
 
@@ -87,6 +89,8 @@ export function useCalendarEvents(): CalendarEvent[] {
   const legionella = useCollectionItems('legionella');
   const rcd = useCollectionItems('rcd');
   const inspections = useCollectionItems('inspections');
+  const documents = useCollectionItems('documents');
+  const vehicles = useCollectionItems('vehicles');
   const contracts = useCollectionItems('contracts');
   const cleaningTasks = useCollectionItems('cleaningtasks');
   const cleaningPlans = useCollectionItems('cleaningplans');
@@ -205,6 +209,59 @@ export function useCalendarEvents(): CalendarEvent[] {
         });
       });
 
+    /** Dokumente: Ablauf der Gueltigkeit. */
+    documents
+      .filter((document) => Boolean(document.validUntil))
+      .forEach((document) => {
+        events.push({
+          id: `document-${document.id}`,
+          kind: 'document',
+          sourceId: document.id,
+          href: `/documents/${document.id}`,
+          labelKey: 'documents.validUntil',
+          title: document.title || document.file?.name || document.number,
+          date: document.validUntil,
+          time: '',
+          customerId: document.customerId,
+          propertyId: document.propertyId,
+          buildingId: document.buildingId,
+          assetId: document.assetId,
+          recurring: false,
+        });
+      });
+
+    /** Fahrzeuge: Service, Reifenwechsel, amtliche Pruefung und Ablauf der Versicherung. */
+    vehicles
+      .filter((vehicle) => vehicle.status !== 'retired')
+      .forEach((vehicle) => {
+        const title = vehicle.title || vehicle.plate || vehicle.number;
+        const dates: [string, TranslationKey][] = [
+          [vehicle.nextService, 'vehicle.nextService'],
+          [vehicle.tireChange, 'vehicle.tireChange'],
+          [vehicle.nextInspection, 'vehicle.nextInspection'],
+          [vehicle.insuranceUntil, 'vehicle.insuranceUntil'],
+        ];
+        dates
+          .filter(([date]) => Boolean(date))
+          .forEach(([date, labelKey]) => {
+            events.push({
+              id: `vehicle-${vehicle.id}-${labelKey}`,
+              kind: 'vehicle',
+              sourceId: vehicle.id,
+              href: `/vehicles/${vehicle.id}`,
+              labelKey,
+              title,
+              date,
+              time: '',
+              customerId: '',
+              propertyId: vehicle.propertyId,
+              buildingId: '',
+              assetId: '',
+              recurring: false,
+            });
+          });
+      });
+
     /** Vertraege: Erinnerung vor Ablauf der Kuendigungsfrist und das Vertragsende. */
     contracts.filter(isContractOpen).forEach((contract) => {
       const title = contract.title || contract.partner || contract.number;
@@ -287,7 +344,9 @@ export function useCalendarEvents(): CalendarEvent[] {
     legionella,
     maintenances,
     orders,
+    documents,
     rcd,
+    vehicles,
   ]);
 }
 

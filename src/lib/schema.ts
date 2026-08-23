@@ -333,6 +333,33 @@ export const INSPECTION_TYPE_OPTIONS: SelectOption[] = [
   option('custom', 'inspection.type.custom'),
 ];
 
+/** Zustand eines Inventargegenstands oder Werkzeugs. */
+export const CONDITION_OPTIONS: SelectOption[] = [
+  { value: 'new', labelKey: 'condition.new', tone: 'success' },
+  { value: 'good', labelKey: 'condition.good', tone: 'success' },
+  { value: 'used', labelKey: 'condition.used', tone: 'neutral' },
+  { value: 'defect', labelKey: 'condition.defect', tone: 'danger' },
+  { value: 'disposed', labelKey: 'condition.disposed', tone: 'neutral' },
+];
+
+/** Stand eines Fahrzeugs. */
+export const VEHICLE_STATUS_OPTIONS: SelectOption[] = [
+  { value: 'active', labelKey: 'vehicle.active', tone: 'success' },
+  { value: 'service', labelKey: 'vehicle.inService', tone: 'warning' },
+  { value: 'retired', labelKey: 'vehicle.retired', tone: 'neutral' },
+];
+
+/** Kategorien fuer Inventar und Werkzeuge. */
+export const INVENTORY_CATEGORY_OPTIONS: SelectOption[] = [
+  option('furniture', 'inventory.category.furniture'),
+  option('it', 'inventory.category.it'),
+  option('machine', 'inventory.category.machine'),
+  option('appliance', 'inventory.category.appliance'),
+  option('tool', 'inventory.category.tool'),
+  option('vehicle', 'inventory.category.vehicle'),
+  option('other', 'inventory.category.other'),
+];
+
 export const DAMAGE_STATUS_OPTIONS: SelectOption[] = [
   option('reported', 'status.reported'),
   option('inspection', 'status.inspection'),

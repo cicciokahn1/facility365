@@ -37,6 +37,9 @@ const SEARCHABLE = [
   'rcd',
   'inspections',
   'keys',
+  'inventory',
+  'vehicles',
+  'tools',
   'stock',
   'contracts',
   'damages',
@@ -113,6 +116,9 @@ function SearchDialog({
   const rcd = useCollectionItems('rcd');
   const inspections = useCollectionItems('inspections');
   const keys = useCollectionItems('keys');
+  const inventory = useCollectionItems('inventory');
+  const vehicles = useCollectionItems('vehicles');
+  const tools = useCollectionItems('tools');
   const stock = useCollectionItems('stock');
   const contracts = useCollectionItems('contracts');
   const damages = useCollectionItems('damages');
@@ -145,6 +151,9 @@ function SearchDialog({
       rcd,
       inspections,
       keys,
+      inventory,
+      vehicles,
+      tools,
       stock,
       contracts,
       damages,
@@ -174,6 +183,7 @@ function SearchDialog({
       documents,
       energy,
       inspections,
+      inventory,
       invoices,
       keys,
       legionella,
@@ -188,7 +198,9 @@ function SearchDialog({
       sites,
       stock,
       suppliers,
+      tools,
       users,
+      vehicles,
     ],
   );
 

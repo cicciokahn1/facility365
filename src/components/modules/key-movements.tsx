@@ -16,16 +16,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
-import { KeyEntity, KeyMovement } from '@/lib/types';
+import { Issuable, KeyMovement } from '@/lib/types';
 import { formatDate, today } from '@/lib/utils/format';
 import { newId } from '@/lib/utils/id';
 
-export function KeyMovements({
+/**
+ * Dieselbe Ausgabe- und Ruecknahmeliste dient Schluesseln und Werkzeugen.
+ */
+export function KeyMovements<T extends Issuable>({
   entity,
   onChange,
 }: {
-  entity: KeyEntity;
-  onChange: (values: Partial<KeyEntity>, action?: string) => void;
+  entity: T;
+  onChange: (values: Partial<T>, action?: string) => void;
 }) {
   const t = useT();
   const { settings } = useSettings();
@@ -34,8 +37,8 @@ export function KeyMovements({
   const [date, setDate] = useState(today());
   const [note, setNote] = useState('');
 
-  const append = (movement: KeyMovement, values: Partial<KeyEntity>, action: string) => {
-    onChange({ ...values, movements: [...entity.movements, movement] }, action);
+  const append = (movement: KeyMovement, values: Partial<T>, action: string) => {
+    onChange({ ...values, movements: [...entity.movements, movement] } as Partial<T>, action);
     setPerson('');
     setNote('');
     setDate(today());
@@ -47,7 +50,7 @@ export function KeyMovements({
     if (!name) return;
     append(
       { id: newId('movement'), type: 'issue', date, person: name, note: note.trim() },
-      { status: 'issued', issuedTo: name, issuedAt: date, returnedAt: '' },
+      { status: 'issued', issuedTo: name, issuedAt: date, returnedAt: '' } as Partial<T>,
       'keys.historyIssued',
     );
   };
@@ -56,7 +59,7 @@ export function KeyMovements({
   const takeBack = () => {
     append(
       { id: newId('movement'), type: 'return', date, person: entity.issuedTo, note: note.trim() },
-      { status: 'available', returnedAt: date },
+      { status: 'available', returnedAt: date } as Partial<T>,
       'keys.historyReturned',
     );
   };
@@ -147,7 +150,7 @@ export function KeyMovements({
                       onClick={() =>
                         onChange({
                           movements: entity.movements.filter((entry) => entry.id !== movement.id),
-                        })
+                        } as Partial<T>)
                       }
                     >
                       <Trash2 className="size-4 text-destructive" />
