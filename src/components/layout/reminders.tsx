@@ -8,7 +8,7 @@
  */
 import { useCallback } from 'react';
 
-import { useCalendarEvents } from '@/lib/calendar/events';
+import { useRelevantEvents } from '@/lib/calendar/relevant';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { reminderText } from '@/lib/notifications/reminders';
@@ -19,7 +19,7 @@ import { today } from '@/lib/utils/format';
 export function Reminders() {
   const t = useT();
   const { settings } = useSettings();
-  const events = useCalendarEvents();
+  const events = useRelevantEvents();
   const buildings = useCollectionItems('buildings');
   const properties = useCollectionItems('properties');
 

@@ -27,7 +27,8 @@ import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { Button } from '@/components/ui/button';
-import { CalendarEvent, CalendarEventKind, useCalendarEvents } from '@/lib/calendar/events';
+import { CalendarEvent, CalendarEventKind } from '@/lib/calendar/events';
+import { useRelevantEvents } from '@/lib/calendar/relevant';
 import { useEntityIndex } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { usePushPermission } from '@/lib/notifications/reminders';
@@ -73,7 +74,7 @@ const gridOf = (year: number, month: number): string[] => {
 export function CalendarView() {
   const t = useT();
   const { settings } = useSettings();
-  const events = useCalendarEvents();
+  const events = useRelevantEvents();
   const push = usePushPermission();
 
   const [cursor, setCursor] = useState(() => {

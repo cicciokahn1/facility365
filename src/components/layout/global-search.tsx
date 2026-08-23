@@ -13,13 +13,14 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
+import { useAccess } from '@/lib/auth/scope';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { MODULES } from '@/lib/modules';
 import { configOf, titleOfEntity } from '@/lib/module-config';
 import { CollectionKey } from '@/lib/types';
 
-const SEARCHABLE: CollectionKey[] = [
+const SEARCHABLE = [
   'customers',
   'suppliers',
   'organizations',
@@ -47,7 +48,8 @@ const SEARCHABLE: CollectionKey[] = [
   'cleaningtasks',
   'cleaningchecks',
   'cleaningcomplaints',
-];
+  'users',
+] as const satisfies readonly CollectionKey[];
 
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
@@ -93,6 +95,7 @@ function SearchDialog({
 }) {
   const t = useT();
   const [query, setQuery] = useState('');
+  const access = useAccess();
   const customers = useCollectionItems('customers');
   const suppliers = useCollectionItems('suppliers');
   const organizations = useCollectionItems('organizations');
@@ -120,6 +123,7 @@ function SearchDialog({
   const cleaningtasks = useCollectionItems('cleaningtasks');
   const cleaningchecks = useCollectionItems('cleaningchecks');
   const cleaningcomplaints = useCollectionItems('cleaningcomplaints');
+  const users = useCollectionItems('users');
 
   const collections = useMemo(
     () => ({
@@ -150,6 +154,7 @@ function SearchDialog({
       cleaningtasks,
       cleaningchecks,
       cleaningcomplaints,
+      users,
     }),
     [
       assets,
@@ -179,17 +184,19 @@ function SearchDialog({
       sites,
       stock,
       suppliers,
+      users,
     ],
   );
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (!open || !needle) return [];
-    return SEARCHABLE.map((collection) => {
+    return SEARCHABLE.filter((collection) => access.canRead(collection)).map((collection) => {
       const config = configOf(collection);
       const items = collections[collection];
       const matches = items
         .filter((item) => {
+          if (!access.visible(collection, item)) return false;
           const searchOf = config.searchOf as (value: typeof item) => string;
           return searchOf(item).toLowerCase().includes(needle);
         })
@@ -201,7 +208,7 @@ function SearchDialog({
         }));
       return { collection, matches };
     }).filter((group) => group.matches.length > 0);
-  }, [collections, open, query]);
+  }, [access, collections, open, query]);
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange} shouldFilter={false}>

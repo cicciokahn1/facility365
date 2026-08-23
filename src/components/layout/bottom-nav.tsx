@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { MoreHorizontal } from 'lucide-react';
 
+import { useAccess } from '@/lib/auth/scope';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { MOBILE_NAV_KEYS, MODULES, NAV_GROUPS, moduleByKey } from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
@@ -15,11 +16,12 @@ export function BottomNav() {
   const pathname = usePathname();
   const t = useT();
   const [open, setOpen] = useState(false);
-  const primary = MOBILE_NAV_KEYS.map(moduleByKey);
+  const access = useAccess();
+  const primary = MOBILE_NAV_KEYS.map(moduleByKey).filter((module) => access.canRead(module.key));
   /** Im Menue steht jede Funktion unter ihrer Gruppe - auch die vier unten. */
   const groups = NAV_GROUPS.map((group) => ({
     ...group,
-    modules: MODULES.filter((module) => module.group === group.key),
+    modules: MODULES.filter((module) => module.group === group.key && access.canRead(module.key)),
   })).filter((group) => group.modules.length > 0);
 
   return (

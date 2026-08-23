@@ -38,6 +38,7 @@ export const defaultSettings: AppSettings = {
   emailNotifications: false,
   cleaningCleanerId: '',
   cleaningOwnTasksOnly: false,
+  activeUserId: '',
 };
 
 interface SettingsContextValue {

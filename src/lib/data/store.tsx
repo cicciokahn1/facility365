@@ -19,10 +19,12 @@ import {
 import { toast } from 'sonner';
 
 import { useAuth } from '@/lib/auth/provider';
+import { currentActor } from '@/lib/data/actor';
 import { NUMBER_PAD, NUMBER_PREFIX, emptyEntity } from '@/lib/data/factories';
 import { Repository, StorageFullError, localRepository } from '@/lib/data/repository';
 import { supabaseRepository } from '@/lib/data/supabase-repository';
-import { BaseEntity, CollectionKey, EntityOf } from '@/lib/types';
+import { titleOfEntity } from '@/lib/module-config';
+import { Activity, BaseEntity, CollectionKey, EntityOf } from '@/lib/types';
 import { newId, nextNumber } from '@/lib/utils/id';
 
 const COLLECTIONS: CollectionKey[] = [
@@ -53,6 +55,24 @@ const COLLECTIONS: CollectionKey[] = [
   'cleaningtasks',
   'cleaningchecks',
   'cleaningcomplaints',
+  'users',
+  'activities',
+];
+
+/**
+ * Sammlungen mit unveraenderbarer Aktivitaetshistorie.
+ *
+ * Jede Anlage, Aenderung und Loeschung wird zusaetzlich als eigener Eintrag in
+ * `activities` festgehalten - dort wird nur angehaengt, nie geaendert.
+ */
+const TRACKED: CollectionKey[] = [
+  'orders',
+  'maintenances',
+  'damages',
+  'assets',
+  'documents',
+  'reports',
+  'cleaningtasks',
 ];
 
 type Store = Record<CollectionKey, BaseEntity[]>;
@@ -212,8 +232,38 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
 
   const get = useCallback((id: string) => index.get(id), [index]);
 
+  const activities = store.activities;
+  const log = useCallback(
+    (entity: BaseEntity, action: string, title: string) => {
+      if (!TRACKED.includes(collection)) return;
+      const actor = currentActor();
+      const now = new Date().toISOString();
+      const record: Activity = {
+        ...emptyEntity('activities'),
+        id: newId('activities'),
+        number: nextNumber(
+          NUMBER_PREFIX.activities,
+          activities.map((item) => item.number),
+          NUMBER_PAD.activities,
+        ),
+        createdAt: now,
+        updatedAt: now,
+        at: now,
+        userId: actor.id,
+        userName: actor.name,
+        module: collection,
+        entityId: entity.id,
+        entityNumber: entity.number,
+        entityTitle: title,
+        action,
+      };
+      saveItem('activities', record);
+    },
+    [activities, collection, saveItem],
+  );
+
   const create = useCallback(
-    (values: Partial<EntityOf<K>>, user = 'System') => {
+    (values: Partial<EntityOf<K>>, user = currentActor().name || 'System') => {
       const now = new Date().toISOString();
       const entity = {
         ...emptyEntity(collection),
@@ -229,13 +279,19 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
         history: [{ id: newId('h'), at: now, user, action: 'history.created' }],
       } as EntityOf<K>;
       saveItem(collection, entity);
+      log(entity, 'history.created', titleOfEntity(collection, entity));
       return entity;
     },
-    [collection, items, saveItem],
+    [collection, items, log, saveItem],
   );
 
   const update = useCallback(
-    (id: string, values: Partial<EntityOf<K>>, action = 'history.updated', user = 'System') => {
+    (
+      id: string,
+      values: Partial<EntityOf<K>>,
+      action = 'history.updated',
+      user = currentActor().name || 'System',
+    ) => {
       const now = new Date().toISOString();
       const current = index.get(id);
       if (!current) return;
@@ -250,13 +306,18 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
         history: [...current.history, { id: newId('h'), at: now, user, action }],
       };
       saveItem(collection, next as BaseEntity);
+      log(next as BaseEntity, action, titleOfEntity(collection, next as BaseEntity));
     },
-    [collection, index, saveItem],
+    [collection, index, log, saveItem],
   );
 
   const remove = useCallback(
-    (id: string) => removeItem(collection, id),
-    [collection, removeItem],
+    (id: string) => {
+      const current = index.get(id);
+      if (current) log(current, 'history.deleted', titleOfEntity(collection, current));
+      removeItem(collection, id);
+    },
+    [collection, index, log, removeItem],
   );
 
   const replaceAll = useCallback(

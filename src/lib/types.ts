@@ -40,12 +40,15 @@ export type ModuleKey =
   | 'cleaningcomplaints'
   | 'analytics'
   | 'audit'
+  | 'today'
+  | 'users'
+  | 'activities'
   | 'settings';
 
 /** Sammlungen, die Datensaetze fuehren. */
 export type CollectionKey = Exclude<
   ModuleKey,
-  'dashboard' | 'calendar' | 'cleaning' | 'analytics' | 'audit' | 'settings'
+  'dashboard' | 'calendar' | 'cleaning' | 'analytics' | 'audit' | 'today' | 'settings'
 >;
 
 export interface Photo {
@@ -361,6 +364,10 @@ export interface Order extends BaseEntity {
   /** Beauftragter Lieferant oder Dienstleister. */
   supplierId: string;
   assignee: string;
+  /** Zustaendige Benutzerin oder Benutzer aus der Benutzerverwaltung. */
+  assigneeUserId: string;
+  /** Zustaendiges Team; frei benannt, z. B. «Hauswartung Nord». */
+  assigneeTeam: string;
   dueDate: string;
   startedAt: string;
   completedAt: string;
@@ -397,6 +404,8 @@ export interface Maintenance extends BaseEntity {
   company: string;
   supplierId: string;
   responsible: string;
+  assigneeUserId: string;
+  assigneeTeam: string;
   lastDate: string;
   nextDate: string;
   checklist: ChecklistItem[];
@@ -516,6 +525,10 @@ export interface Damage extends BaseEntity {
   roomId: string;
   assetId: string;
   reportedBy: string;
+  /** Melderin oder Melder aus der Benutzerverwaltung. */
+  reportedById: string;
+  assigneeUserId: string;
+  assigneeTeam: string;
   reportedAt: string;
   fixedAt: string;
   insuranceCase: boolean;
@@ -692,6 +705,8 @@ export interface CleaningTask extends BaseEntity {
   roomId: string;
   cleanerId: string;
   responsibleId: string;
+  assigneeUserId: string;
+  assigneeTeam: string;
   date: string;
   status: CleaningTaskStatus;
   /** Arbeitsbeginn als HH:MM; optional. */
@@ -835,6 +850,77 @@ export interface AppSettings {
   cleaningCleanerId: string;
   /** Nur die eigenen Reinigungsaufgaben zeigen. */
   cleaningOwnTasksOnly: boolean;
+  /**
+   * Angemeldete Benutzerin oder Benutzer aus der Benutzerverwaltung.
+   *
+   * Leer bedeutet vollen Zugriff (Super-Admin) - so bleibt jede bestehende
+   * Installation ohne Benutzerpflege unveraendert nutzbar. Sobald ein Konto
+   * ueber Microsoft/Entra angemeldet wird, tritt dessen Kennung an diese
+   * Stelle.
+   */
+  activeUserId: string;
+}
+
+/**
+ * Rollen der Benutzerverwaltung.
+ *
+ * Die Rolle bestimmt, welche Module sichtbar sind und ob geschrieben werden
+ * darf; der Umfang (Organisation, Standorte, eigene Zuweisungen) kommt aus dem
+ * Benutzerdatensatz.
+ */
+export type UserRole =
+  | 'superadmin'
+  | 'orgadmin'
+  | 'sitemanager'
+  | 'caretaker'
+  | 'cleaner'
+  | 'reporter'
+  | 'external'
+  | 'reader';
+
+/** Herkunft der Anmeldung; auf «entra» vorbereitet, aber noch nicht angebunden. */
+export type AuthProvider = 'local' | 'entra';
+
+/**
+ * Benutzerin oder Benutzer von Facility365.
+ *
+ * Deaktivierte Benutzer verlieren jeden Zugriff, bleiben aber als Datensatz
+ * erhalten: Auftraege, Rapporte und Historien verweisen weiterhin auf sie.
+ */
+export interface AppUser extends BaseEntity {
+  name: string;
+  email: string;
+  phone: string;
+  role: UserRole;
+  /** Organisation, zu der die Person gehoert; leer bei organisationsuebergreifend. */
+  organizationId: string;
+  /** Zugewiesene Standorte; leer bedeutet alle Standorte der Organisation. */
+  siteIds: string[];
+  team: string;
+  status: ActiveStatus;
+  /** Kennung beim Anmeldedienst, spaeter die Objekt-Kennung aus Entra ID. */
+  externalId: string;
+  authProvider: AuthProvider;
+}
+
+/**
+ * Eintrag der unveraenderbaren Aktivitaetshistorie.
+ *
+ * Die Anwendung schreibt Eintraege nur an; es gibt keine Bearbeitung und kein
+ * Loeschen in der Oberflaeche.
+ */
+export interface Activity extends BaseEntity {
+  at: string;
+  /** Anzeigename der handelnden Person zum Zeitpunkt der Aenderung. */
+  userName: string;
+  userId: string;
+  /** Betroffenes Modul. */
+  module: CollectionKey;
+  entityId: string;
+  entityNumber: string;
+  entityTitle: string;
+  /** Uebersetzungsschluessel der Handlung, z. B. history.updated. */
+  action: string;
 }
 
 /** Zuordnung von Sammlung zu Datensatztyp. */
@@ -866,6 +952,8 @@ export interface CollectionMap {
   cleaningtasks: CleaningTask;
   cleaningchecks: CleaningCheck;
   cleaningcomplaints: CleaningComplaint;
+  users: AppUser;
+  activities: Activity;
 }
 
 export type EntityOf<K extends CollectionKey> = CollectionMap[K];

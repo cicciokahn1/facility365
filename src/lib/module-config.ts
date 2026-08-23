@@ -38,6 +38,8 @@ import {
   PROPERTY_STATUS_OPTIONS,
   QUOTE_STATUS_OPTIONS,
   RCD_RESULT_OPTIONS,
+  USER_ROLE_OPTIONS,
+  USER_STATUS_OPTIONS,
   RCD_STATUS_OPTIONS,
   REPORT_STATUS_OPTIONS,
   REPORT_TYPE_OPTIONS,
@@ -427,6 +429,14 @@ const ordersConfig: ModuleConfig<'orders'> = {
       filter: true,
     },
     text('assignee', 'common.assignee'),
+    {
+      kind: 'relation',
+      name: 'assigneeUserId',
+      labelKey: 'user.assignee',
+      collection: 'users',
+      filter: true,
+    },
+    text('assigneeTeam', 'user.team'),
     { kind: 'date', name: 'dueDate', labelKey: 'common.dueDate' },
     { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },
   ],
@@ -462,6 +472,14 @@ const maintenancesConfig: ModuleConfig<'maintenances'> = {
     },
     text('company', 'settings.company'),
     text('responsible', 'common.responsible'),
+    {
+      kind: 'relation',
+      name: 'assigneeUserId',
+      labelKey: 'user.assignee',
+      collection: 'users',
+      filter: true,
+    },
+    text('assigneeTeam', 'user.team'),
     { kind: 'date', name: 'lastDate', labelKey: 'common.date' },
     { kind: 'date', name: 'nextDate', labelKey: 'common.dueDate' },
     { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },
@@ -700,6 +718,20 @@ const damagesConfig: ModuleConfig<'damages'> = {
     },
     { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
     text('reportedBy', 'common.author'),
+    {
+      kind: 'relation',
+      name: 'reportedById',
+      labelKey: 'user.reporter',
+      collection: 'users',
+    },
+    {
+      kind: 'relation',
+      name: 'assigneeUserId',
+      labelKey: 'user.assignee',
+      collection: 'users',
+      filter: true,
+    },
+    text('assigneeTeam', 'user.team'),
     { kind: 'date', name: 'reportedAt', labelKey: 'common.date' },
     { kind: 'money', name: 'estimatedCost', labelKey: 'common.amount' },
     { kind: 'switch', name: 'insuranceCase', labelKey: 'common.type' },
@@ -922,6 +954,14 @@ const cleaningPlansConfig: ModuleConfig<'cleaningplans'> = {
       collection: 'cleaners',
     },
     {
+      kind: 'relation',
+      name: 'assigneeUserId',
+      labelKey: 'user.assignee',
+      collection: 'users',
+      filter: true,
+    },
+    text('assigneeTeam', 'user.team'),
+    {
       kind: 'date',
       name: 'startDate',
       labelKey: 'cleaning.startDate',
@@ -969,6 +1009,14 @@ const cleaningTasksConfig: ModuleConfig<'cleaningtasks'> = {
       labelKey: 'cleaning.responsible',
       collection: 'cleaners',
     },
+    {
+      kind: 'relation',
+      name: 'assigneeUserId',
+      labelKey: 'user.assignee',
+      collection: 'users',
+      filter: true,
+    },
+    text('assigneeTeam', 'user.team'),
     { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties' },
     {
       kind: 'relation',
@@ -1109,6 +1157,51 @@ const cleaningComplaintsConfig: ModuleConfig<'cleaningcomplaints'> = {
       .join(' '),
 };
 
+const usersConfig: ModuleConfig<'users'> = {
+  collection: 'users',
+  titleOf: (user) => user.name || user.email || user.number,
+  statusField: 'status',
+  statusOptions: USER_STATUS_OPTIONS,
+  fields: [
+    text('name', 'common.name', { required: true, span: 2 }),
+    { kind: 'email', name: 'email', labelKey: 'common.email' },
+    { kind: 'tel', name: 'phone', labelKey: 'common.phone' },
+    { kind: 'select', name: 'role', labelKey: 'settings.role', options: USER_ROLE_OPTIONS, filter: true },
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: USER_STATUS_OPTIONS, filter: true },
+    {
+      kind: 'relation',
+      name: 'organizationId',
+      labelKey: 'module.organizations.singular',
+      collection: 'organizations',
+      filter: true,
+    },
+    text('team', 'user.team'),
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (user) =>
+    [user.number, user.name, user.email, user.team, user.role].filter(Boolean).join(' '),
+};
+
+/**
+ * Aktivitaetshistorie.
+ *
+ * Die Eintraege entstehen nur durch die Anwendung; die Felder sind deshalb
+ * ausschliesslich zur Anzeige beschrieben.
+ */
+const activitiesConfig: ModuleConfig<'activities'> = {
+  collection: 'activities',
+  titleOf: (activity) => activity.entityTitle || activity.entityNumber || activity.number,
+  fields: [
+    text('entityTitle', 'common.title', { span: 2 }),
+    text('userName', 'activity.user'),
+    { kind: 'text', name: 'entityNumber', labelKey: 'common.number' },
+  ],
+  searchOf: (activity) =>
+    [activity.entityNumber, activity.entityTitle, activity.userName, activity.module]
+      .filter(Boolean)
+      .join(' '),
+};
+
 export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   customers: customersConfig,
   suppliers: suppliersConfig,
@@ -1137,6 +1230,8 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   cleaningtasks: cleaningTasksConfig,
   cleaningchecks: cleaningChecksConfig,
   cleaningcomplaints: cleaningComplaintsConfig,
+  users: usersConfig,
+  activities: activitiesConfig,
 };
 
 export const configOf = <K extends CollectionKey>(collection: K): ModuleConfig<K> =>
