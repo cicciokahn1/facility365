@@ -9,10 +9,11 @@
  */
 import { useCallback, useMemo, useState } from 'react';
 
+import { BarChart } from '@/components/common/bar-chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCollectionItems } from '@/lib/data/store';
-import { Language } from '@/lib/i18n/dictionary';
+import { Language, TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { ENERGY_TYPE_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
@@ -34,6 +35,34 @@ const consumptionText = (entries: EnergyEntry[], language: Language): string => 
     .map(([unit, sum]) => `${formatNumber(sum, language)}${unit ? ` ${unit}` : ''}`)
     .join(' · ');
 };
+
+/** Haeufigste Einheit einer Auswahl; nur diese wird im Diagramm summiert. */
+const mainUnit = (entries: EnergyEntry[]): string => {
+  const counts = new Map<string, number>();
+  entries.forEach((entry) => {
+    if (typeof entry.consumption !== 'number') return;
+    const unit = entry.unit.trim();
+    counts.set(unit, (counts.get(unit) ?? 0) + 1);
+  });
+  let best = '';
+  let bestCount = 0;
+  counts.forEach((count, unit) => {
+    if (count > bestCount) {
+      best = unit;
+      bestCount = count;
+    }
+  });
+  return best;
+};
+
+const consumptionSum = (entries: EnergyEntry[], unit: string): number =>
+  entries.reduce(
+    (total, entry) =>
+      entry.unit.trim() === unit && typeof entry.consumption === 'number'
+        ? total + entry.consumption
+        : total,
+    0,
+  );
 
 const costSum = (entries: EnergyEntry[]): number =>
   entries.reduce((total, entry) => total + (typeof entry.cost === 'number' ? entry.cost : 0), 0);
@@ -59,12 +88,83 @@ function DifferenceCell({ current, previous }: { current: number; previous: numb
   );
 }
 
+/** Verbrauch und Kosten je Standort oder Gebaeude, mit Vorjahresvergleich. */
+function ComparisonTable({
+  titleKey,
+  testId,
+  rows,
+  previous,
+  nameOf,
+}: {
+  titleKey: TranslationKey;
+  testId: string;
+  rows: Map<string, EnergyEntry[]>;
+  previous: Map<string, EnergyEntry[]>;
+  nameOf: (id: string) => string;
+}) {
+  const t = useT();
+  const { settings } = useSettings();
+  const keys = [...new Set([...rows.keys(), ...previous.keys()])].sort((a, b) =>
+    nameOf(a).localeCompare(nameOf(b)),
+  );
+
+  if (keys.length === 0) {
+    return (
+      <div className="flex flex-col gap-1">
+        <p className="text-xs text-muted-foreground">{t(titleKey)}</p>
+        <p className="text-sm text-muted-foreground">{t('energy.noData')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="text-xs text-muted-foreground">{t(titleKey)}</p>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[560px] text-sm" data-testid={testId}>
+          <thead>
+            <tr className="border-b text-left text-xs text-muted-foreground">
+              <th className="py-2 pr-3 font-medium">{t(titleKey)}</th>
+              <th className="py-2 pr-3 font-medium">{t('energy.consumption')}</th>
+              <th className="py-2 pr-3 text-right font-medium">{t('energy.yearCost')}</th>
+              <th className="py-2 pr-3 text-right font-medium">{t('energy.previousYear')}</th>
+              <th className="py-2 text-right font-medium">{t('energy.difference')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {keys.map((key) => {
+              const current = rows.get(key) ?? [];
+              const before = previous.get(key) ?? [];
+              return (
+                <tr key={key || 'none'} className="border-b last:border-0" data-testid="energy-comparison-row">
+                  <td className="py-2 pr-3 whitespace-nowrap">{nameOf(key)}</td>
+                  <td className="py-2 pr-3">{consumptionText(current, settings.language) || '–'}</td>
+                  <td className="py-2 pr-3 text-right whitespace-nowrap">
+                    {formatMoney(costSum(current), settings.currency)}
+                  </td>
+                  <td className="py-2 pr-3 text-right whitespace-nowrap text-muted-foreground">
+                    {formatMoney(costSum(before), settings.currency)}
+                  </td>
+                  <td className="py-2 text-right whitespace-nowrap">
+                    <DifferenceCell current={costSum(current)} previous={costSum(before)} />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 export function EnergyOverview() {
   const t = useT();
   const { settings } = useSettings();
   const entries = useCollectionItems('energy');
   const properties = useCollectionItems('properties');
   const buildings = useCollectionItems('buildings');
+  const sites = useCollectionItems('sites');
 
   const years = useMemo(
     () =>
@@ -75,6 +175,7 @@ export function EnergyOverview() {
   );
   const [year, setYear] = useState(years[0] ?? String(new Date().getFullYear()));
   const [property, setProperty] = useState(ALL);
+  const [chartType, setChartType] = useState(ALL);
   const [building, setBuilding] = useState(ALL);
 
   const activeYear = years.includes(year) ? year : (years[0] ?? year);
@@ -160,6 +261,10 @@ export function EnergyOverview() {
       ),
     [activeYear],
   );
+  const monthLabels = useMemo(
+    () => months.map((month) => formatMonth(month, settings.language).slice(0, 3)),
+    [months, settings.language],
+  );
   const usedMonths = useMemo(
     () => months.filter((month) => grouped.byMonth.has(month)),
     [grouped, months],
@@ -177,6 +282,62 @@ export function EnergyOverview() {
       ),
     [grouped, previousByLabel],
   );
+
+  /** Monatskosten des laufenden und des vorigen Jahres fuer das Diagramm. */
+  const costChart = useMemo(() => {
+    const current = months.map((month) =>
+      costSum(scoped.filter((entry) => entry.month === month)),
+    );
+    const previous = months.map((_, index) =>
+      costSum(
+        scopedPrevious.filter(
+          (entry) => entry.month === `${prevYear}-${String(index + 1).padStart(2, '0')}`,
+        ),
+      ),
+    );
+    return { current, previous };
+  }, [months, prevYear, scoped, scopedPrevious]);
+
+  /** Monatsverbrauch der gewaehlten Energieart in ihrer Haupteinheit. */
+  const consumptionChart = useMemo(() => {
+    const ofType =
+      chartType === ALL ? scoped : scoped.filter((entry) => labelOf(entry) === chartType);
+    const unit = mainUnit(ofType);
+    return {
+      unit,
+      values: months.map((month) =>
+        consumptionSum(
+          ofType.filter((entry) => entry.month === month),
+          unit,
+        ),
+      ),
+    };
+  }, [chartType, labelOf, months, scoped]);
+
+  /** Vergleich je Standort und je Gebaeude, jeweils mit Vorjahr. */
+  const comparison = useMemo(() => {
+    const siteOf = (entry: EnergyEntry): string =>
+      properties.find((item) => item.id === entry.propertyId)?.siteId ?? '';
+    const rows = (
+      list: EnergyEntry[],
+      keyOf: (entry: EnergyEntry) => string,
+    ): Map<string, EnergyEntry[]> => {
+      const map = new Map<string, EnergyEntry[]>();
+      list.forEach((entry) => {
+        const key = keyOf(entry);
+        const group = map.get(key) ?? [];
+        group.push(entry);
+        map.set(key, group);
+      });
+      return map;
+    };
+    return {
+      sites: rows(scoped, siteOf),
+      sitesPrevious: rows(scopedPrevious, siteOf),
+      buildings: rows(scoped, (entry) => entry.buildingId),
+      buildingsPrevious: rows(scopedPrevious, (entry) => entry.buildingId),
+    };
+  }, [properties, scoped, scopedPrevious]);
 
   const yearCost = useMemo(() => costSum(scoped), [scoped]);
   const previousYearCost = useMemo(() => costSum(scopedPrevious), [scopedPrevious]);
@@ -335,6 +496,94 @@ export function EnergyOverview() {
               </table>
             </div>
           )}
+        </section>
+
+        <section className="flex flex-col gap-3" data-testid="energy-charts">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold">{t('energy.charts')}</h3>
+            <Select value={chartType} onValueChange={setChartType}>
+              <SelectTrigger className="w-[180px]" data-testid="energy-chart-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL}>{t('energy.allTypes')}</SelectItem>
+                {series.map((label) => (
+                  <SelectItem key={label} value={label}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {scoped.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t('energy.noData')}</p>
+          ) : (
+            <div className="grid gap-6 xl:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <p className="text-xs text-muted-foreground">
+                  {t('energy.consumptionChart')}
+                  {consumptionChart.unit ? ` (${consumptionChart.unit})` : ''}
+                </p>
+                <BarChart
+                  testId="energy-consumption-chart"
+                  categories={monthLabels}
+                  series={[
+                    {
+                      key: 'consumption',
+                      label: chartType === ALL ? t('energy.allTypes') : chartType,
+                      color: 'bg-primary',
+                      values: consumptionChart.values,
+                    },
+                  ]}
+                  formatValue={(value) => formatNumber(value, settings.language)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-xs text-muted-foreground">{t('energy.costChart')}</p>
+                <BarChart
+                  testId="energy-cost-chart"
+                  categories={monthLabels}
+                  series={[
+                    {
+                      key: 'current',
+                      label: activeYear,
+                      color: 'bg-primary',
+                      values: costChart.current,
+                    },
+                    {
+                      key: 'previous',
+                      label: prevYear,
+                      color: 'bg-muted-foreground/40',
+                      values: costChart.previous,
+                    },
+                  ]}
+                  formatValue={(value) => formatMoney(value, settings.currency)}
+                />
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="flex flex-col gap-2" data-testid="energy-comparison">
+          <h3 className="text-sm font-semibold">{t('energy.comparison')}</h3>
+          <ComparisonTable
+            titleKey="energy.bySite"
+            testId="energy-site-comparison"
+            rows={comparison.sites}
+            previous={comparison.sitesPrevious}
+            nameOf={(id) =>
+              sites.find((item) => item.id === id)?.name || (id ? id : t('energy.withoutSite'))
+            }
+          />
+          <ComparisonTable
+            titleKey="energy.byBuilding"
+            testId="energy-building-comparison"
+            rows={comparison.buildings}
+            previous={comparison.buildingsPrevious}
+            nameOf={(id) =>
+              buildings.find((item) => item.id === id)?.name || (id ? id : t('energy.withoutBuilding'))
+            }
+          />
         </section>
 
         <section className="flex flex-col gap-2">
