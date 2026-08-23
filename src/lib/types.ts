@@ -681,6 +681,8 @@ export interface Report extends BaseEntity {
   /** Pause in Minuten. */
   breakMinutes: number;
   materials: MaterialItem[];
+  /** Im Kundenportal sichtbar; ohne Freigabe bleibt der Rapport intern. */
+  sharedWithCustomer: boolean;
   /** Unterschrift als Data-URL (PNG). */
   signature: string;
   signedBy: string;
@@ -762,6 +764,8 @@ export interface DocumentEntity extends BaseEntity {
   orderId: string;
   maintenanceId: string;
   validUntil: string;
+  /** Im Kundenportal sichtbar; ohne Freigabe bleibt das Dokument intern. */
+  sharedWithCustomer: boolean;
 }
 
 /** Rolle einer Person der Reinigung. */

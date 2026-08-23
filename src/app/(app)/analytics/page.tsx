@@ -9,6 +9,7 @@
 import Link from 'next/link';
 
 import { EmptyState } from '@/components/common/empty-state';
+import { ManagementReport } from '@/components/modules/management-report';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useCollectionItems } from '@/lib/data/store';
@@ -49,6 +50,8 @@ export default function AnalyticsPage() {
         <EmptyState titleKey="analytics.empty" />
       ) : (
         <>
+          <ManagementReport />
+
           <Card>
             <CardHeader>
               <CardTitle className="text-base">{t('analytics.portfolio')}</CardTitle>

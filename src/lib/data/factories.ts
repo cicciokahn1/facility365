@@ -227,6 +227,7 @@ export const emptyDocument = (): Omit<DocumentEntity, 'id' | 'number'> => ({
   orderId: '',
   maintenanceId: '',
   validUntil: '',
+  sharedWithCustomer: false,
 });
 
 export const emptyEnergyEntry = (): Omit<EnergyEntry, 'id' | 'number'> => ({
@@ -481,6 +482,7 @@ export const emptyReport = (): Omit<Report, 'id' | 'number'> => ({
   workEnd: '',
   breakMinutes: 0,
   materials: [],
+  sharedWithCustomer: false,
   signature: '',
   signedBy: '',
   signedAt: '',
