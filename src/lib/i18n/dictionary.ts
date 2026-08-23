@@ -166,6 +166,12 @@ export const dictionary = {
     it: 'Determina ruolo, visibilità e notifiche. Senza selezione vale l’accesso completo.',
     en: 'Determines role, visibility and notifications. Without a selection full access applies.',
   },
+  'user.switchBack': {
+    de: 'Benutzerwahl aufheben',
+    fr: 'Annuler la sélection d’utilisateur',
+    it: 'Annulla la scelta dell’utente',
+    en: 'Clear user selection',
+  },
   'user.entraHint': {
     de: 'Microsoft 365 / Entra ID ist vorbereitet: Kennung und Anmeldeart werden je Benutzer geführt.',
     fr: 'Microsoft 365 / Entra ID est préparé : l’identifiant et le type de connexion sont gérés par utilisateur.',
