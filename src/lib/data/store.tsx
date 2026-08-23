@@ -78,6 +78,7 @@ const TRACKED: CollectionKey[] = [
   'documents',
   'reports',
   'cleaningtasks',
+  'quotes',
 ];
 
 type Store = Record<CollectionKey, BaseEntity[]>;
