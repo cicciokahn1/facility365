@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { MoreHorizontal } from 'lucide-react';
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { MOBILE_NAV_KEYS, MODULES, moduleByKey } from '@/lib/modules';
+import { MOBILE_NAV_KEYS, MODULES, NAV_GROUPS, moduleByKey } from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
 import { cn } from '@/lib/utils';
 
@@ -16,7 +16,11 @@ export function BottomNav() {
   const t = useT();
   const [open, setOpen] = useState(false);
   const primary = MOBILE_NAV_KEYS.map(moduleByKey);
-  const rest = MODULES.filter((module) => !MOBILE_NAV_KEYS.includes(module.key));
+  /** Im Menue steht jede Funktion unter ihrer Gruppe - auch die vier unten. */
+  const groups = NAV_GROUPS.map((group) => ({
+    ...group,
+    modules: MODULES.filter((module) => module.group === group.key),
+  })).filter((group) => group.modules.length > 0);
 
   return (
     <nav
@@ -56,23 +60,38 @@ export function BottomNav() {
               <SheetHeader>
                 <SheetTitle>{t('nav.menu')}</SheetTitle>
               </SheetHeader>
-              <ul className="grid grid-cols-3 gap-2 p-4 pt-0">
-                {rest.map((module) => {
-                  const Icon = module.icon;
-                  return (
-                    <li key={module.key}>
-                      <Link
-                        href={module.path}
-                        onClick={() => setOpen(false)}
-                        className="flex h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-card p-2 text-center text-xs font-medium"
-                      >
-                        <Icon className="size-5 text-primary" aria-hidden />
-                        <span className="line-clamp-2">{t(module.labelKey)}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
+              <div className="flex flex-col gap-4 p-4 pt-0">
+                {groups.map((group) => (
+                  <section key={group.key} data-testid={`nav-group-${group.key}`}>
+                    <p className="pb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t(group.labelKey)}
+                    </p>
+                    <ul className="grid grid-cols-3 gap-2">
+                      {group.modules.map((module) => {
+                        const Icon = module.icon;
+                        const active =
+                          pathname === module.path || pathname.startsWith(`${module.path}/`);
+                        return (
+                          <li key={module.key}>
+                            <Link
+                              href={module.path}
+                              onClick={() => setOpen(false)}
+                              data-active={active}
+                              className={cn(
+                                'flex h-20 flex-col items-center justify-center gap-1.5 rounded-xl border bg-card p-2 text-center text-xs font-medium',
+                                active && 'border-primary/40 bg-brand-soft',
+                              )}
+                            >
+                              <Icon className="size-5 text-primary" aria-hidden />
+                              <span className="line-clamp-2">{t(module.labelKey)}</span>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </section>
+                ))}
+              </div>
             </SheetContent>
           </Sheet>
         </li>
