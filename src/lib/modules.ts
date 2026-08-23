@@ -387,6 +387,14 @@ export const MODULES: ModuleDefinition[] = [
     singularKey: 'module.audit',
   },
   {
+    key: 'handover',
+    path: '/handover',
+    icon: ClipboardList,
+    group: 'work',
+    labelKey: 'module.handover',
+    singularKey: 'module.handover',
+  },
+  {
     key: 'users',
     collection: 'users',
     path: '/users',
