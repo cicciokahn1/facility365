@@ -260,6 +260,24 @@ export const SUPPLIER_CATEGORY_OPTIONS: SelectOption[] = [
   option('other', 'supplierCategory.other'),
 ];
 
+/** Rollen der Benutzerverwaltung, von der weitesten zur engsten Berechtigung. */
+export const USER_ROLE_OPTIONS: SelectOption[] = [
+  { value: 'superadmin', labelKey: 'role.superadmin', tone: 'danger' },
+  { value: 'orgadmin', labelKey: 'role.orgadmin', tone: 'brand' },
+  { value: 'sitemanager', labelKey: 'role.sitemanager', tone: 'info' },
+  { value: 'caretaker', labelKey: 'role.caretaker', tone: 'info' },
+  { value: 'cleaner', labelKey: 'role.cleaner', tone: 'neutral' },
+  { value: 'reporter', labelKey: 'role.reporter', tone: 'neutral' },
+  { value: 'external', labelKey: 'role.external', tone: 'warning' },
+  { value: 'reader', labelKey: 'role.reader', tone: 'neutral' },
+];
+
+/** Benutzer sind aktiv oder deaktiviert; geloescht wird nie. */
+export const USER_STATUS_OPTIONS: SelectOption[] = [
+  option('active', 'status.active'),
+  option('inactive', 'status.inactive'),
+];
+
 export const PROPERTY_STATUS_OPTIONS: SelectOption[] = [
   option('active', 'status.active'),
   option('inactive', 'status.inactive'),

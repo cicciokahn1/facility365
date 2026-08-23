@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAccess } from '@/lib/auth/scope';
 import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { fieldValue, stringField, valuesOf } from '@/lib/entity-values';
 import { TranslationKey } from '@/lib/i18n/dictionary';
@@ -58,6 +59,9 @@ export interface EntityDetailProps<K extends CollectionKey> {
   ) => React.ReactNode;
   /** Zuerst gezeigter Bereich; ohne Angabe die Stammdaten. */
   defaultTab?: string;
+  /** Loeschen sperren, z. B. bei Benutzern mit vorhandenen Daten. */
+  deleteBlocked?: boolean;
+  deleteBlockedKey?: TranslationKey;
 }
 
 export function EntityDetail<K extends CollectionKey>({
@@ -66,6 +70,8 @@ export function EntityDetail<K extends CollectionKey>({
   extraTabs,
   headerExtra,
   defaultTab = 'master',
+  deleteBlocked = false,
+  deleteBlockedKey,
 }: EntityDetailProps<K>) {
   const t = useT();
   const router = useRouter();
@@ -73,6 +79,9 @@ export function EntityDetail<K extends CollectionKey>({
   const config = configOf(collection);
   const { get, update, remove, ready } = useCollection(collection);
   const { settings } = useSettings();
+  const access = useAccess();
+  const mayWrite = access.canWrite(moduleDef.key);
+  const mayDelete = access.canDelete(moduleDef.key) && !deleteBlocked;
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -126,15 +135,30 @@ export function EntityDetail<K extends CollectionKey>({
             {headerExtra?.(entity, applyUpdate)}
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setEditOpen(true)} data-testid="edit-entity">
-            <Pencil className="size-4" aria-hidden />
-            {t('action.edit')}
-          </Button>
-          <Button variant="outline" onClick={() => setDeleteOpen(true)} data-testid="delete-entity">
-            <Trash2 className="size-4 text-destructive" aria-hidden />
-            <span className="sr-only sm:not-sr-only">{t('action.delete')}</span>
-          </Button>
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex gap-2">
+            {mayWrite ? (
+              <Button variant="outline" onClick={() => setEditOpen(true)} data-testid="edit-entity">
+                <Pencil className="size-4" aria-hidden />
+                {t('action.edit')}
+              </Button>
+            ) : (
+              <span className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
+                {t('access.readOnly')}
+              </span>
+            )}
+            {mayDelete ? (
+              <Button variant="outline" onClick={() => setDeleteOpen(true)} data-testid="delete-entity">
+                <Trash2 className="size-4 text-destructive" aria-hidden />
+                <span className="sr-only sm:not-sr-only">{t('action.delete')}</span>
+              </Button>
+            ) : null}
+          </div>
+          {deleteBlocked && deleteBlockedKey ? (
+            <p data-testid="delete-blocked" className="text-xs text-muted-foreground">
+              {t(deleteBlockedKey)}
+            </p>
+          ) : null}
         </div>
       </div>
 

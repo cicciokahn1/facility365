@@ -18,6 +18,7 @@ import { EntityForm } from '@/components/module/entity-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAccess } from '@/lib/auth/scope';
 import { useCollection, useCollectionItems, useEntityIndex } from '@/lib/data/store';
 import { fieldValue, stringField } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
@@ -48,7 +49,14 @@ export function ModuleList({
   const router = useRouter();
   const moduleDef = moduleByCollection(collection);
   const config = configOf(collection);
-  const { items, create } = useCollection(collection);
+  const { items: all, create } = useCollection(collection);
+  const access = useAccess();
+  /** Nur Datensaetze des eigenen Sichtbereichs; die Rolle entscheidet. */
+  const items = useMemo(
+    () => all.filter((item) => access.visible(collection, item)),
+    [access, all, collection],
+  );
+  const mayWrite = access.canWrite(moduleDef.key);
   const { settings } = useSettings();
 
   const [query, setQuery] = useState('');
@@ -132,10 +140,16 @@ export function ModuleList({
             {filtered.length} {t('list.count')}
           </p>
         </div>
-        <Button onClick={() => setFormOpen(true)} data-testid="new-entity">
-          <Plus className="size-4" aria-hidden />
-          {t('action.new')}
-        </Button>
+        {mayWrite ? (
+          <Button onClick={() => setFormOpen(true)} data-testid="new-entity">
+            <Plus className="size-4" aria-hidden />
+            {t('action.new')}
+          </Button>
+        ) : (
+          <span className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
+            {t('access.readOnly')}
+          </span>
+        )}
       </header>
 
       <div className="flex flex-col gap-3">
@@ -201,7 +215,7 @@ export function ModuleList({
           titleKey={items.length === 0 ? 'list.empty' : 'list.noSearchResults'}
           textKey={items.length === 0 ? 'list.emptyHint' : undefined}
           action={
-            items.length === 0 ? (
+            items.length === 0 && mayWrite ? (
               <Button onClick={() => setFormOpen(true)} variant="outline">
                 <Plus className="size-4" aria-hidden />
                 {t('action.new')}

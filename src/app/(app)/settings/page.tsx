@@ -46,6 +46,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
   const { save } = useSettings();
   const clearAll = useClearAllData();
   const cleaners = useCollectionItems('cleaners');
+  const users = useCollectionItems('users');
   const [draft, setDraft] = useState<AppSettings>(settings);
   const [usage] = useState(() => storageUsage());
   const [resetOpen, setResetOpen] = useState(false);
@@ -178,6 +179,25 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
           <Field label={t('settings.role')}>
             <Input value={draft.profileRole} onChange={(event) => set('profileRole', event.target.value)} />
           </Field>
+          <Field label={t('user.signedInAs')}>
+            <Select
+              value={draft.activeUserId || 'none'}
+              onValueChange={(value) => set('activeUserId', value === 'none' ? '' : value)}
+            >
+              <SelectTrigger className="w-full" data-testid="active-user-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">{t('common.notSet')}</SelectItem>
+                {users.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.name || user.email || user.number}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <p className="text-xs text-muted-foreground sm:col-span-2">{t('user.signedInHint')}</p>
         </CardContent>
       </Card>
 

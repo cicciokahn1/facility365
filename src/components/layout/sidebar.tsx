@@ -7,6 +7,7 @@ import { LogOut } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/provider';
+import { useAccess } from '@/lib/auth/scope';
 import { BRAND_MARK_SRC, isBrandLogo } from '@/lib/branding/logo';
 import { MODULES, NAV_GROUPS } from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
@@ -20,6 +21,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const t = useT();
   const auth = useAuth();
   const { settings } = useSettings();
+  const access = useAccess();
 
   return (
     <nav className="flex h-full w-full flex-col gap-1 overflow-y-auto bg-sidebar px-3 py-4">
@@ -43,7 +45,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
 
       {NAV_GROUPS.map((group) => {
-        const modules = MODULES.filter((module) => module.group === group.key);
+        const modules = MODULES.filter(
+          (module) => module.group === group.key && access.canRead(module.key),
+        );
         if (modules.length === 0) return null;
         return (
           <div key={group.key} className="mb-2">

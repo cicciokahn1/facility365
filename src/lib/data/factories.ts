@@ -5,7 +5,9 @@
  * Formulare frei von Sonderfaellen und verhindern undefinierte Felder.
  */
 import {
+  Activity,
   Address,
+  AppUser,
   Asset,
   BaseEntity,
   Building,
@@ -78,6 +80,8 @@ export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   cleaningtasks: 'RA',
   cleaningchecks: 'RKO',
   cleaningcomplaints: 'RKL',
+  users: 'BE',
+  activities: 'AK',
 };
 
 /**
@@ -310,6 +314,8 @@ export const emptyOrder = (): Omit<Order, 'id' | 'number'> => ({
   quoteId: '',
   supplierId: '',
   assignee: '',
+  assigneeUserId: '',
+  assigneeTeam: '',
   dueDate: '',
   startedAt: '',
   completedAt: '',
@@ -335,6 +341,8 @@ export const emptyMaintenance = (): Omit<Maintenance, 'id' | 'number'> => ({
   company: '',
   supplierId: '',
   responsible: '',
+  assigneeUserId: '',
+  assigneeTeam: '',
   lastDate: '',
   nextDate: '',
   checklist: [],
@@ -352,6 +360,9 @@ export const emptyDamage = (): Omit<Damage, 'id' | 'number'> => ({
   roomId: '',
   assetId: '',
   reportedBy: '',
+  reportedById: '',
+  assigneeUserId: '',
+  assigneeTeam: '',
   reportedAt: new Date().toISOString().slice(0, 10),
   fixedAt: '',
   insuranceCase: false,
@@ -461,6 +472,8 @@ export const emptyCleaningTask = (): Omit<CleaningTask, 'id' | 'number'> => ({
   roomId: '',
   cleanerId: '',
   responsibleId: '',
+  assigneeUserId: '',
+  assigneeTeam: '',
   date: new Date().toISOString().slice(0, 10),
   status: 'open',
   workStart: '',
@@ -502,6 +515,32 @@ export const emptyCleaningComplaint = (): Omit<CleaningComplaint, 'id' | 'number
   resolvedAt: '',
 });
 
+export const emptyUser = (): Omit<AppUser, 'id' | 'number'> => ({
+  ...base(),
+  name: '',
+  email: '',
+  phone: '',
+  role: 'reader',
+  organizationId: '',
+  siteIds: [],
+  team: '',
+  status: 'active',
+  externalId: '',
+  authProvider: 'local',
+});
+
+export const emptyActivity = (): Omit<Activity, 'id' | 'number'> => ({
+  ...base(),
+  at: new Date().toISOString(),
+  userName: '',
+  userId: '',
+  module: 'orders',
+  entityId: '',
+  entityNumber: '',
+  entityTitle: '',
+  action: '',
+});
+
 const FACTORIES = {
   customers: emptyCustomer,
   suppliers: emptySupplier,
@@ -530,6 +569,8 @@ const FACTORIES = {
   cleaningtasks: emptyCleaningTask,
   cleaningchecks: emptyCleaningCheck,
   cleaningcomplaints: emptyCleaningComplaint,
+  users: emptyUser,
+  activities: emptyActivity,
 } as const;
 
 /** Leerer Datensatz einer Sammlung, noch ohne Kennung und Nummer. */
