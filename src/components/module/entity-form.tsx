@@ -68,8 +68,11 @@ function FormBody({
     .filter((field) => field.required && asString(values[field.name]).trim() === '')
     .map((field) => field.name);
 
-  const setValue = (name: string, value: unknown) =>
-    setValues((current) => ({ ...current, [name]: value }));
+  const setValue = (field: FieldDef, value: unknown) =>
+    setValues((current) => {
+      const next = { ...current, [field.name]: value };
+      return field.applyChange ? { ...next, ...field.applyChange(value, current) } : next;
+    });
 
   const submit = () => {
     setTouched(true);
@@ -106,7 +109,7 @@ function FormBody({
                 field={field}
                 id={fieldId}
                 values={values}
-                onChange={(value) => setValue(field.name, value)}
+                onChange={(value) => setValue(field, value)}
               />
               {invalid ? (
                 <p className="text-xs text-destructive">{t('common.required')}</p>
@@ -223,6 +226,35 @@ function FieldControl({
           step={field.kind === 'money' ? '0.05' : 'any'}
           value={raw === undefined || raw === null ? '' : String(raw)}
           onChange={(event) => onChange(asNumber(event.target.value))}
+        />
+      );
+    case 'suggest': {
+      const suggestions = field.suggestionsOf(values);
+      return (
+        <>
+          <Input
+            id={id}
+            list={suggestions.length ? `${id}-options` : undefined}
+            value={asString(raw)}
+            onChange={(event) => onChange(event.target.value)}
+          />
+          {suggestions.length > 0 && (
+            <datalist id={`${id}-options`} data-testid={`${field.name}-options`}>
+              {suggestions.map((suggestion) => (
+                <option key={suggestion} value={suggestion} />
+              ))}
+            </datalist>
+          )}
+        </>
+      );
+    }
+    case 'month':
+      return (
+        <Input
+          id={id}
+          type="month"
+          value={asString(raw)}
+          onChange={(event) => onChange(event.target.value)}
         />
       );
     case 'date':

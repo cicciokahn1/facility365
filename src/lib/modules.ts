@@ -26,6 +26,7 @@ import {
   ListChecks,
   MapPin,
   MessageSquareWarning,
+  Network,
   PackageSearch,
   type LucideIcon,
   Receipt,
@@ -88,6 +89,15 @@ export const MODULES: ModuleDefinition[] = [
     group: 'objects',
     labelKey: 'module.suppliers',
     singularKey: 'module.suppliers.singular',
+  },
+  {
+    key: 'organizations',
+    collection: 'organizations',
+    path: '/organizations',
+    icon: Network,
+    group: 'objects',
+    labelKey: 'module.organizations',
+    singularKey: 'module.organizations.singular',
   },
   {
     key: 'sites',

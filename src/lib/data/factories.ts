@@ -27,6 +27,7 @@ import {
   LegionellaCheck,
   Maintenance,
   Order,
+  Organization,
   Property,
   Quote,
   RcdCheck,
@@ -52,6 +53,7 @@ const base = (): Omit<BaseEntity, 'id' | 'number'> => ({
 export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   customers: 'KD',
   suppliers: 'LF',
+  organizations: 'OR',
   sites: 'ST',
   properties: 'LI',
   buildings: 'GB',
@@ -103,10 +105,24 @@ export const emptyCustomer = (): Omit<Customer, 'id' | 'number'> => ({
   contracts: [],
 });
 
+export const emptyOrganization = (): Omit<Organization, 'id' | 'number'> => ({
+  ...base(),
+  name: '',
+  shortName: '',
+  address: emptyAddress(),
+  manager: '',
+  phone: '',
+  email: '',
+  website: '',
+  status: 'active',
+  description: '',
+});
+
 export const emptySite = (): Omit<Site, 'id' | 'number'> => ({
   ...base(),
   name: '',
   shortName: '',
+  organizationId: '',
   customerId: '',
   address: emptyAddress(),
   manager: '',
@@ -489,6 +505,7 @@ export const emptyCleaningComplaint = (): Omit<CleaningComplaint, 'id' | 'number
 const FACTORIES = {
   customers: emptyCustomer,
   suppliers: emptySupplier,
+  organizations: emptyOrganization,
   sites: emptySite,
   properties: emptyProperty,
   buildings: emptyBuilding,

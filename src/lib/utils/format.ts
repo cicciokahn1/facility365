@@ -19,6 +19,18 @@ export const formatDate = (value: string, language: Language): string => {
   }).format(date);
 };
 
+/** Zahl in Schweizer Schreibweise, z. B. 2'000. */
+export const formatNumber = (value: number, language: Language): string =>
+  new Intl.NumberFormat(LOCALES[language]).format(value);
+
+/** Monat als "Maerz 2026"; erwartet YYYY-MM. */
+export const formatMonth = (value: string, language: Language): string => {
+  if (!value) return '–';
+  const date = new Date(`${value}-01T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat(LOCALES[language], { month: 'long', year: 'numeric' }).format(date);
+};
+
 export const formatDateTime = (value: string, language: Language): string => {
   if (!value) return '–';
   const date = new Date(value);

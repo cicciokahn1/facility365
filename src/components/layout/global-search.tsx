@@ -22,6 +22,7 @@ import { CollectionKey } from '@/lib/types';
 const SEARCHABLE: CollectionKey[] = [
   'customers',
   'suppliers',
+  'organizations',
   'sites',
   'properties',
   'buildings',
@@ -94,6 +95,7 @@ function SearchDialog({
   const [query, setQuery] = useState('');
   const customers = useCollectionItems('customers');
   const suppliers = useCollectionItems('suppliers');
+  const organizations = useCollectionItems('organizations');
   const sites = useCollectionItems('sites');
   const properties = useCollectionItems('properties');
   const buildings = useCollectionItems('buildings');
@@ -123,6 +125,7 @@ function SearchDialog({
     () => ({
       customers,
       suppliers,
+      organizations,
       sites,
       properties,
       buildings,
@@ -167,6 +170,7 @@ function SearchDialog({
       legionella,
       maintenances,
       orders,
+      organizations,
       properties,
       quotes,
       rcd,
