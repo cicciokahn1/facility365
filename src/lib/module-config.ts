@@ -131,6 +131,35 @@ const suppliersConfig: ModuleConfig<'suppliers'> = {
       .join(' '),
 };
 
+const organizationsConfig: ModuleConfig<'organizations'> = {
+  collection: 'organizations',
+  titleOf: (organization) => organization.name || organization.number,
+  statusField: 'status',
+  statusOptions: PROPERTY_STATUS_OPTIONS,
+  fields: [
+    text('name', 'common.name', { required: true, span: 2 }),
+    text('shortName', 'site.shortName'),
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: PROPERTY_STATUS_OPTIONS, filter: true },
+    { kind: 'address', name: 'address', labelKey: 'common.address', span: 2 },
+    text('manager', 'organization.manager'),
+    { kind: 'tel', name: 'phone', labelKey: 'common.phone' },
+    { kind: 'email', name: 'email', labelKey: 'common.email' },
+    text('website', 'common.website'),
+    { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (organization) =>
+    [
+      organization.number,
+      organization.name,
+      organization.shortName,
+      organization.manager,
+      organization.address.city,
+    ]
+      .filter(Boolean)
+      .join(' '),
+};
+
 const sitesConfig: ModuleConfig<'sites'> = {
   collection: 'sites',
   titleOf: (site) => site.name || site.number,
@@ -139,6 +168,7 @@ const sitesConfig: ModuleConfig<'sites'> = {
   fields: [
     text('name', 'common.name', { required: true, span: 2 }),
     text('shortName', 'site.shortName'),
+    { kind: 'relation', name: 'organizationId', labelKey: 'module.organizations.singular', collection: 'organizations', filter: true },
     { kind: 'relation', name: 'customerId', labelKey: 'module.customers.singular', collection: 'customers', filter: true },
     { kind: 'select', name: 'status', labelKey: 'common.status', options: PROPERTY_STATUS_OPTIONS, filter: true },
     { kind: 'address', name: 'address', labelKey: 'common.address', span: 2 },
@@ -1082,6 +1112,7 @@ const cleaningComplaintsConfig: ModuleConfig<'cleaningcomplaints'> = {
 export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   customers: customersConfig,
   suppliers: suppliersConfig,
+  organizations: organizationsConfig,
   sites: sitesConfig,
   properties: propertiesConfig,
   buildings: buildingsConfig,

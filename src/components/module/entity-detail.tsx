@@ -16,6 +16,7 @@ import { StatusBadge } from '@/components/common/status-badge';
 import { DocumentList } from '@/components/module/document-list';
 import { EntityForm } from '@/components/module/entity-form';
 import { HistoryTimeline } from '@/components/module/history-timeline';
+import { LinkedDocuments, documentLinkOf } from '@/components/module/linked-documents';
 import { PhotoGallery } from '@/components/module/photo-gallery';
 import {
   AlertDialog,
@@ -38,7 +39,7 @@ import { moduleByCollection } from '@/lib/modules';
 import { FieldDef, FormValues, asString } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import { BaseEntity, CollectionKey, DocumentFile, EntityOf, Photo } from '@/lib/types';
-import { formatDate, formatMoney } from '@/lib/utils/format';
+import { formatDate, formatMonth, formatMoney } from '@/lib/utils/format';
 
 export interface ExtraTab {
   value: string;
@@ -98,6 +99,8 @@ export function EntityDetail<K extends CollectionKey>({
     update(id, values, action, settings.profileName || settings.companyName);
 
   const tabs = extraTabs?.(entity, applyUpdate) ?? [];
+  /** Dokumente des Moduls "Dokumente", die auf diesen Datensatz verweisen. */
+  const documentLink = documentLinkOf(collection, entity);
 
   return (
     <div className="flex flex-col gap-4">
@@ -160,13 +163,21 @@ export function EntityDetail<K extends CollectionKey>({
           </TabsContent>
         ))}
 
-        <TabsContent value="documents" className="mt-4">
-          <DocumentList
-            documents={entity.documents}
-            onChange={(documents: DocumentFile[], action) =>
-              applyUpdate({ documents } as Partial<EntityOf<K>>, action)
-            }
-          />
+        <TabsContent value="documents" className="mt-4 flex flex-col gap-6">
+          {documentLink ? (
+            <LinkedDocuments field={documentLink.field} value={entity.id} inherit={documentLink.inherit} />
+          ) : null}
+          <div className="flex flex-col gap-3">
+            {documentLink ? (
+              <h2 className="text-sm font-semibold">{t('documents.ownFiles')}</h2>
+            ) : null}
+            <DocumentList
+              documents={entity.documents}
+              onChange={(documents: DocumentFile[], action) =>
+                applyUpdate({ documents } as Partial<EntityOf<K>>, action)
+              }
+            />
+          </div>
         </TabsContent>
 
         <TabsContent value="photos" className="mt-4">
@@ -262,6 +273,9 @@ function MasterRow({ field, entity }: { field: FieldDef; entity: BaseEntity }) {
     }
     case 'date':
       display = asString(raw) ? formatDate(asString(raw), settings.language) : '';
+      break;
+    case 'month':
+      display = asString(raw) ? formatMonth(asString(raw), settings.language) : '';
       break;
     case 'money':
       display = typeof raw === 'number' ? formatMoney(raw, settings.currency) : '';

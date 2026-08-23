@@ -13,6 +13,8 @@ export const DOCUMENT_ACCEPT =
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document,' +
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 export const PLAN_ACCEPT = '.pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png';
+/** Dokumente an Objekten: PDF, JPG und PNG. */
+export const LINKED_DOCUMENT_ACCEPT = PLAN_ACCEPT;
 
 const DOCUMENT_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png', 'docx', 'xlsx'];
 const PLAN_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png'];
@@ -31,6 +33,8 @@ export const isAllowedDocument = (file: File): boolean =>
 
 export const isAllowedPlan = (file: File): boolean =>
   PLAN_EXTENSIONS.includes(extensionOf(file.name));
+
+export const isLinkedDocument = isAllowedPlan;
 
 export const isPdf = (mimeType: string, fileName = ''): boolean =>
   mimeType === 'application/pdf' || extensionOf(fileName) === 'pdf';
