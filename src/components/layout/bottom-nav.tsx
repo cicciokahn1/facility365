@@ -78,12 +78,14 @@ export function BottomNav() {
                               onClick={() => setOpen(false)}
                               data-active={active}
                               className={cn(
-                                'flex h-20 flex-col items-center justify-center gap-1.5 rounded-xl border bg-card p-2 text-center text-xs font-medium',
+                                'flex h-20 flex-col items-center justify-center gap-1.5 rounded-xl border bg-card px-1 py-2 text-center text-[11px] font-medium leading-tight',
                                 active && 'border-primary/40 bg-brand-soft',
                               )}
                             >
                               <Icon className="size-5 text-primary" aria-hidden />
-                              <span className="line-clamp-2">{t(module.labelKey)}</span>
+                              <span className="line-clamp-2 w-full break-words hyphens-auto">
+                                {t(module.labelKey)}
+                              </span>
                             </Link>
                           </li>
                         );
