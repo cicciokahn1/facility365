@@ -11,14 +11,17 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { ShieldAlert } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
 import { useAccess } from '@/lib/auth/scope';
 import { setActor } from '@/lib/data/actor';
 import { useT } from '@/lib/i18n/provider';
 import { MODULES } from '@/lib/modules';
+import { useSettings } from '@/lib/settings/provider';
 
 export function AccessGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const access = useAccess();
+  const { settings, save } = useSettings();
   const t = useT();
   const user = access.user;
 
@@ -40,6 +43,15 @@ export function AccessGuard({ children }: { children: React.ReactNode }) {
         <ShieldAlert className="size-8 text-muted-foreground" aria-hidden />
         <p className="text-lg font-semibold">{t('access.denied')}</p>
         <p className="text-sm text-muted-foreground">{t('access.deniedHint')}</p>
+        {settings.activeUserId ? (
+          <Button
+            variant="outline"
+            data-testid="reset-active-user"
+            onClick={() => save({ ...settings, activeUserId: '' })}
+          >
+            {t('user.switchBack')}
+          </Button>
+        ) : null}
       </div>
     );
   }
