@@ -1,8 +1,9 @@
 /**
- * Auditbericht als PDF im Format A4.
+ * Berichte als PDF im Format A4.
  *
  * Kopf mit Marke, Standort und Zeitraum, danach je Bereich eine Tabelle mit
- * Ampel, Nummer, Bezeichnung, Datum und Status.
+ * Ampel, Nummer, Bezeichnung, Datum und Status. Dient dem Auditbericht und
+ * dem Uebergabebericht.
  */
 import { jsPDF } from 'jspdf';
 
@@ -30,6 +31,14 @@ export interface AuditPdfData {
   green: number;
   amber: number;
   red: number;
+  /** Ampeluebersicht zeigen; ohne Angabe wird sie gezeigt. */
+  showSummary?: boolean;
+  /** Zusaetzliche Kopfzeilen, z. B. uebergebende und uebernehmende Person. */
+  infoLines?: string[];
+  /** Abschliessender Textblock, z. B. Besonderheiten. */
+  notes?: { title: string; text: string };
+  /** Anfang des Dateinamens; ohne Angabe «Auditbericht». */
+  fileBaseName?: string;
 }
 
 export interface AuditPdfLabels {
@@ -107,8 +116,15 @@ const drawHeader = (doc: jsPDF, data: AuditPdfData, labels: AuditPdfLabels, bran
   doc.text(`${labels.location}: ${data.location}`, WIDTH - MARGIN, MARGIN + 12.5, { align: 'right' });
   doc.text(`${labels.period}: ${data.period}`, WIDTH - MARGIN, MARGIN + 17, { align: 'right' });
   doc.text(`${labels.createdAt}: ${data.createdAt}`, WIDTH - MARGIN, MARGIN + 21.5, { align: 'right' });
+  const infoLines = data.infoLines ?? [];
+  infoLines.forEach((line, index) =>
+    doc.text(line, WIDTH - MARGIN, MARGIN + 26 + index * 4.5, { align: 'right' }),
+  );
 
-  const y = Math.max(MARGIN + 26, textY + 4.5 + brandLines.length * 4 + 4);
+  const y = Math.max(
+    MARGIN + 26 + infoLines.length * 4.5,
+    textY + 4.5 + brandLines.length * 4 + 4,
+  );
   doc.setDrawColor(...LINE);
   doc.line(MARGIN, y, WIDTH - MARGIN, y);
   return y + 8;
@@ -192,6 +208,25 @@ const drawSection = (doc: jsPDF, section: AuditPdfSection, labels: AuditPdfLabel
   return cursor + 5;
 };
 
+const drawNotes = (doc: jsPDF, notes: { title: string; text: string }, y: number): number => {
+  let cursor = ensureSpace(doc, y, 20);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...ACCENT);
+  doc.text(notes.title.toUpperCase(), MARGIN, cursor);
+  cursor += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...INK);
+  const lines: string[] = doc.splitTextToSize(notes.text || '–', CONTENT);
+  lines.forEach((line) => {
+    cursor = ensureSpace(doc, cursor, 8);
+    doc.text(line, MARGIN, cursor);
+    cursor += 5;
+  });
+  return cursor + 4;
+};
+
 const drawFooters = (doc: jsPDF, labels: AuditPdfLabels): void => {
   const pages = doc.getNumberOfPages();
   for (let page = 1; page <= pages; page += 1) {
@@ -211,16 +246,17 @@ export const buildAuditPdf = (
 ): jsPDF => {
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
   let y = drawHeader(doc, data, labels, branding);
-  y = drawSummary(doc, data, labels, y);
+  if (data.showSummary !== false) y = drawSummary(doc, data, labels, y);
   data.sections.forEach((section) => {
     y = drawSection(doc, section, labels, y);
   });
+  if (data.notes) y = drawNotes(doc, data.notes, y);
   drawFooters(doc, labels);
   return doc;
 };
 
 export const auditPdfFileName = (data: AuditPdfData): string =>
-  `Auditbericht-${data.createdAt.replace(/[^0-9]/g, '') || 'aktuell'}.pdf`;
+  `${data.fileBaseName ?? 'Auditbericht'}-${data.createdAt.replace(/[^0-9]/g, '') || 'aktuell'}.pdf`;
 
 export const downloadAuditPdf = (
   data: AuditPdfData,

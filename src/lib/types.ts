@@ -44,6 +44,7 @@ export type ModuleKey =
   | 'cleaningcomplaints'
   | 'analytics'
   | 'audit'
+  | 'handover'
   | 'today'
   | 'users'
   | 'activities'
@@ -52,7 +53,14 @@ export type ModuleKey =
 /** Sammlungen, die Datensaetze fuehren. */
 export type CollectionKey = Exclude<
   ModuleKey,
-  'dashboard' | 'calendar' | 'cleaning' | 'analytics' | 'audit' | 'today' | 'settings'
+  | 'dashboard'
+  | 'calendar'
+  | 'cleaning'
+  | 'analytics'
+  | 'audit'
+  | 'handover'
+  | 'today'
+  | 'settings'
 >;
 
 export interface Photo {
