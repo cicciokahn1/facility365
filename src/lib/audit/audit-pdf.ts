@@ -23,6 +23,19 @@ export interface AuditPdfSection {
   rows: AuditPdfRow[];
 }
 
+/** Kennzahl im Kopf eines Berichts. */
+export interface AuditPdfMetric {
+  label: string;
+  value: string;
+}
+
+/** Freie Tabelle, z. B. Vergleich nach Liegenschaft. */
+export interface AuditPdfTable {
+  title: string;
+  head: string[];
+  rows: string[][];
+}
+
 export interface AuditPdfData {
   location: string;
   period: string;
@@ -39,6 +52,10 @@ export interface AuditPdfData {
   notes?: { title: string; text: string };
   /** Anfang des Dateinamens; ohne Angabe «Auditbericht». */
   fileBaseName?: string;
+  /** Kennzahlen vor den Bereichen. */
+  metrics?: AuditPdfMetric[];
+  /** Tabellen nach den Bereichen. */
+  tables?: AuditPdfTable[];
 }
 
 export interface AuditPdfLabels {
@@ -208,6 +225,86 @@ const drawSection = (doc: jsPDF, section: AuditPdfSection, labels: AuditPdfLabel
   return cursor + 5;
 };
 
+const drawMetrics = (doc: jsPDF, metrics: AuditPdfMetric[], title: string, y: number): number => {
+  let cursor = ensureSpace(doc, y, 20);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...ACCENT);
+  doc.text(title.toUpperCase(), MARGIN, cursor);
+  cursor += 7;
+
+  const columns = 4;
+  const width = CONTENT / columns;
+  metrics.forEach((metric, index) => {
+    const column = index % columns;
+    if (column === 0 && index > 0) cursor = ensureSpace(doc, cursor + 12, 12);
+    const x = MARGIN + column * width;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(...INK);
+    doc.text(metric.value, x, cursor);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...MUTED);
+    const label: string = doc.splitTextToSize(metric.label, width - 3)[0] ?? '';
+    doc.text(label, x, cursor + 4);
+  });
+  cursor += 10;
+  doc.setDrawColor(...LINE);
+  doc.line(MARGIN, cursor, WIDTH - MARGIN, cursor);
+  return cursor + 8;
+};
+
+const drawTable = (doc: jsPDF, table: AuditPdfTable, empty: string, y: number): number => {
+  let cursor = ensureSpace(doc, y, 26);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...ACCENT);
+  doc.text(table.title.toUpperCase(), MARGIN, cursor);
+  cursor += 5;
+
+  if (table.rows.length === 0) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...MUTED);
+    doc.text(empty, MARGIN, cursor + 1);
+    return cursor + 9;
+  }
+
+  const first = 58;
+  const rest = table.head.length > 1 ? (CONTENT - first) / (table.head.length - 1) : 0;
+  const columnX = (index: number): number => (index === 0 ? MARGIN : MARGIN + first + index * rest - rest);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MUTED);
+  table.head.forEach((cell, index) =>
+    doc.text(cell, columnX(index) + (index === 0 ? 0 : rest - 2), cursor, {
+      align: index === 0 ? 'left' : 'right',
+    }),
+  );
+  cursor += 2;
+  doc.setDrawColor(...LINE);
+  doc.line(MARGIN, cursor, WIDTH - MARGIN, cursor);
+  cursor += 5;
+
+  table.rows.forEach((row) => {
+    cursor = ensureSpace(doc, cursor, 8);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...INK);
+    row.forEach((cell, index) => {
+      const text: string = doc.splitTextToSize(cell, index === 0 ? first - 2 : rest - 2)[0] ?? '';
+      doc.text(text, columnX(index) + (index === 0 ? 0 : rest - 2), cursor, {
+        align: index === 0 ? 'left' : 'right',
+      });
+    });
+    cursor += 5.6;
+  });
+
+  return cursor + 5;
+};
+
 const drawNotes = (doc: jsPDF, notes: { title: string; text: string }, y: number): number => {
   let cursor = ensureSpace(doc, y, 20);
   doc.setFont('helvetica', 'bold');
@@ -247,8 +344,12 @@ export const buildAuditPdf = (
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
   let y = drawHeader(doc, data, labels, branding);
   if (data.showSummary !== false) y = drawSummary(doc, data, labels, y);
+  if (data.metrics && data.metrics.length > 0) y = drawMetrics(doc, data.metrics, labels.summary, y);
   data.sections.forEach((section) => {
     y = drawSection(doc, section, labels, y);
+  });
+  (data.tables ?? []).forEach((table) => {
+    y = drawTable(doc, table, labels.empty, y);
   });
   if (data.notes) y = drawNotes(doc, data.notes, y);
   drawFooters(doc, labels);

@@ -11,6 +11,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import {
   AlertTriangle,
+  BarChart3,
   Bell,
   CalendarDays,
   ClipboardList,
@@ -43,6 +44,7 @@ const QUICK_ACTIONS: { href: string; labelKey: TranslationKey; icon: typeof Plus
   { href: '/damages?new=1', labelKey: 'dashboard.quick.damage', icon: ShieldAlert },
   { href: '/reports?new=1', labelKey: 'dashboard.quick.report', icon: FileText },
   { href: '/cleaning', labelKey: 'dashboard.quick.cleaning', icon: SprayCan },
+  { href: '/analytics', labelKey: 'report.openReport', icon: BarChart3 },
 ];
 
 export default function DashboardPage() {
