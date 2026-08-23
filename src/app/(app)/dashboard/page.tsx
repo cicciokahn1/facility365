@@ -27,6 +27,7 @@ import { StatusBadge } from '@/components/common/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding/logo';
 import { isReminderDue } from '@/lib/contracts/reminder';
+import { documentExpiryState } from '@/lib/documents/expiry';
 import { useCollectionItems } from '@/lib/data/store';
 import { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
@@ -53,6 +54,7 @@ export default function DashboardPage() {
   const legionella = useCollectionItems('legionella');
   const rcd = useCollectionItems('rcd');
   const inspections = useCollectionItems('inspections');
+  const documents = useCollectionItems('documents');
   const contracts = useCollectionItems('contracts');
 
   const openOrders = useMemo(
@@ -187,6 +189,14 @@ export default function DashboardPage() {
             textKey: 'dashboard.dueInspection' as TranslationKey,
             title: check.title || check.customType,
           })),
+        ...documents
+          .filter((document) => documentExpiryState(document.validUntil, today()) !== 'valid')
+          .map((document) => ({
+            id: `document-${document.id}`,
+            href: `/documents/${document.id}`,
+            textKey: 'dashboard.documentExpiring' as TranslationKey,
+            title: document.title || document.number,
+          })),
         ...contracts
           .filter((contract) => isReminderDue(contract, today()))
           .map((contract) => ({
@@ -196,7 +206,7 @@ export default function DashboardPage() {
             title: contract.title || contract.partner,
           })),
       ].slice(0, 8),
-    [contracts, inspections, legionella, openDamages, openMaintenances, openOrders, rcd],
+    [contracts, documents, inspections, legionella, openDamages, openMaintenances, openOrders, rcd],
   );
 
   const criticalOrders = useMemo(

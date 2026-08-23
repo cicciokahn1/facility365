@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { EntityDetail } from '@/components/module/entity-detail';
+import { DocumentVersions } from '@/components/modules/document-versions';
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
 import { DOCUMENT_ACCEPT, documentFromFile, downloadDataUrl, isAllowedDocument } from '@/lib/media';
@@ -25,6 +26,11 @@ export function DocumentDetail({ id }: { id: string }) {
           content: (
             <MainFile file={document.file} onChange={(file) => update({ file }, 'history.documentAdded')} />
           ),
+        },
+        {
+          value: 'versions',
+          labelKey: 'documents.versions',
+          content: <DocumentVersions entity={document} onChange={update} />,
         },
       ]}
     />

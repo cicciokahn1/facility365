@@ -9,14 +9,34 @@ import { newId } from '@/lib/utils/id';
 
 export const PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic';
 export const DOCUMENT_ACCEPT =
-  '.pdf,.jpg,.jpeg,.png,.docx,.xlsx,application/pdf,image/jpeg,image/png,' +
+  '.pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt,.odt,.ods,' +
+  'application/pdf,image/jpeg,image/png,' +
+  'application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,' +
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document,' +
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation,' +
+  'text/csv,text/plain,application/vnd.oasis.opendocument.text,' +
+  'application/vnd.oasis.opendocument.spreadsheet';
 export const PLAN_ACCEPT = '.pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png';
 /** Dokumente an Objekten: PDF, JPG und PNG. */
 export const LINKED_DOCUMENT_ACCEPT = PLAN_ACCEPT;
 
-const DOCUMENT_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png', 'docx', 'xlsx'];
+const DOCUMENT_EXTENSIONS = [
+  'pdf',
+  'jpg',
+  'jpeg',
+  'png',
+  'doc',
+  'docx',
+  'xls',
+  'xlsx',
+  'ppt',
+  'pptx',
+  'csv',
+  'txt',
+  'odt',
+  'ods',
+];
 const PLAN_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png'];
 
 /** Laengste Bildkante nach dem Verkleinern. */

@@ -37,7 +37,10 @@ import {
   PRIORITY_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
   QUOTE_STATUS_OPTIONS,
+  CONDITION_OPTIONS,
   INSPECTION_TYPE_OPTIONS,
+  INVENTORY_CATEGORY_OPTIONS,
+  VEHICLE_STATUS_OPTIONS,
   RCD_RESULT_OPTIONS,
   USER_ROLE_OPTIONS,
   USER_STATUS_OPTIONS,
@@ -310,6 +313,22 @@ const documentsConfig: ModuleConfig<'documents'> = {
       filter: true,
     },
     { kind: 'date', name: 'validUntil', labelKey: 'documents.validUntil' },
+    {
+      kind: 'relation',
+      name: 'organizationId',
+      labelKey: 'module.organizations.singular',
+      collection: 'organizations',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'siteId',
+      labelKey: 'module.sites.singular',
+      collection: 'sites',
+      parentValueField: 'organizationId',
+      parentKey: 'organizationId',
+      filter: true,
+    },
     { kind: 'relation', name: 'customerId', labelKey: 'module.customers.singular', collection: 'customers', filter: true },
     { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
     {
@@ -706,6 +725,125 @@ const keysConfig: ModuleConfig<'keys'> = {
   ],
   searchOf: (key) =>
     [key.number, key.title, key.keyNumber, key.location, key.issuedTo].filter(Boolean).join(' '),
+};
+
+const inventoryConfig: ModuleConfig<'inventory'> = {
+  collection: 'inventory',
+  titleOf: (item) => item.title || item.inventoryNumber || item.number,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    text('inventoryNumber', 'inventory.inventoryNumber'),
+    {
+      kind: 'select',
+      name: 'category',
+      labelKey: 'common.category',
+      options: INVENTORY_CATEGORY_OPTIONS,
+      filter: true,
+    },
+    { kind: 'select', name: 'condition', labelKey: 'inventory.condition', options: CONDITION_OPTIONS, filter: true },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
+    text('location', 'keys.location'),
+    text('manufacturer', 'asset.manufacturer'),
+    text('model', 'asset.model'),
+    text('serial', 'asset.serial'),
+    { kind: 'date', name: 'purchaseDate', labelKey: 'inventory.purchaseDate' },
+    { kind: 'number', name: 'price', labelKey: 'inventory.price' },
+    { kind: 'relation', name: 'supplierId', labelKey: 'module.suppliers.singular', collection: 'suppliers', filter: true },
+    { kind: 'date', name: 'warrantyUntil', labelKey: 'inventory.warrantyUntil' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (item) =>
+    [item.number, item.title, item.inventoryNumber, item.serial, item.location]
+      .filter(Boolean)
+      .join(' '),
+};
+
+const vehiclesConfig: ModuleConfig<'vehicles'> = {
+  collection: 'vehicles',
+  titleOf: (vehicle) => vehicle.title || vehicle.plate || vehicle.number,
+  statusField: 'status',
+  statusOptions: VEHICLE_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    text('plate', 'vehicle.plate'),
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: VEHICLE_STATUS_OPTIONS, filter: true },
+    text('brand', 'vehicle.brand'),
+    text('model', 'asset.model'),
+    text('year', 'asset.year'),
+    text('vin', 'vehicle.vin'),
+    { kind: 'number', name: 'mileage', labelKey: 'vehicle.mileage' },
+    text('driver', 'vehicle.driver'),
+    { kind: 'relation', name: 'assigneeUserId', labelKey: 'user.assignee', collection: 'users' },
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
+    { kind: 'date', name: 'nextService', labelKey: 'vehicle.nextService' },
+    { kind: 'date', name: 'tireChange', labelKey: 'vehicle.tireChange' },
+    { kind: 'date', name: 'nextInspection', labelKey: 'vehicle.nextInspection' },
+    text('insurer', 'vehicle.insurer'),
+    text('policyNumber', 'vehicle.policyNumber'),
+    { kind: 'date', name: 'insuranceUntil', labelKey: 'vehicle.insuranceUntil' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (vehicle) =>
+    [vehicle.number, vehicle.title, vehicle.plate, vehicle.brand, vehicle.model]
+      .filter(Boolean)
+      .join(' '),
+};
+
+const toolsConfig: ModuleConfig<'tools'> = {
+  collection: 'tools',
+  titleOf: (tool) => tool.title || tool.toolNumber || tool.number,
+  statusField: 'status',
+  statusOptions: KEY_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    text('toolNumber', 'tool.toolNumber'),
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: KEY_STATUS_OPTIONS, filter: true },
+    {
+      kind: 'select',
+      name: 'category',
+      labelKey: 'common.category',
+      options: INVENTORY_CATEGORY_OPTIONS,
+      filter: true,
+    },
+    { kind: 'select', name: 'condition', labelKey: 'inventory.condition', options: CONDITION_OPTIONS, filter: true },
+    text('manufacturer', 'asset.manufacturer'),
+    text('serial', 'asset.serial'),
+    { kind: 'relation', name: 'propertyId', labelKey: 'module.properties.singular', collection: 'properties', filter: true },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    text('location', 'keys.location'),
+    { kind: 'date', name: 'nextCheck', labelKey: 'tool.nextCheck' },
+    text('issuedTo', 'keys.issuedTo'),
+    { kind: 'date', name: 'issuedAt', labelKey: 'keys.issuedAt' },
+    { kind: 'date', name: 'returnedAt', labelKey: 'keys.returnedAt' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (tool) =>
+    [tool.number, tool.title, tool.toolNumber, tool.serial, tool.issuedTo].filter(Boolean).join(' '),
 };
 
 const stockConfig: ModuleConfig<'stock'> = {
@@ -1289,6 +1427,9 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   rcd: rcdConfig,
   inspections: inspectionsConfig,
   keys: keysConfig,
+  inventory: inventoryConfig,
+  vehicles: vehiclesConfig,
+  tools: toolsConfig,
   stock: stockConfig,
   contracts: contractsConfig,
   damages: damagesConfig,
