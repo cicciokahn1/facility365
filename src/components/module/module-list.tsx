@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { StatusBadge } from '@/components/common/status-badge';
+import { DataExchange } from '@/components/module/data-exchange';
 import { EntityForm } from '@/components/module/entity-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -153,6 +154,8 @@ export function ModuleList({
       </header>
 
       <div className="flex flex-col gap-3">
+        <DataExchange collection={collection} items={filtered} mayWrite={mayWrite} />
+
         <Input
           data-testid="module-search"
           value={query}

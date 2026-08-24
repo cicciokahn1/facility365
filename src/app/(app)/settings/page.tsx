@@ -29,6 +29,7 @@ import { BRAND_LOGO_DATA_URL, BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding
 import { STORAGE_BUDGET, storageUsage } from '@/lib/data/repository';
 import { useClearAllData, useCollectionItems } from '@/lib/data/store';
 import { LANGUAGES, useT } from '@/lib/i18n/provider';
+import { INTEGRATIONS } from '@/lib/integrations/registry';
 import { moduleByKey } from '@/lib/modules';
 import {
   OPTIONAL_MODULES,
@@ -38,6 +39,7 @@ import {
 } from '@/lib/packages/packages';
 import { useSettings } from '@/lib/settings/provider';
 import { AppSettings, IndustryPackage, Language, ModuleKey, ThemeMode } from '@/lib/types';
+import { cn } from '@/lib/utils';
 import { formatBytes } from '@/lib/utils/format';
 
 /** Das Formular wird erst eingehaengt, wenn die gespeicherten Werte vorliegen. */
@@ -385,6 +387,43 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               </label>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('settings.integrations')}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          <p className="text-sm text-muted-foreground">{t('settings.integrationsHint')}</p>
+          <ul className="grid gap-2 sm:grid-cols-2" data-testid="integration-list">
+            {INTEGRATIONS.map((integration) => (
+              <li
+                key={integration.key}
+                data-testid={`integration-${integration.key}`}
+                className="flex flex-col gap-1 rounded-lg border px-3 py-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium">{t(integration.labelKey)}</span>
+                  <span
+                    className={cn(
+                      'rounded-full border px-2 py-0.5 text-[11px]',
+                      integration.status === 'available'
+                        ? 'border-emerald-600/40 text-emerald-700 dark:text-emerald-400'
+                        : 'text-muted-foreground',
+                    )}
+                  >
+                    {t(
+                      integration.status === 'available'
+                        ? 'integration.available'
+                        : 'integration.prepared',
+                    )}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">{t(integration.textKey)}</p>
+              </li>
+            ))}
+          </ul>
         </CardContent>
       </Card>
 
