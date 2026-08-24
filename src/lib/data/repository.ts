@@ -49,6 +49,24 @@ const parse = <T>(raw: string | null): T[] => {
  */
 const cache = new Map<CollectionKey, unknown[]>();
 
+/**
+ * Schreibvorgaenge je Sammlung nacheinander ausfuehren.
+ *
+ * Werden mehrere Datensaetze gleichzeitig angelegt, etwa beim Excel-Import,
+ * wuerden sonst zwei Vorgaenge denselben Stand lesen und der erste ginge
+ * verloren.
+ */
+const queues = new Map<CollectionKey, Promise<void>>();
+
+const inOrder = (collection: CollectionKey, task: () => Promise<void>): Promise<void> => {
+  const next = (queues.get(collection) ?? Promise.resolve()).then(task, task);
+  queues.set(
+    collection,
+    next.catch(() => undefined),
+  );
+  return next;
+};
+
 export const localRepository: Repository = {
   async read<K extends CollectionKey>(collection: K): Promise<EntityOf<K>[]> {
     if (typeof window === 'undefined') return [];
@@ -60,20 +78,24 @@ export const localRepository: Repository = {
   },
 
   async save<K extends CollectionKey>(collection: K, item: EntityOf<K>): Promise<void> {
-    const items = await localRepository.read(collection);
-    const known = items.some((entry) => entry.id === item.id);
-    const next = known
-      ? items.map((entry) => (entry.id === item.id ? item : entry))
-      : [...items, item];
-    await localRepository.write(collection, next);
+    await inOrder(collection, async () => {
+      const items = await localRepository.read(collection);
+      const known = items.some((entry) => entry.id === item.id);
+      const next = known
+        ? items.map((entry) => (entry.id === item.id ? item : entry))
+        : [...items, item];
+      await localRepository.write(collection, next);
+    });
   },
 
   async removeOne(collection: CollectionKey, id: string): Promise<void> {
-    const items = await localRepository.read(collection);
-    await localRepository.write(
-      collection,
-      items.filter((entry) => entry.id !== id),
-    );
+    await inOrder(collection, async () => {
+      const items = await localRepository.read(collection);
+      await localRepository.write(
+        collection,
+        items.filter((entry) => entry.id !== id),
+      );
+    });
   },
 
   async write<K extends CollectionKey>(collection: K, items: EntityOf<K>[]): Promise<void> {
