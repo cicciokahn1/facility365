@@ -29,8 +29,15 @@ import { BRAND_LOGO_DATA_URL, BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding
 import { STORAGE_BUDGET, storageUsage } from '@/lib/data/repository';
 import { useClearAllData, useCollectionItems } from '@/lib/data/store';
 import { LANGUAGES, useT } from '@/lib/i18n/provider';
+import { moduleByKey } from '@/lib/modules';
+import {
+  OPTIONAL_MODULES,
+  PACKAGE_KEYS,
+  disabledByPackage,
+  packageLabelKey,
+} from '@/lib/packages/packages';
 import { useSettings } from '@/lib/settings/provider';
-import { AppSettings, Language, ThemeMode } from '@/lib/types';
+import { AppSettings, IndustryPackage, Language, ModuleKey, ThemeMode } from '@/lib/types';
 import { formatBytes } from '@/lib/utils/format';
 
 /** Das Formular wird erst eingehaengt, wenn die gespeicherten Werte vorliegen. */
@@ -53,6 +60,23 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
 
   const set = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
+
+  /** Das Paket waehlt vor; die Schalter darunter bleiben frei bedienbar. */
+  const choosePackage = (key: IndustryPackage) =>
+    setDraft((current) => ({
+      ...current,
+      industryPackage: key,
+      disabledModules: key === 'custom' ? current.disabledModules : disabledByPackage(key),
+    }));
+
+  const toggleModule = (module: ModuleKey, active: boolean) =>
+    setDraft((current) => ({
+      ...current,
+      industryPackage: 'custom',
+      disabledModules: active
+        ? current.disabledModules.filter((key) => key !== module)
+        : [...current.disabledModules, module],
+    }));
 
   return (
     <div className="flex max-w-3xl flex-col gap-4">
@@ -318,6 +342,49 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               onChange={(event) => set('legionellaIntervalMonths', Number(event.target.value))}
             />
           </Field>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('settings.package')}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          <p className="text-sm text-muted-foreground">{t('settings.packageHint')}</p>
+          <Field label={t('settings.package')}>
+            <Select
+              value={draft.industryPackage || 'all'}
+              onValueChange={(value) =>
+                choosePackage(value === 'all' ? '' : (value as IndustryPackage))
+              }
+            >
+              <SelectTrigger className="w-full" data-testid="package-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PACKAGE_KEYS.map((key) => (
+                  <SelectItem key={key || 'all'} value={key || 'all'}>
+                    {t(packageLabelKey(key))}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <div className="grid gap-1 sm:grid-cols-2" data-testid="package-modules">
+            {OPTIONAL_MODULES.map((module) => (
+              <label
+                key={module}
+                className="flex items-center justify-between gap-4 rounded-lg border px-3 py-2"
+              >
+                <span className="text-sm">{t(moduleByKey(module).labelKey)}</span>
+                <Switch
+                  checked={!draft.disabledModules.includes(module)}
+                  onCheckedChange={(checked) => toggleModule(module, checked)}
+                  data-testid={`package-module-${module}`}
+                />
+              </label>
+            ))}
+          </div>
         </CardContent>
       </Card>
 

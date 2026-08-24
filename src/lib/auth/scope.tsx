@@ -22,6 +22,7 @@ import {
 } from '@/lib/auth/permissions';
 import { useCollectionItems } from '@/lib/data/store';
 import { stringField } from '@/lib/entity-values';
+import { moduleEnabled } from '@/lib/packages/packages';
 import { useSettings } from '@/lib/settings/provider';
 import { AppUser, BaseEntity, CollectionKey, ModuleKey } from '@/lib/types';
 
@@ -53,6 +54,8 @@ export interface Access {
   allowedSiteIds: string[];
   /** Gehoert der Datensatz zum Sichtbereich? */
   visible: (collection: CollectionKey, entity: BaseEntity) => boolean;
+  /** Ist das Modul im gewaehlten Branchenpaket enthalten? */
+  moduleActive: (module: ModuleKey) => boolean;
 }
 
 /** Angemeldete Person aus Einstellung, E-Mail-Konto oder Entra-Kennung. */
@@ -79,6 +82,7 @@ export function useActiveUser(): AppUser | null {
 export function useAccess(): Access {
   const user = useActiveUser();
   const scope = useMemo(() => scopeOf(user), [user]);
+  const { settings } = useSettings();
 
   const sites = useCollectionItems('sites');
   const properties = useCollectionItems('properties');
@@ -145,12 +149,13 @@ export function useAccess(): Access {
       scope,
       user,
       ready: true,
-      canRead: (module: ModuleKey) => canRead(scope, module),
-      canWrite: (module: ModuleKey) => canWrite(scope, module),
-      canDelete: (module: ModuleKey) => canDelete(scope, module),
+      canRead: (module: ModuleKey) => moduleEnabled(settings, module) && canRead(scope, module),
+      canWrite: (module: ModuleKey) => moduleEnabled(settings, module) && canWrite(scope, module),
+      canDelete: (module: ModuleKey) => moduleEnabled(settings, module) && canDelete(scope, module),
       allowedSiteIds,
       visible,
+      moduleActive: (module: ModuleKey) => moduleEnabled(settings, module),
     }),
-    [allowedSiteIds, scope, user, visible],
+    [allowedSiteIds, scope, settings, user, visible],
   );
 }

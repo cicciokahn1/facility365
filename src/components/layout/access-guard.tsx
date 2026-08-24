@@ -9,7 +9,8 @@
  */
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { ShieldAlert } from 'lucide-react';
+import Link from 'next/link';
+import { PackageOpen, ShieldAlert } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useAccess } from '@/lib/auth/scope';
@@ -33,6 +34,22 @@ export function AccessGuard({ children }: { children: React.ReactNode }) {
   const moduleDef = MODULES.filter(
     (module) => pathname === module.path || pathname.startsWith(`${module.path}/`),
   ).sort((a, b) => b.path.length - a.path.length)[0];
+
+  if (moduleDef && !access.moduleActive(moduleDef.key)) {
+    return (
+      <div
+        data-testid="module-inactive"
+        className="mx-auto flex max-w-md flex-col items-center gap-2 py-16 text-center"
+      >
+        <PackageOpen className="size-8 text-muted-foreground" aria-hidden />
+        <p className="text-lg font-semibold">{t('package.inactive')}</p>
+        <p className="text-sm text-muted-foreground">{t('package.inactiveHint')}</p>
+        <Button variant="outline" asChild data-testid="module-inactive-settings">
+          <Link href="/settings">{t('module.settings')}</Link>
+        </Button>
+      </div>
+    );
+  }
 
   if (moduleDef && !access.canRead(moduleDef.key)) {
     return (

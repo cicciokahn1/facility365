@@ -27,6 +27,7 @@ import { EmptyState } from '@/components/common/empty-state';
 import { StatusBadge } from '@/components/common/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding/logo';
+import { useAccess } from '@/lib/auth/scope';
 import { isReminderDue } from '@/lib/contracts/reminder';
 import { documentExpiryState } from '@/lib/documents/expiry';
 import { useCollectionItems } from '@/lib/data/store';
@@ -34,22 +35,39 @@ import { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { DAMAGE_STATUS_OPTIONS, MAINTENANCE_STATUS_OPTIONS, ORDER_STATUS_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
+import { ModuleKey } from '@/lib/types';
 import { formatDate, daysUntil, today } from '@/lib/utils/format';
 import { isDone } from '@/lib/workflow/complete';
 
-const QUICK_ACTIONS: { href: string; labelKey: TranslationKey; icon: typeof Plus }[] = [
-  { href: '/orders?new=1', labelKey: 'dashboard.quick.order', icon: ClipboardList },
-  { href: '/customers?new=1', labelKey: 'dashboard.quick.customer', icon: UserPlus },
-  { href: '/maintenances?new=1', labelKey: 'dashboard.quick.maintenance', icon: Wrench },
-  { href: '/damages?new=1', labelKey: 'dashboard.quick.damage', icon: ShieldAlert },
-  { href: '/reports?new=1', labelKey: 'dashboard.quick.report', icon: FileText },
-  { href: '/cleaning', labelKey: 'dashboard.quick.cleaning', icon: SprayCan },
-  { href: '/analytics', labelKey: 'report.openReport', icon: BarChart3 },
+const QUICK_ACTIONS: {
+  href: string;
+  module: ModuleKey;
+  labelKey: TranslationKey;
+  icon: typeof Plus;
+}[] = [
+  { href: '/orders?new=1', module: 'orders', labelKey: 'dashboard.quick.order', icon: ClipboardList },
+  {
+    href: '/customers?new=1',
+    module: 'customers',
+    labelKey: 'dashboard.quick.customer',
+    icon: UserPlus,
+  },
+  {
+    href: '/maintenances?new=1',
+    module: 'maintenances',
+    labelKey: 'dashboard.quick.maintenance',
+    icon: Wrench,
+  },
+  { href: '/damages?new=1', module: 'damages', labelKey: 'dashboard.quick.damage', icon: ShieldAlert },
+  { href: '/reports?new=1', module: 'reports', labelKey: 'dashboard.quick.report', icon: FileText },
+  { href: '/cleaning', module: 'cleaning', labelKey: 'dashboard.quick.cleaning', icon: SprayCan },
+  { href: '/analytics', module: 'analytics', labelKey: 'report.openReport', icon: BarChart3 },
 ];
 
 export default function DashboardPage() {
   const t = useT();
   const { settings } = useSettings();
+  const access = useAccess();
   const orders = useCollectionItems('orders');
   const maintenances = useCollectionItems('maintenances');
   const damages = useCollectionItems('damages');
@@ -266,7 +284,7 @@ export default function DashboardPage() {
           {t('dashboard.quickActions')}
         </h2>
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {QUICK_ACTIONS.map((action) => {
+          {QUICK_ACTIONS.filter((action) => access.canRead(action.module)).map((action) => {
             const Icon = action.icon;
             return (
               <li key={action.href}>
