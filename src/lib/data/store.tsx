@@ -351,6 +351,9 @@ export function useCollectionItems<K extends CollectionKey>(collection: K): Enti
   return store[collection] as EntityOf<K>[];
 }
 
+/** Alle Sammlungen auf einmal, z. B. um Verknuepfungen beim Excel-Import aufzuloesen. */
+export const useAllCollections = (): Record<CollectionKey, BaseEntity[]> => useData().store;
+
 export const useStorageError = (): boolean => useData().storageError;
 export const useDataReady = (): boolean => useData().ready;
 export const useClearAllData = (): (() => void) => useData().clearAll;

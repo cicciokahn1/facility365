@@ -14,6 +14,7 @@ import {
   BellRing,
   ChevronLeft,
   ChevronRight,
+  CalendarArrowDown,
   ClipboardCheck,
   ClipboardList,
   Droplets,
@@ -34,6 +35,8 @@ import { CalendarEvent, CalendarEventKind } from '@/lib/calendar/events';
 import { useRelevantEvents } from '@/lib/calendar/relevant';
 import { useEntityIndex } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
+import { downloadText } from '@/lib/integrations/csv';
+import { toIcs } from '@/lib/integrations/ics';
 import { usePushPermission } from '@/lib/notifications/reminders';
 import { useSettings } from '@/lib/settings/provider';
 import { cn } from '@/lib/utils';
@@ -125,6 +128,20 @@ export function CalendarView() {
           <h1 className="text-2xl font-semibold tracking-tight">{t('module.calendar')}</h1>
           <p className="text-sm text-muted-foreground">{t('calendar.subtitle')}</p>
         </div>
+        <div className="flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            const name = settings.companyName || t('app.name');
+            downloadText(toIcs(events, name, window.location.origin), 'facility365.ics', 'text/calendar');
+            toast.success(t('exchange.calendarExported'));
+          }}
+          data-testid="calendar-export"
+        >
+          <CalendarArrowDown className="size-4" aria-hidden />
+          {t('exchange.calendarExport')}
+        </Button>
         <Button
           size="sm"
           variant={push.permission === 'granted' ? 'outline' : 'default'}
@@ -147,6 +164,7 @@ export function CalendarView() {
           )}
           {push.permission === 'granted' ? t('notify.active') : t('notify.enable')}
         </Button>
+        </div>
       </header>
 
       {push.install ? (
