@@ -39,6 +39,8 @@ export const defaultSettings: AppSettings = {
   cleaningCleanerId: '',
   cleaningOwnTasksOnly: false,
   activeUserId: '',
+  industryPackage: '',
+  disabledModules: [],
 };
 
 interface SettingsContextValue {

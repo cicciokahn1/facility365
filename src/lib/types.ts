@@ -964,6 +964,17 @@ export interface Plan {
   createdAt: string;
 }
 
+/** Branchenpaket; leer bedeutet «alle Module aktiv». */
+export type IndustryPackage =
+  | ''
+  | 'professional'
+  | 'property'
+  | 'school'
+  | 'care'
+  | 'industry'
+  | 'public'
+  | 'custom';
+
 export type Language = 'de' | 'fr' | 'it' | 'en';
 export type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -1003,6 +1014,10 @@ export interface AppSettings {
    * Stelle.
    */
   activeUserId: string;
+  /** Gewaehltes Branchenpaket; nur zur Anzeige der Vorauswahl. */
+  industryPackage: IndustryPackage;
+  /** Abgeschaltete Module; ihre Daten bleiben erhalten. */
+  disabledModules: ModuleKey[];
 }
 
 /**
