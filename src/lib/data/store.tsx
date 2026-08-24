@@ -13,6 +13,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -235,13 +236,19 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
   const { store, ready, setCollection, saveItem, removeItem } = useData();
   const items = store[collection] as EntityOf<K>[];
   const index = useEntityIndex(collection);
+  /** Bereits vergebene Nummern, solange der neue Stand noch nicht angezeigt wird. */
+  const issued = useRef<string[]>([]);
 
   const get = useCallback((id: string) => index.get(id), [index]);
 
   const activities = store.activities;
+  const issuedActivities = useRef<string[]>([]);
   const log = useCallback(
     (entity: BaseEntity, action: string, title: string) => {
       if (!TRACKED.includes(collection)) return;
+      issuedActivities.current = issuedActivities.current.filter(
+        (number) => !activities.some((item) => item.number === number),
+      );
       const actor = currentActor();
       const now = new Date().toISOString();
       const record: Activity = {
@@ -249,7 +256,7 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
         id: newId('activities'),
         number: nextNumber(
           NUMBER_PREFIX.activities,
-          activities.map((item) => item.number),
+          [...activities.map((item) => item.number), ...issuedActivities.current],
           NUMBER_PAD.activities,
         ),
         createdAt: now,
@@ -263,6 +270,7 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
         entityTitle: title,
         action,
       };
+      issuedActivities.current.push(record.number);
       saveItem('activities', record);
     },
     [activities, collection, saveItem],
@@ -270,6 +278,9 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
 
   const create = useCallback(
     (values: Partial<EntityOf<K>>, user = currentActor().name || 'System') => {
+      issued.current = issued.current.filter(
+        (number) => !items.some((item) => item.number === number),
+      );
       const now = new Date().toISOString();
       const entity = {
         ...emptyEntity(collection),
@@ -277,13 +288,14 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
         id: newId(collection),
         number: nextNumber(
           NUMBER_PREFIX[collection],
-          items.map((item) => item.number),
+          [...items.map((item) => item.number), ...issued.current],
           NUMBER_PAD[collection],
         ),
         createdAt: now,
         updatedAt: now,
         history: [{ id: newId('h'), at: now, user, action: 'history.created' }],
       } as EntityOf<K>;
+      issued.current.push(entity.number);
       saveItem(collection, entity);
       log(entity, 'history.created', titleOfEntity(collection, entity));
       return entity;
