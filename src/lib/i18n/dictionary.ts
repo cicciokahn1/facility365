@@ -728,10 +728,10 @@ export const dictionary = {
     en: 'Delete entry?',
   },
   'detail.deleteText': {
-    de: 'Der Eintrag wird dauerhaft entfernt. Das lässt sich nicht rückgängig machen.',
-    fr: 'L’entrée sera définitivement supprimée. Cette action est irréversible.',
-    it: 'La voce verrà rimossa definitivamente. L’operazione è irreversibile.',
-    en: 'The entry will be removed permanently. This cannot be undone.',
+    de: 'Der Eintrag wird in den Papierkorb gelegt und lässt sich dort wiederherstellen.',
+    fr: 'L’entrée est placée dans la corbeille et peut y être restaurée.',
+    it: 'La voce viene spostata nel cestino e può essere ripristinata.',
+    en: 'The entry is moved to the trash and can be restored there.',
   },
 
   'toast.saved': { de: 'Gespeichert', fr: 'Enregistré', it: 'Salvato', en: 'Saved' },

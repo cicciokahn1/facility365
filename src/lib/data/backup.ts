@@ -104,18 +104,45 @@ interface BackupRow {
   data: Snapshot;
 }
 
-/** Sicherung in der Datenbank ablegen; ohne Anmeldung passiert nichts. */
+/** Ablage der letzten Sicherung, solange keine Datenbank angebunden ist. */
+const LOCAL_KEY = 'facility365.v2.backup';
+
+/**
+ * Sicherung ablegen.
+ *
+ * Mit Datenbank liegt die Sicherung in der Organisation, sonst auf dem Geraet.
+ * Reicht der Platz auf dem Geraet nicht, bleibt es bei der Sicherungsdatei.
+ */
 export const storeSnapshot = async (snapshot: Snapshot): Promise<boolean> => {
   const client = supabase();
-  if (!client) return false;
+  if (!client) {
+    try {
+      window.localStorage.setItem(LOCAL_KEY, JSON.stringify(snapshot));
+      return true;
+    } catch {
+      return false;
+    }
+  }
   const { error } = await client.from('backups').insert({ data: snapshot });
   return !error;
 };
 
-/** Jüngste Sicherung der Organisation. */
+/** Jüngste Sicherung der Organisation beziehungsweise des Geraets. */
 export const latestSnapshot = async (): Promise<{ at: string; snapshot: Snapshot } | null> => {
   const client = supabase();
-  if (!client) return null;
+  if (!client) {
+    try {
+      const raw = window.localStorage.getItem(LOCAL_KEY);
+      if (!raw) return null;
+      const value: unknown = JSON.parse(raw);
+      if (typeof value !== 'object' || value === null) return null;
+      const snapshot = value as Snapshot;
+      if (typeof snapshot.collections !== 'object') return null;
+      return { at: snapshot.createdAt, snapshot };
+    } catch {
+      return null;
+    }
+  }
   const { data, error } = await client
     .from('backups')
     .select('id, created_at, data')
@@ -135,8 +162,6 @@ export const latestSnapshot = async (): Promise<{ at: string; snapshot: Snapshot
 export const ensureDailySnapshot = async (
   store: Record<CollectionKey, BaseEntity[]>,
 ): Promise<boolean> => {
-  const client = supabase();
-  if (!client) return false;
   const last = await latestSnapshot();
   const day = 24 * 60 * 60 * 1000;
   if (last && Date.now() - new Date(last.at).getTime() < day) return false;
