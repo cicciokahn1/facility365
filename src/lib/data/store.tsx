@@ -21,6 +21,8 @@ import { toast } from 'sonner';
 
 import { useAuth } from '@/lib/auth/provider';
 import { currentActor } from '@/lib/data/actor';
+import { ensureDailySnapshot } from '@/lib/data/backup';
+import { COLLECTIONS } from '@/lib/data/collections';
 import { NUMBER_PAD, NUMBER_PREFIX, emptyEntity } from '@/lib/data/factories';
 import { Repository, StorageFullError, localRepository } from '@/lib/data/repository';
 import { supabaseRepository } from '@/lib/data/supabase-repository';
@@ -28,41 +30,6 @@ import { titleOfEntity } from '@/lib/module-config';
 import { Activity, BaseEntity, CollectionKey, EntityOf } from '@/lib/types';
 import { newId, nextNumber } from '@/lib/utils/id';
 
-const COLLECTIONS: CollectionKey[] = [
-  'customers',
-  'suppliers',
-  'organizations',
-  'sites',
-  'properties',
-  'buildings',
-  'rooms',
-  'assets',
-  'documents',
-  'energy',
-  'orders',
-  'maintenances',
-  'legionella',
-  'rcd',
-  'inspections',
-  'keys',
-  'inventory',
-  'vehicles',
-  'tools',
-  'stock',
-  'contracts',
-  'damages',
-  'reports',
-  'quotes',
-  'invoices',
-  'cleaningareas',
-  'cleaners',
-  'cleaningplans',
-  'cleaningtasks',
-  'cleaningchecks',
-  'cleaningcomplaints',
-  'users',
-  'activities',
-];
 
 /**
  * Sammlungen mit unveraenderbarer Aktivitaetshistorie.
@@ -101,7 +68,15 @@ interface DataContextValue {
   setCollection: (collection: CollectionKey, items: BaseEntity[]) => void;
   saveItem: (collection: CollectionKey, item: BaseEntity) => void;
   removeItem: (collection: CollectionKey, id: string) => void;
+  /** Datensaetze im Papierkorb je Sammlung. */
+  trash: Store;
+  restoreItem: (collection: CollectionKey, id: string) => void;
+  purgeItem: (collection: CollectionKey, id: string) => void;
   clearAll: () => void;
+  /** Datenzugriff fuer Sicherung und Datenuebernahme. */
+  repository: Repository;
+  /** Stand neu aus der Ablage lesen, etwa nach einer Wiederherstellung. */
+  reload: () => void;
 }
 
 const DataContext = createContext<DataContextValue | null>(null);
@@ -118,11 +93,30 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     scope: '',
     store: emptyStore(),
   });
+  const [revision, setRevision] = useState(0);
 
   /** Nie Daten eines anderen Kontos zeigen, auch nicht kurz waehrend des Ladens. */
   const current = loaded.scope === scope && scope !== '';
-  const store = current ? loaded.store : EMPTY_STORE;
+  const all = current ? loaded.store : EMPTY_STORE;
   const ready = current;
+
+  /**
+   * Geloeschtes bleibt erhalten und wird nur ausgeblendet. Die Module sehen
+   * unveraendert nur die gueltigen Datensaetze, der Papierkorb den Rest.
+   */
+  const store = useMemo(() => {
+    if (all === EMPTY_STORE) return EMPTY_STORE;
+    const next = emptyStore();
+    for (const key of COLLECTIONS) next[key] = all[key].filter((entry) => !entry.deletedAt);
+    return next;
+  }, [all]);
+
+  const trash = useMemo(() => {
+    if (all === EMPTY_STORE) return EMPTY_STORE;
+    const next = emptyStore();
+    for (const key of COLLECTIONS) next[key] = all[key].filter((entry) => Boolean(entry.deletedAt));
+    return next;
+  }, [all]);
 
   useEffect(() => {
     if (!scope) return;
@@ -138,13 +132,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         if (!cancelled) toast.error(error instanceof Error ? error.message : String(error));
       }
-      if (!cancelled) setLoaded({ scope, store: next });
+      if (cancelled) return;
+      setLoaded({ scope, store: next });
+      /** Taegliche Sicherung; scheitert sie, bleibt der Betrieb unberuehrt. */
+      void ensureDailySnapshot(next).catch(() => undefined);
     };
     void load();
     return () => {
       cancelled = true;
     };
-  }, [repository, scope]);
+  }, [repository, revision, scope]);
+
+  const reload = useCallback(() => setRevision((value) => value + 1), []);
 
   const setStore = useCallback(
     (update: (current: Store) => Store) =>
@@ -162,13 +161,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const setCollection = useCallback(
     (collection: CollectionKey, items: BaseEntity[]) => {
-      setStore((state) => ({ ...state, [collection]: items }));
+      /** Der Papierkorb bleibt unberuehrt, auch wenn eine ganze Liste ersetzt wird. */
+      const kept = all[collection].filter((entry) => entry.deletedAt);
+      const written = [...items, ...kept];
+      setStore((state) => ({ ...state, [collection]: written }));
       void repository
-        .write(collection, items as EntityOf<typeof collection>[])
+        .write(collection, written as EntityOf<typeof collection>[])
         .then(() => setStorageError(false))
         .catch(report);
     },
-    [repository, report, setStore],
+    [all, repository, report, setStore],
   );
 
   const saveItem = useCallback(
@@ -191,7 +193,37 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     [repository, report, setStore],
   );
 
+  /** Loeschen heisst Papierkorb: der Datensatz bleibt wiederherstellbar. */
+  const moveTo = useCallback(
+    (collection: CollectionKey, id: string, deletedAt: string | undefined) => {
+      const entry = all[collection].find((item) => item.id === id);
+      if (!entry) return;
+      const next: BaseEntity = { ...entry, deletedAt };
+      setStore((state) => ({
+        ...state,
+        [collection]: state[collection].map((item) => (item.id === id ? next : item)),
+      }));
+      void repository
+        .save(collection, next as EntityOf<typeof collection>)
+        .then(() => setStorageError(false))
+        .catch(report);
+    },
+    [all, repository, report, setStore],
+  );
+
   const removeItem = useCallback(
+    (collection: CollectionKey, id: string) =>
+      moveTo(collection, id, new Date().toISOString()),
+    [moveTo],
+  );
+
+  const restoreItem = useCallback(
+    (collection: CollectionKey, id: string) => moveTo(collection, id, undefined),
+    [moveTo],
+  );
+
+  /** Endgueltig entfernen; nur aus dem Papierkorb heraus moeglich. */
+  const purgeItem = useCallback(
     (collection: CollectionKey, id: string) => {
       setStore((state) => ({
         ...state,
@@ -208,8 +240,34 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, [repository, report, setStore]);
 
   const value = useMemo<DataContextValue>(
-    () => ({ store, ready, storageError, setCollection, saveItem, removeItem, clearAll }),
-    [store, ready, storageError, setCollection, saveItem, removeItem, clearAll],
+    () => ({
+      store,
+      trash,
+      ready,
+      storageError,
+      setCollection,
+      saveItem,
+      removeItem,
+      restoreItem,
+      purgeItem,
+      clearAll,
+      repository,
+      reload,
+    }),
+    [
+      repository,
+      reload,
+      store,
+      trash,
+      ready,
+      storageError,
+      setCollection,
+      saveItem,
+      removeItem,
+      restoreItem,
+      purgeItem,
+      clearAll,
+    ],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
@@ -365,6 +423,37 @@ export function useCollectionItems<K extends CollectionKey>(collection: K): Enti
 
 /** Alle Sammlungen auf einmal, z. B. um Verknuepfungen beim Excel-Import aufzuloesen. */
 export const useAllCollections = (): Record<CollectionKey, BaseEntity[]> => useData().store;
+
+/** Papierkorb: geloeschte Datensaetze mit Wiederherstellung. */
+export interface TrashApi {
+  items: Record<CollectionKey, BaseEntity[]>;
+  restore: (collection: CollectionKey, id: string) => void;
+  purge: (collection: CollectionKey, id: string) => void;
+}
+
+export function useTrash(): TrashApi {
+  const { trash, restoreItem, purgeItem } = useData();
+  return useMemo(
+    () => ({ items: trash, restore: restoreItem, purge: purgeItem }),
+    [purgeItem, restoreItem, trash],
+  );
+}
+
+/** Datenzugriff fuer Sicherung, Wiederherstellung und Datenuebernahme. */
+export const useRepository = (): Repository => useData().repository;
+
+/** Alle Sammlungen neu aus der Ablage lesen. */
+export const useReloadData = (): (() => void) => useData().reload;
+
+/** Alle Datensaetze inklusive Papierkorb, z. B. fuer eine vollstaendige Sicherung. */
+export const useCompleteStore = (): Record<CollectionKey, BaseEntity[]> => {
+  const { store, trash } = useData();
+  return useMemo(() => {
+    const next = emptyStore();
+    for (const key of COLLECTIONS) next[key] = [...store[key], ...trash[key]];
+    return next;
+  }, [store, trash]);
+};
 
 export const useStorageError = (): boolean => useData().storageError;
 export const useDataReady = (): boolean => useData().ready;

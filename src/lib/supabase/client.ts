@@ -20,7 +20,11 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
 const isProjectUrl = (value: string): boolean => {
   try {
     const parsed = new URL(value);
-    return parsed.protocol === 'https:' && parsed.hostname.endsWith('.supabase.co');
+    /** Entwicklungs- und Testumgebung: dieselbe Datenbank, nur lokal. */
+    const local =
+      parsed.protocol === 'http:' &&
+      (parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost');
+    return local || (parsed.protocol === 'https:' && parsed.hostname.endsWith('.supabase.co'));
   } catch {
     return false;
   }

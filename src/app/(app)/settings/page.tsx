@@ -6,6 +6,7 @@
  * Es wird mit einem Entwurf gearbeitet: nichts wirkt vor dem Speichern,
  * Abbrechen stellt den gespeicherten Stand wieder her.
  */
+import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -481,6 +482,22 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               onCheckedChange={(checked) => set('emailNotifications', checked)}
             />
           </label>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('settings.account')}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-start gap-3">
+          <p className="text-sm text-muted-foreground">{t('settings.accountHint')}</p>
+          <Button variant="outline" asChild data-testid="settings-account">
+            <Link href="/account">{t('account.title')}</Link>
+          </Button>
+          <p className="text-sm text-muted-foreground">{t('settings.trashHint')}</p>
+          <Button variant="outline" asChild data-testid="settings-trash">
+            <Link href="/trash">{t('trash.title')}</Link>
+          </Button>
         </CardContent>
       </Card>
 
