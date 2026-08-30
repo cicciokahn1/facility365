@@ -1,20 +1,25 @@
 /**
  * Datenzugriff gegen Supabase.
  *
- * Jede Zeile traegt die Kennung des angemeldeten Benutzers. Gelesen und
- * geschrieben wird ausschliesslich mit dem Sitzungsschluessel, sodass die
- * Regeln der Datenbank (Row Level Security) greifen: fremde Zeilen sind
- * unsichtbar, und eine Zeile laesst sich keinem fremden Konto zuschreiben.
+ * Jede Zeile gehoert einem Mandanten (Organisation), nicht nur einem Konto.
+ * Gelesen und geschrieben wird ausschliesslich mit dem Sitzungsschluessel,
+ * sodass die Regeln der Datenbank (Row Level Security) greifen: fremde
+ * Mandanten sind unsichtbar, und eine Zeile laesst sich keinem fremden
+ * Mandanten zuschreiben.
+ *
+ * Geloescht wird nie hart: Datensaetze wandern in den Papierkorb
+ * (`deleted_at`) und bleiben wiederherstellbar.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { Repository } from '@/lib/data/repository';
 import { supabase } from '@/lib/supabase/client';
-import { AppSettings, CollectionKey, EntityOf } from '@/lib/types';
+import { AppSettings, BaseEntity, CollectionKey, EntityOf } from '@/lib/types';
 
 interface Row {
   id: string;
   number: string;
+  deleted_at: string | null;
   data: Record<string, unknown>;
 }
 
@@ -30,10 +35,21 @@ const currentUserId = async (): Promise<string> => {
   return data.user.id;
 };
 
-const rowOf = <K extends CollectionKey>(item: EntityOf<K>, userId: string) => ({
+/** Mandant der Anmeldung; die Datenbank entscheidet, nicht die Oberflaeche. */
+export const currentTenantId = async (): Promise<string> => {
+  const { data, error } = await client().rpc('current_tenant');
+  if (error) throw new Error(error.message);
+  const tenant = typeof data === 'string' ? data : '';
+  if (!tenant) throw new Error('Keine Organisation zugeordnet');
+  return tenant;
+};
+
+const rowOf = <K extends CollectionKey>(item: EntityOf<K>, userId: string, tenantId: string) => ({
   id: item.id,
   user_id: userId,
+  tenant_id: tenantId,
   number: item.number,
+  deleted_at: (item as BaseEntity).deletedAt ?? null,
   data: item as unknown as Record<string, unknown>,
 });
 
@@ -41,43 +57,62 @@ export const supabaseRepository: Repository = {
   async read<K extends CollectionKey>(collection: K): Promise<EntityOf<K>[]> {
     const { data, error } = await client()
       .from(collection)
-      .select('id, number, data')
+      .select('id, number, data, deleted_at')
       .order('created_at', { ascending: true });
     if (error) throw new Error(error.message);
-    return (data as Row[]).map((row) => row.data as unknown as EntityOf<K>);
+    /** Der Papierkorb steht in der Spalte; die Oberflaeche liest ihn am Datensatz. */
+    return (data as Row[]).map(
+      (row) =>
+        ({
+          ...row.data,
+          deletedAt: row.deleted_at ?? undefined,
+        }) as unknown as EntityOf<K>,
+    );
   },
 
   async save<K extends CollectionKey>(collection: K, item: EntityOf<K>): Promise<void> {
-    const userId = await currentUserId();
+    const [userId, tenantId] = await Promise.all([currentUserId(), currentTenantId()]);
     const { error } = await client()
       .from(collection)
-      .upsert(rowOf(item, userId), { onConflict: 'user_id,id' });
+      .upsert(rowOf(item, userId, tenantId), { onConflict: 'tenant_id,id' });
     if (error) throw new Error(error.message);
   },
 
   async removeOne(collection: CollectionKey, id: string): Promise<void> {
-    const { error } = await client().from(collection).delete().eq('id', id);
+    const tenantId = await currentTenantId();
+    const { error } = await client()
+      .from(collection)
+      .delete()
+      .eq('tenant_id', tenantId)
+      .eq('id', id);
     if (error) throw new Error(error.message);
   },
 
   async write<K extends CollectionKey>(collection: K, items: EntityOf<K>[]): Promise<void> {
-    const userId = await currentUserId();
-    const keep = items.map((item) => item.id);
+    const [userId, tenantId] = await Promise.all([currentUserId(), currentTenantId()]);
     if (items.length > 0) {
       const { error } = await client()
         .from(collection)
         .upsert(
-          items.map((item) => rowOf(item, userId)),
-          { onConflict: 'user_id,id' },
+          items.map((item) => rowOf(item, userId, tenantId)),
+          { onConflict: 'tenant_id,id' },
         );
       if (error) throw new Error(error.message);
     }
-    /** Entfernte Datensaetze loeschen; die Regeln beschraenken das auf eigene Zeilen. */
-    const query = client().from(collection).delete();
-    const { error: deleteError } = keep.length
+    /**
+     * Fehlende Datensaetze wandern in den Papierkorb statt verloren zu gehen;
+     * endgueltig entfernt werden sie nur ueber den Papierkorb selbst.
+     */
+    const keep = items.map((item) => item.id);
+    const query = client()
+      .from(collection)
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('tenant_id', tenantId)
+      .is('deleted_at', null);
+    const { error: trashError } = keep.length
       ? await query.not('id', 'in', `(${keep.map((id) => `"${id}"`).join(',')})`)
       : await query.neq('id', '');
-    if (deleteError) throw new Error(deleteError.message);
+    if (trashError) throw new Error(trashError.message);
   },
 
   async readSettings(): Promise<Partial<AppSettings> | null> {
@@ -109,8 +144,13 @@ export const supabaseRepository: Repository = {
       'quotes',
       'invoices',
     ];
+    const tenantId = await currentTenantId();
     for (const collection of collections) {
-      const { error } = await client().from(collection).delete().neq('id', '');
+      const { error } = await client()
+        .from(collection)
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('tenant_id', tenantId)
+        .is('deleted_at', null);
       if (error) throw new Error(error.message);
     }
   },

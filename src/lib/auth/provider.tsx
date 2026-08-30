@@ -6,14 +6,27 @@
  * Die Sitzung kommt von Supabase Auth. Ohne hinterlegtes Projekt laeuft die
  * Anwendung lokal weiter; dann meldet `enabled` false und die Oberflaeche
  * verlangt keine Anmeldung.
+ *
+ * Neben der Sitzung liefert der Anbieter die Mitgliedschaft: welcher Mandant
+ * (Organisation) und welche Rolle in der Datenbank hinterlegt sind. Massgeblich
+ * bleibt die Datenbank - die Oberflaeche zeigt nur, was dort erlaubt ist.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import { authMessage, AuthMessage } from '@/lib/auth/errors';
 import { isSupabaseConfigured, isSupabaseReachable, supabase } from '@/lib/supabase/client';
 
 export interface AuthUser {
   id: string;
   email: string;
+  /** E-Mail bestaetigt; unbestaetigte Konten sehen einen Hinweis. */
+  verified: boolean;
+}
+
+export interface Membership {
+  tenantId: string;
+  role: string;
+  status: string;
 }
 
 export interface AuthApi {
@@ -22,16 +35,31 @@ export interface AuthApi {
   /** Sitzung wurde geprueft; vorher zeigt die Oberflaeche nichts Endgueltiges. */
   ready: boolean;
   user: AuthUser | null;
-  signIn: (email: string, password: string) => Promise<string | null>;
-  signUp: (email: string, password: string) => Promise<string | null>;
+  /** Mandant und Rolle aus der Datenbank; null, solange nichts geladen ist. */
+  membership: Membership | null;
+  signIn: (email: string, password: string) => Promise<AuthMessage | null>;
+  signUp: (email: string, password: string) => Promise<AuthMessage | null>;
   signOut: () => Promise<void>;
+  /** Verschickt den Link zum Zuruecksetzen des Kennworts. */
+  requestReset: (email: string) => Promise<AuthMessage | null>;
+  /** Setzt das Kennwort der laufenden Sitzung neu. */
+  updatePassword: (password: string) => Promise<AuthMessage | null>;
+  /** Schickt die Bestaetigungsmail erneut. */
+  resendVerification: (email: string) => Promise<AuthMessage | null>;
 }
 
 const AuthContext = createContext<AuthApi | null>(null);
 
+interface MembershipRow {
+  tenant_id: string;
+  role: string;
+  status: string;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const configured = isSupabaseConfigured();
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [membership, setMembership] = useState<Membership | null>(null);
   const [ready, setReady] = useState(!configured);
   /** Unerreichbares Projekt: die Anwendung bleibt bedienbar, aber lokal. */
   const [reachable, setReachable] = useState(configured);
@@ -52,7 +80,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data } = await client.auth.getSession();
       if (!active) return;
       const current = data.session?.user;
-      setUser(current ? { id: current.id, email: current.email ?? '' } : null);
+      setUser(
+        current
+          ? {
+              id: current.id,
+              email: current.email ?? '',
+              verified: Boolean(current.email_confirmed_at),
+            }
+          : null,
+      );
       setReady(true);
     };
     void init();
@@ -64,7 +100,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
      */
     const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
       const next = session?.user;
-      setUser(next ? { id: next.id, email: next.email ?? '' } : null);
+      setUser(
+        next
+          ? { id: next.id, email: next.email ?? '', verified: Boolean(next.email_confirmed_at) }
+          : null,
+      );
     });
 
     return () => {
@@ -73,18 +113,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  /** Mitgliedschaft nachladen, sobald eine Sitzung besteht. */
+  useEffect(() => {
+    let active = true;
+    const client = supabase();
+    const load = async () => {
+      if (!client || !user) {
+        setMembership(null);
+        return;
+      }
+      const { data } = await client
+        .from('memberships')
+        .select('tenant_id, role, status')
+        .eq('auth_user_id', user.id)
+        .maybeSingle();
+      if (!active) return;
+      const row = data as MembershipRow | null;
+      setMembership(
+        row ? { tenantId: row.tenant_id, role: row.role, status: row.status } : null,
+      );
+    };
+    void load();
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
   const signIn = useCallback(async (email: string, password: string) => {
     const client = supabase();
-    if (!client) return 'auth.notConfigured';
+    if (!client) return 'auth.errorGeneric' as AuthMessage;
     const { error } = await client.auth.signInWithPassword({ email, password });
-    return error ? error.message : null;
+    return error ? authMessage(error) : null;
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
     const client = supabase();
-    if (!client) return 'auth.notConfigured';
-    const { error } = await client.auth.signUp({ email, password });
-    return error ? error.message : null;
+    if (!client) return 'auth.errorGeneric' as AuthMessage;
+    const { error } = await client.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/login` },
+    });
+    return error ? authMessage(error) : null;
   }, []);
 
   const signOut = useCallback(async () => {
@@ -92,11 +162,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!client) return;
     await client.auth.signOut();
     setUser(null);
+    setMembership(null);
+  }, []);
+
+  const requestReset = useCallback(async (email: string) => {
+    const client = supabase();
+    if (!client) return 'auth.errorGeneric' as AuthMessage;
+    const { error } = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset`,
+    });
+    return error ? authMessage(error) : null;
+  }, []);
+
+  const updatePassword = useCallback(async (password: string) => {
+    const client = supabase();
+    if (!client) return 'auth.errorGeneric' as AuthMessage;
+    const { error } = await client.auth.updateUser({ password });
+    return error ? authMessage(error) : null;
+  }, []);
+
+  const resendVerification = useCallback(async (email: string) => {
+    const client = supabase();
+    if (!client) return 'auth.errorGeneric' as AuthMessage;
+    const { error } = await client.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/login` },
+    });
+    return error ? authMessage(error) : null;
   }, []);
 
   const value = useMemo<AuthApi>(
-    () => ({ enabled, ready, user, signIn, signUp, signOut }),
-    [enabled, ready, user, signIn, signUp, signOut],
+    () => ({
+      enabled,
+      ready,
+      user,
+      membership,
+      signIn,
+      signUp,
+      signOut,
+      requestReset,
+      updatePassword,
+      resendVerification,
+    }),
+    [
+      enabled,
+      ready,
+      user,
+      membership,
+      signIn,
+      signUp,
+      signOut,
+      requestReset,
+      updatePassword,
+      resendVerification,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

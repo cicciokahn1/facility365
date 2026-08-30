@@ -111,6 +111,8 @@ export interface BaseEntity {
   photos: Photo[];
   documents: DocumentFile[];
   history: HistoryEntry[];
+  /** Gesetzt, solange der Datensatz im Papierkorb liegt. */
+  deletedAt?: string;
 }
 
 export type CustomerType = 'company' | 'private';
