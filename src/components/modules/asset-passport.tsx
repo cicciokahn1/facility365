@@ -6,7 +6,12 @@
  * Alle Angaben werden bei jedem Aufruf aus den aktuellen Daten gelesen; das
  * gedruckte Etikett bleibt damit dauerhaft richtig.
  */
+import { useState } from 'react';
+import { TriangleAlert } from 'lucide-react';
+
 import { StatusBadge } from '@/components/common/status-badge';
+import { QuickDamageDialog } from '@/components/modules/quick-damage-dialog';
+import { Button } from '@/components/ui/button';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { lastMaintenanceDate, nextMaintenanceDate } from '@/lib/assets/passport';
@@ -40,6 +45,7 @@ export function AssetPassport({ asset }: { asset: Asset }) {
   const last = lastMaintenanceDate(maintenances);
   const next = nextMaintenanceDate(maintenances);
   const year = asset.manufacturedYear || asset.installedAt.slice(0, 4);
+  const [reporting, setReporting] = useState(false);
 
   return (
     <section className="flex flex-col gap-4" data-testid="asset-passport">
@@ -52,6 +58,13 @@ export function AssetPassport({ asset }: { asset: Asset }) {
             </p>
           </div>
           <StatusBadge value={asset.status} options={ASSET_STATUS_OPTIONS} />
+        </div>
+
+        <div className="mt-3">
+          <Button variant="outline" onClick={() => setReporting(true)} data-testid="passport-report">
+            <TriangleAlert className="size-4" aria-hidden />
+            {t('quickReport.title')}
+          </Button>
         </div>
 
         <dl className="mt-2 grid grid-cols-1 gap-x-6 divide-y sm:grid-cols-2 sm:divide-y-0 keep-cols">
@@ -84,6 +97,21 @@ export function AssetPassport({ asset }: { asset: Asset }) {
           </p>
         </div>
       </div>
+
+      <QuickDamageDialog
+        open={reporting}
+        onOpenChange={setReporting}
+        target={{
+          title: asset.name || asset.number,
+          location: [property?.name, building?.name, room?.name, asset.location]
+            .filter(Boolean)
+            .join(' · '),
+          propertyId: asset.propertyId,
+          buildingId: asset.buildingId,
+          roomId: asset.roomId,
+          assetId: asset.id,
+        }}
+      />
     </section>
   );
 }
