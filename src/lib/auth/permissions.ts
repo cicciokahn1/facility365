@@ -73,6 +73,7 @@ const ROLES: Record<UserRole, RoleAccess> = {
       legionella: 'write',
       rcd: 'write',
       inspections: 'write',
+      playgroundchecks: 'write',
       keys: 'write',
       inventory: 'write',
       vehicles: 'write',

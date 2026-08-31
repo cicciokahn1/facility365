@@ -49,6 +49,8 @@ import {
   REPORT_TYPE_OPTIONS,
   SelectOption,
   SOLAR_STATUS_OPTIONS,
+  PLAYGROUND_CONDITION_OPTIONS,
+  PLAYGROUND_TYPE_OPTIONS,
   SOURCE_CATEGORY_OPTIONS,
   SOURCE_RATING_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
@@ -831,6 +833,98 @@ const inspectionsConfig: ModuleConfig<'inspections'> = {
     [check.number, check.title, check.customType, check.tester].filter(Boolean).join(' '),
 };
 
+/** Ueblicher Abstand je Kontrollart nach Norm-Praxis. */
+const PLAYGROUND_INTERVALS: Record<string, MaintenanceInterval> = {
+  visual: 'monthly',
+  functional: 'quarterly',
+  periodic: 'annual',
+};
+
+/**
+ * Naechste Spielplatzkontrolle vorschlagen.
+ *
+ * Beim Wechsel der Kontrollart wird zusaetzlich der uebliche Abstand gesetzt,
+ * ein bereits gewaehlter Abstand bleibt beim Aendern von Datum erhalten.
+ */
+const withPlaygroundNextDate = (values: FormValues): FormValues => {
+  const interval = asString(values.interval) as MaintenanceInterval;
+  const months = INTERVAL_MONTHS[interval] ?? 12;
+  const next = nextControlDate(asString(values.date), months);
+  return next ? { interval, nextDate: next } : { interval };
+};
+
+const playgroundChecksConfig: ModuleConfig<'playgroundchecks'> = {
+  collection: 'playgroundchecks',
+  titleOf: (check) => check.title || check.number,
+  statusField: 'status',
+  statusOptions: RCD_STATUS_OPTIONS,
+  fields: [
+    text('title', 'playground.name', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'type',
+      labelKey: 'playground.kind',
+      options: PLAYGROUND_TYPE_OPTIONS,
+      filter: true,
+      applyChange: (value, values) =>
+        withPlaygroundNextDate({
+          ...values,
+          interval: PLAYGROUND_INTERVALS[asString(value)] ?? values.interval,
+        }),
+    },
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: RCD_STATUS_OPTIONS, filter: true },
+    {
+      kind: 'relation',
+      name: 'propertyId',
+      labelKey: 'module.properties.singular',
+      collection: 'properties',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    text('location', 'playground.location'),
+    {
+      kind: 'date',
+      name: 'date',
+      labelKey: 'playground.date',
+      applyChange: (value, values) => withPlaygroundNextDate({ ...values, date: value }),
+    },
+    text('inspector', 'playground.inspector'),
+    {
+      kind: 'select',
+      name: 'condition',
+      labelKey: 'playground.conditionLabel',
+      options: PLAYGROUND_CONDITION_OPTIONS,
+      filter: true,
+    },
+    { kind: 'relation', name: 'supplierId', labelKey: 'module.suppliers.singular', collection: 'suppliers' },
+    {
+      kind: 'select',
+      name: 'interval',
+      labelKey: 'legionella.interval',
+      options: INTERVAL_OPTIONS,
+      filter: true,
+      applyChange: (value, values) => withPlaygroundNextDate({ ...values, interval: value }),
+    },
+    { kind: 'date', name: 'nextDate', labelKey: 'playground.nextControl' },
+    { kind: 'relation', name: 'assigneeUserId', labelKey: 'user.assignee', collection: 'users' },
+    { kind: 'textarea', name: 'defects', labelKey: 'playground.defects', span: 2 },
+    { kind: 'textarea', name: 'measures', labelKey: 'legionella.measures', span: 2 },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (check) =>
+    [check.number, check.title, check.location, check.inspector, check.defects]
+      .filter(Boolean)
+      .join(' '),
+};
+
 const keysConfig: ModuleConfig<'keys'> = {
   collection: 'keys',
   titleOf: (key) => key.title || key.keyNumber || key.number,
@@ -1578,6 +1672,7 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   legionella: legionellaConfig,
   rcd: rcdConfig,
   inspections: inspectionsConfig,
+  playgroundchecks: playgroundChecksConfig,
   keys: keysConfig,
   inventory: inventoryConfig,
   vehicles: vehiclesConfig,

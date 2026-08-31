@@ -38,6 +38,7 @@ import {
   ShieldCheck,
   ShoppingBag,
   SprayCan,
+  ToyBrick,
   Truck,
   UserCog,
   Users,
@@ -301,6 +302,15 @@ export const MODULES: ModuleDefinition[] = [
     group: 'work',
     labelKey: 'module.inspections',
     singularKey: 'module.inspections.singular',
+  },
+  {
+    key: 'playgroundchecks',
+    collection: 'playgroundchecks',
+    path: '/playgrounds',
+    icon: ToyBrick,
+    group: 'work',
+    labelKey: 'module.playgroundchecks',
+    singularKey: 'module.playgroundchecks.singular',
   },
   {
     key: 'damages',

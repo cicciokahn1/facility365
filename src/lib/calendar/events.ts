@@ -22,6 +22,7 @@ export type CalendarEventKind =
   | 'legionella'
   | 'rcd'
   | 'inspection'
+  | 'playground'
   | 'document'
   | 'vehicle'
   | 'contract'
@@ -90,6 +91,7 @@ export function useCalendarEvents(): CalendarEvent[] {
   const legionella = useCollectionItems('legionella');
   const rcd = useCollectionItems('rcd');
   const inspections = useCollectionItems('inspections');
+  const playgroundChecks = useCollectionItems('playgroundchecks');
   const documents = useCollectionItems('documents');
   const vehicles = useCollectionItems('vehicles');
   const solarPlants = useCollectionItems('solarplants');
@@ -207,6 +209,26 @@ export function useCalendarEvents(): CalendarEvent[] {
           propertyId: check.propertyId,
           buildingId: check.buildingId,
           assetId: check.assetId,
+          recurring: false,
+        });
+      });
+
+    playgroundChecks
+      .filter((check) => check.status !== 'done' && check.nextDate)
+      .forEach((check) => {
+        events.push({
+          id: `playground-${check.id}`,
+          kind: 'playground',
+          sourceId: check.id,
+          href: `/playgrounds/${check.id}`,
+          labelKey: 'module.playgroundchecks.singular',
+          title: check.title || check.number,
+          date: check.nextDate,
+          time: '',
+          customerId: '',
+          propertyId: check.propertyId,
+          buildingId: check.buildingId,
+          assetId: '',
           recurring: false,
         });
       });
@@ -367,6 +389,7 @@ export function useCalendarEvents(): CalendarEvent[] {
     maintenances,
     orders,
     documents,
+    playgroundChecks,
     rcd,
     solarPlants,
     vehicles,

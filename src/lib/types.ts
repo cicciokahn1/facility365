@@ -28,6 +28,7 @@ export type ModuleKey =
   | 'legionella'
   | 'rcd'
   | 'inspections'
+  | 'playgroundchecks'
   | 'keys'
   | 'inventory'
   | 'vehicles'
@@ -612,6 +613,42 @@ export interface Inspection extends BaseEntity {
   measures: string;
 }
 
+/** Art einer Spielplatzkontrolle. */
+export type PlaygroundCheckType = 'visual' | 'functional' | 'periodic';
+
+/** Zustand eines Spielplatzes nach der Kontrolle. */
+export type PlaygroundCondition = 'good' | 'minor' | 'defect' | 'closed';
+
+/** Kontrolle eines Spielplatzes nach Sicht-, Funktions- oder Hauptpruefung. */
+export interface PlaygroundCheck extends BaseEntity {
+  /** Name des Spielplatzes. */
+  title: string;
+  type: PlaygroundCheckType;
+  organizationId: string;
+  siteId: string;
+  propertyId: string;
+  buildingId: string;
+  /** Freie Ortsangabe, z. B. Pausenplatz Nord. */
+  location: string;
+  date: string;
+  /** Person, welche die Kontrolle ausgefuehrt hat. */
+  inspector: string;
+  supplierId: string;
+  assigneeUserId: string;
+  assigneeTeam: string;
+  condition: PlaygroundCondition;
+  /** Festgestellte Maengel im Klartext. */
+  defects: string;
+  measures: string;
+  interval: MaintenanceInterval;
+  nextDate: string;
+  status: RcdStatus;
+  /** Schaden, der aus den Maengeln erstellt wurde. */
+  damageId: string;
+  /** Auftrag, der aus den Maengeln erstellt wurde. */
+  orderId: string;
+}
+
 /** Stand eines Schluessels. */
 export type KeyStatus = 'available' | 'issued' | 'lost' | 'retired';
 
@@ -1187,6 +1224,7 @@ export interface CollectionMap {
   legionella: LegionellaCheck;
   rcd: RcdCheck;
   inspections: Inspection;
+  playgroundchecks: PlaygroundCheck;
   keys: KeyEntity;
   inventory: InventoryItem;
   vehicles: Vehicle;

@@ -361,6 +361,21 @@ export const INSPECTION_TYPE_OPTIONS: SelectOption[] = [
   option('custom', 'inspection.type.custom'),
 ];
 
+/** Arten der Spielplatzkontrolle. */
+export const PLAYGROUND_TYPE_OPTIONS: SelectOption[] = [
+  option('visual', 'playground.type.visual'),
+  option('functional', 'playground.type.functional'),
+  option('periodic', 'playground.type.periodic'),
+];
+
+/** Zustand eines Spielplatzes nach der Kontrolle. */
+export const PLAYGROUND_CONDITION_OPTIONS: SelectOption[] = [
+  { value: 'good', labelKey: 'playground.condition.good', tone: 'success' },
+  { value: 'minor', labelKey: 'playground.condition.minor', tone: 'warning' },
+  { value: 'defect', labelKey: 'playground.condition.defect', tone: 'danger' },
+  { value: 'closed', labelKey: 'playground.condition.closed', tone: 'danger' },
+];
+
 /** Zustand eines Inventargegenstands oder Werkzeugs. */
 export const CONDITION_OPTIONS: SelectOption[] = [
   { value: 'new', labelKey: 'condition.new', tone: 'success' },
