@@ -9,11 +9,12 @@
 import { type ReactNode, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Plus } from 'lucide-react';
+import { CopyPlus, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { StatusBadge } from '@/components/common/status-badge';
+import { BULK_COLLECTIONS, BulkCreateDialog } from '@/components/module/bulk-create-dialog';
 import { DataExchange } from '@/components/module/data-exchange';
 import { EntityForm } from '@/components/module/entity-form';
 import { Button } from '@/components/ui/button';
@@ -72,6 +73,9 @@ export function ModuleList({
   const [sort, setSort] = useState<SortKey>('newest');
   /** Schnellaktionen des Dashboards oeffnen das Formular direkt: ?new=1 */
   const [formOpen, setFormOpen] = useState(useSearchParams().get('new') === '1');
+  /** Serienerfassung: eine Kontrolle fuer viele Raeume oder Anlagen zugleich. */
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const mayBulk = mayWrite && BULK_COLLECTIONS.includes(collection);
 
   const statusField = useMemo(
     () =>
@@ -147,10 +151,18 @@ export function ModuleList({
           </p>
         </div>
         {mayWrite ? (
-          <Button onClick={() => setFormOpen(true)} data-testid="new-entity">
-            <Plus className="size-4" aria-hidden />
-            {t('action.new')}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {mayBulk ? (
+              <Button variant="outline" onClick={() => setBulkOpen(true)} data-testid="bulk-new">
+                <CopyPlus className="size-4" aria-hidden />
+                {t('bulk.action')}
+              </Button>
+            ) : null}
+            <Button onClick={() => setFormOpen(true)} data-testid="new-entity">
+              <Plus className="size-4" aria-hidden />
+              {t('action.new')}
+            </Button>
+          </div>
         ) : (
           <span className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
             {t('access.readOnly')}
@@ -202,6 +214,20 @@ export function ModuleList({
               />
             </div>
           ))}
+          {query || statusFilter !== 'all' || Object.values(relationFilters).some((value) => value && value !== 'all') ? (
+            <Button
+              variant="ghost"
+              className="h-11"
+              data-testid="reset-filters"
+              onClick={() => {
+                setQuery('');
+                setStatusFilter('all');
+                setRelationFilters({});
+              }}
+            >
+              {t('list.resetFilters')}
+            </Button>
+          ) : null}
           <div className="min-w-40 flex-1 sm:max-w-44">
             <Select value={sort} onValueChange={(value) => setSort(value as SortKey)}>
               <SelectTrigger className="w-full" data-testid="sort-select">
@@ -264,6 +290,10 @@ export function ModuleList({
           )}
         />
       )}
+
+      {mayBulk ? (
+        <BulkCreateDialog collection={collection} open={bulkOpen} onOpenChange={setBulkOpen} />
+      ) : null}
 
       <EntityForm
         open={formOpen}

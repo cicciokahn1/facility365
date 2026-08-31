@@ -5,7 +5,6 @@ import { FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { ChecklistEditor } from '@/components/module/checklist-editor';
-import { DoneButton } from '@/components/module/done-button';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
@@ -27,7 +26,6 @@ export function OrderDetail({ id }: { id: string }) {
         const existing = reports.existing(order.id);
         return (
           <>
-            <DoneButton collection="orders" id={order.id} status={order.status} />
             <Button
               size="sm"
               variant={existing ? 'outline' : 'default'}

@@ -9,12 +9,13 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Copy, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { StatusBadge } from '@/components/common/status-badge';
 import { DocumentList } from '@/components/module/document-list';
 import { EntityForm } from '@/components/module/entity-form';
+import { DoneButton } from '@/components/module/done-button';
 import { HistoryTimeline } from '@/components/module/history-timeline';
 import { LinkedDocuments, documentLinkOf } from '@/components/module/linked-documents';
 import { PhotoGallery } from '@/components/module/photo-gallery';
@@ -40,6 +41,7 @@ import { moduleByCollection } from '@/lib/modules';
 import { FieldDef, FormValues, asString } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import { BaseEntity, CollectionKey, DocumentFile, EntityOf, Photo } from '@/lib/types';
+import { isCompletable } from '@/lib/workflow/complete';
 import { formatDate, formatMonth, formatMoney } from '@/lib/utils/format';
 
 export interface ExtraTab {
@@ -77,7 +79,7 @@ export function EntityDetail<K extends CollectionKey>({
   const router = useRouter();
   const moduleDef = moduleByCollection(collection);
   const config = configOf(collection);
-  const { get, update, remove, ready } = useCollection(collection);
+  const { get, update, remove, create, ready } = useCollection(collection);
   const { settings } = useSettings();
   const access = useAccess();
   const mayWrite = access.canWrite(moduleDef.key);
@@ -107,6 +109,21 @@ export function EntityDetail<K extends CollectionKey>({
   const applyUpdate = (values: Partial<EntityOf<K>>, action = 'history.updated') =>
     update(id, values, action, settings.profileName || settings.companyName);
 
+  /**
+   * Kopie eines Datensatzes.
+   *
+   * Uebernommen werden nur die Stammdaten; Nummer, Verlauf, Dokumente und Fotos
+   * beginnen neu. Der Ursprung bleibt unveraendert bestehen.
+   */
+  const duplicate = () => {
+    const copy = create(
+      valuesOf(entity) as Partial<EntityOf<K>>,
+      settings.profileName || settings.companyName,
+    );
+    toast.success(t('toast.duplicated'));
+    router.push(`${moduleDef.path}/${copy.id}`);
+  };
+
   const tabs = extraTabs?.(entity, applyUpdate) ?? [];
   /** Dokumente des Moduls "Dokumente", die auf diesen Datensatz verweisen. */
   const documentLink = documentLinkOf(collection, entity);
@@ -132,6 +149,13 @@ export function EntityDetail<K extends CollectionKey>({
                 options={config.statusOptions}
               />
             ) : null}
+            {mayWrite && config.statusField && isCompletable(collection) ? (
+              <DoneButton
+                collection={collection}
+                id={id}
+                status={stringField(entity, config.statusField)}
+              />
+            ) : null}
             {headerExtra?.(entity, applyUpdate)}
           </div>
         </div>
@@ -147,6 +171,12 @@ export function EntityDetail<K extends CollectionKey>({
                 {t('access.readOnly')}
               </span>
             )}
+            {mayWrite ? (
+              <Button variant="outline" onClick={duplicate} data-testid="duplicate-entity">
+                <Copy className="size-4" aria-hidden />
+                <span className="sr-only sm:not-sr-only">{t('action.duplicate')}</span>
+              </Button>
+            ) : null}
             {mayDelete ? (
               <Button variant="outline" onClick={() => setDeleteOpen(true)} data-testid="delete-entity">
                 <Trash2 className="size-4 text-destructive" aria-hidden />
