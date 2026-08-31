@@ -12,6 +12,7 @@ export type ModuleKey =
   | 'calendar'
   | 'customers'
   | 'suppliers'
+  | 'sources'
   | 'organizations'
   | 'sites'
   | 'properties'
@@ -174,6 +175,28 @@ export interface Supplier extends BaseEntity {
   email: string;
   website: string;
   category: string;
+  status: ActiveStatus;
+}
+
+/**
+ * Bezugsquelle.
+ *
+ * Selbst gepflegter Anbieter, bei dem Material, Werkzeug oder Ersatzteile
+ * bezogen werden. Kann mit einem Lieferanten und mit Inventar verknuepft
+ * werden, ersetzt die Lieferanten aber nicht.
+ */
+export interface Source extends BaseEntity {
+  name: string;
+  category: string;
+  website: string;
+  contactPerson: string;
+  phone: string;
+  mobile: string;
+  email: string;
+  address: Address;
+  /** Persoenliche Bewertung von 1 bis 5; leer, solange nicht bewertet. */
+  rating: string;
+  supplierId: string;
   status: ActiveStatus;
 }
 
@@ -648,6 +671,8 @@ export interface InventoryItem extends BaseEntity {
   purchaseDate: string;
   price?: number;
   supplierId: string;
+  /** Bezugsquelle, bei der der Gegenstand beschafft wurde. */
+  sourceId: string;
   warrantyUntil: string;
 }
 
@@ -1154,6 +1179,7 @@ export interface CollectionMap {
   assets: Asset;
   documents: DocumentEntity;
   energy: EnergyEntry;
+  sources: Source;
   solarplants: SolarPlant;
   solaryields: SolarYield;
   orders: Order;

@@ -40,6 +40,7 @@ import {
   Site,
   SolarPlant,
   SolarYield,
+  Source,
   StockItem,
   Supplier,
   Tool,
@@ -61,6 +62,7 @@ const base = (): Omit<BaseEntity, 'id' | 'number'> => ({
 export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   customers: 'KD',
   suppliers: 'LF',
+  sources: 'BQ',
   organizations: 'OR',
   sites: 'ST',
   properties: 'LI',
@@ -216,6 +218,21 @@ export const emptySupplier = (): Omit<Supplier, 'id' | 'number'> => ({
   status: 'active',
 });
 
+export const emptySource = (): Omit<Source, 'id' | 'number'> => ({
+  ...base(),
+  name: '',
+  category: '',
+  website: '',
+  contactPerson: '',
+  phone: '',
+  mobile: '',
+  email: '',
+  address: emptyAddress(),
+  rating: '',
+  supplierId: '',
+  status: 'active',
+});
+
 export const emptyDocument = (): Omit<DocumentEntity, 'id' | 'number'> => ({
   ...base(),
   title: '',
@@ -354,6 +371,7 @@ export const emptyInventoryItem = (): Omit<InventoryItem, 'id' | 'number'> => ({
   condition: 'good',
   purchaseDate: '',
   supplierId: '',
+  sourceId: '',
   warrantyUntil: '',
 });
 
@@ -667,6 +685,7 @@ export const emptyActivity = (): Omit<Activity, 'id' | 'number'> => ({
 const FACTORIES = {
   customers: emptyCustomer,
   suppliers: emptySupplier,
+  sources: emptySource,
   organizations: emptyOrganization,
   sites: emptySite,
   properties: emptyProperty,

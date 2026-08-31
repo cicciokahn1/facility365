@@ -34,6 +34,7 @@ const WITHOUT_LOCATION: CollectionKey[] = [
   'activities',
   'cleaners',
   'stock',
+  'sources',
 ];
 
 /** Felder, ueber die ein Datensatz zu seinem Standort findet - in dieser Reihenfolge. */

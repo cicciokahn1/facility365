@@ -267,6 +267,27 @@ export const SUPPLIER_CATEGORY_OPTIONS: SelectOption[] = [
   option('other', 'supplierCategory.other'),
 ];
 
+/** Kategorien einer Bezugsquelle. */
+export const SOURCE_CATEGORY_OPTIONS: SelectOption[] = [
+  option('tools', 'sourceCategory.tools'),
+  option('material', 'sourceCategory.material'),
+  option('cleaning', 'sourceCategory.cleaning'),
+  option('spareParts', 'sourceCategory.spareParts'),
+  option('electrical', 'sourceCategory.electrical'),
+  option('plumbing', 'sourceCategory.plumbing'),
+  option('construction', 'sourceCategory.construction'),
+  option('other', 'sourceCategory.other'),
+];
+
+/** Persoenliche Bewertung einer Bezugsquelle. */
+export const SOURCE_RATING_OPTIONS: SelectOption[] = [
+  option('5', 'source.rating5'),
+  option('4', 'source.rating4'),
+  option('3', 'source.rating3'),
+  option('2', 'source.rating2'),
+  option('1', 'source.rating1'),
+];
+
 /** Rollen der Benutzerverwaltung, von der weitesten zur engsten Berechtigung. */
 export const USER_ROLE_OPTIONS: SelectOption[] = [
   { value: 'superadmin', labelKey: 'role.superadmin', tone: 'danger' },

@@ -23,6 +23,7 @@ import { CollectionKey } from '@/lib/types';
 const SEARCHABLE = [
   'customers',
   'suppliers',
+  'sources',
   'organizations',
   'sites',
   'properties',
@@ -104,6 +105,7 @@ function SearchDialog({
   const access = useAccess();
   const customers = useCollectionItems('customers');
   const suppliers = useCollectionItems('suppliers');
+  const sources = useCollectionItems('sources');
   const organizations = useCollectionItems('organizations');
   const sites = useCollectionItems('sites');
   const properties = useCollectionItems('properties');
@@ -141,6 +143,7 @@ function SearchDialog({
     () => ({
       customers,
       suppliers,
+      sources,
       organizations,
       sites,
       properties,
@@ -204,6 +207,7 @@ function SearchDialog({
       sites,
       solarplants,
       solaryields,
+      sources,
       stock,
       suppliers,
       tools,
