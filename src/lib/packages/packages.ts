@@ -50,6 +50,7 @@ export const OPTIONAL_MODULES: ModuleKey[] = [
   'legionella',
   'rcd',
   'inspections',
+  'playgroundchecks',
   'audit',
   'handover',
   'cleaning',
@@ -86,7 +87,14 @@ const TECHNICS: ModuleKey[] = [
   'stock',
 ];
 
-const CONTROLS: ModuleKey[] = ['legionella', 'rcd', 'inspections', 'audit', 'handover'];
+const CONTROLS: ModuleKey[] = [
+  'legionella',
+  'rcd',
+  'inspections',
+  'playgroundchecks',
+  'audit',
+  'handover',
+];
 
 const STRUCTURE: ModuleKey[] = ['organizations', 'sites', 'suppliers', 'sources'];
 

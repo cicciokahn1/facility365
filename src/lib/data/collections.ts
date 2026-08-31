@@ -25,6 +25,7 @@ export const COLLECTIONS: CollectionKey[] = [
   'legionella',
   'rcd',
   'inspections',
+  'playgroundchecks',
   'keys',
   'inventory',
   'vehicles',

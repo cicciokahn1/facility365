@@ -27,6 +27,7 @@ import {
   Truck,
   Wrench,
   Zap,
+  ToyBrick,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -60,6 +61,7 @@ const EVENT_ICONS: Record<CalendarEventKind, LucideIcon> = {
   legionella: Droplets,
   rcd: Zap,
   inspection: ClipboardCheck,
+  playground: ToyBrick,
   vehicle: Truck,
   document: FileText,
   contract: FileSignature,
