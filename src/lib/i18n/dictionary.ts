@@ -4147,6 +4147,47 @@ export const dictionary = {
     it: 'Azzera filtri',
     en: 'Reset filters',
   },
+  'weather.clear': { de: 'Klar', fr: 'Dégagé', it: 'Sereno', en: 'Clear' },
+  'weather.partly': {
+    de: 'Teils bewölkt',
+    fr: 'Partiellement nuageux',
+    it: 'Parzialmente nuvoloso',
+    en: 'Partly cloudy',
+  },
+  'weather.cloudy': { de: 'Bewölkt', fr: 'Nuageux', it: 'Nuvoloso', en: 'Cloudy' },
+  'weather.fog': { de: 'Nebel', fr: 'Brouillard', it: 'Nebbia', en: 'Fog' },
+  'weather.drizzle': { de: 'Nieselregen', fr: 'Bruine', it: 'Pioviggine', en: 'Drizzle' },
+  'weather.rain': { de: 'Regen', fr: 'Pluie', it: 'Pioggia', en: 'Rain' },
+  'weather.snow': { de: 'Schnee', fr: 'Neige', it: 'Neve', en: 'Snow' },
+  'weather.showers': { de: 'Regenschauer', fr: 'Averses', it: 'Rovesci', en: 'Showers' },
+  'weather.snowShowers': {
+    de: 'Schneeschauer',
+    fr: 'Averses de neige',
+    it: 'Rovesci di neve',
+    en: 'Snow showers',
+  },
+  'weather.thunder': { de: 'Gewitter', fr: 'Orage', it: 'Temporale', en: 'Thunderstorm' },
+  'weather.loading': { de: 'Wetter wird geladen', fr: 'Chargement de la météo', it: 'Caricamento meteo', en: 'Loading weather' },
+  'weather.unavailable': {
+    de: 'Wetter nicht verfügbar',
+    fr: 'Météo indisponible',
+    it: 'Meteo non disponibile',
+    en: 'Weather unavailable',
+  },
+  'weather.choosePlace': { de: 'Ort wählen', fr: 'Choisir un lieu', it: 'Scegli luogo', en: 'Choose location' },
+  'weather.searchHint': {
+    de: 'Ort suchen oder den Gerätestandort verwenden.',
+    fr: 'Rechercher un lieu ou utiliser la position de l’appareil.',
+    it: 'Cerca un luogo o usa la posizione del dispositivo.',
+    en: 'Search a place or use the device location.',
+  },
+  'weather.searchPlaceholder': { de: 'z. B. Zürich', fr: 'p. ex. Zurich', it: 'es. Zurigo', en: 'e.g. Zurich' },
+  'weather.useDevice': {
+    de: 'Gerätestandort verwenden',
+    fr: 'Utiliser la position de l’appareil',
+    it: 'Usa posizione del dispositivo',
+    en: 'Use device location',
+  },
 } as const satisfies Record<string, Entry>;
 
 export type TranslationKey = keyof typeof dictionary;
