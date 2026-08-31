@@ -1,7 +1,8 @@
 'use client';
 
 /**
- * Erledigt-Logik fuer Auftrag, Wartung, Schaden und Reinigungsaufgabe.
+ * Erledigt-Logik fuer Auftrag, Wartung, Schaden, Reinigungsaufgabe und die
+ * Kontrollmodule.
  *
  * Ueberall derselbe Ablauf: Status auf erledigt, Tag des Abschlusses setzen,
  * Eintrag in der Historie. Damit verschwindet der Datensatz aus den offenen
@@ -11,10 +12,27 @@ import { useCallback } from 'react';
 
 import { useCollection } from '@/lib/data/store';
 import { useCurrentUser } from '@/lib/settings/provider';
-import { CleaningTask, Damage, Maintenance, Order } from '@/lib/types';
+import {
+  CleaningTask,
+  Damage,
+  FireCheck,
+  Inspection,
+  Maintenance,
+  Order,
+  PlaygroundCheck,
+  RcdCheck,
+} from '@/lib/types';
 import { today } from '@/lib/utils/format';
 
-export type CompletableKey = 'orders' | 'maintenances' | 'damages' | 'cleaningtasks';
+export type CompletableKey =
+  | 'orders'
+  | 'maintenances'
+  | 'damages'
+  | 'cleaningtasks'
+  | 'inspections'
+  | 'firechecks'
+  | 'playgroundchecks'
+  | 'rcd';
 
 /** Werte, die ein Abschluss je Modul setzt. */
 const doneValues = {
@@ -22,6 +40,10 @@ const doneValues = {
   maintenances: (): Partial<Maintenance> => ({ status: 'done', lastDate: today() }),
   damages: (): Partial<Damage> => ({ status: 'fixed', fixedAt: today() }),
   cleaningtasks: (): Partial<CleaningTask> => ({ status: 'done', completedAt: today() }),
+  inspections: (): Partial<Inspection> => ({ status: 'done' }),
+  firechecks: (): Partial<FireCheck> => ({ status: 'done' }),
+  playgroundchecks: (): Partial<PlaygroundCheck> => ({ status: 'done' }),
+  rcd: (): Partial<RcdCheck> => ({ status: 'done' }),
 };
 
 /** Erledigte Zustaende; sie zaehlen nirgends mehr als offen oder faellig. */
@@ -30,7 +52,15 @@ const doneStatuses: Record<CompletableKey, string[]> = {
   maintenances: ['done'],
   damages: ['fixed', 'rejected'],
   cleaningtasks: ['done'],
+  inspections: ['done'],
+  firechecks: ['done'],
+  playgroundchecks: ['done'],
+  rcd: ['done'],
 };
+
+/** Wahr, wenn ein Modul den Abschluss mit einem Klick kennt. */
+export const isCompletable = (collection: string): collection is CompletableKey =>
+  collection in doneStatuses;
 
 /** Wahr, sobald der Datensatz abgeschlossen ist. */
 export const isDone = (collection: CompletableKey, status: string): boolean =>

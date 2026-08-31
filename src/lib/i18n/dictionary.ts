@@ -4075,6 +4075,78 @@ export const dictionary = {
     it: 'Configura',
     en: 'Set up',
   },
+  'bulk.action': {
+    de: 'Mehrere erfassen',
+    fr: 'Saisie multiple',
+    it: 'Inserimento multiplo',
+    en: 'Create several',
+  },
+  'bulk.title': {
+    de: 'Serienerfassung',
+    fr: 'Saisie en serie',
+    it: 'Inserimento in serie',
+    en: 'Bulk entry',
+  },
+  'bulk.hint': {
+    de: 'Bereich waehlen, Raeume oder Anlagen auswaehlen und je Auswahl eine Kontrolle erstellen.',
+    fr: 'Choisir le perimetre, selectionner les locaux ou installations et creer un controle par selection.',
+    it: 'Scegliere l’ambito, selezionare locali o impianti e creare un controllo per ogni selezione.',
+    en: 'Choose the scope, select rooms or assets and create one check per selection.',
+  },
+  'bulk.target': {
+    de: 'Auswahl',
+    fr: 'Selection',
+    it: 'Selezione',
+    en: 'Selection',
+  },
+  'bulk.selectAll': {
+    de: 'Alle auswaehlen',
+    fr: 'Tout selectionner',
+    it: 'Seleziona tutto',
+    en: 'Select all',
+  },
+  'bulk.clearAll': {
+    de: 'Auswahl aufheben',
+    fr: 'Tout deselectionner',
+    it: 'Annulla selezione',
+    en: 'Clear selection',
+  },
+  'bulk.empty': {
+    de: 'Keine Raeume oder Anlagen im gewaehlten Bereich.',
+    fr: 'Aucun local ou installation dans le perimetre choisi.',
+    it: 'Nessun locale o impianto nell’ambito scelto.',
+    en: 'No rooms or assets in the selected scope.',
+  },
+  'bulk.next': {
+    de: 'Angaben erfassen',
+    fr: 'Saisir les donnees',
+    it: 'Inserire i dati',
+    en: 'Enter details',
+  },
+  'bulk.created': {
+    de: 'Datensaetze erstellt',
+    fr: 'Enregistrements crees',
+    it: 'Record creati',
+    en: 'Records created',
+  },
+  'action.duplicate': {
+    de: 'Kopieren',
+    fr: 'Copier',
+    it: 'Copia',
+    en: 'Duplicate',
+  },
+  'toast.duplicated': {
+    de: 'Kopie erstellt',
+    fr: 'Copie creee',
+    it: 'Copia creata',
+    en: 'Copy created',
+  },
+  'list.resetFilters': {
+    de: 'Filter zuruecksetzen',
+    fr: 'Reinitialiser les filtres',
+    it: 'Azzera filtri',
+    en: 'Reset filters',
+  },
 } as const satisfies Record<string, Entry>;
 
 export type TranslationKey = keyof typeof dictionary;

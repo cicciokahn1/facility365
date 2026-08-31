@@ -9,7 +9,6 @@
 import { toast } from 'sonner';
 
 import { ChecklistEditor } from '@/components/module/checklist-editor';
-import { DoneButton } from '@/components/module/done-button';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
@@ -24,9 +23,6 @@ export function CleaningTaskDetail({ id }: { id: string }) {
     <EntityDetail
       collection="cleaningtasks"
       id={id}
-      headerExtra={(task) => (
-        <DoneButton collection="cleaningtasks" id={task.id} status={task.status} />
-      )}
       extraTabs={(task, update) => [
         {
           value: 'checklist',

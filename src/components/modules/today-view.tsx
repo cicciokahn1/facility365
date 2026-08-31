@@ -33,7 +33,16 @@ interface Row {
 }
 
 /** Sammlungen, die eine persoenliche Zuweisung kennen. */
-const ASSIGNABLE: CompletableKey[] = ['orders', 'maintenances', 'damages', 'cleaningtasks'];
+const ASSIGNABLE: CompletableKey[] = [
+  'orders',
+  'maintenances',
+  'damages',
+  'cleaningtasks',
+  'inspections',
+  'firechecks',
+  'playgroundchecks',
+  'rcd',
+];
 
 export function TodayView() {
   const t = useT();
@@ -45,6 +54,10 @@ export function TodayView() {
   const maintenances = useCollectionItems('maintenances');
   const damages = useCollectionItems('damages');
   const cleaningtasks = useCollectionItems('cleaningtasks');
+  const inspections = useCollectionItems('inspections');
+  const firechecks = useCollectionItems('firechecks');
+  const playgroundchecks = useCollectionItems('playgroundchecks');
+  const rcd = useCollectionItems('rcd');
 
   const assigned = useMemo(() => {
     const userId = access.user?.id ?? '';
@@ -54,6 +67,10 @@ export function TodayView() {
       maintenances,
       damages,
       cleaningtasks,
+      inspections,
+      firechecks,
+      playgroundchecks,
+      rcd,
     };
     const rows: Row[] = [];
     ASSIGNABLE.forEach((collection) => {
@@ -79,7 +96,19 @@ export function TodayView() {
         });
     });
     return rows.sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
-  }, [access, cleaningtasks, damages, day, maintenances, orders, t]);
+  }, [
+    access,
+    cleaningtasks,
+    damages,
+    day,
+    firechecks,
+    inspections,
+    maintenances,
+    orders,
+    playgroundchecks,
+    rcd,
+    t,
+  ]);
 
   const due = useMemo(
     () =>
