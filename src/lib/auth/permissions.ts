@@ -78,6 +78,8 @@ const ROLES: Record<UserRole, RoleAccess> = {
       vehicles: 'write',
       tools: 'write',
       stock: 'write',
+      solarplants: 'write',
+      solaryields: 'write',
       cleaningchecks: 'write',
       cleaningcomplaints: 'write',
       quotes: 'none',

@@ -23,6 +23,7 @@ import {
   type LucideIcon,
   Repeat,
   SprayCan,
+  Sun,
   Truck,
   Wrench,
   Zap,
@@ -62,6 +63,7 @@ const EVENT_ICONS: Record<CalendarEventKind, LucideIcon> = {
   vehicle: Truck,
   document: FileText,
   contract: FileSignature,
+  solar: Sun,
   cleaning: SprayCan,
 };
 

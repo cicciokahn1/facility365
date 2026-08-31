@@ -17,6 +17,8 @@ export const COLLECTIONS: CollectionKey[] = [
   'assets',
   'documents',
   'energy',
+  'solarplants',
+  'solaryields',
   'orders',
   'maintenances',
   'legionella',

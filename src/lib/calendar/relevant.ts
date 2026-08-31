@@ -24,6 +24,7 @@ const COLLECTION_OF: Record<CalendarEventKind, CollectionKey> = {
   vehicle: 'vehicles',
   document: 'documents',
   contract: 'contracts',
+  solar: 'solarplants',
   cleaning: 'cleaningtasks',
 };
 
@@ -38,6 +39,7 @@ export function useRelevantEvents(): CalendarEvent[] {
   const documents = useCollectionItems('documents');
   const vehicles = useCollectionItems('vehicles');
   const contracts = useCollectionItems('contracts');
+  const solarplants = useCollectionItems('solarplants');
   const cleaningtasks = useCollectionItems('cleaningtasks');
 
   const sources = useMemo(() => {
@@ -52,9 +54,21 @@ export function useRelevantEvents(): CalendarEvent[] {
     add('vehicles', vehicles);
     add('documents', documents);
     add('contracts', contracts);
+    add('solarplants', solarplants);
     add('cleaningtasks', cleaningtasks);
     return map;
-  }, [cleaningtasks, contracts, documents, inspections, legionella, maintenances, orders, rcd, vehicles]);
+  }, [
+    cleaningtasks,
+    contracts,
+    documents,
+    inspections,
+    legionella,
+    maintenances,
+    orders,
+    rcd,
+    solarplants,
+    vehicles,
+  ]);
 
   return useMemo(
     () =>

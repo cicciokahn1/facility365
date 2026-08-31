@@ -48,6 +48,7 @@ import {
   REPORT_STATUS_OPTIONS,
   REPORT_TYPE_OPTIONS,
   SelectOption,
+  SOLAR_STATUS_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
   asString,
 } from '@/lib/schema';
@@ -411,6 +412,90 @@ const energyConfig: ModuleConfig<'energy'> = {
   ],
   searchOf: (entry) =>
     [entry.number, entry.month, entry.typeOther, entry.unit, entry.notes].filter(Boolean).join(' '),
+};
+
+const solarPlantsConfig: ModuleConfig<'solarplants'> = {
+  collection: 'solarplants',
+  titleOf: (plant) => plant.name || plant.number,
+  statusField: 'status',
+  statusOptions: SOLAR_STATUS_OPTIONS,
+  fields: [
+    text('name', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'status',
+      labelKey: 'common.status',
+      options: SOLAR_STATUS_OPTIONS,
+      filter: true,
+    },
+    { kind: 'number', name: 'power', labelKey: 'solar.power' },
+    { kind: 'date', name: 'commissionedAt', labelKey: 'solar.commissionedAt' },
+    {
+      kind: 'relation',
+      name: 'propertyId',
+      labelKey: 'module.properties.singular',
+      collection: 'properties',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    { kind: 'number', name: 'moduleCount', labelKey: 'solar.moduleCount' },
+    text('moduleType', 'solar.moduleType'),
+    text('orientation', 'solar.orientation'),
+    text('inverter', 'solar.inverter'),
+    { kind: 'number', name: 'inverterCount', labelKey: 'solar.inverterCount' },
+    { kind: 'number', name: 'batteryCapacity', labelKey: 'solar.batteryCapacity' },
+    text('batteryType', 'solar.batteryType'),
+    {
+      kind: 'relation',
+      name: 'supplierId',
+      labelKey: 'module.suppliers.singular',
+      collection: 'suppliers',
+    },
+    { kind: 'money', name: 'feedInTariff', labelKey: 'solar.feedInTariff' },
+    { kind: 'money', name: 'electricityPrice', labelKey: 'solar.electricityPrice' },
+    { kind: 'number', name: 'co2Factor', labelKey: 'solar.co2Factor' },
+    { kind: 'money', name: 'investment', labelKey: 'solar.investment' },
+    { kind: 'date', name: 'nextMaintenance', labelKey: 'solar.nextMaintenance' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (plant) =>
+    [plant.number, plant.name, plant.inverter, plant.moduleType, plant.notes]
+      .filter(Boolean)
+      .join(' '),
+};
+
+const solarYieldsConfig: ModuleConfig<'solaryields'> = {
+  collection: 'solaryields',
+  titleOf: (entry) => entry.month || entry.number,
+  fields: [
+    {
+      kind: 'relation',
+      name: 'plantId',
+      labelKey: 'module.solarplants.singular',
+      collection: 'solarplants',
+      required: true,
+      filter: true,
+    },
+    { kind: 'month', name: 'month', labelKey: 'energy.month', required: true },
+    { kind: 'number', name: 'production', labelKey: 'solar.production' },
+    { kind: 'number', name: 'selfUse', labelKey: 'solar.selfUse' },
+    { kind: 'number', name: 'feedIn', labelKey: 'solar.feedIn' },
+    { kind: 'number', name: 'batteryUse', labelKey: 'solar.batteryUse' },
+    { kind: 'money', name: 'revenue', labelKey: 'solar.revenue' },
+    { kind: 'money', name: 'savings', labelKey: 'solar.savings' },
+    { kind: 'money', name: 'cost', labelKey: 'solar.cost' },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (entry) => [entry.number, entry.month, entry.notes].filter(Boolean).join(' '),
 };
 
 const ordersConfig: ModuleConfig<'orders'> = {
@@ -1423,6 +1508,8 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   assets: assetsConfig,
   documents: documentsConfig,
   energy: energyConfig,
+  solarplants: solarPlantsConfig,
+  solaryields: solarYieldsConfig,
   orders: ordersConfig,
   maintenances: maintenancesConfig,
   legionella: legionellaConfig,
