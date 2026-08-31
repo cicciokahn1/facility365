@@ -422,6 +422,14 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">{t(integration.textKey)}</p>
+                {integration.href ? (
+                  <Link
+                    href={integration.href}
+                    className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+                  >
+                    {t('settings.integrationOpen')}
+                  </Link>
+                ) : null}
               </li>
             ))}
           </ul>

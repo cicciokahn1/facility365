@@ -35,6 +35,8 @@ const COMMON: Partial<Record<ModuleKey, Access>> = {
   settings: 'read',
   /** Das Kundenportal zeigt nur freigegebene Daten und die eigenen Offerten. */
   portal: 'write',
+  /** Die Anbindung an Microsoft 365 richtet nur die Administration ein. */
+  microsoft: 'none',
 };
 
 const ROLES: Record<UserRole, RoleAccess> = {
