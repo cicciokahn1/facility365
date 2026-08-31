@@ -6,7 +6,7 @@
  * Enthaelt Suche, Filter, Sortierung und das Anlegen neuer Datensaetze - fuer
  * jedes Modul identisch aufgebaut.
  */
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Plus } from 'lucide-react';
@@ -18,7 +18,13 @@ import { DataExchange } from '@/components/module/data-exchange';
 import { EntityForm } from '@/components/module/entity-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useAccess } from '@/lib/auth/scope';
 import { useCollection, useCollectionItems, useEntityIndex } from '@/lib/data/store';
 import { fieldValue, stringField } from '@/lib/entity-values';
@@ -27,7 +33,7 @@ import { configOf, titleOfEntity } from '@/lib/module-config';
 import { moduleByCollection } from '@/lib/modules';
 import { FormValues, SelectField, asString } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
-import { CollectionKey } from '@/lib/types';
+import { BaseEntity, CollectionKey } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/utils/format';
 
@@ -83,9 +89,7 @@ export function ModuleList({
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const searchOf = config.searchOf as (entity: (typeof items)[number]) => string;
-    const active = Object.entries(relationFilters).filter(
-      ([, value]) => value && value !== 'all',
-    );
+    const active = Object.entries(relationFilters).filter(([, value]) => value && value !== 'all');
     const result = items.filter((item) => {
       if (only && stringField(item, only.field) !== only.value) return false;
       if (needle && !searchOf(item).toLowerCase().includes(needle)) return false;
@@ -120,7 +124,8 @@ export function ModuleList({
       else if (field.kind === 'address')
         defaults[field.name] = { street: '', zip: '', city: '', country: 'Schweiz' };
       else if (field.kind === 'switch') defaults[field.name] = false;
-      else if (field.kind === 'suggest') defaults[field.name] = field.suggestionsOf(defaults)[0] ?? '';
+      else if (field.kind === 'suggest')
+        defaults[field.name] = field.suggestionsOf(defaults)[0] ?? '';
       else defaults[field.name] = '';
     });
     return defaults;
@@ -227,14 +232,14 @@ export function ModuleList({
           }
         />
       ) : (
-        <ul
-          data-testid="entity-list"
-          className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3"
-        >
-          {filtered.map((item) => (
+        <EntityGrid
+          key={`${collection}|${query}|${statusFilter}|${sort}|${JSON.stringify(relationFilters)}`}
+          items={filtered}
+          render={(item) => (
             <li key={item.id}>
               <Link
                 href={`${moduleDef.path}/${item.id}`}
+                prefetch={false}
                 data-testid="entity-card"
                 className="flex h-full flex-col gap-2 rounded-xl border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-accent/40"
               >
@@ -256,8 +261,8 @@ export function ModuleList({
                 </p>
               </Link>
             </li>
-          ))}
-        </ul>
+          )}
+        />
       )}
 
       <EntityForm
@@ -268,6 +273,49 @@ export function ModuleList({
         initialValues={initialValues}
         onSubmit={handleCreate}
       />
+    </div>
+  );
+}
+
+/**
+ * Kartenliste in Schritten.
+ *
+ * Es werden nur die ersten Karten gezeichnet; weitere kommen auf Wunsch dazu.
+ * Bei sehr vielen Datensaetzen bleibt die Seite dadurch auch auf dem Telefon
+ * schnell. Der Zaehler beginnt bei jeder neuen Filterung von vorn, weil die
+ * aufrufende Stelle diese Komponente ueber ihren Schluessel neu aufbaut.
+ */
+const PAGE_SIZE = 30;
+
+function EntityGrid<T extends BaseEntity>({
+  items,
+  render,
+}: {
+  items: T[];
+  render: (item: T) => ReactNode;
+}) {
+  const t = useT();
+  const [count, setCount] = useState(PAGE_SIZE);
+  const visible = items.length <= count ? items : items.slice(0, count);
+
+  return (
+    <div className="flex flex-col gap-3">
+      <ul
+        data-testid="entity-list"
+        className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3"
+      >
+        {visible.map((item) => render(item))}
+      </ul>
+      {items.length > visible.length ? (
+        <Button
+          variant="outline"
+          className="self-center"
+          data-testid="load-more"
+          onClick={() => setCount((current) => current + PAGE_SIZE)}
+        >
+          {t('list.loadMore')} ({items.length - visible.length})
+        </Button>
+      ) : null}
     </div>
   );
 }
