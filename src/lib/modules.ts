@@ -25,6 +25,7 @@ import {
   KeyRound,
   LayoutDashboard,
   ListChecks,
+  MailPlus,
   MapPin,
   MessageSquareWarning,
   Network,
@@ -485,6 +486,14 @@ export const MODULES: ModuleDefinition[] = [
     group: 'admin',
     labelKey: 'module.activities',
     singularKey: 'module.activities.singular',
+  },
+  {
+    key: 'microsoft',
+    path: '/microsoft',
+    icon: MailPlus,
+    group: 'admin',
+    labelKey: 'module.microsoft',
+    singularKey: 'module.microsoft',
   },
   {
     key: 'settings',

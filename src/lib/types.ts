@@ -52,6 +52,7 @@ export type ModuleKey =
   | 'handover'
   | 'portal'
   | 'today'
+  | 'microsoft'
   | 'users'
   | 'activities'
   | 'settings';
@@ -67,6 +68,7 @@ export type CollectionKey = Exclude<
   | 'handover'
   | 'portal'
   | 'today'
+  | 'microsoft'
   | 'settings'
 >;
 
@@ -482,6 +484,12 @@ export interface Order extends BaseEntity {
   materials: MaterialItem[];
   signature: string;
   signedBy: string;
+  /** Nachricht aus Outlook, aus der der Auftrag entstanden ist. */
+  graphMessageId?: string;
+  /** Zugehoeriger Termin im Outlook-Kalender. */
+  graphEventId?: string;
+  /** Zeitpunkt des letzten Abgleichs mit Microsoft 365. */
+  graphSyncedAt?: string;
 }
 
 export type MaintenanceStatus = 'planned' | 'due' | 'overdue' | 'done';
@@ -1189,6 +1197,14 @@ export interface AppSettings {
    * Stelle.
    */
   activeUserId: string;
+  /** Verzeichnis-Kennung (Mandant) der Microsoft-365-Anbindung. */
+  microsoftTenantId?: string;
+  /** Anwendungs-Kennung der Registrierung im Entra ID. */
+  microsoftClientId?: string;
+  /** Ordner in Outlook, aus dem Nachrichten gelesen werden. */
+  microsoftMailFolder?: string;
+  /** Termine automatisch in beide Richtungen abgleichen. */
+  microsoftSyncCalendar?: boolean;
   /** Gewaehltes Branchenpaket; nur zur Anzeige der Vorauswahl. */
   industryPackage: IndustryPackage;
   /** Abgeschaltete Module; ihre Daten bleiben erhalten. */

@@ -14,6 +14,8 @@ export interface IntegrationDef {
   labelKey: TranslationKey;
   textKey: TranslationKey;
   status: IntegrationStatus;
+  /** Seite, auf der die Anbindung eingerichtet wird. */
+  href?: string;
 }
 
 export const INTEGRATIONS: IntegrationDef[] = [
@@ -28,6 +30,13 @@ export const INTEGRATIONS: IntegrationDef[] = [
     labelKey: 'integration.outlook',
     textKey: 'integration.outlookText',
     status: 'available',
+  },
+  {
+    key: 'microsoft',
+    labelKey: 'integration.microsoft',
+    textKey: 'integration.microsoftText',
+    status: 'available',
+    href: '/microsoft',
   },
   {
     key: 'entra',
