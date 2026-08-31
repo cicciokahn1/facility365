@@ -376,6 +376,27 @@ export const PLAYGROUND_CONDITION_OPTIONS: SelectOption[] = [
   { value: 'closed', labelKey: 'playground.condition.closed', tone: 'danger' },
 ];
 
+/** Geprueftes Brandschutzelement; 'custom' traegt eine eigene Bezeichnung. */
+export const FIRE_TYPE_OPTIONS: SelectOption[] = [
+  option('extinguisher', 'fire.type.extinguisher'),
+  option('alarm', 'fire.type.alarm'),
+  option('escapeRoute', 'fire.type.escapeRoute'),
+  option('emergencyExit', 'fire.type.emergencyExit'),
+  option('fireDoor', 'fire.type.fireDoor'),
+  option('smokeExtraction', 'fire.type.smokeExtraction'),
+  option('extinguishingWater', 'fire.type.extinguishingWater'),
+  option('signage', 'fire.type.signage'),
+  option('custom', 'fire.type.custom'),
+];
+
+/** Zustand einer Brandschutzeinrichtung nach der Kontrolle. */
+export const FIRE_CONDITION_OPTIONS: SelectOption[] = [
+  { value: 'good', labelKey: 'fire.condition.good', tone: 'success' },
+  { value: 'minor', labelKey: 'fire.condition.minor', tone: 'warning' },
+  { value: 'defect', labelKey: 'fire.condition.defect', tone: 'danger' },
+  { value: 'critical', labelKey: 'fire.condition.critical', tone: 'danger' },
+];
+
 /** Zustand eines Inventargegenstands oder Werkzeugs. */
 export const CONDITION_OPTIONS: SelectOption[] = [
   { value: 'new', labelKey: 'condition.new', tone: 'success' },

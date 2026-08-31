@@ -74,6 +74,7 @@ const ROLES: Record<UserRole, RoleAccess> = {
       rcd: 'write',
       inspections: 'write',
       playgroundchecks: 'write',
+      firechecks: 'write',
       keys: 'write',
       inventory: 'write',
       vehicles: 'write',

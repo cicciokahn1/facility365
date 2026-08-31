@@ -38,6 +38,7 @@ import {
   ShieldCheck,
   ShoppingBag,
   SprayCan,
+  FlameKindling,
   ToyBrick,
   Truck,
   UserCog,
@@ -311,6 +312,15 @@ export const MODULES: ModuleDefinition[] = [
     group: 'work',
     labelKey: 'module.playgroundchecks',
     singularKey: 'module.playgroundchecks.singular',
+  },
+  {
+    key: 'firechecks',
+    collection: 'firechecks',
+    path: '/firesafety',
+    icon: FlameKindling,
+    group: 'work',
+    labelKey: 'module.firechecks',
+    singularKey: 'module.firechecks.singular',
   },
   {
     key: 'damages',

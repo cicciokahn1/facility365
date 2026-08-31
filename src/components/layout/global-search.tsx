@@ -40,6 +40,7 @@ const SEARCHABLE = [
   'rcd',
   'inspections',
   'playgroundchecks',
+  'firechecks',
   'keys',
   'inventory',
   'vehicles',
@@ -123,6 +124,7 @@ function SearchDialog({
   const rcd = useCollectionItems('rcd');
   const inspections = useCollectionItems('inspections');
   const playgroundchecks = useCollectionItems('playgroundchecks');
+  const firechecks = useCollectionItems('firechecks');
   const keys = useCollectionItems('keys');
   const inventory = useCollectionItems('inventory');
   const vehicles = useCollectionItems('vehicles');
@@ -162,6 +164,7 @@ function SearchDialog({
       rcd,
       inspections,
       playgroundchecks,
+      firechecks,
       keys,
       inventory,
       vehicles,
@@ -194,6 +197,7 @@ function SearchDialog({
       damages,
       documents,
       energy,
+      firechecks,
       inspections,
       inventory,
       invoices,
