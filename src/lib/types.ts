@@ -29,6 +29,7 @@ export type ModuleKey =
   | 'rcd'
   | 'inspections'
   | 'playgroundchecks'
+  | 'firechecks'
   | 'keys'
   | 'inventory'
   | 'vehicles'
@@ -649,6 +650,58 @@ export interface PlaygroundCheck extends BaseEntity {
   orderId: string;
 }
 
+/** Geprueftes Brandschutzelement; frei erweiterbar ueber 'custom'. */
+export type FireCheckType =
+  | 'extinguisher'
+  | 'alarm'
+  | 'escapeRoute'
+  | 'emergencyExit'
+  | 'fireDoor'
+  | 'smokeExtraction'
+  | 'extinguishingWater'
+  | 'signage'
+  | 'custom';
+
+/** Zustand eines Brandschutzelements nach der Kontrolle. */
+export type FireCheckCondition = 'good' | 'minor' | 'defect' | 'critical';
+
+/** Kontrolle einer Brandschutzeinrichtung. */
+export interface FireCheck extends BaseEntity {
+  /** Bezeichnung der Kontrolle. */
+  title: string;
+  type: FireCheckType;
+  /** Eigene Bezeichnung, wenn die Art 'custom' ist. */
+  customType: string;
+  organizationId: string;
+  siteId: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  assetId: string;
+  /** Freie Bereichsangabe, z. B. Treppenhaus Ost. */
+  area: string;
+  date: string;
+  /** Person, welche die Kontrolle ausgefuehrt hat. */
+  inspector: string;
+  supplierId: string;
+  /** Verantwortliche Person fuer die Behebung. */
+  assigneeUserId: string;
+  assigneeTeam: string;
+  condition: FireCheckCondition;
+  /** Festgestellte Maengel im Klartext. */
+  defects: string;
+  measures: string;
+  /** Frist fuer die Behebung der Maengel. */
+  dueDate: string;
+  interval: MaintenanceInterval;
+  nextDate: string;
+  status: RcdStatus;
+  /** Schaden, der aus den Maengeln erstellt wurde. */
+  damageId: string;
+  /** Auftrag, der aus den Maengeln erstellt wurde. */
+  orderId: string;
+}
+
 /** Stand eines Schluessels. */
 export type KeyStatus = 'available' | 'issued' | 'lost' | 'retired';
 
@@ -1225,6 +1278,7 @@ export interface CollectionMap {
   rcd: RcdCheck;
   inspections: Inspection;
   playgroundchecks: PlaygroundCheck;
+  firechecks: FireCheck;
   keys: KeyEntity;
   inventory: InventoryItem;
   vehicles: Vehicle;

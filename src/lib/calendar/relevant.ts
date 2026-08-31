@@ -22,6 +22,7 @@ const COLLECTION_OF: Record<CalendarEventKind, CollectionKey> = {
   rcd: 'rcd',
   inspection: 'inspections',
   playground: 'playgroundchecks',
+  fire: 'firechecks',
   vehicle: 'vehicles',
   document: 'documents',
   contract: 'contracts',
@@ -38,6 +39,7 @@ export function useRelevantEvents(): CalendarEvent[] {
   const rcd = useCollectionItems('rcd');
   const inspections = useCollectionItems('inspections');
   const playgroundchecks = useCollectionItems('playgroundchecks');
+  const firechecks = useCollectionItems('firechecks');
   const documents = useCollectionItems('documents');
   const vehicles = useCollectionItems('vehicles');
   const contracts = useCollectionItems('contracts');
@@ -54,6 +56,7 @@ export function useRelevantEvents(): CalendarEvent[] {
     add('rcd', rcd);
     add('inspections', inspections);
     add('playgroundchecks', playgroundchecks);
+    add('firechecks', firechecks);
     add('vehicles', vehicles);
     add('documents', documents);
     add('contracts', contracts);
@@ -64,6 +67,7 @@ export function useRelevantEvents(): CalendarEvent[] {
     cleaningtasks,
     contracts,
     documents,
+    firechecks,
     inspections,
     legionella,
     maintenances,

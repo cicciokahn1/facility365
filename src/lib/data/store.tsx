@@ -40,6 +40,7 @@ import { newId, nextNumber } from '@/lib/utils/id';
 const TRACKED: CollectionKey[] = [
   'inspections',
   'playgroundchecks',
+  'firechecks',
   'orders',
   'maintenances',
   'damages',

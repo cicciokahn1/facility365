@@ -51,6 +51,8 @@ import {
   SOLAR_STATUS_OPTIONS,
   PLAYGROUND_CONDITION_OPTIONS,
   PLAYGROUND_TYPE_OPTIONS,
+  FIRE_CONDITION_OPTIONS,
+  FIRE_TYPE_OPTIONS,
   SOURCE_CATEGORY_OPTIONS,
   SOURCE_RATING_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
@@ -925,6 +927,117 @@ const playgroundChecksConfig: ModuleConfig<'playgroundchecks'> = {
       .join(' '),
 };
 
+/** Ueblicher Abstand je Brandschutzelement nach Praxis. */
+const FIRE_INTERVALS: Record<string, MaintenanceInterval> = {
+  extinguisher: 'annual',
+  alarm: 'annual',
+  escapeRoute: 'monthly',
+  emergencyExit: 'monthly',
+  fireDoor: 'semiannual',
+  smokeExtraction: 'annual',
+  extinguishingWater: 'annual',
+  signage: 'semiannual',
+  custom: 'annual',
+};
+
+/**
+ * Naechste Brandschutzkontrolle vorschlagen.
+ *
+ * Beim Wechsel der Kontrollart wird zusaetzlich der uebliche Abstand gesetzt,
+ * ein bereits gewaehlter Abstand bleibt beim Aendern des Datums erhalten.
+ */
+const withFireNextDate = (values: FormValues): FormValues => {
+  const interval = asString(values.interval) as MaintenanceInterval;
+  const months = INTERVAL_MONTHS[interval] ?? 12;
+  const next = nextControlDate(asString(values.date), months);
+  return next ? { interval, nextDate: next } : { interval };
+};
+
+const fireChecksConfig: ModuleConfig<'firechecks'> = {
+  collection: 'firechecks',
+  titleOf: (check) => check.title || check.number,
+  statusField: 'status',
+  statusOptions: RCD_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'type',
+      labelKey: 'fire.kind',
+      options: FIRE_TYPE_OPTIONS,
+      filter: true,
+      applyChange: (value, values) =>
+        withFireNextDate({
+          ...values,
+          interval: FIRE_INTERVALS[asString(value)] ?? values.interval,
+        }),
+    },
+    text('customType', 'fire.customType', {
+      visibleWhen: (values) => values.type === 'custom',
+    }),
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: RCD_STATUS_OPTIONS, filter: true },
+    {
+      kind: 'relation',
+      name: 'propertyId',
+      labelKey: 'module.properties.singular',
+      collection: 'properties',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
+    text('area', 'fire.area'),
+    { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    {
+      kind: 'date',
+      name: 'date',
+      labelKey: 'fire.date',
+      applyChange: (value, values) => withFireNextDate({ ...values, date: value }),
+    },
+    text('inspector', 'fire.inspector'),
+    {
+      kind: 'select',
+      name: 'condition',
+      labelKey: 'fire.conditionLabel',
+      options: FIRE_CONDITION_OPTIONS,
+      filter: true,
+    },
+    { kind: 'relation', name: 'supplierId', labelKey: 'module.suppliers.singular', collection: 'suppliers' },
+    {
+      kind: 'select',
+      name: 'interval',
+      labelKey: 'legionella.interval',
+      options: INTERVAL_OPTIONS,
+      filter: true,
+      applyChange: (value, values) => withFireNextDate({ ...values, interval: value }),
+    },
+    { kind: 'date', name: 'nextDate', labelKey: 'fire.nextControl' },
+    { kind: 'relation', name: 'assigneeUserId', labelKey: 'fire.responsible', collection: 'users' },
+    { kind: 'date', name: 'dueDate', labelKey: 'fire.dueDate' },
+    { kind: 'textarea', name: 'defects', labelKey: 'fire.defects', span: 2 },
+    { kind: 'textarea', name: 'measures', labelKey: 'legionella.measures', span: 2 },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (check) =>
+    [check.number, check.title, check.customType, check.area, check.inspector, check.defects]
+      .filter(Boolean)
+      .join(' '),
+};
+
 const keysConfig: ModuleConfig<'keys'> = {
   collection: 'keys',
   titleOf: (key) => key.title || key.keyNumber || key.number,
@@ -1673,6 +1786,7 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   rcd: rcdConfig,
   inspections: inspectionsConfig,
   playgroundchecks: playgroundChecksConfig,
+  firechecks: fireChecksConfig,
   keys: keysConfig,
   inventory: inventoryConfig,
   vehicles: vehiclesConfig,

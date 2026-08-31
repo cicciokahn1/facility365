@@ -23,6 +23,7 @@ export type CalendarEventKind =
   | 'rcd'
   | 'inspection'
   | 'playground'
+  | 'fire'
   | 'document'
   | 'vehicle'
   | 'contract'
@@ -92,6 +93,7 @@ export function useCalendarEvents(): CalendarEvent[] {
   const rcd = useCollectionItems('rcd');
   const inspections = useCollectionItems('inspections');
   const playgroundChecks = useCollectionItems('playgroundchecks');
+  const fireChecks = useCollectionItems('firechecks');
   const documents = useCollectionItems('documents');
   const vehicles = useCollectionItems('vehicles');
   const solarPlants = useCollectionItems('solarplants');
@@ -231,6 +233,32 @@ export function useCalendarEvents(): CalendarEvent[] {
           assetId: '',
           recurring: false,
         });
+      });
+
+    /** Brandschutz: naechste Kontrolle und Frist zur Behebung der Maengel. */
+    fireChecks
+      .filter((check) => check.status !== 'done')
+      .forEach((check) => {
+        const title = check.title || check.number;
+        const shared = {
+          kind: 'fire' as const,
+          sourceId: check.id,
+          href: `/firesafety/${check.id}`,
+          labelKey: 'module.firechecks.singular' as const,
+          title,
+          time: '',
+          customerId: '',
+          propertyId: check.propertyId,
+          buildingId: check.buildingId,
+          assetId: check.assetId,
+          recurring: false,
+        };
+        if (check.nextDate) {
+          events.push({ ...shared, id: `fire-${check.id}`, date: check.nextDate });
+        }
+        if (check.dueDate) {
+          events.push({ ...shared, id: `fire-due-${check.id}`, date: check.dueDate });
+        }
       });
 
     /** Dokumente: Ablauf der Gueltigkeit. */
@@ -390,6 +418,7 @@ export function useCalendarEvents(): CalendarEvent[] {
     orders,
     documents,
     playgroundChecks,
+    fireChecks,
     rcd,
     solarPlants,
     vehicles,
