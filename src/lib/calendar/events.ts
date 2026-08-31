@@ -25,6 +25,7 @@ export type CalendarEventKind =
   | 'document'
   | 'vehicle'
   | 'contract'
+  | 'solar'
   | 'cleaning';
 
 export interface CalendarEvent {
@@ -91,6 +92,7 @@ export function useCalendarEvents(): CalendarEvent[] {
   const inspections = useCollectionItems('inspections');
   const documents = useCollectionItems('documents');
   const vehicles = useCollectionItems('vehicles');
+  const solarPlants = useCollectionItems('solarplants');
   const contracts = useCollectionItems('contracts');
   const cleaningTasks = useCollectionItems('cleaningtasks');
   const cleaningPlans = useCollectionItems('cleaningplans');
@@ -334,6 +336,26 @@ export function useCalendarEvents(): CalendarEvent[] {
         );
       });
 
+    solarPlants
+      .filter((plant) => plant.status !== 'inactive' && Boolean(plant.nextMaintenance))
+      .forEach((plant) => {
+        events.push({
+          id: `solar-${plant.id}`,
+          kind: 'solar',
+          sourceId: plant.id,
+          href: `/solar/${plant.id}`,
+          labelKey: 'solar.nextMaintenance',
+          title: plant.name || plant.number,
+          date: plant.nextMaintenance,
+          time: '',
+          customerId: '',
+          propertyId: plant.propertyId,
+          buildingId: plant.buildingId,
+          assetId: plant.assetId,
+          recurring: false,
+        });
+      });
+
     return events.sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
   }, [
     cleaningAreas,
@@ -346,6 +368,7 @@ export function useCalendarEvents(): CalendarEvent[] {
     orders,
     documents,
     rcd,
+    solarPlants,
     vehicles,
   ]);
 }

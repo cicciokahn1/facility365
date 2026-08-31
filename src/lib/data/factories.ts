@@ -38,6 +38,8 @@ import {
   Report,
   Room,
   Site,
+  SolarPlant,
+  SolarYield,
   StockItem,
   Supplier,
   Tool,
@@ -67,6 +69,8 @@ export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   assets: 'ANL',
   documents: 'DK',
   energy: 'EN',
+  solarplants: 'PV',
+  solaryields: 'PVM',
   orders: 'AU',
   maintenances: 'WA',
   legionella: 'LEG',
@@ -238,6 +242,29 @@ export const emptyEnergyEntry = (): Omit<EnergyEntry, 'id' | 'number'> => ({
   buildingId: '',
   month: new Date().toISOString().slice(0, 7),
   unit: 'kWh',
+});
+
+export const emptySolarPlant = (): Omit<SolarPlant, 'id' | 'number'> => ({
+  ...base(),
+  name: '',
+  status: 'active',
+  propertyId: '',
+  buildingId: '',
+  assetId: '',
+  commissionedAt: '',
+  moduleType: '',
+  orientation: '',
+  inverter: '',
+  batteryType: '',
+  supplierId: '',
+  co2Factor: 128,
+  nextMaintenance: '',
+});
+
+export const emptySolarYield = (): Omit<SolarYield, 'id' | 'number'> => ({
+  ...base(),
+  plantId: '',
+  month: new Date().toISOString().slice(0, 7),
 });
 
 export const emptyLegionellaCheck = (): Omit<LegionellaCheck, 'id' | 'number'> => ({
@@ -648,6 +675,8 @@ const FACTORIES = {
   assets: emptyAsset,
   documents: emptyDocument,
   energy: emptyEnergyEntry,
+  solarplants: emptySolarPlant,
+  solaryields: emptySolarYield,
   orders: emptyOrder,
   maintenances: emptyMaintenance,
   legionella: emptyLegionellaCheck,

@@ -31,6 +31,8 @@ const SEARCHABLE = [
   'assets',
   'documents',
   'energy',
+  'solarplants',
+  'solaryields',
   'orders',
   'maintenances',
   'legionella',
@@ -110,6 +112,8 @@ function SearchDialog({
   const assets = useCollectionItems('assets');
   const documents = useCollectionItems('documents');
   const energy = useCollectionItems('energy');
+  const solarplants = useCollectionItems('solarplants');
+  const solaryields = useCollectionItems('solaryields');
   const orders = useCollectionItems('orders');
   const maintenances = useCollectionItems('maintenances');
   const legionella = useCollectionItems('legionella');
@@ -145,6 +149,8 @@ function SearchDialog({
       assets,
       documents,
       energy,
+      solarplants,
+      solaryields,
       orders,
       maintenances,
       legionella,
@@ -196,6 +202,8 @@ function SearchDialog({
       reports,
       rooms,
       sites,
+      solarplants,
+      solaryields,
       stock,
       suppliers,
       tools,

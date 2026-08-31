@@ -20,6 +20,8 @@ export type ModuleKey =
   | 'assets'
   | 'documents'
   | 'energy'
+  | 'solarplants'
+  | 'solaryields'
   | 'orders'
   | 'maintenances'
   | 'legionella'
@@ -306,6 +308,62 @@ export interface EnergyEntry extends BaseEntity {
   month: string;
   consumption?: number;
   unit: string;
+  cost?: number;
+}
+
+/** Stand einer Photovoltaikanlage. */
+export type SolarPlantStatus = 'planned' | 'active' | 'inactive';
+
+/** Photovoltaikanlage einer Liegenschaft. */
+export interface SolarPlant extends BaseEntity {
+  name: string;
+  status: SolarPlantStatus;
+  propertyId: string;
+  buildingId: string;
+  /** Verknuepfte technische Anlage, damit Wartung und Historie zusammenlaufen. */
+  assetId: string;
+  /** Leistung in Kilowatt-Peak. */
+  power?: number;
+  /** Datum der Inbetriebnahme. */
+  commissionedAt: string;
+  /** Anzahl Module. */
+  moduleCount?: number;
+  moduleType: string;
+  orientation: string;
+  inverter: string;
+  inverterCount?: number;
+  /** Speicherkapazitaet in Kilowattstunden; 0 oder leer bedeutet kein Speicher. */
+  batteryCapacity?: number;
+  batteryType: string;
+  supplierId: string;
+  /** Verguetung je eingespeiste Kilowattstunde. */
+  feedInTariff?: number;
+  /** Strompreis je Kilowattstunde fuer die Bewertung des Eigenverbrauchs. */
+  electricityPrice?: number;
+  /** Gramm CO2 je Kilowattstunde, die durch Solarstrom vermieden werden. */
+  co2Factor?: number;
+  investment?: number;
+  nextMaintenance: string;
+}
+
+/** Monatswerte einer Photovoltaikanlage. */
+export interface SolarYield extends BaseEntity {
+  plantId: string;
+  /** Monat als YYYY-MM. */
+  month: string;
+  /** Erzeugte Energie in Kilowattstunden. */
+  production?: number;
+  /** Direkt genutzte Energie in Kilowattstunden. */
+  selfUse?: number;
+  /** Ins Netz abgegebene Energie in Kilowattstunden. */
+  feedIn?: number;
+  /** Aus dem Speicher entnommene Energie in Kilowattstunden. */
+  batteryUse?: number;
+  /** Verguetung der Einspeisung. */
+  revenue?: number;
+  /** Eingesparte Stromkosten durch Eigenverbrauch. */
+  savings?: number;
+  /** Betriebskosten des Monats. */
   cost?: number;
 }
 
@@ -1096,6 +1154,8 @@ export interface CollectionMap {
   assets: Asset;
   documents: DocumentEntity;
   energy: EnergyEntry;
+  solarplants: SolarPlant;
+  solaryields: SolarYield;
   orders: Order;
   maintenances: Maintenance;
   legionella: LegionellaCheck;

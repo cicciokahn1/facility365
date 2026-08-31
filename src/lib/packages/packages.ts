@@ -39,6 +39,8 @@ export const OPTIONAL_MODULES: ModuleKey[] = [
   'sites',
   'suppliers',
   'energy',
+  'solarplants',
+  'solaryields',
   'keys',
   'inventory',
   'tools',
@@ -73,7 +75,15 @@ const CLEANING: ModuleKey[] = [
   'cleaningcomplaints',
 ];
 
-const TECHNICS: ModuleKey[] = ['energy', 'keys', 'inventory', 'tools', 'stock'];
+const TECHNICS: ModuleKey[] = [
+  'energy',
+  'solarplants',
+  'solaryields',
+  'keys',
+  'inventory',
+  'tools',
+  'stock',
+];
 
 const CONTROLS: ModuleKey[] = ['legionella', 'rcd', 'inspections', 'audit', 'handover'];
 

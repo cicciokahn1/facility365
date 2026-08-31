@@ -215,6 +215,13 @@ export const ENERGY_TYPE_OPTIONS: SelectOption[] = [
   option('other', 'energy.other'),
 ];
 
+/** Stand einer Photovoltaikanlage. */
+export const SOLAR_STATUS_OPTIONS: SelectOption[] = [
+  option('planned', 'solar.statusPlanned'),
+  option('active', 'solar.statusActive'),
+  option('inactive', 'solar.statusInactive'),
+];
+
 /** Kategorien einer Anlage; "Sonstige" faengt alles Uebrige auf. */
 export const ASSET_CATEGORY_OPTIONS: SelectOption[] = [
   option('heating', 'assetCategory.heating'),
