@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 
 import { EmptyState } from '@/components/common/empty-state';
+import { WeatherWidget } from '@/components/modules/weather-widget';
 import { StatusBadge } from '@/components/common/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding/logo';
@@ -237,20 +238,29 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-5">
       <header className="flex items-center justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight">{t('module.dashboard')}</h1>
           <p className="text-sm text-muted-foreground">
             {settings.profileName ? `${t('dashboard.greeting.day')}, ${settings.profileName}` : t('app.tagline')}
           </p>
         </div>
-        {/* eslint-disable-next-line @next/next/no-img-element -- Data-URL aus den Einstellungen */}
-        <img
-          src={isBrandLogo(settings.companyLogo) ? BRAND_LOGO_SRC : settings.companyLogo}
-          alt={settings.companyName || 'Facility365'}
-          data-testid="dashboard-logo"
-          className="h-11 w-auto max-w-[150px] shrink-0 rounded object-contain dark:bg-white/95 dark:p-1 sm:h-14 sm:max-w-[200px]"
-        />
+        <div className="flex shrink-0 items-center gap-3">
+          <div className="hidden sm:block">
+            <WeatherWidget />
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- Data-URL aus den Einstellungen */}
+          <img
+            src={isBrandLogo(settings.companyLogo) ? BRAND_LOGO_SRC : settings.companyLogo}
+            alt={settings.companyName || 'Facility365'}
+            data-testid="dashboard-logo"
+            className="h-11 w-auto max-w-[150px] shrink-0 rounded object-contain dark:bg-white/95 dark:p-1 sm:h-14 sm:max-w-[200px]"
+          />
+        </div>
       </header>
+
+      <div className="sm:hidden">
+        <WeatherWidget />
+      </div>
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
