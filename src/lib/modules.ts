@@ -50,7 +50,23 @@ import {
 import { TranslationKey } from '@/lib/i18n/dictionary';
 import { CollectionKey, ModuleKey } from '@/lib/types';
 
-export type NavGroup = 'overview' | 'objects' | 'work' | 'cleaning' | 'business' | 'system';
+/**
+ * Hauptordner der Navigation. `overview` steht ohne Ordner zuoberst, alle
+ * uebrigen Ordner klappen erst beim Oeffnen auf.
+ */
+export type NavGroup =
+  | 'overview'
+  | 'objects'
+  | 'technics'
+  | 'work'
+  | 'cleaning'
+  | 'energy'
+  | 'operations'
+  | 'documents'
+  | 'finance'
+  | 'analytics'
+  | 'users'
+  | 'admin';
 
 export interface ModuleDefinition {
   key: ModuleKey;
@@ -165,7 +181,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'assets',
     path: '/assets',
     icon: Boxes,
-    group: 'objects',
+    group: 'technics',
     labelKey: 'module.assets',
     singularKey: 'module.assets.singular',
   },
@@ -174,7 +190,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'documents',
     path: '/documents',
     icon: Files,
-    group: 'objects',
+    group: 'documents',
     labelKey: 'module.documents',
     singularKey: 'module.documents.singular',
   },
@@ -183,7 +199,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'energy',
     path: '/energy',
     icon: Gauge,
-    group: 'objects',
+    group: 'energy',
     labelKey: 'module.energy',
     singularKey: 'module.energy.singular',
   },
@@ -192,7 +208,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'solarplants',
     path: '/solar',
     icon: Sun,
-    group: 'objects',
+    group: 'energy',
     labelKey: 'module.solarplants',
     singularKey: 'module.solarplants.singular',
   },
@@ -201,7 +217,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'solaryields',
     path: '/solar/yields',
     icon: SunMedium,
-    group: 'objects',
+    group: 'energy',
     labelKey: 'module.solaryields',
     singularKey: 'module.solaryields.singular',
   },
@@ -210,7 +226,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'keys',
     path: '/keys',
     icon: KeyRound,
-    group: 'objects',
+    group: 'operations',
     labelKey: 'module.keys',
     singularKey: 'module.keys.singular',
   },
@@ -219,7 +235,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'inventory',
     path: '/inventory',
     icon: Boxes,
-    group: 'objects',
+    group: 'operations',
     labelKey: 'module.inventory',
     singularKey: 'module.inventory.singular',
   },
@@ -228,7 +244,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'tools',
     path: '/tools',
     icon: Wrench,
-    group: 'objects',
+    group: 'operations',
     labelKey: 'module.tools',
     singularKey: 'module.tools.singular',
   },
@@ -237,7 +253,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'vehicles',
     path: '/vehicles',
     icon: Truck,
-    group: 'objects',
+    group: 'operations',
     labelKey: 'module.vehicles',
     singularKey: 'module.vehicles.singular',
   },
@@ -246,7 +262,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'stock',
     path: '/stock',
     icon: PackageSearch,
-    group: 'objects',
+    group: 'operations',
     labelKey: 'module.stock',
     singularKey: 'module.stock.singular',
   },
@@ -255,7 +271,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'contracts',
     path: '/contracts',
     icon: FileSignature,
-    group: 'business',
+    group: 'documents',
     labelKey: 'module.contracts',
     singularKey: 'module.contracts.singular',
   },
@@ -273,7 +289,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'maintenances',
     path: '/maintenances',
     icon: Wrench,
-    group: 'work',
+    group: 'technics',
     labelKey: 'module.maintenances',
     singularKey: 'module.maintenances.singular',
   },
@@ -282,7 +298,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'legionella',
     path: '/legionella',
     icon: Droplets,
-    group: 'work',
+    group: 'energy',
     labelKey: 'module.legionella',
     singularKey: 'module.legionella.singular',
   },
@@ -291,7 +307,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'rcd',
     path: '/rcd',
     icon: Zap,
-    group: 'work',
+    group: 'energy',
     labelKey: 'module.rcd',
     singularKey: 'module.rcd.singular',
   },
@@ -300,7 +316,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'inspections',
     path: '/inspections',
     icon: ClipboardCheck,
-    group: 'work',
+    group: 'technics',
     labelKey: 'module.inspections',
     singularKey: 'module.inspections.singular',
   },
@@ -309,7 +325,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'playgroundchecks',
     path: '/playgrounds',
     icon: ToyBrick,
-    group: 'work',
+    group: 'technics',
     labelKey: 'module.playgroundchecks',
     singularKey: 'module.playgroundchecks.singular',
   },
@@ -318,7 +334,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'firechecks',
     path: '/firesafety',
     icon: FlameKindling,
-    group: 'work',
+    group: 'technics',
     labelKey: 'module.firechecks',
     singularKey: 'module.firechecks.singular',
   },
@@ -345,7 +361,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'quotes',
     path: '/quotes',
     icon: FileSpreadsheet,
-    group: 'business',
+    group: 'finance',
     labelKey: 'module.quotes',
     singularKey: 'module.quotes.singular',
   },
@@ -354,7 +370,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'invoices',
     path: '/invoices',
     icon: Receipt,
-    group: 'business',
+    group: 'finance',
     labelKey: 'module.invoices',
     singularKey: 'module.invoices.singular',
   },
@@ -424,7 +440,7 @@ export const MODULES: ModuleDefinition[] = [
     key: 'analytics',
     path: '/analytics',
     icon: FileSpreadsheet,
-    group: 'business',
+    group: 'analytics',
     labelKey: 'module.analytics',
     singularKey: 'module.analytics',
   },
@@ -432,7 +448,7 @@ export const MODULES: ModuleDefinition[] = [
     key: 'audit',
     path: '/audit',
     icon: ClipboardCheck,
-    group: 'work',
+    group: 'analytics',
     labelKey: 'module.audit',
     singularKey: 'module.audit',
   },
@@ -448,7 +464,7 @@ export const MODULES: ModuleDefinition[] = [
     key: 'portal',
     path: '/portal',
     icon: Handshake,
-    group: 'business',
+    group: 'operations',
     labelKey: 'module.portal',
     singularKey: 'module.portal',
   },
@@ -457,7 +473,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'users',
     path: '/users',
     icon: UserCog,
-    group: 'system',
+    group: 'users',
     labelKey: 'module.users',
     singularKey: 'module.users.singular',
   },
@@ -466,7 +482,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: 'activities',
     path: '/activities',
     icon: ShieldCheck,
-    group: 'system',
+    group: 'admin',
     labelKey: 'module.activities',
     singularKey: 'module.activities.singular',
   },
@@ -474,20 +490,39 @@ export const MODULES: ModuleDefinition[] = [
     key: 'settings',
     path: '/settings',
     icon: Settings,
-    group: 'system',
+    group: 'admin',
     labelKey: 'module.settings',
     singularKey: 'module.settings',
   },
 ];
 
-export const NAV_GROUPS: { key: NavGroup; labelKey: TranslationKey }[] = [
-  { key: 'overview', labelKey: 'nav.overview' },
-  { key: 'objects', labelKey: 'nav.objects' },
-  { key: 'work', labelKey: 'nav.work' },
-  { key: 'cleaning', labelKey: 'nav.cleaning' },
-  { key: 'business', labelKey: 'nav.business' },
-  { key: 'system', labelKey: 'nav.system' },
+export interface NavGroupDefinition {
+  key: NavGroup;
+  labelKey: TranslationKey;
+  icon: LucideIcon;
+  /** Steht ohne Ordner direkt in der Navigation. */
+  flat?: boolean;
+}
+
+export const NAV_GROUPS: NavGroupDefinition[] = [
+  { key: 'overview', labelKey: 'nav.overview', icon: LayoutDashboard, flat: true },
+  { key: 'objects', labelKey: 'nav.objects', icon: Building2 },
+  { key: 'technics', labelKey: 'nav.technics', icon: Wrench },
+  { key: 'work', labelKey: 'nav.work', icon: ClipboardList },
+  { key: 'cleaning', labelKey: 'nav.cleaning', icon: SprayCan },
+  { key: 'energy', labelKey: 'nav.energy', icon: Gauge },
+  { key: 'operations', labelKey: 'nav.operations', icon: PackageSearch },
+  { key: 'documents', labelKey: 'nav.documents', icon: Files },
+  { key: 'finance', labelKey: 'nav.finance', icon: Receipt },
+  { key: 'analytics', labelKey: 'nav.analytics', icon: FileSpreadsheet },
+  { key: 'users', labelKey: 'nav.users', icon: UserCog },
+  { key: 'admin', labelKey: 'nav.admin', icon: Settings },
 ];
+
+/** Ordner, in dem die aufgerufene Seite liegt - fuer das automatische Aufklappen. */
+export const groupOfPath = (pathname: string): NavGroup | undefined =>
+  MODULES.filter((module) => pathname === module.path || pathname.startsWith(`${module.path}/`))
+    .sort((a, b) => b.path.length - a.path.length)[0]?.group;
 
 /** Vier Module in der Telefonnavigation; alles Weitere liegt unter «Mehr». */
 export const MOBILE_NAV_KEYS: ModuleKey[] = ['dashboard', 'orders', 'damages', 'assets'];

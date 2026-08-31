@@ -3,12 +3,19 @@
 /** Navigation am unteren Rand fuer Smartphones. */
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { MoreHorizontal } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ChevronRight, MoreHorizontal } from 'lucide-react';
 
 import { useAccess } from '@/lib/auth/scope';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { MOBILE_NAV_KEYS, MODULES, NAV_GROUPS, moduleByKey } from '@/lib/modules';
+import {
+  MOBILE_NAV_KEYS,
+  MODULES,
+  NAV_GROUPS,
+  NavGroup,
+  groupOfPath,
+  moduleByKey,
+} from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
 import { cn } from '@/lib/utils';
 
@@ -18,11 +25,26 @@ export function BottomNav() {
   const [open, setOpen] = useState(false);
   const access = useAccess();
   const primary = MOBILE_NAV_KEYS.map(moduleByKey).filter((module) => access.canRead(module.key));
-  /** Im Menue steht jede Funktion unter ihrer Gruppe - auch die vier unten. */
-  const groups = NAV_GROUPS.map((group) => ({
-    ...group,
-    modules: MODULES.filter((module) => module.group === group.key && access.canRead(module.key)),
-  })).filter((group) => group.modules.length > 0);
+  /** Im Menue steht jede Funktion in ihrem Ordner - auch die vier unten. */
+  const groups = useMemo(
+    () =>
+      NAV_GROUPS.map((group) => ({
+        ...group,
+        modules: MODULES.filter(
+          (module) => module.group === group.key && access.canRead(module.key),
+        ),
+      })).filter((group) => group.modules.length > 0),
+    [access],
+  );
+  /** Ordner bleiben zu, bis sie gebraucht werden; nur der aktuelle ist offen. */
+  const current = groupOfPath(pathname);
+  const [folders, setFolders] = useState<Partial<Record<NavGroup, boolean>>>({});
+  const isOpen = (key: NavGroup) => folders[key] ?? key === current;
+  const toggle = (key: NavGroup) =>
+    setFolders((state) => ({
+      ...state,
+      [key]: !(state[key] ?? key === current),
+    }));
 
   return (
     <nav
@@ -63,38 +85,61 @@ export function BottomNav() {
                 <SheetTitle>{t('nav.menu')}</SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-4 p-4 pt-0">
-                {groups.map((group) => (
-                  <section key={group.key} data-testid={`nav-group-${group.key}`}>
-                    <p className="pb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t(group.labelKey)}
-                    </p>
-                    <ul className="grid grid-cols-3 gap-2">
-                      {group.modules.map((module) => {
-                        const Icon = module.icon;
-                        const active =
-                          pathname === module.path || pathname.startsWith(`${module.path}/`);
-                        return (
-                          <li key={module.key}>
-                            <Link
-                              href={module.path}
-                              onClick={() => setOpen(false)}
-                              data-active={active}
-                              className={cn(
-                                'flex h-20 flex-col items-center justify-center gap-1.5 rounded-xl border bg-card px-1 py-2 text-center text-[11px] font-medium leading-tight',
-                                active && 'border-primary/40 bg-brand-soft',
-                              )}
-                            >
-                              <Icon className="size-5 text-primary" aria-hidden />
-                              <span className="line-clamp-2 w-full break-words hyphens-auto">
-                                {t(module.labelKey)}
-                              </span>
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </section>
-                ))}
+                {groups.map((group) => {
+                  const expanded = group.flat || isOpen(group.key);
+                  const GroupIcon = group.icon;
+                  return (
+                    <section key={group.key} data-testid={`nav-group-${group.key}`}>
+                      {group.flat ? null : (
+                        <button
+                          type="button"
+                          onClick={() => toggle(group.key)}
+                          aria-expanded={expanded}
+                          data-testid={`nav-folder-${group.key}`}
+                          className="mb-2 flex w-full items-center gap-2 rounded-lg border bg-card px-3 py-2 text-left text-sm font-semibold"
+                        >
+                          <GroupIcon className="size-4 shrink-0 text-primary" aria-hidden />
+                          <span className="flex-1 truncate">{t(group.labelKey)}</span>
+                          <ChevronRight
+                            className={cn(
+                              'size-4 shrink-0 transition-transform',
+                              expanded && 'rotate-90',
+                            )}
+                            aria-hidden
+                          />
+                        </button>
+                      )}
+                      {/* Kacheln entstehen erst beim Oeffnen des Ordners. */}
+                      {!expanded ? null : (
+                        <ul className="grid grid-cols-3 gap-2">
+                          {group.modules.map((module) => {
+                            const Icon = module.icon;
+                            const active =
+                              pathname === module.path || pathname.startsWith(`${module.path}/`);
+                            return (
+                              <li key={module.key}>
+                                <Link
+                                  href={module.path}
+                                  onClick={() => setOpen(false)}
+                                  data-active={active}
+                                  className={cn(
+                                    'flex h-20 flex-col items-center justify-center gap-1.5 rounded-xl border bg-card px-1 py-2 text-center text-[11px] font-medium leading-tight',
+                                    active && 'border-primary/40 bg-brand-soft',
+                                  )}
+                                >
+                                  <Icon className="size-5 text-primary" aria-hidden />
+                                  <span className="line-clamp-2 w-full break-words hyphens-auto">
+                                    {t(module.labelKey)}
+                                  </span>
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </section>
+                  );
+                })}
               </div>
             </SheetContent>
           </Sheet>

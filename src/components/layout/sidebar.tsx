@@ -3,13 +3,14 @@
 /** Seitenleiste fuer Tablet und Desktop. */
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LogOut } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ChevronRight, LogOut } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/provider';
 import { useAccess } from '@/lib/auth/scope';
 import { BRAND_MARK_SRC, isBrandLogo } from '@/lib/branding/logo';
-import { MODULES, NAV_GROUPS } from '@/lib/modules';
+import { MODULES, NAV_GROUPS, NavGroup, groupOfPath } from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
 import { initials } from '@/lib/utils/format';
@@ -22,6 +23,26 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const auth = useAuth();
   const { settings } = useSettings();
   const access = useAccess();
+  /** Nur der Ordner der aktuellen Seite ist zu Beginn offen; weitere kommen dazu. */
+  const current = groupOfPath(pathname);
+  const [folders, setFolders] = useState<Partial<Record<NavGroup, boolean>>>({});
+  const isOpen = (key: NavGroup) => folders[key] ?? key === current;
+  const toggle = (key: NavGroup) =>
+    setFolders((state) => ({
+      ...state,
+      [key]: !(state[key] ?? key === current),
+    }));
+
+  const groups = useMemo(
+    () =>
+      NAV_GROUPS.map((group) => ({
+        ...group,
+        modules: MODULES.filter(
+          (module) => module.group === group.key && access.canRead(module.key),
+        ),
+      })).filter((group) => group.modules.length > 0),
+    [access],
+  );
 
   return (
     <nav className="flex h-full w-full flex-col gap-1 overflow-y-auto bg-sidebar px-3 py-4">
@@ -44,40 +65,60 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         </span>
       </Link>
 
-      {NAV_GROUPS.map((group) => {
-        const modules = MODULES.filter(
-          (module) => module.group === group.key && access.canRead(module.key),
-        );
-        if (modules.length === 0) return null;
+      {groups.map((group) => {
+        const modules = group.modules;
+        const open = group.flat || isOpen(group.key);
+        const GroupIcon = group.icon;
         return (
-          <div key={group.key} className="mb-2">
-            <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {t(group.labelKey)}
-            </p>
-            <ul className="space-y-0.5">
-              {modules.map((module) => {
-                const active = pathname === module.path || pathname.startsWith(`${module.path}/`);
-                const Icon = module.icon;
-                return (
-                  <li key={module.key}>
-                    <Link
-                      href={module.path}
-                      onClick={onNavigate}
-                      data-active={active}
-                      className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                        active
-                          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                          : 'text-sidebar-foreground hover:bg-sidebar-accent/60',
-                      )}
-                    >
-                      <Icon className="size-4 shrink-0" aria-hidden />
-                      <span className="truncate">{t(module.labelKey)}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+          <div key={group.key} className="mb-1">
+            {group.flat ? null : (
+              <button
+                type="button"
+                onClick={() => toggle(group.key)}
+                aria-expanded={open}
+                data-testid={`nav-folder-${group.key}`}
+                className={cn(
+                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors',
+                  group.key === current
+                    ? 'text-sidebar-accent-foreground'
+                    : 'text-sidebar-foreground hover:bg-sidebar-accent/60',
+                )}
+              >
+                <GroupIcon className="size-4 shrink-0" aria-hidden />
+                <span className="flex-1 truncate text-left">{t(group.labelKey)}</span>
+                <ChevronRight
+                  className={cn('size-4 shrink-0 transition-transform', open && 'rotate-90')}
+                  aria-hidden
+                />
+              </button>
+            )}
+            {/* Unterpunkte entstehen erst beim Oeffnen des Ordners. */}
+            {!open ? null : (
+              <ul className={cn('space-y-0.5', !group.flat && 'ml-4 border-l pl-2')}>
+                {modules.map((module) => {
+                  const active = pathname === module.path || pathname.startsWith(`${module.path}/`);
+                  const Icon = module.icon;
+                  return (
+                    <li key={module.key}>
+                      <Link
+                        href={module.path}
+                        onClick={onNavigate}
+                        data-active={active}
+                        className={cn(
+                          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                          active
+                            ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                            : 'text-sidebar-foreground hover:bg-sidebar-accent/60',
+                        )}
+                      >
+                        <Icon className="size-4 shrink-0" aria-hidden />
+                        <span className="truncate">{t(module.labelKey)}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
         );
       })}
