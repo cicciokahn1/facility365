@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CreditCard, QrCode, TriangleAlert } from 'lucide-react';
@@ -50,32 +50,35 @@ export default function AssetsPage() {
    * Der Code traegt die dauerhafte Anlagen-ID; aeltere Etiketten mit der
    * technischen Kennung oder der Seriennummer werden weiterhin erkannt.
    */
-  const handleResult = (text: string) => {
-    const match = findAsset(assets, text);
-    if (!match) {
-      toast.error(t('scanner.noMatch'));
-      return;
-    }
-    if (!reportMode) {
-      router.push(`/assets/${match.number}`);
-      return;
-    }
-    setTarget({
-      title: match.name || match.number,
-      location: [
-        properties.find((entry) => entry.id === match.propertyId)?.name,
-        buildings.find((entry) => entry.id === match.buildingId)?.name,
-        rooms.find((entry) => entry.id === match.roomId)?.name,
-        match.location,
-      ]
-        .filter(Boolean)
-        .join(' · '),
-      propertyId: match.propertyId,
-      buildingId: match.buildingId,
-      roomId: match.roomId,
-      assetId: match.id,
-    });
-  };
+  const handleResult = useCallback(
+    (text: string) => {
+      const match = findAsset(assets, text);
+      if (!match) {
+        toast.error(t('scanner.noMatch'));
+        return;
+      }
+      if (!reportMode) {
+        router.push(`/assets/${match.number}`);
+        return;
+      }
+      setTarget({
+        title: match.name || match.number,
+        location: [
+          properties.find((entry) => entry.id === match.propertyId)?.name,
+          buildings.find((entry) => entry.id === match.buildingId)?.name,
+          rooms.find((entry) => entry.id === match.roomId)?.name,
+          match.location,
+        ]
+          .filter(Boolean)
+          .join(' · '),
+        propertyId: match.propertyId,
+        buildingId: match.buildingId,
+        roomId: match.roomId,
+        assetId: match.id,
+      });
+    },
+    [assets, buildings, properties, reportMode, rooms, router, t],
+  );
 
   return (
     <div className="flex flex-col gap-4">
