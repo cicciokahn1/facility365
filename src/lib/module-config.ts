@@ -49,6 +49,8 @@ import {
   REPORT_TYPE_OPTIONS,
   SelectOption,
   SOLAR_STATUS_OPTIONS,
+  SOURCE_CATEGORY_OPTIONS,
+  SOURCE_RATING_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
   asString,
 } from '@/lib/schema';
@@ -134,6 +136,59 @@ const suppliersConfig: ModuleConfig<'suppliers'> = {
   ],
   searchOf: (supplier) =>
     [supplier.number, supplier.name, supplier.contactPerson, supplier.category, supplier.email, supplier.phone, supplier.address.city]
+      .filter(Boolean)
+      .join(' '),
+};
+
+const sourcesConfig: ModuleConfig<'sources'> = {
+  collection: 'sources',
+  titleOf: (source) => source.name || source.number,
+  statusField: 'status',
+  statusOptions: ACTIVE_OPTIONS,
+  fields: [
+    text('name', 'common.name', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'category',
+      labelKey: 'source.category',
+      options: SOURCE_CATEGORY_OPTIONS,
+      filter: true,
+    },
+    { kind: 'select', name: 'status', labelKey: 'common.status', options: ACTIVE_OPTIONS, filter: true },
+    text('website', 'common.website', { span: 2 }),
+    text('contactPerson', 'supplier.contactPerson'),
+    { kind: 'tel', name: 'phone', labelKey: 'common.phone' },
+    { kind: 'tel', name: 'mobile', labelKey: 'common.mobile' },
+    { kind: 'email', name: 'email', labelKey: 'common.email' },
+    { kind: 'address', name: 'address', labelKey: 'common.address', span: 2 },
+    {
+      kind: 'select',
+      name: 'rating',
+      labelKey: 'source.rating',
+      options: SOURCE_RATING_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'supplierId',
+      labelKey: 'module.suppliers.singular',
+      collection: 'suppliers',
+      filter: true,
+    },
+    { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
+  ],
+  searchOf: (source) =>
+    [
+      source.number,
+      source.name,
+      source.category,
+      source.website,
+      source.contactPerson,
+      source.email,
+      source.phone,
+      source.address.city,
+      source.notes,
+    ]
       .filter(Boolean)
       .join(' '),
 };
@@ -852,6 +907,13 @@ const inventoryConfig: ModuleConfig<'inventory'> = {
     { kind: 'date', name: 'purchaseDate', labelKey: 'inventory.purchaseDate' },
     { kind: 'number', name: 'price', labelKey: 'inventory.price' },
     { kind: 'relation', name: 'supplierId', labelKey: 'module.suppliers.singular', collection: 'suppliers', filter: true },
+    {
+      kind: 'relation',
+      name: 'sourceId',
+      labelKey: 'module.sources.singular',
+      collection: 'sources',
+      filter: true,
+    },
     { kind: 'date', name: 'warrantyUntil', labelKey: 'inventory.warrantyUntil' },
     { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
   ],
@@ -1500,6 +1562,7 @@ const activitiesConfig: ModuleConfig<'activities'> = {
 export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   customers: customersConfig,
   suppliers: suppliersConfig,
+  sources: sourcesConfig,
   organizations: organizationsConfig,
   sites: sitesConfig,
   properties: propertiesConfig,

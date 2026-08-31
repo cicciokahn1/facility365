@@ -36,6 +36,7 @@ import {
   SunMedium,
   ShieldAlert,
   ShieldCheck,
+  ShoppingBag,
   SprayCan,
   Truck,
   UserCog,
@@ -102,6 +103,15 @@ export const MODULES: ModuleDefinition[] = [
     group: 'objects',
     labelKey: 'module.suppliers',
     singularKey: 'module.suppliers.singular',
+  },
+  {
+    key: 'sources',
+    collection: 'sources',
+    path: '/sources',
+    icon: ShoppingBag,
+    group: 'objects',
+    labelKey: 'module.sources',
+    singularKey: 'module.sources.singular',
   },
   {
     key: 'organizations',

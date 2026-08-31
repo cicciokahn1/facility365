@@ -20,6 +20,11 @@ export function SupplierDetail({ id }: { id: string }) {
           content: <RelatedList collection="maintenances" field="supplierId" value={id} />,
         },
         {
+          value: 'sources',
+          labelKey: 'module.sources',
+          content: <RelatedList collection="sources" field="supplierId" value={id} />,
+        },
+        {
           value: 'orders',
           labelKey: 'module.orders',
           content: <RelatedList collection="orders" field="supplierId" value={id} />,

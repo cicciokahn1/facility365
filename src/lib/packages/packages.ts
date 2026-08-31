@@ -38,6 +38,7 @@ export const OPTIONAL_MODULES: ModuleKey[] = [
   'organizations',
   'sites',
   'suppliers',
+  'sources',
   'energy',
   'solarplants',
   'solaryields',
@@ -87,7 +88,7 @@ const TECHNICS: ModuleKey[] = [
 
 const CONTROLS: ModuleKey[] = ['legionella', 'rcd', 'inspections', 'audit', 'handover'];
 
-const STRUCTURE: ModuleKey[] = ['organizations', 'sites', 'suppliers'];
+const STRUCTURE: ModuleKey[] = ['organizations', 'sites', 'suppliers', 'sources'];
 
 const COMMERCE: ModuleKey[] = ['contracts', 'quotes', 'invoices', 'analytics', 'portal'];
 

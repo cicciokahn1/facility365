@@ -9,6 +9,7 @@ import { CollectionKey } from '@/lib/types';
 export const COLLECTIONS: CollectionKey[] = [
   'customers',
   'suppliers',
+  'sources',
   'organizations',
   'sites',
   'properties',
