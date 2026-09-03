@@ -4188,6 +4188,25 @@ export const dictionary = {
     it: 'Usa posizione del dispositivo',
     en: 'Use device location',
   },
+  'module.trash': { de: 'Papierkorb', fr: 'Corbeille', it: 'Cestino', en: 'Trash' },
+  'trash.restoreAll': {
+    de: 'Alle wiederherstellen',
+    fr: 'Tout restaurer',
+    it: 'Ripristina tutto',
+    en: 'Restore all',
+  },
+  'trash.purgeAll': {
+    de: 'Papierkorb leeren',
+    fr: 'Vider la corbeille',
+    it: 'Svuota cestino',
+    en: 'Empty trash',
+  },
+  'trash.purgeAllConfirm': {
+    de: 'Alle Datensätze im Papierkorb werden endgültig gelöscht. Das kann nicht rückgängig gemacht werden.',
+    fr: 'Tous les enregistrements de la corbeille seront définitivement supprimés. Action irréversible.',
+    it: 'Tutti i record nel cestino saranno eliminati definitivamente. Operazione irreversibile.',
+    en: 'All records in the trash will be deleted permanently. This cannot be undone.',
+  },
 } as const satisfies Record<string, Entry>;
 
 export type TranslationKey = keyof typeof dictionary;

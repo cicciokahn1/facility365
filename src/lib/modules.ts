@@ -41,6 +41,7 @@ import {
   SprayCan,
   FlameKindling,
   ToyBrick,
+  Trash2,
   Truck,
   UserCog,
   Users,
@@ -494,6 +495,14 @@ export const MODULES: ModuleDefinition[] = [
     group: 'admin',
     labelKey: 'module.microsoft',
     singularKey: 'module.microsoft',
+  },
+  {
+    key: 'trash',
+    path: '/trash',
+    icon: Trash2,
+    group: 'admin',
+    labelKey: 'module.trash',
+    singularKey: 'module.trash',
   },
   {
     key: 'settings',

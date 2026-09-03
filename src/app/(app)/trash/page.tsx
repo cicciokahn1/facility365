@@ -43,6 +43,7 @@ export default function TrashPage() {
   const access = useAccess();
   const { settings } = useSettings();
   const [pending, setPending] = useState<Entry | null>(null);
+  const [purgeAllOpen, setPurgeAllOpen] = useState(false);
 
   const entries = useMemo(() => {
     const list: Entry[] = [];
@@ -61,6 +62,30 @@ export default function TrashPage() {
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">{t('trash.intro')}</p>
+          {entries.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                data-testid="trash-restore-all"
+                onClick={() => {
+                  const restorable = entries.filter(({ collection }) => access.canWrite(collection));
+                  restorable.forEach(({ collection, entity }) => trash.restore(collection, entity.id));
+                  if (restorable.length > 0) toast.success(t('trash.restored'));
+                }}
+              >
+                {t('trash.restoreAll')}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                data-testid="trash-purge-all"
+                onClick={() => setPurgeAllOpen(true)}
+              >
+                {t('trash.purgeAll')}
+              </Button>
+            </div>
+          ) : null}
           {entries.length === 0 ? (
             <p className="text-sm text-muted-foreground" data-testid="trash-empty">
               {t('trash.empty')}
@@ -114,6 +139,30 @@ export default function TrashPage() {
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog open={purgeAllOpen} onOpenChange={setPurgeAllOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('trash.purgeAll')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('trash.purgeAllConfirm')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('action.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              data-testid="trash-purge-all-confirm"
+              onClick={() => {
+                entries
+                  .filter(({ collection }) => access.canDelete(collection))
+                  .forEach(({ collection, entity }) => trash.purge(collection, entity.id));
+                setPurgeAllOpen(false);
+                toast.success(t('toast.deleted'));
+              }}
+            >
+              {t('action.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={pending !== null} onOpenChange={(open) => (open ? null : setPending(null))}>
         <AlertDialogContent>
