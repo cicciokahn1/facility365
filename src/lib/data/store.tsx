@@ -53,6 +53,21 @@ const TRACKED: CollectionKey[] = [
 
 type Store = Record<CollectionKey, BaseEntity[]>;
 
+interface IdleWindow {
+  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+}
+
+/** Arbeit ausserhalb des ersten Bildaufbaus ausfuehren. */
+const whenIdle = (task: () => void): void => {
+  if (typeof window === 'undefined') {
+    task();
+    return;
+  }
+  const idle = (window as unknown as IdleWindow).requestIdleCallback;
+  if (idle) idle(task, { timeout: 4000 });
+  else window.setTimeout(task, 1200);
+};
+
 const emptyStore = (): Store =>
   COLLECTIONS.reduce((acc, key) => {
     acc[key] = [];
@@ -106,17 +121,28 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
    * Geloeschtes bleibt erhalten und wird nur ausgeblendet. Die Module sehen
    * unveraendert nur die gueltigen Datensaetze, der Papierkorb den Rest.
    */
+  /** Ohne Papierkorbeintrag bleibt die vorhandene Liste bestehen - das spart Kopien und Neuzeichnen. */
   const store = useMemo(() => {
     if (all === EMPTY_STORE) return EMPTY_STORE;
     const next = emptyStore();
-    for (const key of COLLECTIONS) next[key] = all[key].filter((entry) => !entry.deletedAt);
+    for (const key of COLLECTIONS) {
+      const items = all[key];
+      next[key] = items.some((entry) => entry.deletedAt)
+        ? items.filter((entry) => !entry.deletedAt)
+        : items;
+    }
     return next;
   }, [all]);
 
   const trash = useMemo(() => {
     if (all === EMPTY_STORE) return EMPTY_STORE;
     const next = emptyStore();
-    for (const key of COLLECTIONS) next[key] = all[key].filter((entry) => Boolean(entry.deletedAt));
+    for (const key of COLLECTIONS) {
+      const items = all[key];
+      next[key] = items.some((entry) => entry.deletedAt)
+        ? items.filter((entry) => Boolean(entry.deletedAt))
+        : EMPTY_STORE[key];
+    }
     return next;
   }, [all]);
 
@@ -136,8 +162,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       }
       if (cancelled) return;
       setLoaded({ scope, store: next });
-      /** Taegliche Sicherung; scheitert sie, bleibt der Betrieb unberuehrt. */
-      void ensureDailySnapshot(next).catch(() => undefined);
+      /** Taegliche Sicherung erst in einer Ruhephase; scheitert sie, bleibt der Betrieb unberuehrt. */
+      whenIdle(() => void ensureDailySnapshot(next).catch(() => undefined));
     };
     void load();
     return () => {
