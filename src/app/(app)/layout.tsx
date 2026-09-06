@@ -1,7 +1,7 @@
 import { AccessGuard } from '@/components/layout/access-guard';
 import { AppShell } from '@/components/layout/app-shell';
 import { AuthGuard } from '@/components/layout/auth-guard';
-import { Reminders } from '@/components/layout/reminders';
+import { DeferredReminders } from '@/components/layout/reminders-deferred';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <AppShell>
         <AccessGuard>{children}</AccessGuard>
       </AppShell>
-      <Reminders />
+      <DeferredReminders />
     </AuthGuard>
   );
 }
