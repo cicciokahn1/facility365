@@ -13,7 +13,7 @@ import { BarChart } from '@/components/common/bar-chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCollectionItems } from '@/lib/data/store';
-import { Language, TranslationKey } from '@/lib/i18n/dictionary';
+import type { Language, TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { ENERGY_TYPE_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';

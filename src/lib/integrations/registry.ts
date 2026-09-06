@@ -5,7 +5,7 @@
  * uebrigen Anbindungen sind vorbereitet: Bezeichnung, Zweck und Anschlussstelle
  * stehen fest, die Anmeldung bleibt bis zur Freigabe die bestehende.
  */
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 
 export type IntegrationStatus = 'available' | 'prepared';
 

@@ -49,7 +49,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { CollectionKey, ModuleKey } from '@/lib/types';
 
 /**

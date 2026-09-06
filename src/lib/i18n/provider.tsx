@@ -1,9 +1,18 @@
 'use client';
 
 /** Sprachumschaltung und Uebersetzungsfunktion. */
-import { createContext, useCallback, useContext, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { Language, TranslationKey, dictionary } from '@/lib/i18n/dictionary';
+import type { Language, TranslationKey } from '@/lib/i18n/dictionary';
+import { table as german } from '@/lib/i18n/generated/de';
+
+/** Nur die aktive Sprache wird geladen; Deutsch liegt als Rueckfall bereit. */
+const LOADERS: Record<Language, () => Promise<{ table: Record<string, string> }>> = {
+  de: async () => ({ table: german }),
+  fr: () => import('@/lib/i18n/generated/fr'),
+  it: () => import('@/lib/i18n/generated/it'),
+  en: () => import('@/lib/i18n/generated/en'),
+};
 
 interface I18nContextValue {
   language: Language;
@@ -27,10 +36,24 @@ export function I18nProvider({
   language: Language;
   children: React.ReactNode;
 }) {
+  const [loaded, setLoaded] = useState<Record<string, Record<string, string>>>({ de: german });
+  const table = loaded[language] ?? german;
+
+  useEffect(() => {
+    if (loaded[language]) return;
+    let active = true;
+    LOADERS[language]().then((module) => {
+      if (active) setLoaded((current) => ({ ...current, [language]: module.table }));
+    });
+    return () => {
+      active = false;
+    };
+  }, [language, loaded]);
+
   const t = useCallback(
     (key: TranslationKey, values?: Record<string, string | number>) =>
-      format(dictionary[key][language], values),
-    [language],
+      format(table[key] ?? german[key] ?? key, values),
+    [table],
   );
 
   const value = useMemo<I18nContextValue>(() => ({ language, t }), [language, t]);

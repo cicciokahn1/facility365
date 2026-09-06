@@ -2,7 +2,7 @@
 
 /** Statuszeichen mit einheitlichen Farben. */
 import { Badge } from '@/components/ui/badge';
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { STATUS_TONES, SelectOption, Tone } from '@/lib/schema';
 import { cn } from '@/lib/utils';

@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 
 import { cleaningDates } from '@/lib/cleaning/schedule';
 import { useCollectionItems } from '@/lib/data/store';
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { isContractOpen, reminderDate } from '@/lib/contracts/reminder';
 import { CollectionKey, MaintenanceInterval } from '@/lib/types';
 import { isDone } from '@/lib/workflow/complete';

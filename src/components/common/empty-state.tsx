@@ -2,7 +2,7 @@
 
 import type { LucideIcon } from 'lucide-react';
 
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 
 /** Hinweis, wenn eine Liste leer ist - mit Weg zur naechsten Handlung. */

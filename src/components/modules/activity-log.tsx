@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { useAccess } from '@/lib/auth/scope';
 import { useCollectionItems } from '@/lib/data/store';
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { moduleByCollection } from '@/lib/modules';
 import { useSettings } from '@/lib/settings/provider';

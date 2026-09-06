@@ -7,7 +7,7 @@
  * naechsten Aufruf sofort etwas anzeigen kann. Es werden keine Daten an
  * Facility365 gespeichert.
  */
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 
 export interface WeatherPlace {
   name: string;

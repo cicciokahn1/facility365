@@ -5,7 +5,7 @@
  * Suche. Das haelt alle Module gleich aufgebaut und neue Felder muessen nur an
  * einer Stelle ergaenzt werden.
  */
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { CollectionKey } from '@/lib/types';
 
 export type Tone = 'neutral' | 'brand' | 'success' | 'warning' | 'danger' | 'info';

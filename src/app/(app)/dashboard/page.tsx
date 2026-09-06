@@ -32,7 +32,7 @@ import { useAccess } from '@/lib/auth/scope';
 import { isReminderDue } from '@/lib/contracts/reminder';
 import { documentExpiryState } from '@/lib/documents/expiry';
 import { useCollectionItems } from '@/lib/data/store';
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { DAMAGE_STATUS_OPTIONS, MAINTENANCE_STATUS_OPTIONS, ORDER_STATUS_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
