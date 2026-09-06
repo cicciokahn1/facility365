@@ -16,7 +16,13 @@ import { Button } from '@/components/ui/button';
 import { useCollection } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { logoOf } from '@/lib/branding/logo';
-import { FIRE_CONDITION_OPTIONS, FIRE_TYPE_OPTIONS, RCD_STATUS_OPTIONS } from '@/lib/schema';
+import {
+  FIRE_CONDITION_OPTIONS,
+  FIRE_TYPE_OPTIONS,
+  FIRING_FUEL_OPTIONS,
+  FIRING_SCOPE_OPTIONS,
+  RCD_STATUS_OPTIONS,
+} from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import { FireCheck } from '@/lib/types';
 import { formatDate, today } from '@/lib/utils/format';
@@ -114,6 +120,22 @@ export function FireCheckDetail({ id }: { id: string }) {
     const tone =
       check.condition === 'good' ? 'green' : check.condition === 'minor' ? 'amber' : 'red';
 
+    /** Bei der Feuerungskontrolle gehoeren Anlage, Brennstoff und Messwerte in den Bericht. */
+    const firingLines =
+      check.type === 'firing'
+        ? [
+            `${t('firing.system')}: ${check.firingSystem || '–'}`,
+            `${t('firing.fuel')}: ${labelOf(FIRING_FUEL_OPTIONS, check.fuel, t)}`,
+            `${t('firing.sweeper')}: ${check.sweeper || '–'}`,
+            `${t('firing.scope')}: ${labelOf(FIRING_SCOPE_OPTIONS, check.firingScope, t)}`,
+            `${t('firing.co')}: ${check.coValue || '–'}`,
+            `${t('firing.soot')}: ${check.sootNumber || '–'}`,
+            `${t('firing.exhaust')}: ${check.exhaustTemperature || '–'}`,
+            `${t('firing.efficiency')}: ${check.efficiency || '–'}`,
+            ...(check.measurements ? [`${t('firing.measurements')}: ${check.measurements}`] : []),
+          ]
+        : [];
+
     downloadAuditPdf(
       {
         location: locationText(check) || check.title,
@@ -123,9 +145,10 @@ export function FireCheckDetail({ id }: { id: string }) {
         amber: 0,
         red: 0,
         showSummary: false,
-        fileBaseName: 'Brandschutzkontrolle',
+        fileBaseName: check.type === 'firing' ? 'Feuerungskontrolle' : 'Brandschutzkontrolle',
         infoLines: [
           `${t('fire.kind')}: ${kindOf(check)}`,
+          ...firingLines,
           `${t('fire.area')}: ${check.area || '–'}`,
           `${t('fire.inspector')}: ${check.inspector || '–'}`,
           `${t('fire.conditionLabel')}: ${labelOf(FIRE_CONDITION_OPTIONS, check.condition, t)}`,
@@ -135,7 +158,7 @@ export function FireCheckDetail({ id }: { id: string }) {
         notes: { title: t('common.notes'), text: check.notes },
         sections: [
           {
-            title: t('fire.reportTitle'),
+            title: check.type === 'firing' ? t('firing.report') : t('fire.reportTitle'),
             rows: [
               {
                 tone: tone as 'green' | 'amber' | 'red',

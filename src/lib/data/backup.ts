@@ -114,7 +114,7 @@ const LOCAL_KEY = 'facility365.v2.backup';
  * Reicht der Platz auf dem Geraet nicht, bleibt es bei der Sicherungsdatei.
  */
 export const storeSnapshot = async (snapshot: Snapshot): Promise<boolean> => {
-  const client = supabase();
+  const client = await supabase();
   if (!client) {
     try {
       window.localStorage.setItem(LOCAL_KEY, JSON.stringify(snapshot));
@@ -129,7 +129,7 @@ export const storeSnapshot = async (snapshot: Snapshot): Promise<boolean> => {
 
 /** Jüngste Sicherung der Organisation beziehungsweise des Geraets. */
 export const latestSnapshot = async (): Promise<{ at: string; snapshot: Snapshot } | null> => {
-  const client = supabase();
+  const client = await supabase();
   if (!client) {
     try {
       const raw = window.localStorage.getItem(LOCAL_KEY);

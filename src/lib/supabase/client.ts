@@ -6,7 +6,6 @@
  * rein lokal im Browser. `isSupabaseConfigured` entscheidet, welche Betriebsart
  * aktiv ist; die Module merken davon nichts.
  */
-import { createBrowserClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
@@ -52,11 +51,18 @@ export const isSupabaseReachable = async (): Promise<boolean> => {
   }
 };
 
-let client: SupabaseClient | null = null;
+let client: Promise<SupabaseClient> | null = null;
 
-/** Einzelne Verbindung je Browsersitzung; ohne Konfiguration `null`. */
-export const supabase = (): SupabaseClient | null => {
+/**
+ * Einzelne Verbindung je Browsersitzung; ohne Konfiguration `null`.
+ *
+ * Die Bibliothek wird erst geladen, wenn ein Projekt hinterlegt ist - im
+ * lokalen Betrieb muss der Start sie gar nicht erst herunterladen.
+ */
+export const supabase = async (): Promise<SupabaseClient | null> => {
   if (!isSupabaseConfigured()) return null;
-  client ??= createBrowserClient(url, anonKey);
+  client ??= import('@supabase/ssr').then(({ createBrowserClient }) =>
+    createBrowserClient(url, anonKey),
+  );
   return client;
 };

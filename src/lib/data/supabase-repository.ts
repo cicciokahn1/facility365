@@ -23,21 +23,21 @@ interface Row {
   data: Record<string, unknown>;
 }
 
-const client = (): SupabaseClient => {
-  const value = supabase();
+const client = async (): Promise<SupabaseClient> => {
+  const value = await supabase();
   if (!value) throw new Error('Supabase ist nicht konfiguriert');
   return value;
 };
 
 const currentUserId = async (): Promise<string> => {
-  const { data, error } = await client().auth.getUser();
+  const { data, error } = await (await client()).auth.getUser();
   if (error || !data.user) throw new Error('Keine Anmeldung');
   return data.user.id;
 };
 
 /** Mandant der Anmeldung; die Datenbank entscheidet, nicht die Oberflaeche. */
 export const currentTenantId = async (): Promise<string> => {
-  const { data, error } = await client().rpc('current_tenant');
+  const { data, error } = await (await client()).rpc('current_tenant');
   if (error) throw new Error(error.message);
   const tenant = typeof data === 'string' ? data : '';
   if (!tenant) throw new Error('Keine Organisation zugeordnet');
@@ -55,7 +55,7 @@ const rowOf = <K extends CollectionKey>(item: EntityOf<K>, userId: string, tenan
 
 export const supabaseRepository: Repository = {
   async read<K extends CollectionKey>(collection: K): Promise<EntityOf<K>[]> {
-    const { data, error } = await client()
+    const { data, error } = await (await client())
       .from(collection)
       .select('id, number, data, deleted_at')
       .order('created_at', { ascending: true });
@@ -72,7 +72,7 @@ export const supabaseRepository: Repository = {
 
   async save<K extends CollectionKey>(collection: K, item: EntityOf<K>): Promise<void> {
     const [userId, tenantId] = await Promise.all([currentUserId(), currentTenantId()]);
-    const { error } = await client()
+    const { error } = await (await client())
       .from(collection)
       .upsert(rowOf(item, userId, tenantId), { onConflict: 'tenant_id,id' });
     if (error) throw new Error(error.message);
@@ -80,7 +80,7 @@ export const supabaseRepository: Repository = {
 
   async removeOne(collection: CollectionKey, id: string): Promise<void> {
     const tenantId = await currentTenantId();
-    const { error } = await client()
+    const { error } = await (await client())
       .from(collection)
       .delete()
       .eq('tenant_id', tenantId)
@@ -91,7 +91,7 @@ export const supabaseRepository: Repository = {
   async write<K extends CollectionKey>(collection: K, items: EntityOf<K>[]): Promise<void> {
     const [userId, tenantId] = await Promise.all([currentUserId(), currentTenantId()]);
     if (items.length > 0) {
-      const { error } = await client()
+      const { error } = await (await client())
         .from(collection)
         .upsert(
           items.map((item) => rowOf(item, userId, tenantId)),
@@ -104,7 +104,7 @@ export const supabaseRepository: Repository = {
      * endgueltig entfernt werden sie nur ueber den Papierkorb selbst.
      */
     const keep = items.map((item) => item.id);
-    const query = client()
+    const query = (await client())
       .from(collection)
       .update({ deleted_at: new Date().toISOString() })
       .eq('tenant_id', tenantId)
@@ -116,14 +116,14 @@ export const supabaseRepository: Repository = {
   },
 
   async readSettings(): Promise<Partial<AppSettings> | null> {
-    const { data, error } = await client().from('settings').select('data').maybeSingle();
+    const { data, error } = await (await client()).from('settings').select('data').maybeSingle();
     if (error) throw new Error(error.message);
     return (data?.data as Partial<AppSettings> | undefined) ?? null;
   },
 
   async writeSettings(settings: AppSettings): Promise<void> {
     const userId = await currentUserId();
-    const { error } = await client()
+    const { error } = await (await client())
       .from('settings')
       .upsert({ user_id: userId, data: settings }, { onConflict: 'user_id' });
     if (error) throw new Error(error.message);
@@ -146,7 +146,7 @@ export const supabaseRepository: Repository = {
     ];
     const tenantId = await currentTenantId();
     for (const collection of collections) {
-      const { error } = await client()
+      const { error } = await (await client())
         .from(collection)
         .update({ deleted_at: new Date().toISOString() })
         .eq('tenant_id', tenantId)
