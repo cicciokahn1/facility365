@@ -78,7 +78,7 @@ function DifferenceCell({ current, previous }: { current: number; previous: numb
   const diff = current - previous;
   const percent = Math.round((diff / previous) * 100);
   const sign = diff > 0 ? '+' : '';
-  const tone = diff > 0 ? 'text-destructive' : diff < 0 ? 'text-emerald-600' : 'text-muted-foreground';
+  const tone = diff > 0 ? 'text-destructive' : diff < 0 ? 'text-success' : 'text-muted-foreground';
   return (
     <span className={tone} data-testid="energy-cost-diff">
       {sign}

@@ -40,7 +40,7 @@ export function SignaturePad({
     context.lineWidth = 2.2;
     context.lineCap = 'round';
     context.lineJoin = 'round';
-    context.strokeStyle = '#0f172a';
+    context.strokeStyle = '#0e3255';
   }, []);
 
   useEffect(() => {

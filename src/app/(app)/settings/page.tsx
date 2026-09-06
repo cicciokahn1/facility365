@@ -410,7 +410,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
                     className={cn(
                       'rounded-full border px-2 py-0.5 text-[11px]',
                       integration.status === 'available'
-                        ? 'border-emerald-600/40 text-emerald-700 dark:text-emerald-400'
+                        ? 'border-success/40 text-success'
                         : 'text-muted-foreground',
                     )}
                   >

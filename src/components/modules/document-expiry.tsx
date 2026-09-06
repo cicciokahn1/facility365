@@ -23,10 +23,10 @@ export function DocumentExpiry() {
   if (due.length === 0) return null;
 
   return (
-    <Card className="border-amber-500/40" data-testid="document-expiry">
+    <Card className="border-warning/40" data-testid="document-expiry">
       <CardHeader className="flex flex-row items-center gap-2">
-        <CalendarClock className="size-4 text-amber-600" aria-hidden />
-        <CardTitle className="text-base text-amber-700 dark:text-amber-500">
+        <CalendarClock className="size-4 text-warning" aria-hidden />
+        <CardTitle className="text-base text-warning-foreground">
           {t('documents.expiryTitle')} ({due.length})
         </CardTitle>
       </CardHeader>

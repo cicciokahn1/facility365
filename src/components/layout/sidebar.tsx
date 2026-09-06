@@ -55,13 +55,15 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <img
           src={isBrandLogo(settings.companyLogo) ? BRAND_MARK_SRC : settings.companyLogo}
           alt=""
-          className="size-9 rounded-lg object-contain dark:bg-white/95 dark:p-0.5"
+          className="size-9 rounded-lg bg-white/95 object-contain p-0.5"
         />
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-sidebar-foreground">
             {settings.companyName || t('app.name')}
           </span>
-          <span className="block truncate text-xs text-muted-foreground">{t('app.tagline')}</span>
+          <span className="block truncate text-xs text-sidebar-foreground/70">
+            {t('app.tagline')}
+          </span>
         </span>
       </Link>
 
@@ -81,7 +83,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors',
                   group.key === current
                     ? 'text-sidebar-accent-foreground'
-                    : 'text-sidebar-foreground hover:bg-sidebar-accent/60',
+                    : 'text-sidebar-foreground/90 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground',
                 )}
               >
                 <GroupIcon className="size-4 shrink-0" aria-hidden />
@@ -94,7 +96,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             )}
             {/* Unterpunkte entstehen erst beim Oeffnen des Ordners. */}
             {!open ? null : (
-              <ul className={cn('space-y-0.5', !group.flat && 'ml-4 border-l pl-2')}>
+              <ul
+                className={cn('space-y-0.5', !group.flat && 'ml-4 border-l border-sidebar-border pl-2')}
+              >
                 {modules.map((module) => {
                   const active = pathname === module.path || pathname.startsWith(`${module.path}/`);
                   const Icon = module.icon;
@@ -108,10 +112,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                           'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                           active
                             ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                            : 'text-sidebar-foreground hover:bg-sidebar-accent/60',
+                            : 'text-sidebar-foreground/85 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground',
                         )}
                       >
-                        <Icon className="size-4 shrink-0" aria-hidden />
+                        <Icon
+                          className={cn('size-4 shrink-0', active && 'text-sidebar-primary')}
+                          aria-hidden
+                        />
                         <span className="truncate">{t(module.labelKey)}</span>
                       </Link>
                     </li>
@@ -123,15 +130,15 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         );
       })}
 
-      <div className="mt-auto flex items-center gap-3 rounded-lg border bg-card px-3 py-2">
-        <span className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
+      <div className="mt-auto flex items-center gap-3 rounded-lg border border-sidebar-border bg-sidebar-accent/40 px-3 py-2 text-sidebar-foreground">
+        <span className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">
           {initials(settings.profileName || settings.companyName || 'Facility365')}
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-medium" data-testid="account-name">
             {auth.user?.email || settings.profileName || settings.companyName || 'Facility365'}
           </span>
-          <span className="block truncate text-xs text-muted-foreground">
+          <span className="block truncate text-xs text-sidebar-foreground/70">
             {settings.profileRole || t('common.notSet')}
           </span>
         </span>
@@ -139,6 +146,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           <Button
             variant="ghost"
             size="icon"
+            className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             aria-label={t('auth.signOut')}
             data-testid="sign-out"
             onClick={() => {
