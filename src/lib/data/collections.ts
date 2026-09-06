@@ -20,6 +20,7 @@ export const COLLECTIONS: CollectionKey[] = [
   'energy',
   'solarplants',
   'solaryields',
+  'appointments',
   'orders',
   'maintenances',
   'legionella',

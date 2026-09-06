@@ -4,28 +4,35 @@
  * Kalender.
  *
  * Monatsraster mit den Terminen aus Auftraegen und Wartungen, darunter die
- * Liste des gewaehlten Tages und die naechsten Termine. Eigene Daten fuehrt
- * der Kalender nicht.
+ * Liste des gewaehlten Tages und die naechsten Termine. Zusaetzlich lassen sich
+ * eigene Termine erfassen, bearbeiten und loeschen; mehrere Termine koennen
+ * gemeinsam verschoben oder in den Papierkorb gelegt werden.
  */
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   Bell,
   BellRing,
+  CalendarClock,
   ChevronLeft,
   ChevronRight,
   CalendarArrowDown,
+  CheckSquare,
   ClipboardCheck,
   ClipboardList,
   Droplets,
   FileSignature,
   FileText,
   type LucideIcon,
+  Pencil,
+  Plus,
   Repeat,
   SprayCan,
   Sun,
+  Trash2,
   Truck,
   Wrench,
+  X,
   Zap,
   FlameKindling,
   ToyBrick,
@@ -33,14 +40,22 @@ import {
 import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
+import { CalendarBulkDialog } from '@/components/modules/calendar-bulk-dialog';
+import { EntityForm } from '@/components/module/entity-form';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useAccess } from '@/lib/auth/scope';
 import { CalendarEvent, CalendarEventKind } from '@/lib/calendar/events';
+import { useCalendarMutations } from '@/lib/calendar/mutations';
 import { useRelevantEvents } from '@/lib/calendar/relevant';
-import { useEntityIndex } from '@/lib/data/store';
+import { useCollection, useEntityIndex } from '@/lib/data/store';
+import { valuesOf } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
 import { downloadText } from '@/lib/integrations/csv';
 import { toIcs } from '@/lib/integrations/ics';
+import { configOf } from '@/lib/module-config';
 import { usePushPermission } from '@/lib/notifications/reminders';
+import { FieldDef, FormValues } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import { cn } from '@/lib/utils';
 import { formatDate, today } from '@/lib/utils/format';
@@ -57,6 +72,7 @@ const WEEKDAY_KEYS = [
 
 /** Symbol je Terminart. */
 const EVENT_ICONS: Record<CalendarEventKind, LucideIcon> = {
+  appointment: CalendarClock,
   order: ClipboardList,
   maintenance: Wrench,
   legionella: Droplets,
@@ -86,11 +102,33 @@ const gridOf = (year: number, month: number): string[] => {
   });
 };
 
+/** Leere Formularwerte eines Moduls. */
+const emptyValues = (fields: FieldDef[]): FormValues => {
+  const values: FormValues = {};
+  fields.forEach((field) => {
+    if (field.kind === 'select') values[field.name] = field.options[0]?.value ?? '';
+    else if (field.kind === 'switch') values[field.name] = false;
+    else values[field.name] = '';
+  });
+  return values;
+};
+
 export function CalendarView() {
   const t = useT();
   const { settings } = useSettings();
   const events = useRelevantEvents();
   const push = usePushPermission();
+  const access = useAccess();
+  const mutations = useCalendarMutations();
+  const appointments = useCollection('appointments');
+  const appointmentConfig = configOf('appointments');
+  const mayCreate = access.canWrite('appointments');
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editId, setEditId] = useState('');
+  const [selectMode, setSelectMode] = useState(false);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const [cursor, setCursor] = useState(() => {
     const now = new Date();
@@ -121,6 +159,43 @@ export function CalendarView() {
   );
   const dayEvents = byDay.get(selected) ?? [];
 
+  /** Ausgewaehlte Termine; nur Datensaetze mit Schreibrecht sind waehlbar. */
+  const selectable = useMemo(
+    () => events.filter((event) => mutations.canEdit(event) || mutations.canRemove(event)),
+    [events, mutations],
+  );
+  const pickedEvents = useMemo(
+    () => selectable.filter((event) => picked.includes(event.id)),
+    [picked, selectable],
+  );
+
+  const toggle = (event: CalendarEvent) =>
+    setPicked((current) =>
+      current.includes(event.id)
+        ? current.filter((id) => id !== event.id)
+        : [...current, event.id],
+    );
+
+  const editing = editId ? appointments.get(editId) : undefined;
+
+  const createAppointment = (values: FormValues) => {
+    appointments.create(values as never, settings.profileName || settings.companyName);
+    toast.success(t('toast.created'));
+  };
+
+  const saveAppointment = (values: FormValues) => {
+    if (!editId) return;
+    appointments.update(editId, values as never);
+    setEditId('');
+    toast.success(t('toast.saved'));
+  };
+
+  const removeEvent = (event: CalendarEvent) => {
+    mutations.remove(event);
+    setPicked((current) => current.filter((id) => id !== event.id));
+    toast.success(t('toast.deleted'));
+  };
+
   const step = (delta: number) =>
     setCursor((current) => {
       const date = new Date(current.year, current.month + delta, 1);
@@ -135,6 +210,24 @@ export function CalendarView() {
           <p className="text-sm text-muted-foreground">{t('calendar.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
+        {mayCreate ? (
+          <Button size="sm" onClick={() => setFormOpen(true)} data-testid="calendar-new">
+            <Plus className="size-4" aria-hidden />
+            {t('calendar.newEvent')}
+          </Button>
+        ) : null}
+        <Button
+          size="sm"
+          variant={selectMode ? 'default' : 'outline'}
+          onClick={() => {
+            setSelectMode((current) => !current);
+            setPicked([]);
+          }}
+          data-testid="calendar-select-mode"
+        >
+          <CheckSquare className="size-4" aria-hidden />
+          {selectMode ? t('calendar.selectionEnd') : t('calendar.select')}
+        </Button>
         <Button
           size="sm"
           variant="outline"
@@ -238,7 +331,17 @@ export function CalendarView() {
         ) : (
           <ul className="flex flex-col gap-2">
             {dayEvents.map((event) => (
-              <EventRow key={event.id} event={event} />
+              <EventRow
+                key={event.id}
+                event={event}
+                selectMode={selectMode}
+                checked={picked.includes(event.id)}
+                selectable={selectable.some((item) => item.id === event.id)}
+                onToggle={toggle}
+                onEdit={setEditId}
+                onRemove={removeEvent}
+                mutations={mutations}
+              />
             ))}
           </ul>
         )}
@@ -253,16 +356,124 @@ export function CalendarView() {
         ) : (
           <ul className="flex flex-col gap-2">
             {upcoming.map((event) => (
-              <EventRow key={event.id} event={event} showDate />
+              <EventRow
+                key={event.id}
+                event={event}
+                showDate
+                selectMode={selectMode}
+                checked={picked.includes(event.id)}
+                selectable={selectable.some((item) => item.id === event.id)}
+                onToggle={toggle}
+                onEdit={setEditId}
+                onRemove={removeEvent}
+                mutations={mutations}
+              />
             ))}
           </ul>
         )}
       </section>
+
+      {selectMode ? (
+        <div
+          className="sticky bottom-2 z-10 flex flex-wrap items-center gap-2 rounded-xl border bg-card p-3 shadow-lg"
+          data-testid="calendar-selection-bar"
+        >
+          <span className="text-sm font-medium">
+            {pickedEvents.length} {t('calendar.selected')}
+          </span>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setPicked(dayEvents.filter((event) => selectable.some((item) => item.id === event.id)).map((event) => event.id))}
+            data-testid="calendar-select-day"
+          >
+            {t('bulk.selectAll')}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setPicked([])}>
+            <X className="size-4" aria-hidden />
+            {t('calendar.selectionClear')}
+          </Button>
+          <Button
+            size="sm"
+            disabled={pickedEvents.length === 0}
+            onClick={() => setBulkOpen(true)}
+            data-testid="calendar-bulk-edit"
+          >
+            <Pencil className="size-4" aria-hidden />
+            {t('calendar.bulkEdit')}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={pickedEvents.every((event) => !mutations.canRemove(event))}
+            onClick={() => {
+              const removable = pickedEvents.filter((event) => mutations.canRemove(event));
+              if (removable.length === 0) return;
+              if (!window.confirm(t('calendar.bulkDeleteConfirm'))) return;
+              removable.forEach((event) => mutations.remove(event));
+              setPicked([]);
+              toast.success(t('toast.deleted'));
+            }}
+            data-testid="calendar-bulk-delete"
+          >
+            <Trash2 className="size-4" aria-hidden />
+            {t('action.delete')}
+          </Button>
+        </div>
+      ) : null}
+
+      <CalendarBulkDialog
+        open={bulkOpen}
+        onOpenChange={setBulkOpen}
+        events={pickedEvents}
+        mutations={mutations}
+        onDone={() => setPicked([])}
+      />
+
+      <EntityForm
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        title={`${t('action.new')} · ${t('module.appointments.singular')}`}
+        fields={appointmentConfig.fields}
+        initialValues={{ ...emptyValues(appointmentConfig.fields), date: selected }}
+        onSubmit={createAppointment}
+      />
+
+      <EntityForm
+        open={Boolean(editing)}
+        onOpenChange={(open) => {
+          if (!open) setEditId('');
+        }}
+        title={`${t('action.edit')} · ${t('module.appointments.singular')}`}
+        fields={appointmentConfig.fields}
+        initialValues={editing ? valuesOf(editing) : {}}
+        onSubmit={saveAppointment}
+      />
     </div>
   );
 }
 
-function EventRow({ event, showDate = false }: { event: CalendarEvent; showDate?: boolean }) {
+function EventRow({
+  event,
+  showDate = false,
+  selectMode = false,
+  checked = false,
+  selectable = false,
+  onToggle,
+  onEdit,
+  onRemove,
+  mutations,
+}: {
+  event: CalendarEvent;
+  showDate?: boolean;
+  selectMode?: boolean;
+  checked?: boolean;
+  selectable?: boolean;
+  onToggle: (event: CalendarEvent) => void;
+  onEdit: (id: string) => void;
+  onRemove: (event: CalendarEvent) => void;
+  mutations: ReturnType<typeof useCalendarMutations>;
+}) {
   const t = useT();
   const { settings } = useSettings();
   const customers = useEntityIndex('customers');
@@ -278,14 +489,21 @@ function EventRow({ event, showDate = false }: { event: CalendarEvent; showDate?
   ].filter(Boolean);
 
   const Icon = EVENT_ICONS[event.kind];
+  const own = event.kind === 'appointment';
 
   return (
-    <li>
-      <Link
-        href={event.href}
-        data-testid="calendar-event"
-        className="flex items-start gap-3 rounded-xl border bg-card p-3 transition-colors hover:border-primary/40"
-      >
+    <li className="flex items-start gap-2 rounded-xl border bg-card p-3 transition-colors hover:border-primary/40">
+      {selectMode ? (
+        <Checkbox
+          className="mt-0.5"
+          checked={checked}
+          disabled={!selectable}
+          onCheckedChange={() => onToggle(event)}
+          aria-label={event.title}
+          data-testid="calendar-event-select"
+        />
+      ) : null}
+      <Link href={event.href} data-testid="calendar-event" className="flex min-w-0 flex-1 items-start gap-3">
         <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
         <div className="min-w-0">
           <p className="truncate text-sm font-medium">{event.title}</p>
@@ -310,6 +528,35 @@ function EventRow({ event, showDate = false }: { event: CalendarEvent; showDate?
           </span>
         ) : null}
       </Link>
+      {!selectMode && own ? (
+        <div className="flex shrink-0 items-center gap-1">
+          {mutations.canEdit(event) ? (
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label={t('action.edit')}
+              onClick={() => onEdit(event.sourceId)}
+              data-testid="calendar-event-edit"
+            >
+              <Pencil className="size-4" aria-hidden />
+            </Button>
+          ) : null}
+          {mutations.canRemove(event) ? (
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label={t('action.delete')}
+              onClick={() => {
+                if (!window.confirm(t('detail.deleteText'))) return;
+                onRemove(event);
+              }}
+              data-testid="calendar-event-delete"
+            >
+              <Trash2 className="size-4" aria-hidden />
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
     </li>
   );
 }

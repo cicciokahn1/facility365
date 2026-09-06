@@ -23,6 +23,7 @@ const SEARCHABLE = [
   'customers',
   'suppliers',
   'sources',
+  'appointments',
   'organizations',
   'sites',
   'properties',
@@ -74,6 +75,7 @@ export function SearchDialog({
   const customers = useCollectionItems('customers');
   const suppliers = useCollectionItems('suppliers');
   const sources = useCollectionItems('sources');
+  const appointments = useCollectionItems('appointments');
   const organizations = useCollectionItems('organizations');
   const sites = useCollectionItems('sites');
   const properties = useCollectionItems('properties');
@@ -114,6 +116,7 @@ export function SearchDialog({
       customers,
       suppliers,
       sources,
+      appointments,
       organizations,
       sites,
       properties,
@@ -150,6 +153,7 @@ export function SearchDialog({
       users,
     }),
     [
+      appointments,
       assets,
       buildings,
       cleaners,

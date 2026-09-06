@@ -55,6 +55,8 @@ import {
   FIRE_TYPE_OPTIONS,
   FIRING_FUEL_OPTIONS,
   FIRING_SCOPE_OPTIONS,
+  APPOINTMENT_STATUS_OPTIONS,
+  APPOINTMENT_TYPE_OPTIONS,
   SOURCE_CATEGORY_OPTIONS,
   SOURCE_RATING_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
@@ -557,6 +559,78 @@ const solarYieldsConfig: ModuleConfig<'solaryields'> = {
     { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
   ],
   searchOf: (entry) => [entry.number, entry.month, entry.notes].filter(Boolean).join(' '),
+};
+
+const appointmentsConfig: ModuleConfig<'appointments'> = {
+  collection: 'appointments',
+  titleOf: (appointment) => appointment.title || appointment.number,
+  statusField: 'status',
+  statusOptions: APPOINTMENT_STATUS_OPTIONS,
+  fields: [
+    text('title', 'common.title', { required: true, span: 2 }),
+    {
+      kind: 'select',
+      name: 'type',
+      labelKey: 'appointment.type',
+      options: APPOINTMENT_TYPE_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: 'select',
+      name: 'status',
+      labelKey: 'common.status',
+      options: APPOINTMENT_STATUS_OPTIONS,
+      filter: true,
+    },
+    { kind: 'date', name: 'date', labelKey: 'common.date', required: true },
+    text('timeStart', 'work.start'),
+    text('timeEnd', 'work.end'),
+    text('location', 'common.location'),
+    { kind: 'relation', name: 'customerId', labelKey: 'module.customers.singular', collection: 'customers' },
+    {
+      kind: 'relation',
+      name: 'propertyId',
+      labelKey: 'module.properties.singular',
+      collection: 'properties',
+      filter: true,
+    },
+    {
+      kind: 'relation',
+      name: 'buildingId',
+      labelKey: 'module.buildings.singular',
+      collection: 'buildings',
+      parentValueField: 'propertyId',
+      parentKey: 'propertyId',
+    },
+    {
+      kind: 'relation',
+      name: 'roomId',
+      labelKey: 'module.rooms.singular',
+      collection: 'rooms',
+      parentValueField: 'buildingId',
+      parentKey: 'buildingId',
+    },
+    { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    text('assignee', 'common.assignee'),
+    {
+      kind: 'relation',
+      name: 'assigneeUserId',
+      labelKey: 'user.assignee',
+      collection: 'users',
+      filter: true,
+    },
+    { kind: 'textarea', name: 'description', labelKey: 'common.description', span: 2 },
+  ],
+  searchOf: (appointment) =>
+    [
+      appointment.number,
+      appointment.title,
+      appointment.location,
+      appointment.assignee,
+      appointment.description,
+    ]
+      .filter(Boolean)
+      .join(' '),
 };
 
 const ordersConfig: ModuleConfig<'orders'> = {
@@ -1843,6 +1917,7 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   energy: energyConfig,
   solarplants: solarPlantsConfig,
   solaryields: solarYieldsConfig,
+  appointments: appointmentsConfig,
   orders: ordersConfig,
   maintenances: maintenancesConfig,
   legionella: legionellaConfig,

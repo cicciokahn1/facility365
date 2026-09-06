@@ -5,6 +5,7 @@
  * Formulare frei von Sonderfaellen und verhindern undefinierte Felder.
  */
 import {
+  Appointment,
   Activity,
   Address,
   AppUser,
@@ -65,6 +66,7 @@ export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   customers: 'KD',
   suppliers: 'LF',
   sources: 'BQ',
+  appointments: 'TR',
   organizations: 'OR',
   sites: 'ST',
   properties: 'LI',
@@ -220,6 +222,25 @@ export const emptySupplier = (): Omit<Supplier, 'id' | 'number'> => ({
   website: '',
   category: '',
   status: 'active',
+});
+
+export const emptyAppointment = (): Omit<Appointment, 'id' | 'number'> => ({
+  ...base(),
+  title: '',
+  type: 'appointment',
+  status: 'planned',
+  date: '',
+  timeStart: '',
+  timeEnd: '',
+  location: '',
+  assignee: '',
+  assigneeUserId: '',
+  customerId: '',
+  propertyId: '',
+  buildingId: '',
+  roomId: '',
+  assetId: '',
+  description: '',
 });
 
 export const emptySource = (): Omit<Source, 'id' | 'number'> => ({
@@ -751,6 +772,7 @@ const FACTORIES = {
   customers: emptyCustomer,
   suppliers: emptySupplier,
   sources: emptySource,
+  appointments: emptyAppointment,
   organizations: emptyOrganization,
   sites: emptySite,
   properties: emptyProperty,

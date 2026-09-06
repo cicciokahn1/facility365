@@ -99,6 +99,15 @@ export const MODULES: ModuleDefinition[] = [
     singularKey: 'module.calendar',
   },
   {
+    key: 'appointments',
+    collection: 'appointments',
+    path: '/appointments',
+    icon: CalendarClock,
+    group: 'overview',
+    labelKey: 'module.appointments',
+    singularKey: 'module.appointments.singular',
+  },
+  {
     key: 'today',
     path: '/today',
     icon: Sun,

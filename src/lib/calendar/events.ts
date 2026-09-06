@@ -13,10 +13,11 @@ import { cleaningDates } from '@/lib/cleaning/schedule';
 import { useCollectionItems } from '@/lib/data/store';
 import { TranslationKey } from '@/lib/i18n/dictionary';
 import { isContractOpen, reminderDate } from '@/lib/contracts/reminder';
-import { MaintenanceInterval } from '@/lib/types';
+import { CollectionKey, MaintenanceInterval } from '@/lib/types';
 import { isDone } from '@/lib/workflow/complete';
 
 export type CalendarEventKind =
+  | 'appointment'
   | 'order'
   | 'maintenance'
   | 'legionella'
@@ -48,6 +49,14 @@ export interface CalendarEvent {
   assetId: string;
   /** Wahr bei einem errechneten Folgetermin einer wiederkehrenden Wartung. */
   recurring: boolean;
+  /**
+   * Datensatz und Datumsfeld hinter dem Termin.
+   *
+   * Nur gesetzt, wenn genau ein Feld den Termin bestimmt - dann laesst er sich
+   * im Kalender verschieben und loeschen. Errechnete Folgetermine tragen es
+   * nicht.
+   */
+  source?: { collection: CollectionKey; field: string };
 }
 
 /** Monate je Intervall. */
@@ -87,6 +96,7 @@ const horizon = (): string => addMonths(new Date().toISOString().slice(0, 10), H
 
 /** Termine, sortiert nach Tag und Uhrzeit. */
 export function useCalendarEvents(): CalendarEvent[] {
+  const appointments = useCollectionItems('appointments');
   const orders = useCollectionItems('orders');
   const maintenances = useCollectionItems('maintenances');
   const legionella = useCollectionItems('legionella');
@@ -105,6 +115,28 @@ export function useCalendarEvents(): CalendarEvent[] {
   return useMemo(() => {
     const events: CalendarEvent[] = [];
     const until = horizon();
+
+    /** Eigene Termine des Kalenders. */
+    appointments
+      .filter((appointment) => appointment.status !== 'cancelled' && appointment.date)
+      .forEach((appointment) => {
+        events.push({
+          id: `appointment-${appointment.id}`,
+          kind: 'appointment',
+          sourceId: appointment.id,
+          href: `/appointments/${appointment.id}`,
+          labelKey: 'module.appointments.singular',
+          title: appointment.title || appointment.number,
+          date: appointment.date,
+          time: appointment.timeStart,
+          customerId: appointment.customerId,
+          propertyId: appointment.propertyId,
+          buildingId: appointment.buildingId,
+          assetId: appointment.assetId,
+          recurring: false,
+          source: { collection: 'appointments', field: 'date' },
+        });
+      });
 
     orders
       .filter((order) => !isDone('orders', order.status))
@@ -125,6 +157,7 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: order.buildingId,
           assetId: order.assetId,
           recurring: false,
+          source: { collection: 'orders', field: order.dueDate ? 'dueDate' : 'workDate' },
         });
       });
 
@@ -149,6 +182,7 @@ export function useCalendarEvents(): CalendarEvent[] {
             buildingId: maintenance.buildingId,
             assetId: maintenance.assetId,
             recurring: index > 0,
+            source: index === 0 ? { collection: 'maintenances', field: 'nextDate' } : undefined,
           });
           index += 1;
           date = addMonths(date, step);
@@ -172,6 +206,7 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: check.buildingId,
           assetId: '',
           recurring: false,
+          source: { collection: 'legionella', field: 'nextDate' },
         });
       });
 
@@ -192,6 +227,7 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: check.buildingId,
           assetId: check.assetId,
           recurring: false,
+          source: { collection: 'rcd', field: 'nextDate' },
         });
       });
 
@@ -212,6 +248,7 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: check.buildingId,
           assetId: check.assetId,
           recurring: false,
+          source: { collection: 'inspections', field: 'nextDate' },
         });
       });
 
@@ -232,6 +269,7 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: check.buildingId,
           assetId: '',
           recurring: false,
+          source: { collection: 'playgroundchecks', field: 'nextDate' },
         });
       });
 
@@ -254,10 +292,20 @@ export function useCalendarEvents(): CalendarEvent[] {
           recurring: false,
         };
         if (check.nextDate) {
-          events.push({ ...shared, id: `fire-${check.id}`, date: check.nextDate });
+          events.push({
+            ...shared,
+            id: `fire-${check.id}`,
+            date: check.nextDate,
+            source: { collection: 'firechecks', field: 'nextDate' },
+          });
         }
         if (check.dueDate) {
-          events.push({ ...shared, id: `fire-due-${check.id}`, date: check.dueDate });
+          events.push({
+            ...shared,
+            id: `fire-due-${check.id}`,
+            date: check.dueDate,
+            source: { collection: 'firechecks', field: 'dueDate' },
+          });
         }
       });
 
@@ -279,6 +327,7 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: document.buildingId,
           assetId: document.assetId,
           recurring: false,
+          source: { collection: 'documents', field: 'validUntil' },
         });
       });
 
@@ -356,6 +405,7 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: task.buildingId,
           assetId: '',
           recurring: false,
+          source: { collection: 'cleaningtasks', field: 'date' },
         });
       });
 
@@ -403,11 +453,13 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: plant.buildingId,
           assetId: plant.assetId,
           recurring: false,
+          source: { collection: 'solarplants', field: 'nextMaintenance' },
         });
       });
 
     return events.sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
   }, [
+    appointments,
     cleaningAreas,
     cleaningPlans,
     cleaningTasks,
