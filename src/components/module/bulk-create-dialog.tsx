@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useCollection, useCollectionItems } from '@/lib/data/store';
+import { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { configOf, titleOfEntity } from '@/lib/module-config';
 import { FormValues } from '@/lib/schema';
@@ -49,11 +50,21 @@ export const BULK_COLLECTIONS: CollectionKey[] = [
   'maintenances',
 ];
 
-export const bulkTargets = (collection: CollectionKey): ('rooms' | 'assets')[] => {
+/** Bereiche, fuer die je ein eigener Datensatz entstehen kann. */
+export type BulkTarget = 'buildings' | 'rooms' | 'assets';
+
+const MODULE_LABEL: Record<BulkTarget, TranslationKey> = {
+  buildings: 'module.buildings',
+  rooms: 'module.rooms',
+  assets: 'module.assets',
+};
+
+export const bulkTargets = (collection: CollectionKey): BulkTarget[] => {
   const names = new Set(configOf(collection).fields.map((field) => field.name));
-  const targets: ('rooms' | 'assets')[] = [];
+  const targets: BulkTarget[] = [];
   if (names.has('roomId')) targets.push('rooms');
   if (names.has('assetId')) targets.push('assets');
+  if (names.has('buildingId')) targets.push('buildings');
   return targets;
 };
 
@@ -76,7 +87,7 @@ export function BulkCreateDialog({
   const assets = useCollectionItems('assets');
 
   const targets = bulkTargets(collection);
-  const [target, setTarget] = useState<'rooms' | 'assets'>(targets[0] ?? 'rooms');
+  const [target, setTarget] = useState<BulkTarget>(targets[0] ?? 'rooms');
   const [propertyId, setPropertyId] = useState('');
   const [buildingId, setBuildingId] = useState('');
   const [selected, setSelected] = useState<string[]>([]);
@@ -90,6 +101,11 @@ export function BulkCreateDialog({
   /** Auswahlliste des gewaehlten Bereichs; ohne Filter alle Eintraege. */
   const candidates = useMemo(() => {
     const buildingIds = new Set(scopedBuildings.map((building) => building.id));
+    if (target === 'buildings') {
+      return buildingId
+        ? scopedBuildings.filter((item) => item.id === buildingId)
+        : scopedBuildings;
+    }
     if (target === 'rooms') {
       return rooms.filter((room) => {
         if (buildingId) return room.buildingId === buildingId;
@@ -129,30 +145,36 @@ export function BulkCreateDialog({
     return defaults;
   }, [buildingId, config, propertyId]);
 
-  const fields = useMemo(
-    () =>
-      config.fields.filter(
-        (field) => field.name !== (target === 'rooms' ? 'roomId' : 'assetId'),
-      ),
-    [config, target],
-  );
+  /** Je Datensatz gesetzte Zuordnungen gehoeren nicht ins gemeinsame Formular. */
+  const fields = useMemo(() => {
+    const hidden =
+      target === 'buildings'
+        ? ['buildingId', 'roomId', 'assetId']
+        : [target === 'rooms' ? 'roomId' : 'assetId'];
+    return config.fields.filter((field) => !hidden.includes(field.name));
+  }, [config, target]);
 
   const roomBuilding = (id: string) => rooms.find((room) => room.id === id)?.buildingId ?? '';
+
+  const buildingProperty = (id: string) =>
+    buildings.find((building) => building.id === id)?.propertyId ?? '';
 
   const submit = (values: FormValues) => {
     const chosen = candidates.filter((item) => selected.includes(item.id));
     const author = settings.profileName || settings.companyName;
     chosen.forEach((item) => {
       const place =
-        target === 'rooms'
-          ? { roomId: item.id, buildingId: buildingId || roomBuilding(item.id) }
-          : { assetId: item.id };
+        target === 'buildings'
+          ? { buildingId: item.id, propertyId: buildingProperty(item.id) || propertyId }
+          : target === 'rooms'
+            ? { roomId: item.id, buildingId: buildingId || roomBuilding(item.id) }
+            : { assetId: item.id };
       const title = String(values.title ?? '').trim();
       create(
         {
           ...values,
-          ...place,
           propertyId: values.propertyId || propertyId,
+          ...place,
           title: title ? `${title} · ${titleOfEntity(target, item)}` : titleOfEntity(target, item),
         } as never,
         author,
@@ -180,7 +202,7 @@ export function BulkCreateDialog({
                 <Select
                   value={target}
                   onValueChange={(value) => {
-                    setTarget(value as 'rooms' | 'assets');
+                    setTarget(value as BulkTarget);
                     setSelected([]);
                   }}
                 >
@@ -188,8 +210,11 @@ export function BulkCreateDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="rooms">{t('module.rooms')}</SelectItem>
-                    <SelectItem value="assets">{t('module.assets')}</SelectItem>
+                    {targets.map((entry) => (
+                      <SelectItem key={entry} value={entry}>
+                        {t(MODULE_LABEL[entry])}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -219,7 +244,7 @@ export function BulkCreateDialog({
               </Select>
             </div>
 
-            <div className="flex flex-col gap-1">
+            <div className={target === 'buildings' ? 'hidden' : 'flex flex-col gap-1'}>
               <Label>{t('module.buildings.singular')}</Label>
               <Select
                 value={buildingId || 'all'}
