@@ -944,6 +944,7 @@ export const dictionary = {
   'action.selectAll': { de: 'Alle', fr: 'Tous', it: 'Tutti', en: 'All' },
 
   'common.all': { de: 'Alle', fr: 'Tous', it: 'Tutti', en: 'All' },
+  'list.filter.open': { de: 'Offen', fr: 'Ouverts', it: 'Aperti', en: 'Open' },
   'common.none': { de: 'Keine', fr: 'Aucun', it: 'Nessuno', en: 'None' },
   'common.yes': { de: 'Ja', fr: 'Oui', it: 'Sì', en: 'Yes' },
   'common.no': { de: 'Nein', fr: 'Non', it: 'No', en: 'No' },
