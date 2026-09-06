@@ -10,7 +10,7 @@
 import { useMemo } from 'react';
 
 import { useCollectionItems } from '@/lib/data/store';
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import type { Quote } from '@/lib/types';
 
 export interface PortalRow {

@@ -1,5 +1,5 @@
 /** Formatierung von Datum, Zahlen und Betraegen in Schweizer Schreibweise. */
-import { Language } from '@/lib/i18n/dictionary';
+import type { Language } from '@/lib/i18n/dictionary';
 
 const LOCALES: Record<Language, string> = {
   de: 'de-CH',

@@ -11,7 +11,7 @@
 import { useMemo } from 'react';
 
 import { useCollectionItems } from '@/lib/data/store';
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { today } from '@/lib/utils/format';
 import { isDone } from '@/lib/workflow/complete';
 

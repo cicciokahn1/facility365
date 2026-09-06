@@ -4,7 +4,7 @@
  * Jedes Modul besteht aus denselben Bausteinen: Titel, Status, Felder und
  * Suchtext. Uebersicht, Formular und Detailansicht werden daraus erzeugt.
  */
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import {
   ACTIVE_OPTIONS,
   ASSET_CATEGORY_OPTIONS,

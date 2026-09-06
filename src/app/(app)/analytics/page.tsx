@@ -13,7 +13,7 @@ import { ManagementReport } from '@/components/modules/management-report';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useCollectionItems } from '@/lib/data/store';
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { DAMAGE_STATUS_OPTIONS, ORDER_STATUS_OPTIONS, PRIORITY_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';

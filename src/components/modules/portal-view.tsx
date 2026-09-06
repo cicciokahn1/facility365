@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { PortalQuoteRow, PortalRow, usePortalData } from '@/lib/portal/portal';
 import { useSettings } from '@/lib/settings/provider';
 import { formatDate, formatMoney } from '@/lib/utils/format';

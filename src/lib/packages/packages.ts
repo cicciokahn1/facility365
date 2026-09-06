@@ -10,7 +10,7 @@
  * Ohne gewaehltes Paket ist alles aktiv: bestehende Installationen bleiben
  * unveraendert.
  */
-import { TranslationKey } from '@/lib/i18n/dictionary';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { AppSettings, IndustryPackage, ModuleKey } from '@/lib/types';
 
 /** Module, die jedes Paket enthaelt; sie lassen sich nicht abschalten. */
