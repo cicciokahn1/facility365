@@ -4302,6 +4302,13 @@ export const dictionary = {
     it: 'Ripristina tutto',
     en: 'Restore all',
   },
+  'relation.others': {
+    de: 'Weitere Auswahl',
+    fr: 'Autres choix',
+    it: 'Altre scelte',
+    en: 'More options',
+  },
+
   'trash.purgeAll': {
     de: 'Papierkorb leeren',
     fr: 'Vider la corbeille',
