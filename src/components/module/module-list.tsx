@@ -32,6 +32,7 @@ import { fieldValue, stringField } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
 import { configOf, titleOfEntity } from '@/lib/module-config';
 import { moduleByCollection } from '@/lib/modules';
+import { closedStatusValues } from '@/lib/module-status';
 import { FormValues, SelectField, asString } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import { BaseEntity, CollectionKey } from '@/lib/types';
@@ -39,6 +40,9 @@ import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/utils/format';
 
 type SortKey = 'newest' | 'oldest' | 'name';
+
+/** Auswahl "offen": alles ausser den abgeschlossenen Zustaenden. */
+const OPEN_FILTER = '__open';
 
 /** Feste Einschraenkung der Liste, z. B. auf die eigenen Reinigungsaufgaben. */
 export interface ListRestriction {
@@ -67,8 +71,11 @@ export function ModuleList({
   const mayWrite = access.canWrite(moduleDef.key);
   const { settings } = useSettings();
 
+  /** Erledigte Datensaetze bleiben erhalten, sind aber zuerst ausgeblendet. */
+  const closed = useMemo(() => closedStatusValues(collection), [collection]);
+
   const [query, setQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>(closed.length ? OPEN_FILTER : 'all');
   const [relationFilters, setRelationFilters] = useState<Record<string, string>>({});
   const [sort, setSort] = useState<SortKey>('newest');
   /** Schnellaktionen des Dashboards oeffnen das Formular direkt: ?new=1 */
@@ -98,7 +105,10 @@ export function ModuleList({
       if (only && stringField(item, only.field) !== only.value) return false;
       if (needle && !searchOf(item).toLowerCase().includes(needle)) return false;
       if (statusFilter !== 'all' && config.statusField) {
-        if (stringField(item, config.statusField) !== statusFilter) return false;
+        const status = stringField(item, config.statusField);
+        if (statusFilter === OPEN_FILTER) {
+          if (closed.includes(status)) return false;
+        } else if (status !== statusFilter) return false;
       }
       return active.every(([name, value]) => stringField(item, name) === value);
     });
@@ -108,7 +118,7 @@ export function ModuleList({
       if (sort === 'oldest') return a.createdAt.localeCompare(b.createdAt);
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [config, items, only, query, relationFilters, sort, statusFilter]);
+  }, [closed, config, items, only, query, relationFilters, sort, statusFilter]);
 
   /** Anzahl je Status in einem Durchgang statt einer Suche je Auswahl. */
   const statusCounts = useMemo(() => {
@@ -117,9 +127,10 @@ export function ModuleList({
     items.forEach((item) => {
       const value = stringField(item, statusField.name);
       counts.set(value, (counts.get(value) ?? 0) + 1);
+      if (!closed.includes(value)) counts.set(OPEN_FILTER, (counts.get(OPEN_FILTER) ?? 0) + 1);
     });
     return counts;
-  }, [items, statusField]);
+  }, [closed, items, statusField]);
 
   const initialValues = useMemo(() => {
     const defaults: FormValues = {};
@@ -183,6 +194,14 @@ export function ModuleList({
 
         {statusField ? (
           <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+            {closed.length ? (
+              <FilterChip
+                active={statusFilter === OPEN_FILTER}
+                label={t('list.filter.open')}
+                count={statusCounts.get(OPEN_FILTER) ?? 0}
+                onClick={() => setStatusFilter(OPEN_FILTER)}
+              />
+            ) : null}
             <FilterChip
               active={statusFilter === 'all'}
               label={t('common.all')}
@@ -214,14 +233,16 @@ export function ModuleList({
               />
             </div>
           ))}
-          {query || statusFilter !== 'all' || Object.values(relationFilters).some((value) => value && value !== 'all') ? (
+          {query ||
+          statusFilter !== (closed.length ? OPEN_FILTER : 'all') ||
+          Object.values(relationFilters).some((value) => value && value !== 'all') ? (
             <Button
               variant="ghost"
               className="h-11"
               data-testid="reset-filters"
               onClick={() => {
                 setQuery('');
-                setStatusFilter('all');
+                setStatusFilter(closed.length ? OPEN_FILTER : 'all');
                 setRelationFilters({});
               }}
             >
