@@ -57,6 +57,7 @@ export type ModuleKey =
   | 'users'
   | 'activities'
   | 'trash'
+  | 'help'
   | 'settings';
 
 /** Sammlungen, die Datensaetze fuehren. */
@@ -72,6 +73,7 @@ export type CollectionKey = Exclude<
   | 'today'
   | 'microsoft'
   | 'trash'
+  | 'help'
   | 'settings'
 >;
 
