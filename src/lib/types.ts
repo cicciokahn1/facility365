@@ -670,7 +670,14 @@ export type FireCheckType =
   | 'smokeExtraction'
   | 'extinguishingWater'
   | 'signage'
+  | 'firing'
   | 'custom';
+
+/** Brennstoff einer Feuerungsanlage. */
+export type FiringFuel = 'oil' | 'gas' | 'wood' | 'pellets' | 'woodchips' | 'heatpump' | 'other';
+
+/** Umfang der Feuerungskontrolle durch den Kaminfeger. */
+export type FiringScope = 'cleaning' | 'measurement' | 'safety' | 'periodic';
 
 /** Zustand eines Brandschutzelements nach der Kontrolle. */
 export type FireCheckCondition = 'good' | 'minor' | 'defect' | 'critical';
@@ -698,6 +705,22 @@ export interface FireCheck extends BaseEntity {
   assigneeUserId: string;
   assigneeTeam: string;
   condition: FireCheckCondition;
+  /** Bezeichnung der Feuerungsanlage (Feuerungskontrolle). */
+  firingSystem: string;
+  fuel: FiringFuel;
+  /** Kaminfeger oder Kaminfegerbetrieb. */
+  sweeper: string;
+  firingScope: FiringScope;
+  /** Kohlenmonoxid in ppm. */
+  coValue: number;
+  /** Russzahl nach Bacharach. */
+  sootNumber: number;
+  /** Abgastemperatur in Grad Celsius. */
+  exhaustTemperature: number;
+  /** Feuerungswirkungsgrad in Prozent. */
+  efficiency: number;
+  /** Weitere Messwerte im Klartext. */
+  measurements: string;
   /** Festgestellte Maengel im Klartext. */
   defects: string;
   measures: string;

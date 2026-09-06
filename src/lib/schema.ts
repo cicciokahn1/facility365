@@ -386,7 +386,27 @@ export const FIRE_TYPE_OPTIONS: SelectOption[] = [
   option('smokeExtraction', 'fire.type.smokeExtraction'),
   option('extinguishingWater', 'fire.type.extinguishingWater'),
   option('signage', 'fire.type.signage'),
+  option('firing', 'fire.type.firing'),
   option('custom', 'fire.type.custom'),
+];
+
+/** Brennstoff einer Feuerungsanlage. */
+export const FIRING_FUEL_OPTIONS: SelectOption[] = [
+  option('oil', 'firing.fuel.oil'),
+  option('gas', 'firing.fuel.gas'),
+  option('wood', 'firing.fuel.wood'),
+  option('pellets', 'firing.fuel.pellets'),
+  option('woodchips', 'firing.fuel.woodchips'),
+  option('heatpump', 'firing.fuel.heatpump'),
+  option('other', 'firing.fuel.other'),
+];
+
+/** Umfang der Feuerungskontrolle. */
+export const FIRING_SCOPE_OPTIONS: SelectOption[] = [
+  option('periodic', 'firing.scope.periodic'),
+  option('cleaning', 'firing.scope.cleaning'),
+  option('measurement', 'firing.scope.measurement'),
+  option('safety', 'firing.scope.safety'),
 ];
 
 /** Zustand einer Brandschutzeinrichtung nach der Kontrolle. */

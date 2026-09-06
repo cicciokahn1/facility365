@@ -53,6 +53,8 @@ import {
   PLAYGROUND_TYPE_OPTIONS,
   FIRE_CONDITION_OPTIONS,
   FIRE_TYPE_OPTIONS,
+  FIRING_FUEL_OPTIONS,
+  FIRING_SCOPE_OPTIONS,
   SOURCE_CATEGORY_OPTIONS,
   SOURCE_RATING_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
@@ -937,6 +939,7 @@ const FIRE_INTERVALS: Record<string, MaintenanceInterval> = {
   smokeExtraction: 'annual',
   extinguishingWater: 'annual',
   signage: 'semiannual',
+  firing: 'annual',
   custom: 'annual',
 };
 
@@ -1002,6 +1005,57 @@ const fireChecksConfig: ModuleConfig<'firechecks'> = {
     },
     text('area', 'fire.area'),
     { kind: 'relation', name: 'assetId', labelKey: 'module.assets.singular', collection: 'assets' },
+    text('firingSystem', 'firing.system', {
+      visibleWhen: (values) => values.type === 'firing',
+    }),
+    {
+      kind: 'select',
+      name: 'fuel',
+      labelKey: 'firing.fuel',
+      options: FIRING_FUEL_OPTIONS,
+      visibleWhen: (values) => values.type === 'firing',
+    },
+    text('sweeper', 'firing.sweeper', {
+      visibleWhen: (values) => values.type === 'firing',
+    }),
+    {
+      kind: 'select',
+      name: 'firingScope',
+      labelKey: 'firing.scope',
+      options: FIRING_SCOPE_OPTIONS,
+      visibleWhen: (values) => values.type === 'firing',
+    },
+    {
+      kind: 'number',
+      name: 'coValue',
+      labelKey: 'firing.co',
+      visibleWhen: (values) => values.type === 'firing',
+    },
+    {
+      kind: 'number',
+      name: 'sootNumber',
+      labelKey: 'firing.soot',
+      visibleWhen: (values) => values.type === 'firing',
+    },
+    {
+      kind: 'number',
+      name: 'exhaustTemperature',
+      labelKey: 'firing.exhaust',
+      visibleWhen: (values) => values.type === 'firing',
+    },
+    {
+      kind: 'number',
+      name: 'efficiency',
+      labelKey: 'firing.efficiency',
+      visibleWhen: (values) => values.type === 'firing',
+    },
+    {
+      kind: 'textarea',
+      name: 'measurements',
+      labelKey: 'firing.measurements',
+      span: 2,
+      visibleWhen: (values) => values.type === 'firing',
+    },
     {
       kind: 'date',
       name: 'date',
@@ -1033,7 +1087,16 @@ const fireChecksConfig: ModuleConfig<'firechecks'> = {
     { kind: 'textarea', name: 'notes', labelKey: 'common.notes', span: 2 },
   ],
   searchOf: (check) =>
-    [check.number, check.title, check.customType, check.area, check.inspector, check.defects]
+    [
+      check.number,
+      check.title,
+      check.customType,
+      check.area,
+      check.inspector,
+      check.firingSystem,
+      check.sweeper,
+      check.defects,
+    ]
       .filter(Boolean)
       .join(' '),
 };

@@ -66,11 +66,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const enabled = configured && reachable;
 
   useEffect(() => {
-    const client = supabase();
-    if (!client) return;
-
     let active = true;
+    let unsubscribe: (() => void) | null = null;
+
     const init = async () => {
+      const client = await supabase();
+      if (!client || !active) return;
       if (!(await isSupabaseReachable())) {
         if (!active) return;
         setReachable(false);
@@ -91,33 +92,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
       setReady(true);
     };
-    void init();
 
     /**
      * Der Sitzungswechsel meldet nur den Benutzer. Fertig ist die Pruefung erst,
      * wenn auch die Erreichbarkeit feststeht - sonst schickt die Oberflaeche
      * zur Anmeldung, obwohl gar kein Dienst antwortet.
      */
-    const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
-      const next = session?.user;
-      setUser(
-        next
-          ? { id: next.id, email: next.email ?? '', verified: Boolean(next.email_confirmed_at) }
-          : null,
-      );
-    });
+    const listen = async () => {
+      const client = await supabase();
+      if (!client || !active) return;
+      const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
+        const next = session?.user;
+        setUser(
+          next
+            ? { id: next.id, email: next.email ?? '', verified: Boolean(next.email_confirmed_at) }
+            : null,
+        );
+      });
+      unsubscribe = () => listener.subscription.unsubscribe();
+      if (!active) unsubscribe();
+    };
+
+    void init();
+    void listen();
 
     return () => {
       active = false;
-      listener.subscription.unsubscribe();
+      unsubscribe?.();
     };
   }, []);
 
   /** Mitgliedschaft nachladen, sobald eine Sitzung besteht. */
   useEffect(() => {
     let active = true;
-    const client = supabase();
     const load = async () => {
+      const client = await supabase();
       if (!client || !user) {
         setMembership(null);
         return;
@@ -140,14 +149,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const client = supabase();
+    const client = await supabase();
     if (!client) return 'auth.errorGeneric' as AuthMessage;
     const { error } = await client.auth.signInWithPassword({ email, password });
     return error ? authMessage(error) : null;
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
-    const client = supabase();
+    const client = await supabase();
     if (!client) return 'auth.errorGeneric' as AuthMessage;
     const { error } = await client.auth.signUp({
       email,
@@ -158,7 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    const client = supabase();
+    const client = await supabase();
     if (!client) return;
     await client.auth.signOut();
     setUser(null);
@@ -166,7 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const requestReset = useCallback(async (email: string) => {
-    const client = supabase();
+    const client = await supabase();
     if (!client) return 'auth.errorGeneric' as AuthMessage;
     const { error } = await client.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset`,
@@ -175,14 +184,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updatePassword = useCallback(async (password: string) => {
-    const client = supabase();
+    const client = await supabase();
     if (!client) return 'auth.errorGeneric' as AuthMessage;
     const { error } = await client.auth.updateUser({ password });
     return error ? authMessage(error) : null;
   }, []);
 
   const resendVerification = useCallback(async (email: string) => {
-    const client = supabase();
+    const client = await supabase();
     if (!client) return 'auth.errorGeneric' as AuthMessage;
     const { error } = await client.auth.resend({
       type: 'signup',
