@@ -20,10 +20,10 @@ export function ContractReminders() {
   if (due.length === 0) return null;
 
   return (
-    <Card className="border-amber-500/40" data-testid="contract-reminders">
+    <Card className="border-warning/40" data-testid="contract-reminders">
       <CardHeader className="flex flex-row items-center gap-2">
-        <BellRing className="size-4 text-amber-600" aria-hidden />
-        <CardTitle className="text-base text-amber-700 dark:text-amber-500">
+        <BellRing className="size-4 text-warning" aria-hidden />
+        <CardTitle className="text-base text-warning-foreground">
           {t('contracts.reminderTitle')} ({due.length})
         </CardTitle>
       </CardHeader>

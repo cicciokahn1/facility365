@@ -85,9 +85,9 @@ const WIDTH = 210;
 const HEIGHT = 297;
 const MARGIN = 16;
 const CONTENT = WIDTH - 2 * MARGIN;
-const INK: [number, number, number] = [15, 23, 42];
-const MUTED: [number, number, number] = [100, 116, 139];
-const ACCENT: [number, number, number] = [13, 116, 128];
+const INK: [number, number, number] = [20, 33, 52];
+const MUTED: [number, number, number] = [92, 104, 124];
+const ACCENT: [number, number, number] = [14, 50, 85];
 const LINE: [number, number, number] = [226, 232, 240];
 
 const TONE_COLORS: Record<AuditPdfRow['tone'], [number, number, number]> = {

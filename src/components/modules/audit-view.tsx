@@ -23,8 +23,8 @@ const ALL = 'all';
 
 /** Farbe der Ampel. */
 const TONE_CLASS: Record<AuditTone, string> = {
-  green: 'bg-emerald-500',
-  amber: 'bg-amber-500',
+  green: 'bg-success',
+  amber: 'bg-warning',
   red: 'bg-destructive',
 };
 

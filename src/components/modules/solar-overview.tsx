@@ -252,7 +252,7 @@ export function SolarOverview() {
                     {
                       key: 'selfUse',
                       label: t('solar.selfUse'),
-                      color: 'bg-emerald-500',
+                      color: 'bg-success',
                       values: chart.selfUse,
                     },
                     {

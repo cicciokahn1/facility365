@@ -45,9 +45,9 @@ const QR_SIZE = 46;
 /** Oberkante des QR-Codes; darueber bleibt Platz fuer die Angaben. */
 const QR_TOP = HEIGHT - MARGIN - QR_SIZE - 10;
 const ROW_HEIGHT = 7.6;
-const INK: [number, number, number] = [15, 23, 42];
-const MUTED: [number, number, number] = [100, 116, 139];
-const ACCENT: [number, number, number] = [13, 116, 128];
+const INK: [number, number, number] = [20, 33, 52];
+const MUTED: [number, number, number] = [92, 104, 124];
+const ACCENT: [number, number, number] = [14, 50, 85];
 
 const qrDataUrl = (value: string): Promise<string> =>
   QRCode.toDataURL(value, { margin: 0, width: 600, errorCorrectionLevel: 'M' });

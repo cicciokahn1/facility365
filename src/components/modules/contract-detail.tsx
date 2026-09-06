@@ -20,7 +20,7 @@ export function ContractDetail({ id }: { id: string }) {
       headerExtra={(contract) =>
         isReminderDue(contract, today()) ? (
           <span
-            className="flex items-center gap-1.5 rounded-md bg-amber-500/10 px-2.5 py-1.5 text-sm font-medium text-amber-700 dark:text-amber-500"
+            className="flex items-center gap-1.5 rounded-md bg-warning/15 px-2.5 py-1.5 text-sm font-medium text-warning-foreground"
             data-testid="contract-reminder-badge"
           >
             <BellRing className="size-4" aria-hidden />
