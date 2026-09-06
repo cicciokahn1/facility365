@@ -4355,6 +4355,43 @@ export const dictionary = {
     en: 'Use device location',
   },
   'module.trash': { de: 'Papierkorb', fr: 'Corbeille', it: 'Cestino', en: 'Trash' },
+  'module.help': { de: 'Hilfe', fr: 'Aide', it: 'Guida', en: 'Help' },
+  'help.title': {
+    de: 'Hilfe und Anleitung',
+    fr: 'Aide et guide',
+    it: 'Guida e istruzioni',
+    en: 'Help and guide',
+  },
+  'help.intro': {
+    de: 'Kurz erklärt: was Facility365 ist, wie die App aufgebaut ist und wie die wichtigsten Arbeiten Schritt für Schritt gehen.',
+    fr: 'En bref : ce qu’est Facility365, comment l’application est structurée et comment effectuer les tâches principales étape par étape.',
+    it: 'In breve: che cos’è Facility365, com’è strutturata l’app e come svolgere passo dopo passo le attività principali.',
+    en: 'In short: what Facility365 is, how the app is structured and how the main tasks work step by step.',
+  },
+  'help.searchPlaceholder': {
+    de: 'Hilfe durchsuchen …',
+    fr: 'Rechercher dans l’aide …',
+    it: 'Cerca nella guida …',
+    en: 'Search help …',
+  },
+  'help.steps': {
+    de: 'So funktioniert es',
+    fr: 'Comment procéder',
+    it: 'Come funziona',
+    en: 'How it works',
+  },
+  'help.openModule': {
+    de: 'Modul öffnen',
+    fr: 'Ouvrir le module',
+    it: 'Apri il modulo',
+    en: 'Open module',
+  },
+  'help.empty': {
+    de: 'Kein Hilfethema gefunden.',
+    fr: 'Aucun sujet d’aide trouvé.',
+    it: 'Nessun argomento trovato.',
+    en: 'No help topic found.',
+  },
   'trash.restoreAll': {
     de: 'Alle wiederherstellen',
     fr: 'Tout restaurer',

@@ -24,6 +24,7 @@ import {
   Home,
   KeyRound,
   LayoutDashboard,
+  LifeBuoy,
   ListChecks,
   MailPlus,
   MapPin,
@@ -512,6 +513,14 @@ export const MODULES: ModuleDefinition[] = [
     group: 'admin',
     labelKey: 'module.trash',
     singularKey: 'module.trash',
+  },
+  {
+    key: 'help',
+    path: '/help',
+    icon: LifeBuoy,
+    group: 'admin',
+    labelKey: 'module.help',
+    singularKey: 'module.help',
   },
   {
     key: 'settings',

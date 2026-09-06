@@ -506,6 +506,10 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
           <Button variant="outline" asChild data-testid="settings-trash">
             <Link href="/trash">{t('trash.title')}</Link>
           </Button>
+          <p className="text-sm text-muted-foreground">{t('help.intro')}</p>
+          <Button variant="outline" asChild data-testid="settings-help">
+            <Link href="/help">{t('help.title')}</Link>
+          </Button>
         </CardContent>
       </Card>
 

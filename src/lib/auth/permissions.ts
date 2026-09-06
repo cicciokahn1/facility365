@@ -35,6 +35,8 @@ const COMMON: Partial<Record<ModuleKey, Access>> = {
   settings: 'read',
   /** Der Papierkorb zeigt nur Datensaetze aus Modulen mit Leserecht. */
   trash: 'read',
+  /** Die Anleitung steht allen offen. */
+  help: 'read',
   /** Das Kundenportal zeigt nur freigegebene Daten und die eigenen Offerten. */
   portal: 'write',
   /** Die Anbindung an Microsoft 365 richtet nur die Administration ein. */
