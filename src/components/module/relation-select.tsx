@@ -3,7 +3,15 @@
 /** Auswahl eines verknuepften Datensatzes, z. B. Liegenschaft eines Gebaeudes. */
 import { useMemo } from 'react';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { titleOfEntity } from '@/lib/module-config';
@@ -38,14 +46,23 @@ export function RelationSelect({
   const t = useT();
   const items = useCollectionItems(collection);
 
-  const options = useMemo(() => {
-    const filtered =
-      parentKey && parentValue
-        ? items.filter((item) => parentValueOf(item, parentKey) === parentValue)
-        : items;
-    return filtered
-      .map((item) => ({ id: item.id, label: titleOfEntity(collection, item), number: item.number }))
+  /**
+   * Passende Eintraege stehen oben, alle uebrigen bleiben darunter waehlbar.
+   * So schraenkt die uebergeordnete Auswahl nur die Reihenfolge ein - kein
+   * Gebaeude und kein Raum verschwindet aus der Liste.
+   */
+  const { matching, others } = useMemo(() => {
+    const entries = items
+      .map((item) => ({
+        id: item.id,
+        label: titleOfEntity(collection, item),
+        fits: parentKey && parentValue ? parentValueOf(item, parentKey) === parentValue : true,
+      }))
       .sort((a, b) => a.label.localeCompare(b.label));
+    return {
+      matching: entries.filter((entry) => entry.fits),
+      others: entries.filter((entry) => !entry.fits),
+    };
   }, [items, collection, parentKey, parentValue]);
 
   return (
@@ -55,11 +72,21 @@ export function RelationSelect({
       </SelectTrigger>
       <SelectContent>
         <SelectItem value={NONE}>{t('common.none')}</SelectItem>
-        {options.map((option) => (
+        {matching.map((option) => (
           <SelectItem key={option.id} value={option.id}>
             {option.label}
           </SelectItem>
         ))}
+        {others.length > 0 ? (
+          <SelectGroup>
+            <SelectLabel>{t('relation.others')}</SelectLabel>
+            {others.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        ) : null}
       </SelectContent>
     </Select>
   );
