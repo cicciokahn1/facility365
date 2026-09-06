@@ -10,6 +10,7 @@
 export type ModuleKey =
   | 'dashboard'
   | 'calendar'
+  | 'appointments'
   | 'customers'
   | 'suppliers'
   | 'sources'
@@ -182,6 +183,34 @@ export interface Supplier extends BaseEntity {
   website: string;
   category: string;
   status: ActiveStatus;
+}
+
+export type AppointmentStatus = 'planned' | 'done' | 'cancelled';
+
+/**
+ * Termin des Kalenders.
+ *
+ * Eigener Eintrag, der direkt im Kalender angelegt, bearbeitet und geloescht
+ * wird. Die abgeleiteten Termine aus Auftraegen, Wartungen und Kontrollen
+ * bleiben daneben unveraendert bestehen.
+ */
+export interface Appointment extends BaseEntity {
+  title: string;
+  type: string;
+  status: AppointmentStatus;
+  date: string;
+  /** Uhrzeiten als HH:MM; leer, wenn nur der Tag feststeht. */
+  timeStart: string;
+  timeEnd: string;
+  location: string;
+  assignee: string;
+  assigneeUserId: string;
+  customerId: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  assetId: string;
+  description: string;
 }
 
 /**
@@ -1310,6 +1339,7 @@ export interface CollectionMap {
   assets: Asset;
   documents: DocumentEntity;
   energy: EnergyEntry;
+  appointments: Appointment;
   sources: Source;
   solarplants: SolarPlant;
   solaryields: SolarYield;

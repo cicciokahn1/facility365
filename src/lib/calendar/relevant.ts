@@ -16,6 +16,7 @@ import { useCollectionItems } from '@/lib/data/store';
 import { BaseEntity, CollectionKey } from '@/lib/types';
 
 const COLLECTION_OF: Record<CalendarEventKind, CollectionKey> = {
+  appointment: 'appointments',
   order: 'orders',
   maintenance: 'maintenances',
   legionella: 'legionella',
@@ -33,6 +34,7 @@ const COLLECTION_OF: Record<CalendarEventKind, CollectionKey> = {
 export function useRelevantEvents(): CalendarEvent[] {
   const access = useAccess();
   const events = useCalendarEvents();
+  const appointments = useCollectionItems('appointments');
   const orders = useCollectionItems('orders');
   const maintenances = useCollectionItems('maintenances');
   const legionella = useCollectionItems('legionella');
@@ -50,6 +52,7 @@ export function useRelevantEvents(): CalendarEvent[] {
     const map = new Map<CollectionKey, Map<string, BaseEntity>>();
     const add = (collection: CollectionKey, items: BaseEntity[]) =>
       map.set(collection, new Map(items.map((item) => [item.id, item])));
+    add('appointments', appointments);
     add('orders', orders);
     add('maintenances', maintenances);
     add('legionella', legionella);
@@ -64,6 +67,7 @@ export function useRelevantEvents(): CalendarEvent[] {
     add('cleaningtasks', cleaningtasks);
     return map;
   }, [
+    appointments,
     cleaningtasks,
     contracts,
     documents,

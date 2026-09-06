@@ -267,6 +267,23 @@ export const SUPPLIER_CATEGORY_OPTIONS: SelectOption[] = [
   option('other', 'supplierCategory.other'),
 ];
 
+/** Arten eines Kalendertermins. */
+export const APPOINTMENT_TYPE_OPTIONS: SelectOption[] = [
+  option('appointment', 'appointment.type.appointment'),
+  option('meeting', 'appointment.type.meeting'),
+  option('visit', 'appointment.type.visit'),
+  option('service', 'appointment.type.service'),
+  option('absence', 'appointment.type.absence'),
+  option('other', 'appointment.type.other'),
+];
+
+/** Status eines Kalendertermins. */
+export const APPOINTMENT_STATUS_OPTIONS: SelectOption[] = [
+  { value: 'planned', labelKey: 'appointment.status.planned', tone: 'info' },
+  { value: 'done', labelKey: 'appointment.status.done', tone: 'success' },
+  { value: 'cancelled', labelKey: 'appointment.status.cancelled', tone: 'neutral' },
+];
+
 /** Kategorien einer Bezugsquelle. */
 export const SOURCE_CATEGORY_OPTIONS: SelectOption[] = [
   option('tools', 'sourceCategory.tools'),
