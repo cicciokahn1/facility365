@@ -1294,4 +1294,12 @@ export const table: Record<string, string> = {
   "trial.separate": "L’environnement d’essai est séparé de vos données de production.",
   "trial.contactMail": "Objet : prolonger la démo Facility365",
   "trial.signOut": "Se déconnecter",
+  "module.favorites": "Mes favoris",
+  "favorites.title": "Mes favoris",
+  "favorites.intro": "Vos entrées favorites et les derniers enregistrements ouverts – uniquement des liens, aucune copie.",
+  "favorites.add": "Ajouter aux favoris",
+  "favorites.remove": "Retirer des favoris",
+  "favorites.empty": "Aucun favori pour l’instant. L’étoile ⭐ d’un enregistrement l’ajoute ici.",
+  "favorites.recent": "Utilisés récemment",
+  "favorites.recentEmpty": "Aucun enregistrement ouvert pour l’instant.",
 };

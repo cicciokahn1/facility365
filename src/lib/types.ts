@@ -8,73 +8,75 @@
 
 /** Modulschluessel; zugleich Sammlung in der Datenschicht und Teil der Adresse. */
 export type ModuleKey =
-  | 'dashboard'
-  | 'calendar'
-  | 'appointments'
-  | 'customers'
-  | 'suppliers'
-  | 'sources'
-  | 'organizations'
-  | 'sites'
-  | 'properties'
-  | 'buildings'
-  | 'rooms'
-  | 'assets'
-  | 'documents'
-  | 'energy'
-  | 'solarplants'
-  | 'solaryields'
-  | 'orders'
-  | 'maintenances'
-  | 'legionella'
-  | 'rcd'
-  | 'inspections'
-  | 'playgroundchecks'
-  | 'firechecks'
-  | 'keys'
-  | 'inventory'
-  | 'vehicles'
-  | 'tools'
-  | 'stock'
-  | 'contracts'
-  | 'damages'
-  | 'reports'
-  | 'quotes'
-  | 'invoices'
-  | 'cleaning'
-  | 'cleaningareas'
-  | 'cleaners'
-  | 'cleaningplans'
-  | 'cleaningtasks'
-  | 'cleaningchecks'
-  | 'cleaningcomplaints'
-  | 'analytics'
-  | 'audit'
-  | 'handover'
-  | 'portal'
-  | 'today'
-  | 'microsoft'
-  | 'users'
-  | 'activities'
-  | 'trash'
-  | 'help'
-  | 'settings';
+  | "dashboard"
+  | "calendar"
+  | "appointments"
+  | "customers"
+  | "suppliers"
+  | "sources"
+  | "organizations"
+  | "sites"
+  | "properties"
+  | "buildings"
+  | "rooms"
+  | "assets"
+  | "documents"
+  | "energy"
+  | "solarplants"
+  | "solaryields"
+  | "orders"
+  | "maintenances"
+  | "legionella"
+  | "rcd"
+  | "inspections"
+  | "playgroundchecks"
+  | "firechecks"
+  | "keys"
+  | "inventory"
+  | "vehicles"
+  | "tools"
+  | "stock"
+  | "contracts"
+  | "damages"
+  | "reports"
+  | "quotes"
+  | "invoices"
+  | "cleaning"
+  | "cleaningareas"
+  | "cleaners"
+  | "cleaningplans"
+  | "cleaningtasks"
+  | "cleaningchecks"
+  | "cleaningcomplaints"
+  | "analytics"
+  | "audit"
+  | "handover"
+  | "portal"
+  | "today"
+  | "favorites"
+  | "microsoft"
+  | "users"
+  | "activities"
+  | "trash"
+  | "help"
+  | "settings";
 
 /** Sammlungen, die Datensaetze fuehren. */
 export type CollectionKey = Exclude<
   ModuleKey,
-  | 'dashboard'
-  | 'calendar'
-  | 'cleaning'
-  | 'analytics'
-  | 'audit'
-  | 'handover'
-  | 'portal'
-  | 'today'
-  | 'microsoft'
-  | 'trash'
-  | 'help'
-  | 'settings'
+  | "dashboard"
+  | "calendar"
+  | "cleaning"
+  | "analytics"
+  | "audit"
+  | "handover"
+  | "portal"
+  | "today"
+  | "favorites"
+  | "microsoft"
+  | "trash"
+  | "help"
+  | "settings"
 >;
 
 export interface Photo {
@@ -127,8 +129,8 @@ export interface BaseEntity {
   deletedAt?: string;
 }
 
-export type CustomerType = 'company' | 'private';
-export type ActiveStatus = 'active' | 'inactive';
+export type CustomerType = "company" | "private";
+export type ActiveStatus = "active" | "inactive";
 
 export interface Contact {
   id: string;
@@ -187,7 +189,7 @@ export interface Supplier extends BaseEntity {
   status: ActiveStatus;
 }
 
-export type AppointmentStatus = 'planned' | 'done' | 'cancelled';
+export type AppointmentStatus = "planned" | "done" | "cancelled";
 
 /**
  * Termin des Kalenders.
@@ -237,7 +239,7 @@ export interface Source extends BaseEntity {
   status: ActiveStatus;
 }
 
-export type PropertyStatus = 'active' | 'inactive' | 'archived';
+export type PropertyStatus = "active" | "inactive" | "archived";
 
 /**
  * Organisation.
@@ -321,7 +323,7 @@ export interface Room extends BaseEntity {
   description: string;
 }
 
-export type AssetStatus = 'active' | 'maintenance' | 'defect' | 'inactive';
+export type AssetStatus = "active" | "maintenance" | "defect" | "inactive";
 
 export interface Asset extends BaseEntity {
   name: string;
@@ -346,16 +348,16 @@ export interface Asset extends BaseEntity {
 }
 
 export type EnergyType =
-  | 'electricity'
-  | 'water'
-  | 'oil'
-  | 'gas'
-  | 'pellets'
-  | 'districtHeating'
-  | 'wood'
-  | 'solar'
-  | 'heatPump'
-  | 'other';
+  | "electricity"
+  | "water"
+  | "oil"
+  | "gas"
+  | "pellets"
+  | "districtHeating"
+  | "wood"
+  | "solar"
+  | "heatPump"
+  | "other";
 
 /** Verbrauch eines Monats fuer eine Liegenschaft oder ein Gebaeude. */
 export interface EnergyEntry extends BaseEntity {
@@ -372,7 +374,7 @@ export interface EnergyEntry extends BaseEntity {
 }
 
 /** Stand einer Photovoltaikanlage. */
-export type SolarPlantStatus = 'planned' | 'active' | 'inactive';
+export type SolarPlantStatus = "planned" | "active" | "inactive";
 
 /** Photovoltaikanlage einer Liegenschaft. */
 export interface SolarPlant extends BaseEntity {
@@ -442,7 +444,7 @@ export interface StockItem extends BaseEntity {
 }
 
 /** Stand eines Vertrags. */
-export type ContractStatus = 'active' | 'terminated' | 'expired';
+export type ContractStatus = "active" | "terminated" | "expired";
 
 /** Vertrag der Vertragsverwaltung. */
 export interface ContractEntity extends BaseEntity {
@@ -465,9 +467,10 @@ export interface ContractEntity extends BaseEntity {
   status: ContractStatus;
 }
 
-export type Priority = 'low' | 'medium' | 'high' | 'critical';
+export type Priority = "low" | "medium" | "high" | "critical";
 
-export type OrderStatus = 'new' | 'planned' | 'inProgress' | 'paused' | 'done' | 'invoiced';
+export type OrderStatus =
+  "new" | "planned" | "inProgress" | "paused" | "done" | "invoiced";
 
 export interface ChecklistItem {
   id: string;
@@ -525,13 +528,9 @@ export interface Order extends BaseEntity {
   graphSyncedAt?: string;
 }
 
-export type MaintenanceStatus = 'planned' | 'due' | 'overdue' | 'done';
+export type MaintenanceStatus = "planned" | "due" | "overdue" | "done";
 export type MaintenanceInterval =
-  | 'monthly'
-  | 'quarterly'
-  | 'semiannual'
-  | 'annual'
-  | 'biennial';
+  "monthly" | "quarterly" | "semiannual" | "annual" | "biennial";
 
 export interface Maintenance extends BaseEntity {
   title: string;
@@ -552,7 +551,7 @@ export interface Maintenance extends BaseEntity {
 }
 
 /** Bewertung einer Legionellenkontrolle. */
-export type LegionellaResult = 'pending' | 'ok' | 'warning' | 'critical';
+export type LegionellaResult = "pending" | "ok" | "warning" | "critical";
 
 /** Einzelne Messstelle einer Kontrolle. */
 export interface LegionellaSample {
@@ -591,10 +590,10 @@ export interface LegionellaCheck extends BaseEntity {
 }
 
 /** Stand einer FI-Kontrolle. */
-export type RcdStatus = 'open' | 'done';
+export type RcdStatus = "open" | "done";
 
 /** Ergebnis einer FI-Kontrolle. */
-export type RcdResult = 'pending' | 'passed' | 'failed';
+export type RcdResult = "pending" | "passed" | "failed";
 
 /** Pruefung eines Fehlerstromschutzschalters (FI/RCD). */
 export interface RcdCheck extends BaseEntity {
@@ -622,14 +621,14 @@ export interface RcdCheck extends BaseEntity {
 
 /** Art einer Kontrolle; frei erweiterbar ueber 'custom'. */
 export type InspectionType =
-  | 'fire'
-  | 'emergencyLight'
-  | 'escapeRoute'
-  | 'safety'
-  | 'elevator'
-  | 'ladder'
-  | 'playground'
-  | 'custom';
+  | "fire"
+  | "emergencyLight"
+  | "escapeRoute"
+  | "safety"
+  | "elevator"
+  | "ladder"
+  | "playground"
+  | "custom";
 
 /** Wiederkehrende Kontrolle der Betreiberpflichten. */
 export interface Inspection extends BaseEntity {
@@ -656,10 +655,10 @@ export interface Inspection extends BaseEntity {
 }
 
 /** Art einer Spielplatzkontrolle. */
-export type PlaygroundCheckType = 'visual' | 'functional' | 'periodic';
+export type PlaygroundCheckType = "visual" | "functional" | "periodic";
 
 /** Zustand eines Spielplatzes nach der Kontrolle. */
-export type PlaygroundCondition = 'good' | 'minor' | 'defect' | 'closed';
+export type PlaygroundCondition = "good" | "minor" | "defect" | "closed";
 
 /** Kontrolle eines Spielplatzes nach Sicht-, Funktions- oder Hauptpruefung. */
 export interface PlaygroundCheck extends BaseEntity {
@@ -693,25 +692,26 @@ export interface PlaygroundCheck extends BaseEntity {
 
 /** Geprueftes Brandschutzelement; frei erweiterbar ueber 'custom'. */
 export type FireCheckType =
-  | 'extinguisher'
-  | 'alarm'
-  | 'escapeRoute'
-  | 'emergencyExit'
-  | 'fireDoor'
-  | 'smokeExtraction'
-  | 'extinguishingWater'
-  | 'signage'
-  | 'firing'
-  | 'custom';
+  | "extinguisher"
+  | "alarm"
+  | "escapeRoute"
+  | "emergencyExit"
+  | "fireDoor"
+  | "smokeExtraction"
+  | "extinguishingWater"
+  | "signage"
+  | "firing"
+  | "custom";
 
 /** Brennstoff einer Feuerungsanlage. */
-export type FiringFuel = 'oil' | 'gas' | 'wood' | 'pellets' | 'woodchips' | 'heatpump' | 'other';
+export type FiringFuel =
+  "oil" | "gas" | "wood" | "pellets" | "woodchips" | "heatpump" | "other";
 
 /** Umfang der Feuerungskontrolle durch den Kaminfeger. */
-export type FiringScope = 'cleaning' | 'measurement' | 'safety' | 'periodic';
+export type FiringScope = "cleaning" | "measurement" | "safety" | "periodic";
 
 /** Zustand eines Brandschutzelements nach der Kontrolle. */
-export type FireCheckCondition = 'good' | 'minor' | 'defect' | 'critical';
+export type FireCheckCondition = "good" | "minor" | "defect" | "critical";
 
 /** Kontrolle einer Brandschutzeinrichtung. */
 export interface FireCheck extends BaseEntity {
@@ -767,12 +767,12 @@ export interface FireCheck extends BaseEntity {
 }
 
 /** Stand eines Schluessels. */
-export type KeyStatus = 'available' | 'issued' | 'lost' | 'retired';
+export type KeyStatus = "available" | "issued" | "lost" | "retired";
 
 /** Ausgabe oder Ruecknahme eines Schluessels. */
 export interface KeyMovement {
   id: string;
-  type: 'issue' | 'return';
+  type: "issue" | "return";
   date: string;
   /** Person oder Firma, die den Schluessel erhalten oder zurueckgegeben hat. */
   person: string;
@@ -803,7 +803,7 @@ export interface KeyEntity extends BaseEntity, Issuable {
 }
 
 /** Zustand eines Inventar- oder Werkzeugbestands. */
-export type ConditionStatus = 'new' | 'good' | 'used' | 'defect' | 'disposed';
+export type ConditionStatus = "new" | "good" | "used" | "defect" | "disposed";
 
 /** Inventargegenstand mit Inventarnummer und QR-Code. */
 export interface InventoryItem extends BaseEntity {
@@ -831,7 +831,7 @@ export interface InventoryItem extends BaseEntity {
 }
 
 /** Stand eines Fahrzeugs. */
-export type VehicleStatus = 'active' | 'service' | 'retired';
+export type VehicleStatus = "active" | "service" | "retired";
 
 /** Firmenfahrzeug mit Service-, Reifen- und Pruefterminen. */
 export interface Vehicle extends BaseEntity {
@@ -875,7 +875,8 @@ export interface Tool extends BaseEntity, Issuable {
   nextCheck: string;
 }
 
-export type DamageStatus = 'reported' | 'inspection' | 'inProgress' | 'fixed' | 'rejected';
+export type DamageStatus =
+  "reported" | "inspection" | "inProgress" | "fixed" | "rejected";
 
 export interface Damage extends BaseEntity {
   title: string;
@@ -898,8 +899,9 @@ export interface Damage extends BaseEntity {
   estimatedCost?: number;
 }
 
-export type ReportType = 'daily' | 'weekly' | 'order' | 'maintenance' | 'damage' | 'inspection';
-export type ReportStatus = 'draft' | 'final';
+export type ReportType =
+  "daily" | "weekly" | "order" | "maintenance" | "damage" | "inspection";
+export type ReportStatus = "draft" | "final";
 
 export interface Report extends BaseEntity {
   title: string;
@@ -931,7 +933,8 @@ export interface Report extends BaseEntity {
   signedAt: string;
 }
 
-export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
+export type QuoteStatus =
+  "draft" | "sent" | "accepted" | "rejected" | "expired";
 
 export interface LineItem {
   id: string;
@@ -956,7 +959,7 @@ export interface Quote extends BaseEntity {
   currency: string;
 }
 
-export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled";
 
 export interface Invoice extends BaseEntity {
   title: string;
@@ -1010,7 +1013,7 @@ export interface DocumentEntity extends BaseEntity {
 }
 
 /** Rolle einer Person der Reinigung. */
-export type CleanerRole = 'cleaner' | 'lead' | 'caretaker' | 'external';
+export type CleanerRole = "cleaner" | "lead" | "caretaker" | "external";
 
 /** Reinigungskraft, Reinigungsleitung oder Hauswart. */
 export interface Cleaner extends BaseEntity {
@@ -1051,9 +1054,10 @@ export interface CleaningArea extends BaseEntity {
 }
 
 /** Reinigungsintervall; "custom" rechnet mit einer eigenen Anzahl Tage. */
-export type CleaningInterval = 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'custom';
+export type CleaningInterval =
+  "daily" | "weekly" | "biweekly" | "monthly" | "quarterly" | "custom";
 
-export type CleaningPlanStatus = 'active' | 'paused';
+export type CleaningPlanStatus = "active" | "paused";
 
 /** Wiederkehrende Reinigung eines Bereichs. */
 export interface CleaningPlan extends BaseEntity {
@@ -1075,7 +1079,7 @@ export interface CleaningPlan extends BaseEntity {
   checklist: ChecklistItem[];
 }
 
-export type CleaningTaskStatus = 'open' | 'inProgress' | 'done';
+export type CleaningTaskStatus = "open" | "inProgress" | "done";
 
 /** Einzelne Reinigungsaufgabe. */
 export interface CleaningTask extends BaseEntity {
@@ -1104,7 +1108,7 @@ export interface CleaningTask extends BaseEntity {
 }
 
 /** Ergebnis einer Reinigungskontrolle. */
-export type CleaningCheckResult = 'pending' | 'ok' | 'minor' | 'major';
+export type CleaningCheckResult = "pending" | "ok" | "minor" | "major";
 
 /** Kontrolle durch Hauswart oder Reinigungsleitung. */
 export interface CleaningCheck extends BaseEntity {
@@ -1123,7 +1127,8 @@ export interface CleaningCheck extends BaseEntity {
   measures: string;
 }
 
-export type CleaningComplaintStatus = 'open' | 'inProgress' | 'resolved' | 'rejected';
+export type CleaningComplaintStatus =
+  "open" | "inProgress" | "resolved" | "rejected";
 
 /** Reklamation zu einer Reinigung. */
 export interface CleaningComplaint extends BaseEntity {
@@ -1147,16 +1152,16 @@ export interface CleaningComplaint extends BaseEntity {
 
 /** Plantypen der Gebaeude- und Liegenschaftsplaene. */
 export type PlanType =
-  | 'floorPlan'
-  | 'escape'
-  | 'fire'
-  | 'electric'
-  | 'plumbing'
-  | 'heating'
-  | 'ventilation'
-  | 'roof'
-  | 'garden'
-  | 'other';
+  | "floorPlan"
+  | "escape"
+  | "fire"
+  | "electric"
+  | "plumbing"
+  | "heating"
+  | "ventilation"
+  | "roof"
+  | "garden"
+  | "other";
 
 export interface PlanVersion {
   id: string;
@@ -1205,17 +1210,17 @@ export interface Plan {
 
 /** Branchenpaket; leer bedeutet «alle Module aktiv». */
 export type IndustryPackage =
-  | ''
-  | 'professional'
-  | 'property'
-  | 'school'
-  | 'care'
-  | 'industry'
-  | 'public'
-  | 'custom';
+  | ""
+  | "professional"
+  | "property"
+  | "school"
+  | "care"
+  | "industry"
+  | "public"
+  | "custom";
 
-export type Language = 'de' | 'fr' | 'it' | 'en';
-export type ThemeMode = 'light' | 'dark' | 'system';
+export type Language = "de" | "fr" | "it" | "en";
+export type ThemeMode = "light" | "dark" | "system";
 
 export interface AppSettings {
   companyName: string;
@@ -1275,17 +1280,17 @@ export interface AppSettings {
  * Benutzerdatensatz.
  */
 export type UserRole =
-  | 'superadmin'
-  | 'orgadmin'
-  | 'sitemanager'
-  | 'caretaker'
-  | 'cleaner'
-  | 'reporter'
-  | 'external'
-  | 'reader';
+  | "superadmin"
+  | "orgadmin"
+  | "sitemanager"
+  | "caretaker"
+  | "cleaner"
+  | "reporter"
+  | "external"
+  | "reader";
 
 /** Herkunft der Anmeldung; auf «entra» vorbereitet, aber noch nicht angebunden. */
-export type AuthProvider = 'local' | 'entra';
+export type AuthProvider = "local" | "entra";
 
 /**
  * Benutzerin oder Benutzer von Facility365.
