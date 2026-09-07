@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Anmeldung und Registrierung.
@@ -6,33 +6,41 @@
  * Dieselbe Adresse gilt fuer alle Hauswarte; getrennt werden die Daten ueber
  * das Konto, nicht ueber das Geraet.
  */
-import { Suspense, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/lib/auth/provider';
-import { passwordProblem } from '@/lib/auth/errors';
-import { BRAND_LOGO_SRC } from '@/lib/branding/logo';
-import { useT } from '@/lib/i18n/provider';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/lib/auth/provider";
+import { passwordProblem } from "@/lib/auth/errors";
+import { BRAND_LOGO_SRC } from "@/lib/branding/logo";
+import { useT } from "@/lib/i18n/provider";
+import { useTrial } from "@/lib/trial/provider";
 
-type Mode = 'signIn' | 'signUp' | 'reset';
+type Mode = "signIn" | "signUp" | "reset";
 
 function LoginForm() {
   const t = useT();
   const auth = useAuth();
   const router = useRouter();
+  const trial = useTrial();
   const params = useSearchParams();
-  const target = params.get('next') || '/dashboard';
+  const target = params.get("next") || "/dashboard";
 
-  const [mode, setMode] = useState<Mode>('signIn');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [mode, setMode] = useState<Mode>("signIn");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [hint, setHint] = useState('');
+  const [error, setError] = useState("");
+  const [hint, setHint] = useState("");
 
   useEffect(() => {
     if (auth.user) router.replace(target);
@@ -41,14 +49,14 @@ function LoginForm() {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setBusy(true);
-    setError('');
-    setHint('');
-    const weak = mode === 'signUp' ? passwordProblem(password) : null;
+    setError("");
+    setHint("");
+    const weak = mode === "signUp" ? passwordProblem(password) : null;
     const message =
       weak ??
-      (mode === 'signIn'
+      (mode === "signIn"
         ? await auth.signIn(email.trim(), password)
-        : mode === 'signUp'
+        : mode === "signUp"
           ? await auth.signUp(email.trim(), password)
           : await auth.requestReset(email.trim()));
     setBusy(false);
@@ -56,20 +64,39 @@ function LoginForm() {
       setError(t(message));
       return;
     }
-    if (mode === 'signUp') setHint(t('auth.checkMail'));
-    if (mode === 'reset') setHint(t('auth.resetSent'));
+    if (mode === "signUp") setHint(t("auth.checkMail"));
+    if (mode === "reset") setHint(t("auth.resetSent"));
   };
 
   if (!auth.enabled) {
     return (
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>{t('auth.signIn')}</CardTitle>
-          <CardDescription data-testid="auth-disabled">{t('auth.notConfigured')}</CardDescription>
+          <CardTitle>{t("auth.signIn")}</CardTitle>
+          <CardDescription data-testid="auth-disabled">
+            {t("auth.notConfigured")}
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button className="h-11 w-full" onClick={() => router.replace('/dashboard')}>
-            {t('auth.continueLocal')}
+        <CardContent className="space-y-2">
+          <Button
+            className="h-11 w-full"
+            data-testid="trial-start"
+            onClick={() => {
+              trial.start();
+              router.replace("/dashboard");
+            }}
+          >
+            {t("trial.start")}
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            {t("trial.noCard")} {t("trial.separate")}
+          </p>
+          <Button
+            variant="outline"
+            className="h-11 w-full"
+            onClick={() => router.replace("/dashboard")}
+          >
+            {t("auth.continueLocal")}
           </Button>
         </CardContent>
       </Card>
@@ -80,20 +107,20 @@ function LoginForm() {
     <Card className="w-full max-w-sm" data-testid="login-card">
       <CardHeader>
         <CardTitle>
-          {mode === 'signIn'
-            ? t('auth.signIn')
-            : mode === 'signUp'
-              ? t('auth.signUp')
-              : t('auth.resetTitle')}
+          {mode === "signIn"
+            ? t("auth.signIn")
+            : mode === "signUp"
+              ? t("auth.signUp")
+              : t("auth.resetTitle")}
         </CardTitle>
         <CardDescription>
-          {mode === 'reset' ? t('auth.resetIntro') : t('auth.intro')}
+          {mode === "reset" ? t("auth.resetIntro") : t("auth.intro")}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-2">
-            <Label htmlFor="auth-email">{t('auth.email')}</Label>
+            <Label htmlFor="auth-email">{t("auth.email")}</Label>
             <Input
               id="auth-email"
               type="email"
@@ -105,13 +132,15 @@ function LoginForm() {
               data-testid="auth-email"
             />
           </div>
-          {mode === 'reset' ? null : (
+          {mode === "reset" ? null : (
             <div className="space-y-2">
-              <Label htmlFor="auth-password">{t('auth.password')}</Label>
+              <Label htmlFor="auth-password">{t("auth.password")}</Label>
               <Input
                 id="auth-password"
                 type="password"
-                autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'}
+                autoComplete={
+                  mode === "signIn" ? "current-password" : "new-password"
+                }
                 required
                 minLength={10}
                 className="h-11"
@@ -119,8 +148,15 @@ function LoginForm() {
                 onChange={(event) => setPassword(event.target.value)}
                 data-testid="auth-password"
               />
-              {mode === 'signUp' ? (
-                <p className="text-xs text-muted-foreground">{t('auth.passwordRule')}</p>
+              {mode === "signUp" ? (
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    {t("auth.passwordRule")}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("trial.start")} – {t("trial.noCard")}
+                  </p>
+                </>
               ) : null}
             </div>
           )}
@@ -131,17 +167,25 @@ function LoginForm() {
             </p>
           ) : null}
           {hint ? (
-            <p className="text-sm text-muted-foreground" data-testid="auth-hint">
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid="auth-hint"
+            >
               {hint}
             </p>
           ) : null}
 
-          <Button type="submit" className="h-11 w-full" disabled={busy} data-testid="auth-submit">
-            {mode === 'signIn'
-              ? t('auth.signIn')
-              : mode === 'signUp'
-                ? t('auth.signUp')
-                : t('auth.resetTitle')}
+          <Button
+            type="submit"
+            className="h-11 w-full"
+            disabled={busy}
+            data-testid="auth-submit"
+          >
+            {mode === "signIn"
+              ? t("auth.signIn")
+              : mode === "signUp"
+                ? t("auth.signUp")
+                : t("auth.resetTitle")}
           </Button>
         </form>
 
@@ -149,26 +193,26 @@ function LoginForm() {
           variant="link"
           className="mt-2 w-full"
           onClick={() => {
-            setMode(mode === 'signUp' ? 'signIn' : 'signUp');
-            setError('');
-            setHint('');
+            setMode(mode === "signUp" ? "signIn" : "signUp");
+            setError("");
+            setHint("");
           }}
           data-testid="auth-switch"
         >
-          {mode === 'signUp' ? t('auth.toSignIn') : t('auth.toSignUp')}
+          {mode === "signUp" ? t("auth.toSignIn") : t("auth.toSignUp")}
         </Button>
 
         <Button
           variant="link"
           className="w-full"
           onClick={() => {
-            setMode(mode === 'reset' ? 'signIn' : 'reset');
-            setError('');
-            setHint('');
+            setMode(mode === "reset" ? "signIn" : "reset");
+            setError("");
+            setHint("");
           }}
           data-testid="auth-forgot"
         >
-          {mode === 'reset' ? t('auth.toSignIn') : t('auth.forgot')}
+          {mode === "reset" ? t("auth.toSignIn") : t("auth.forgot")}
         </Button>
       </CardContent>
     </Card>

@@ -4417,6 +4417,103 @@ export const dictionary = {
     it: 'Tutti i record nel cestino saranno eliminati definitivamente. Operazione irreversibile.',
     en: 'All records in the trash will be deleted permanently. This cannot be undone.',
   },
+
+  'trial.badge': {
+    de: 'Testversion – noch {days} Tage',
+    fr: 'Version d’essai – encore {days} jours',
+    it: 'Versione di prova – ancora {days} giorni',
+    en: 'Trial – {days} days left',
+  },
+  'trial.badgeShort': {
+    de: 'Test: {days} T.',
+    fr: 'Essai : {days} j.',
+    it: 'Prova: {days} g.',
+    en: 'Trial: {days} d.',
+  },
+  'trial.notice': {
+    de: 'Ihre Testversion endet in {days} Tagen. Danach ist kein Zugriff mehr möglich.',
+    fr: 'Votre version d’essai se termine dans {days} jours. Ensuite, l’accès sera bloqué.',
+    it: 'La versione di prova termina tra {days} giorni. Poi l’accesso sarà bloccato.',
+    en: 'Your trial ends in {days} days. Access will be blocked afterwards.',
+  },
+  'trial.title': {
+    de: 'Kostenlose Testversion',
+    fr: 'Version d’essai gratuite',
+    it: 'Versione di prova gratuita',
+    en: 'Free trial',
+  },
+  'trial.expiredTitle': {
+    de: 'Testversion abgelaufen',
+    fr: 'Version d’essai expirée',
+    it: 'Versione di prova scaduta',
+    en: 'Trial expired',
+  },
+  'trial.expiredText': {
+    de: 'Ihre 30-tägige Testversion ist abgelaufen. Ihre Daten bleiben gespeichert und stehen nach der Verlängerung sofort wieder zur Verfügung.',
+    fr: 'Votre version d’essai de 30 jours est expirée. Vos données restent enregistrées et seront de nouveau disponibles après la prolongation.',
+    it: 'La versione di prova di 30 giorni è scaduta. I dati restano salvati e saranno di nuovo disponibili dopo il rinnovo.',
+    en: 'Your 30-day trial has expired. Your data is kept and available again once the trial is extended.',
+  },
+  'trial.extend': {
+    de: 'Demo verlängern / Kontakt aufnehmen',
+    fr: 'Prolonger la démo / nous contacter',
+    it: 'Prolungare la demo / contattarci',
+    en: 'Extend demo / contact us',
+  },
+  'trial.extendAdmin': {
+    de: 'Testversion um 30 Tage verlängern',
+    fr: 'Prolonger la version d’essai de 30 jours',
+    it: 'Prolungare la prova di 30 giorni',
+    en: 'Extend trial by 30 days',
+  },
+  'trial.extended': {
+    de: 'Testversion verlängert',
+    fr: 'Version d’essai prolongée',
+    it: 'Versione di prova prolungata',
+    en: 'Trial extended',
+  },
+  'trial.remaining': {
+    de: 'Noch {days} Tage bis {date}',
+    fr: 'Encore {days} jours jusqu’au {date}',
+    it: 'Ancora {days} giorni fino al {date}',
+    en: '{days} days left until {date}',
+  },
+  'trial.noCard': {
+    de: 'Keine Kreditkarte erforderlich.',
+    fr: 'Aucune carte de crédit requise.',
+    it: 'Nessuna carta di credito necessaria.',
+    en: 'No credit card required.',
+  },
+  'trial.start': {
+    de: '30 Tage kostenlos testen',
+    fr: 'Essayer 30 jours gratuitement',
+    it: 'Prova gratuita di 30 giorni',
+    en: 'Start 30-day free trial',
+  },
+  'trial.startedToast': {
+    de: 'Testversion gestartet – 30 Tage',
+    fr: 'Version d’essai démarrée – 30 jours',
+    it: 'Versione di prova avviata – 30 giorni',
+    en: 'Trial started – 30 days',
+  },
+  'trial.separate': {
+    de: 'Die Testumgebung ist von Ihren Produktivdaten getrennt.',
+    fr: 'L’environnement d’essai est séparé de vos données de production.',
+    it: 'L’ambiente di prova è separato dai dati di produzione.',
+    en: 'The trial environment is separate from your production data.',
+  },
+  'trial.contactMail': {
+    de: 'Betreff: Facility365 Demo verlängern',
+    fr: 'Objet : prolonger la démo Facility365',
+    it: 'Oggetto: prolungare la demo Facility365',
+    en: 'Subject: extend Facility365 demo',
+  },
+  'trial.signOut': {
+    de: 'Abmelden',
+    fr: 'Se déconnecter',
+    it: 'Esci',
+    en: 'Sign out',
+  },
 } as const satisfies Record<string, Entry>;
 
 export type TranslationKey = keyof typeof dictionary;
