@@ -1275,6 +1275,7 @@ export const table: Record<string, string> = {
   "help.empty": "Aucun sujet d’aide trouvé.",
   "trash.restoreAll": "Tout restaurer",
   "relation.others": "Autres choix",
+  "relation.create": "+ Créer",
   "trash.purgeAll": "Vider la corbeille",
   "trash.purgeAllConfirm": "Tous les enregistrements de la corbeille seront définitivement supprimés. Action irréversible.",
   "trial.badge": "Version d’essai – encore {days} jours",

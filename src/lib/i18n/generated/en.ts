@@ -1275,6 +1275,7 @@ export const table: Record<string, string> = {
   "help.empty": "No help topic found.",
   "trash.restoreAll": "Restore all",
   "relation.others": "More options",
+  "relation.create": "+ Create new",
   "trash.purgeAll": "Empty trash",
   "trash.purgeAllConfirm": "All records in the trash will be deleted permanently. This cannot be undone.",
   "trial.badge": "Trial – {days} days left",
