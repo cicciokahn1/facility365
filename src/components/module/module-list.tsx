@@ -13,6 +13,7 @@ import { CopyPlus, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { EmptyState } from "@/components/common/empty-state";
+import { FavoriteButton } from "@/components/common/favorite-button";
 import { StatusBadge } from "@/components/common/status-badge";
 import {
   BULK_COLLECTIONS,
@@ -339,12 +340,19 @@ export function ModuleList({
                       {titleOfEntity(collection, item)}
                     </p>
                   </div>
-                  {config.statusField && config.statusOptions ? (
-                    <StatusBadge
-                      value={stringField(item, config.statusField)}
-                      options={config.statusOptions}
+                  <div className="flex shrink-0 items-center gap-1">
+                    {config.statusField && config.statusOptions ? (
+                      <StatusBadge
+                        value={stringField(item, config.statusField)}
+                        options={config.statusOptions}
+                      />
+                    ) : null}
+                    <FavoriteButton
+                      collection={collection}
+                      id={item.id}
+                      variant="ghost"
                     />
-                  ) : null}
+                  </div>
                 </div>
                 <CardMeta collection={collection} entity={item} />
                 <p className="mt-auto pt-2 text-xs text-muted-foreground">

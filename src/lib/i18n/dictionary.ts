@@ -7120,6 +7120,54 @@ export const dictionary = {
     it: "Esci",
     en: "Sign out",
   },
+  "module.favorites": {
+    de: "Meine Favoriten",
+    fr: "Mes favoris",
+    it: "I miei preferiti",
+    en: "My favourites",
+  },
+  "favorites.title": {
+    de: "Meine Favoriten",
+    fr: "Mes favoris",
+    it: "I miei preferiti",
+    en: "My favourites",
+  },
+  "favorites.intro": {
+    de: "Ihre gemerkten Einträge und die zuletzt geöffneten Datensätze – nur Verweise, keine Kopien.",
+    fr: "Vos entrées favorites et les derniers enregistrements ouverts – uniquement des liens, aucune copie.",
+    it: "Le voci preferite e gli ultimi record aperti: solo collegamenti, nessuna copia.",
+    en: "Your marked entries and the records you opened last – links only, no copies.",
+  },
+  "favorites.add": {
+    de: "Als Favorit merken",
+    fr: "Ajouter aux favoris",
+    it: "Aggiungi ai preferiti",
+    en: "Add to favourites",
+  },
+  "favorites.remove": {
+    de: "Favorit entfernen",
+    fr: "Retirer des favoris",
+    it: "Rimuovi dai preferiti",
+    en: "Remove from favourites",
+  },
+  "favorites.empty": {
+    de: "Noch keine Favoriten. Mit dem Stern ⭐ in einem Datensatz merken Sie ihn hier.",
+    fr: "Aucun favori pour l’instant. L’étoile ⭐ d’un enregistrement l’ajoute ici.",
+    it: "Nessun preferito. Con la stella ⭐ in un record lo si aggiunge qui.",
+    en: "No favourites yet. Use the star ⭐ on a record to keep it here.",
+  },
+  "favorites.recent": {
+    de: "Zuletzt verwendet",
+    fr: "Utilisés récemment",
+    it: "Usati di recente",
+    en: "Recently used",
+  },
+  "favorites.recentEmpty": {
+    de: "Noch keine geöffneten Datensätze.",
+    fr: "Aucun enregistrement ouvert pour l’instant.",
+    it: "Nessun record aperto finora.",
+    en: "No records opened yet.",
+  },
 } as const satisfies Record<string, Entry>;
 
 export type TranslationKey = keyof typeof dictionary;

@@ -1294,4 +1294,12 @@ export const table: Record<string, string> = {
   "trial.separate": "The trial environment is separate from your production data.",
   "trial.contactMail": "Subject: extend Facility365 demo",
   "trial.signOut": "Sign out",
+  "module.favorites": "My favourites",
+  "favorites.title": "My favourites",
+  "favorites.intro": "Your marked entries and the records you opened last – links only, no copies.",
+  "favorites.add": "Add to favourites",
+  "favorites.remove": "Remove from favourites",
+  "favorites.empty": "No favourites yet. Use the star ⭐ on a record to keep it here.",
+  "favorites.recent": "Recently used",
+  "favorites.recentEmpty": "No records opened yet.",
 };

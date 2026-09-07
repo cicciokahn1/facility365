@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Detailansicht eines Datensatzes.
@@ -6,19 +6,23 @@
  * Gleicher Aufbau in jedem Modul: Kopf mit Nummer, Titel und Status, danach
  * Stammdaten, modul-eigene Bereiche, Dokumente, Fotos und Historie.
  */
-import { useMemo, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Copy, Pencil, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Copy, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
-import { StatusBadge } from '@/components/common/status-badge';
-import { DocumentList } from '@/components/module/document-list';
-import { EntityForm } from '@/components/module/entity-form';
-import { DoneButton } from '@/components/module/done-button';
-import { HistoryTimeline } from '@/components/module/history-timeline';
-import { LinkedDocuments, documentLinkOf } from '@/components/module/linked-documents';
-import { PhotoGallery } from '@/components/module/photo-gallery';
+import { FavoriteButton } from "@/components/common/favorite-button";
+import { StatusBadge } from "@/components/common/status-badge";
+import { DocumentList } from "@/components/module/document-list";
+import { EntityForm } from "@/components/module/entity-form";
+import { DoneButton } from "@/components/module/done-button";
+import { HistoryTimeline } from "@/components/module/history-timeline";
+import {
+  LinkedDocuments,
+  documentLinkOf,
+} from "@/components/module/linked-documents";
+import { PhotoGallery } from "@/components/module/photo-gallery";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,21 +32,28 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAccess } from '@/lib/auth/scope';
-import { useCollection, useCollectionItems } from '@/lib/data/store';
-import { fieldValue, stringField, valuesOf } from '@/lib/entity-values';
-import type { TranslationKey } from '@/lib/i18n/dictionary';
-import { useT } from '@/lib/i18n/provider';
-import { configOf, titleOfEntity } from '@/lib/module-config';
-import { moduleByCollection } from '@/lib/modules';
-import { FieldDef, FormValues, asString } from '@/lib/schema';
-import { useSettings } from '@/lib/settings/provider';
-import { BaseEntity, CollectionKey, DocumentFile, EntityOf, Photo } from '@/lib/types';
-import { isCompletable } from '@/lib/workflow/complete';
-import { formatDate, formatMonth, formatMoney } from '@/lib/utils/format';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAccess } from "@/lib/auth/scope";
+import { useCollection, useCollectionItems } from "@/lib/data/store";
+import { useMarks } from "@/lib/favorites/use-marks";
+import { fieldValue, stringField, valuesOf } from "@/lib/entity-values";
+import type { TranslationKey } from "@/lib/i18n/dictionary";
+import { useT } from "@/lib/i18n/provider";
+import { configOf, titleOfEntity } from "@/lib/module-config";
+import { moduleByCollection } from "@/lib/modules";
+import { FieldDef, FormValues, asString } from "@/lib/schema";
+import { useSettings } from "@/lib/settings/provider";
+import {
+  BaseEntity,
+  CollectionKey,
+  DocumentFile,
+  EntityOf,
+  Photo,
+} from "@/lib/types";
+import { isCompletable } from "@/lib/workflow/complete";
+import { formatDate, formatMonth, formatMoney } from "@/lib/utils/format";
 
 export interface ExtraTab {
   value: string;
@@ -54,7 +65,10 @@ export interface EntityDetailProps<K extends CollectionKey> {
   collection: K;
   id: string;
   /** Zusaetzliche Bereiche des Moduls, z. B. Ansprechpartner oder Plaene. */
-  extraTabs?: (entity: EntityOf<K>, update: (values: Partial<EntityOf<K>>, action?: string) => void) => ExtraTab[];
+  extraTabs?: (
+    entity: EntityOf<K>,
+    update: (values: Partial<EntityOf<K>>, action?: string) => void,
+  ) => ExtraTab[];
   headerExtra?: (
     entity: EntityOf<K>,
     update: (values: Partial<EntityOf<K>>, action?: string) => void,
@@ -71,7 +85,7 @@ export function EntityDetail<K extends CollectionKey>({
   id,
   extraTabs,
   headerExtra,
-  defaultTab = 'master',
+  defaultTab = "master",
   deleteBlocked = false,
   deleteBlockedKey,
 }: EntityDetailProps<K>) {
@@ -88,11 +102,18 @@ export function EntityDetail<K extends CollectionKey>({
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const entity = get(id);
+  const { visit } = useMarks();
 
   const initialValues = useMemo<FormValues>(
     () => (entity ? valuesOf(entity) : {}),
     [entity],
   );
+
+  /** Geoeffnete Datensaetze erscheinen unter "Zuletzt verwendet". */
+  const seen = Boolean(entity);
+  useEffect(() => {
+    if (seen) visit(collection, id);
+  }, [collection, id, seen, visit]);
 
   if (!entity) {
     return (
@@ -101,13 +122,17 @@ export function EntityDetail<K extends CollectionKey>({
           <ArrowLeft className="size-4" aria-hidden />
           {t(moduleDef.labelKey)}
         </Button>
-        <p className="text-muted-foreground">{ready ? t('detail.notFound') : t('common.loading')}</p>
+        <p className="text-muted-foreground">
+          {ready ? t("detail.notFound") : t("common.loading")}
+        </p>
       </div>
     );
   }
 
-  const applyUpdate = (values: Partial<EntityOf<K>>, action = 'history.updated') =>
-    update(id, values, action, settings.profileName || settings.companyName);
+  const applyUpdate = (
+    values: Partial<EntityOf<K>>,
+    action = "history.updated",
+  ) => update(id, values, action, settings.profileName || settings.companyName);
 
   /**
    * Kopie eines Datensatzes.
@@ -120,7 +145,7 @@ export function EntityDetail<K extends CollectionKey>({
       valuesOf(entity) as Partial<EntityOf<K>>,
       settings.profileName || settings.companyName,
     );
-    toast.success(t('toast.duplicated'));
+    toast.success(t("toast.duplicated"));
     router.push(`${moduleDef.path}/${copy.id}`);
   };
 
@@ -138,7 +163,9 @@ export function EntityDetail<K extends CollectionKey>({
               {t(moduleDef.labelKey)}
             </Link>
           </Button>
-          <p className="font-mono text-xs text-muted-foreground">{entity.number}</p>
+          <p className="font-mono text-xs text-muted-foreground">
+            {entity.number}
+          </p>
           <h1 className="text-2xl font-semibold tracking-tight">
             {titleOfEntity(collection, entity)}
           </h1>
@@ -161,31 +188,51 @@ export function EntityDetail<K extends CollectionKey>({
         </div>
         <div className="flex flex-col items-end gap-1">
           <div className="flex gap-2">
+            <FavoriteButton collection={collection} id={id} />
             {mayWrite ? (
-              <Button variant="outline" onClick={() => setEditOpen(true)} data-testid="edit-entity">
+              <Button
+                variant="outline"
+                onClick={() => setEditOpen(true)}
+                data-testid="edit-entity"
+              >
                 <Pencil className="size-4" aria-hidden />
-                {t('action.edit')}
+                {t("action.edit")}
               </Button>
             ) : (
               <span className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
-                {t('access.readOnly')}
+                {t("access.readOnly")}
               </span>
             )}
             {mayWrite ? (
-              <Button variant="outline" onClick={duplicate} data-testid="duplicate-entity">
+              <Button
+                variant="outline"
+                onClick={duplicate}
+                data-testid="duplicate-entity"
+              >
                 <Copy className="size-4" aria-hidden />
-                <span className="sr-only sm:not-sr-only">{t('action.duplicate')}</span>
+                <span className="sr-only sm:not-sr-only">
+                  {t("action.duplicate")}
+                </span>
               </Button>
             ) : null}
             {mayDelete ? (
-              <Button variant="outline" onClick={() => setDeleteOpen(true)} data-testid="delete-entity">
+              <Button
+                variant="outline"
+                onClick={() => setDeleteOpen(true)}
+                data-testid="delete-entity"
+              >
                 <Trash2 className="size-4 text-destructive" aria-hidden />
-                <span className="sr-only sm:not-sr-only">{t('action.delete')}</span>
+                <span className="sr-only sm:not-sr-only">
+                  {t("action.delete")}
+                </span>
               </Button>
             ) : null}
           </div>
           {deleteBlocked && deleteBlockedKey ? (
-            <p data-testid="delete-blocked" className="text-xs text-muted-foreground">
+            <p
+              data-testid="delete-blocked"
+              className="text-xs text-muted-foreground"
+            >
               {t(deleteBlockedKey)}
             </p>
           ) : null}
@@ -195,15 +242,15 @@ export function EntityDetail<K extends CollectionKey>({
       <Tabs defaultValue={defaultTab}>
         <div className="no-scrollbar -mx-1 overflow-x-auto px-1">
           <TabsList>
-            <TabsTrigger value="master">{t('tab.master')}</TabsTrigger>
+            <TabsTrigger value="master">{t("tab.master")}</TabsTrigger>
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value}>
                 {t(tab.labelKey)}
               </TabsTrigger>
             ))}
-            <TabsTrigger value="documents">{t('tab.documents')}</TabsTrigger>
-            <TabsTrigger value="photos">{t('tab.photos')}</TabsTrigger>
-            <TabsTrigger value="history">{t('tab.history')}</TabsTrigger>
+            <TabsTrigger value="documents">{t("tab.documents")}</TabsTrigger>
+            <TabsTrigger value="photos">{t("tab.photos")}</TabsTrigger>
+            <TabsTrigger value="history">{t("tab.history")}</TabsTrigger>
           </TabsList>
         </div>
 
@@ -219,11 +266,17 @@ export function EntityDetail<K extends CollectionKey>({
 
         <TabsContent value="documents" className="mt-4 flex flex-col gap-6">
           {documentLink ? (
-            <LinkedDocuments field={documentLink.field} value={entity.id} inherit={documentLink.inherit} />
+            <LinkedDocuments
+              field={documentLink.field}
+              value={entity.id}
+              inherit={documentLink.inherit}
+            />
           ) : null}
           <div className="flex flex-col gap-3">
             {documentLink ? (
-              <h2 className="text-sm font-semibold">{t('documents.ownFiles')}</h2>
+              <h2 className="text-sm font-semibold">
+                {t("documents.ownFiles")}
+              </h2>
             ) : null}
             <DocumentList
               documents={entity.documents}
@@ -251,32 +304,34 @@ export function EntityDetail<K extends CollectionKey>({
       <EntityForm
         open={editOpen}
         onOpenChange={setEditOpen}
-        title={`${t('action.edit')} · ${t(moduleDef.singularKey)}`}
+        title={`${t("action.edit")} · ${t(moduleDef.singularKey)}`}
         fields={config.fields}
         initialValues={initialValues}
         onSubmit={(values) => {
           applyUpdate(values as Partial<EntityOf<K>>);
-          toast.success(t('toast.saved'));
+          toast.success(t("toast.saved"));
         }}
       />
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('detail.deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('detail.deleteText')}</AlertDialogDescription>
+            <AlertDialogTitle>{t("detail.deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("detail.deleteText")}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('action.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t("action.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               data-testid="confirm-delete"
               onClick={() => {
                 remove(id);
-                toast.success(t('toast.deleted'));
+                toast.success(t("toast.deleted"));
                 router.push(moduleDef.path);
               }}
             >
-              {t('action.delete')}
+              {t("action.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -285,7 +340,13 @@ export function EntityDetail<K extends CollectionKey>({
   );
 }
 
-function MasterData({ entity, fields }: { entity: BaseEntity; fields: FieldDef[] }) {
+function MasterData({
+  entity,
+  fields,
+}: {
+  entity: BaseEntity;
+  fields: FieldDef[];
+}) {
   const t = useT();
   const { settings } = useSettings();
 
@@ -298,8 +359,12 @@ function MasterData({ entity, fields }: { entity: BaseEntity; fields: FieldDef[]
         <MasterRow key={field.name} field={field} entity={entity} />
       ))}
       <div className="sm:col-span-2">
-        <dt className="text-xs text-muted-foreground">{t('common.createdAt')}</dt>
-        <dd className="text-sm">{formatDate(entity.createdAt, settings.language)}</dd>
+        <dt className="text-xs text-muted-foreground">
+          {t("common.createdAt")}
+        </dt>
+        <dd className="text-sm">
+          {formatDate(entity.createdAt, settings.language)}
+        </dd>
       </div>
     </dl>
   );
@@ -308,41 +373,59 @@ function MasterData({ entity, fields }: { entity: BaseEntity; fields: FieldDef[]
 function MasterRow({ field, entity }: { field: FieldDef; entity: BaseEntity }) {
   const t = useT();
   const { settings } = useSettings();
-  const relationItems = useCollectionItems(field.kind === 'relation' ? field.collection : 'customers');
+  const relationItems = useCollectionItems(
+    field.kind === "relation" ? field.collection : "customers",
+  );
   const raw = fieldValue(entity, field.name);
   const values = valuesOf(entity);
   if (field.visibleWhen && !field.visibleWhen(values)) return null;
 
-  let display = '';
+  let display = "";
   switch (field.kind) {
-    case 'relation': {
+    case "relation": {
       const target = relationItems.find((item) => item.id === asString(raw));
-      display = target ? titleOfEntity(field.collection, target) : '';
+      display = target ? titleOfEntity(field.collection, target) : "";
       break;
     }
-    case 'select': {
-      const option = field.options.find((entry) => entry.value === asString(raw));
-      display = option ? t(option.labelKey) : '';
+    case "select": {
+      const option = field.options.find(
+        (entry) => entry.value === asString(raw),
+      );
+      display = option ? t(option.labelKey) : "";
       break;
     }
-    case 'date':
-      display = asString(raw) ? formatDate(asString(raw), settings.language) : '';
+    case "date":
+      display = asString(raw)
+        ? formatDate(asString(raw), settings.language)
+        : "";
       break;
-    case 'month':
-      display = asString(raw) ? formatMonth(asString(raw), settings.language) : '';
+    case "month":
+      display = asString(raw)
+        ? formatMonth(asString(raw), settings.language)
+        : "";
       break;
-    case 'money':
-      display = typeof raw === 'number' ? formatMoney(raw, settings.currency) : '';
+    case "money":
+      display =
+        typeof raw === "number" ? formatMoney(raw, settings.currency) : "";
       break;
-    case 'switch':
-      display = raw === true ? t('common.yes') : t('common.no');
+    case "switch":
+      display = raw === true ? t("common.yes") : t("common.no");
       break;
-    case 'address': {
-      if (raw && typeof raw === 'object') {
-        const address = raw as { street?: string; zip?: string; city?: string; country?: string };
-        display = [address.street, [address.zip, address.city].filter(Boolean).join(' '), address.country]
+    case "address": {
+      if (raw && typeof raw === "object") {
+        const address = raw as {
+          street?: string;
+          zip?: string;
+          city?: string;
+          country?: string;
+        };
+        display = [
+          address.street,
+          [address.zip, address.city].filter(Boolean).join(" "),
+          address.country,
+        ]
           .filter(Boolean)
-          .join(', ');
+          .join(", ");
       }
       break;
     }
@@ -354,7 +437,7 @@ function MasterRow({ field, entity }: { field: FieldDef; entity: BaseEntity }) {
   const labelKey = field.labelKeyOf ? field.labelKeyOf(values) : field.labelKey;
 
   return (
-    <div className={field.span === 2 ? 'sm:col-span-2' : undefined}>
+    <div className={field.span === 2 ? "sm:col-span-2" : undefined}>
       <dt className="text-xs text-muted-foreground">{t(labelKey)}</dt>
       <dd className="whitespace-pre-line text-sm">{display}</dd>
     </div>

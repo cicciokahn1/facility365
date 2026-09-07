@@ -9,10 +9,10 @@
  * Ohne gepflegten Benutzer gilt der volle Zugriff: bestehende Installationen
  * ohne Benutzerverwaltung verhalten sich unveraendert.
  */
-import { AppUser, ModuleKey, UserRole } from '@/lib/types';
+import { AppUser, ModuleKey, UserRole } from "@/lib/types";
 
 /** Zugriffstiefe je Modul. */
-export type Access = 'none' | 'read' | 'write';
+export type Access = "none" | "read" | "write";
 
 interface RoleAccess {
   /** Zugriff auf alle Module, die unten nicht eigens genannt sind. */
@@ -30,22 +30,24 @@ interface RoleAccess {
 
 /** Module, die jede angemeldete Person sieht. */
 const COMMON: Partial<Record<ModuleKey, Access>> = {
-  dashboard: 'read',
-  today: 'read',
-  settings: 'read',
+  dashboard: "read",
+  today: "read",
+  /** Die eigene Merkliste gehoert jedem Benutzer. */
+  favorites: "read",
+  settings: "read",
   /** Der Papierkorb zeigt nur Datensaetze aus Modulen mit Leserecht. */
-  trash: 'read',
+  trash: "read",
   /** Die Anleitung steht allen offen. */
-  help: 'read',
+  help: "read",
   /** Das Kundenportal zeigt nur freigegebene Daten und die eigenen Offerten. */
-  portal: 'write',
+  portal: "write",
   /** Die Anbindung an Microsoft 365 richtet nur die Administration ein. */
-  microsoft: 'none',
+  microsoft: "none",
 };
 
 const ROLES: Record<UserRole, RoleAccess> = {
   superadmin: {
-    fallback: 'write',
+    fallback: "write",
     modules: {},
     allOrganizations: true,
     allSites: true,
@@ -53,7 +55,7 @@ const ROLES: Record<UserRole, RoleAccess> = {
     manageUsers: true,
   },
   orgadmin: {
-    fallback: 'write',
+    fallback: "write",
     modules: {},
     allOrganizations: false,
     allSites: true,
@@ -61,43 +63,43 @@ const ROLES: Record<UserRole, RoleAccess> = {
     manageUsers: true,
   },
   sitemanager: {
-    fallback: 'write',
-    modules: { ...COMMON, users: 'read', activities: 'read' },
+    fallback: "write",
+    modules: { ...COMMON, users: "read", activities: "read" },
     allOrganizations: false,
     allSites: false,
     ownOnly: false,
     manageUsers: false,
   },
   caretaker: {
-    fallback: 'read',
+    fallback: "read",
     modules: {
       ...COMMON,
-      orders: 'write',
-      maintenances: 'write',
-      damages: 'write',
-      reports: 'write',
-      legionella: 'write',
-      rcd: 'write',
-      inspections: 'write',
-      playgroundchecks: 'write',
-      firechecks: 'write',
-      keys: 'write',
-      inventory: 'write',
-      vehicles: 'write',
-      tools: 'write',
-      stock: 'write',
-      sources: 'write',
-      appointments: 'write',
-      solarplants: 'write',
-      solaryields: 'write',
-      cleaningchecks: 'write',
-      cleaningcomplaints: 'write',
-      quotes: 'none',
-      invoices: 'none',
-      contracts: 'none',
-      customers: 'none',
-      users: 'none',
-      activities: 'none',
+      orders: "write",
+      maintenances: "write",
+      damages: "write",
+      reports: "write",
+      legionella: "write",
+      rcd: "write",
+      inspections: "write",
+      playgroundchecks: "write",
+      firechecks: "write",
+      keys: "write",
+      inventory: "write",
+      vehicles: "write",
+      tools: "write",
+      stock: "write",
+      sources: "write",
+      appointments: "write",
+      solarplants: "write",
+      solaryields: "write",
+      cleaningchecks: "write",
+      cleaningcomplaints: "write",
+      quotes: "none",
+      invoices: "none",
+      contracts: "none",
+      customers: "none",
+      users: "none",
+      activities: "none",
     },
     allOrganizations: false,
     allSites: false,
@@ -105,14 +107,14 @@ const ROLES: Record<UserRole, RoleAccess> = {
     manageUsers: false,
   },
   cleaner: {
-    fallback: 'none',
+    fallback: "none",
     modules: {
       ...COMMON,
-      cleaning: 'read',
-      cleaningtasks: 'write',
-      cleaningareas: 'read',
-      cleaningplans: 'read',
-      cleaningcomplaints: 'read',
+      cleaning: "read",
+      cleaningtasks: "write",
+      cleaningareas: "read",
+      cleaningplans: "read",
+      cleaningcomplaints: "read",
     },
     allOrganizations: false,
     allSites: false,
@@ -120,30 +122,35 @@ const ROLES: Record<UserRole, RoleAccess> = {
     manageUsers: false,
   },
   reporter: {
-    fallback: 'none',
-    modules: { ...COMMON, damages: 'write' },
+    fallback: "none",
+    modules: { ...COMMON, damages: "write" },
     allOrganizations: false,
     allSites: false,
     ownOnly: true,
     manageUsers: false,
   },
   external: {
-    fallback: 'none',
-    modules: { ...COMMON, orders: 'write', reports: 'write', documents: 'read' },
+    fallback: "none",
+    modules: {
+      ...COMMON,
+      orders: "write",
+      reports: "write",
+      documents: "read",
+    },
     allOrganizations: false,
     allSites: false,
     ownOnly: true,
     manageUsers: false,
   },
   reader: {
-    fallback: 'read',
+    fallback: "read",
     modules: {
       ...COMMON,
-      quotes: 'none',
-      invoices: 'none',
-      contracts: 'none',
-      users: 'none',
-      activities: 'none',
+      quotes: "none",
+      invoices: "none",
+      contracts: "none",
+      users: "none",
+      activities: "none",
     },
     allOrganizations: false,
     allSites: false,
@@ -169,9 +176,9 @@ export interface AccessScope {
 /** Voller Zugriff, solange keine Benutzerverwaltung gepflegt ist. */
 export const FULL_SCOPE: AccessScope = {
   user: null,
-  role: 'superadmin',
+  role: "superadmin",
   active: true,
-  organizationId: '',
+  organizationId: "",
   siteIds: [],
   allOrganizations: true,
   allSites: true,
@@ -185,7 +192,7 @@ export const scopeOf = (user: AppUser | null): AccessScope => {
   return {
     user,
     role: user.role,
-    active: user.status === 'active',
+    active: user.status === "active",
     organizationId: user.organizationId,
     siteIds: user.siteIds ?? [],
     allOrganizations: role.allOrganizations,
@@ -198,20 +205,23 @@ export const scopeOf = (user: AppUser | null): AccessScope => {
 /** Zugriffstiefe einer Rolle auf ein Modul. */
 export const moduleAccess = (scope: AccessScope, module: ModuleKey): Access => {
   /** Deaktivierte Benutzer haben keinen Zugriff - auch nicht lesend. */
-  if (!scope.active) return 'none';
+  if (!scope.active) return "none";
   const role = ROLES[scope.role];
   return role.modules[module] ?? role.fallback;
 };
 
 export const canRead = (scope: AccessScope, module: ModuleKey): boolean =>
-  moduleAccess(scope, module) !== 'none';
+  moduleAccess(scope, module) !== "none";
 
 export const canWrite = (scope: AccessScope, module: ModuleKey): boolean =>
-  moduleAccess(scope, module) === 'write';
+  moduleAccess(scope, module) === "write";
 
 /** Loeschen ist enger als Schreiben: nur Verwaltungsrollen duerfen es. */
 export const canDelete = (scope: AccessScope, module: ModuleKey): boolean =>
   canWrite(scope, module) &&
-  (scope.role === 'superadmin' || scope.role === 'orgadmin' || scope.role === 'sitemanager');
+  (scope.role === "superadmin" ||
+    scope.role === "orgadmin" ||
+    scope.role === "sitemanager");
 
-export const canManageUsers = (scope: AccessScope): boolean => scope.active && scope.manageUsers;
+export const canManageUsers = (scope: AccessScope): boolean =>
+  scope.active && scope.manageUsers;

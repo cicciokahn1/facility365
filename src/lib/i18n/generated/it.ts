@@ -1294,4 +1294,12 @@ export const table: Record<string, string> = {
   "trial.separate": "L’ambiente di prova è separato dai dati di produzione.",
   "trial.contactMail": "Oggetto: prolungare la demo Facility365",
   "trial.signOut": "Esci",
+  "module.favorites": "I miei preferiti",
+  "favorites.title": "I miei preferiti",
+  "favorites.intro": "Le voci preferite e gli ultimi record aperti: solo collegamenti, nessuna copia.",
+  "favorites.add": "Aggiungi ai preferiti",
+  "favorites.remove": "Rimuovi dai preferiti",
+  "favorites.empty": "Nessun preferito. Con la stella ⭐ in un record lo si aggiunge qui.",
+  "favorites.recent": "Usati di recente",
+  "favorites.recentEmpty": "Nessun record aperto finora.",
 };

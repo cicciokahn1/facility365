@@ -1294,4 +1294,12 @@ export const table: Record<string, string> = {
   "trial.separate": "Die Testumgebung ist von Ihren Produktivdaten getrennt.",
   "trial.contactMail": "Betreff: Facility365 Demo verlängern",
   "trial.signOut": "Abmelden",
+  "module.favorites": "Meine Favoriten",
+  "favorites.title": "Meine Favoriten",
+  "favorites.intro": "Ihre gemerkten Einträge und die zuletzt geöffneten Datensätze – nur Verweise, keine Kopien.",
+  "favorites.add": "Als Favorit merken",
+  "favorites.remove": "Favorit entfernen",
+  "favorites.empty": "Noch keine Favoriten. Mit dem Stern ⭐ in einem Datensatz merken Sie ihn hier.",
+  "favorites.recent": "Zuletzt verwendet",
+  "favorites.recentEmpty": "Noch keine geöffneten Datensätze.",
 };
