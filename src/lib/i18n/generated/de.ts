@@ -1275,6 +1275,7 @@ export const table: Record<string, string> = {
   "help.empty": "Kein Hilfethema gefunden.",
   "trash.restoreAll": "Alle wiederherstellen",
   "relation.others": "Weitere Auswahl",
+  "relation.create": "+ Neu erstellen",
   "trash.purgeAll": "Papierkorb leeren",
   "trash.purgeAllConfirm": "Alle Datensätze im Papierkorb werden endgültig gelöscht. Das kann nicht rückgängig gemacht werden.",
   "trial.badge": "Testversion – noch {days} Tage",
