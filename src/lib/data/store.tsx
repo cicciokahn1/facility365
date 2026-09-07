@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Gemeinsamer Datenspeicher der Anwendung.
@@ -15,51 +15,55 @@ import {
   useMemo,
   useRef,
   useState,
-} from 'react';
+} from "react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { useAuth } from '@/lib/auth/provider';
-import { currentActor } from '@/lib/data/actor';
-import { ensureDailySnapshot } from '@/lib/data/backup';
-import { COLLECTIONS } from '@/lib/data/collections';
-import { NUMBER_PAD, NUMBER_PREFIX, emptyEntity } from '@/lib/data/factories';
-import { Repository, StorageFullError, localRepository } from '@/lib/data/repository';
-import { supabaseRepository } from '@/lib/data/supabase-repository';
-import { titleOfEntity } from '@/lib/module-config';
-import { Activity, BaseEntity, CollectionKey, EntityOf } from '@/lib/types';
-import { newId, nextNumber } from '@/lib/utils/id';
-
+import { useAuth } from "@/lib/auth/provider";
+import { currentActor } from "@/lib/data/actor";
+import { ensureDailySnapshot } from "@/lib/data/backup";
+import { COLLECTIONS } from "@/lib/data/collections";
+import { NUMBER_PAD, NUMBER_PREFIX, emptyEntity } from "@/lib/data/factories";
+import { describeChanges } from "@/lib/data/changes";
+import {
+  Repository,
+  StorageFullError,
+  localRepository,
+} from "@/lib/data/repository";
+import { supabaseRepository } from "@/lib/data/supabase-repository";
+import { titleOfEntity } from "@/lib/module-config";
+import {
+  Activity,
+  BaseEntity,
+  CollectionKey,
+  EntityOf,
+  FieldChange,
+} from "@/lib/types";
+import { newId, nextNumber } from "@/lib/utils/id";
 
 /**
  * Sammlungen mit unveraenderbarer Aktivitaetshistorie.
  *
- * Jede Anlage, Aenderung und Loeschung wird zusaetzlich als eigener Eintrag in
- * `activities` festgehalten - dort wird nur angehaengt, nie geaendert.
+ * Jede Anlage, Aenderung, Loeschung und Wiederherstellung wird zusaetzlich als
+ * eigener Eintrag in `activities` festgehalten - dort wird nur angehaengt, nie
+ * geaendert. Die Historie selbst fuehrt keine Historie.
  */
-const TRACKED: CollectionKey[] = [
-  'inspections',
-  'playgroundchecks',
-  'firechecks',
-  'orders',
-  'maintenances',
-  'damages',
-  'assets',
-  'documents',
-  'reports',
-  'cleaningtasks',
-  'quotes',
-];
+const TRACKED: CollectionKey[] = COLLECTIONS.filter(
+  (key) => key !== "activities",
+);
 
 type Store = Record<CollectionKey, BaseEntity[]>;
 
 interface IdleWindow {
-  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+  requestIdleCallback?: (
+    callback: () => void,
+    options?: { timeout: number },
+  ) => number;
 }
 
 /** Arbeit ausserhalb des ersten Bildaufbaus ausfuehren. */
 const whenIdle = (task: () => void): void => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     task();
     return;
   }
@@ -84,6 +88,13 @@ interface DataContextValue {
   storageError: boolean;
   setCollection: (collection: CollectionKey, items: BaseEntity[]) => void;
   saveItem: (collection: CollectionKey, item: BaseEntity) => void;
+  /** Vorgang in der zentralen Aktivitaetshistorie festhalten. */
+  logActivity: (
+    collection: CollectionKey,
+    entity: BaseEntity,
+    action: string,
+    changes?: FieldChange[],
+  ) => void;
   removeItem: (collection: CollectionKey, id: string) => void;
   /** Datensaetze im Papierkorb je Sammlung. */
   trash: Store;
@@ -103,17 +114,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [storageError, setStorageError] = useState(false);
 
   /** Mit Anmeldung gegen die Datenbank, ohne Anmeldung lokal im Browser. */
-  const repository: Repository = auth.enabled ? supabaseRepository : localRepository;
+  const repository: Repository = auth.enabled
+    ? supabaseRepository
+    : localRepository;
   /** Datenraum: das Konto, sonst das Geraet. Wechselt er, gilt der alte Inhalt nicht mehr. */
-  const scope = auth.enabled ? auth.user?.id ?? '' : 'local';
+  const scope = auth.enabled ? (auth.user?.id ?? "") : "local";
   const [loaded, setLoaded] = useState<{ scope: string; store: Store }>({
-    scope: '',
+    scope: "",
     store: emptyStore(),
   });
   const [revision, setRevision] = useState(0);
 
   /** Nie Daten eines anderen Kontos zeigen, auch nicht kurz waehrend des Ladens. */
-  const current = loaded.scope === scope && scope !== '';
+  const current = loaded.scope === scope && scope !== "";
   const all = current ? loaded.store : EMPTY_STORE;
   const ready = current;
 
@@ -158,7 +171,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
           }),
         );
       } catch (error) {
-        if (!cancelled) toast.error(error instanceof Error ? error.message : String(error));
+        if (!cancelled)
+          toast.error(error instanceof Error ? error.message : String(error));
       }
       if (cancelled) return;
       setLoaded({ scope, store: next });
@@ -175,7 +189,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const setStore = useCallback(
     (update: (current: Store) => Store) =>
-      setLoaded((state) => ({ scope: state.scope, store: update(state.store) })),
+      setLoaded((state) => ({
+        scope: state.scope,
+        store: update(state.store),
+      })),
     [],
   );
 
@@ -221,6 +238,56 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     [repository, report, setStore],
   );
 
+  /**
+   * Aktivitaetseintrag anlegen.
+   *
+   * Der Eintrag wird nur angehaengt: er nennt Person, Zeitpunkt, Modul,
+   * Datensatz, Handlung und - beim Aendern - die betroffenen Felder.
+   */
+  const issuedActivities = useRef<string[]>([]);
+  const logActivity = useCallback(
+    (
+      collection: CollectionKey,
+      entity: BaseEntity,
+      action: string,
+      changes?: FieldChange[],
+    ) => {
+      if (!TRACKED.includes(collection)) return;
+      const activities = all.activities;
+      issuedActivities.current = issuedActivities.current.filter(
+        (number) => !activities.some((item) => item.number === number),
+      );
+      const actor = currentActor();
+      const now = new Date().toISOString();
+      const record: Activity = {
+        ...emptyEntity("activities"),
+        id: newId("activities"),
+        number: nextNumber(
+          NUMBER_PREFIX.activities,
+          [
+            ...activities.map((item) => item.number),
+            ...issuedActivities.current,
+          ],
+          NUMBER_PAD.activities,
+        ),
+        createdAt: now,
+        updatedAt: now,
+        at: now,
+        userId: actor.id,
+        userName: actor.name,
+        module: collection,
+        entityId: entity.id,
+        entityNumber: entity.number,
+        entityTitle: titleOfEntity(collection, entity),
+        action,
+        ...(changes && changes.length > 0 ? { changes } : {}),
+      };
+      issuedActivities.current.push(record.number);
+      saveItem("activities", record);
+    },
+    [all, saveItem],
+  );
+
   /** Loeschen heisst Papierkorb: der Datensatz bleibt wiederherstellbar. */
   const moveTo = useCallback(
     (collection: CollectionKey, id: string, deletedAt: string | undefined) => {
@@ -229,7 +296,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       const next: BaseEntity = { ...entry, deletedAt };
       setStore((state) => ({
         ...state,
-        [collection]: state[collection].map((item) => (item.id === id ? next : item)),
+        [collection]: state[collection].map((item) =>
+          item.id === id ? next : item,
+        ),
       }));
       void repository
         .save(collection, next as EntityOf<typeof collection>)
@@ -246,20 +315,27 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   );
 
   const restoreItem = useCallback(
-    (collection: CollectionKey, id: string) => moveTo(collection, id, undefined),
-    [moveTo],
+    (collection: CollectionKey, id: string) => {
+      const entry = all[collection].find((item) => item.id === id);
+      if (entry) logActivity(collection, entry, "history.restored");
+      moveTo(collection, id, undefined);
+    },
+    [all, logActivity, moveTo],
   );
 
   /** Endgueltig entfernen; nur aus dem Papierkorb heraus moeglich. */
   const purgeItem = useCallback(
     (collection: CollectionKey, id: string) => {
+      const entry = all[collection].find((item) => item.id === id);
+      /** Der Datensatz verschwindet, der Eintrag in der Historie bleibt. */
+      if (entry) logActivity(collection, entry, "history.purged");
       setStore((state) => ({
         ...state,
         [collection]: state[collection].filter((entry) => entry.id !== id),
       }));
       void repository.removeOne(collection, id).catch(report);
     },
-    [repository, report, setStore],
+    [all, logActivity, repository, report, setStore],
   );
 
   const clearAll = useCallback(() => {
@@ -275,6 +351,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       storageError,
       setCollection,
       saveItem,
+      logActivity,
       removeItem,
       restoreItem,
       purgeItem,
@@ -291,6 +368,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       storageError,
       setCollection,
       saveItem,
+      logActivity,
       removeItem,
       restoreItem,
       purgeItem,
@@ -303,7 +381,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
 const useData = (): DataContextValue => {
   const context = useContext(DataContext);
-  if (!context) throw new Error('DataProvider fehlt');
+  if (!context) throw new Error("DataProvider fehlt");
   return context;
 };
 
@@ -312,14 +390,22 @@ export interface CollectionApi<K extends CollectionKey> {
   ready: boolean;
   get: (id: string) => EntityOf<K> | undefined;
   create: (values: Partial<EntityOf<K>>, user?: string) => EntityOf<K>;
-  update: (id: string, values: Partial<EntityOf<K>>, action?: string, user?: string) => void;
+  update: (
+    id: string,
+    values: Partial<EntityOf<K>>,
+    action?: string,
+    user?: string,
+  ) => void;
   remove: (id: string) => void;
   replaceAll: (items: EntityOf<K>[]) => void;
 }
 
 /** Zugriff auf eine Sammlung inklusive Historie und laufender Nummer. */
-export function useCollection<K extends CollectionKey>(collection: K): CollectionApi<K> {
-  const { store, ready, setCollection, saveItem, removeItem } = useData();
+export function useCollection<K extends CollectionKey>(
+  collection: K,
+): CollectionApi<K> {
+  const { store, ready, setCollection, saveItem, removeItem, logActivity } =
+    useData();
   const items = store[collection] as EntityOf<K>[];
   const index = useEntityIndex(collection);
   /** Bereits vergebene Nummern, solange der neue Stand noch nicht angezeigt wird. */
@@ -327,43 +413,8 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
 
   const get = useCallback((id: string) => index.get(id), [index]);
 
-  const activities = store.activities;
-  const issuedActivities = useRef<string[]>([]);
-  const log = useCallback(
-    (entity: BaseEntity, action: string, title: string) => {
-      if (!TRACKED.includes(collection)) return;
-      issuedActivities.current = issuedActivities.current.filter(
-        (number) => !activities.some((item) => item.number === number),
-      );
-      const actor = currentActor();
-      const now = new Date().toISOString();
-      const record: Activity = {
-        ...emptyEntity('activities'),
-        id: newId('activities'),
-        number: nextNumber(
-          NUMBER_PREFIX.activities,
-          [...activities.map((item) => item.number), ...issuedActivities.current],
-          NUMBER_PAD.activities,
-        ),
-        createdAt: now,
-        updatedAt: now,
-        at: now,
-        userId: actor.id,
-        userName: actor.name,
-        module: collection,
-        entityId: entity.id,
-        entityNumber: entity.number,
-        entityTitle: title,
-        action,
-      };
-      issuedActivities.current.push(record.number);
-      saveItem('activities', record);
-    },
-    [activities, collection, saveItem],
-  );
-
   const create = useCallback(
-    (values: Partial<EntityOf<K>>, user = currentActor().name || 'System') => {
+    (values: Partial<EntityOf<K>>, user = currentActor().name || "System") => {
       issued.current = issued.current.filter(
         (number) => !items.some((item) => item.number === number),
       );
@@ -379,27 +430,27 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
         ),
         createdAt: now,
         updatedAt: now,
-        history: [{ id: newId('h'), at: now, user, action: 'history.created' }],
+        history: [{ id: newId("h"), at: now, user, action: "history.created" }],
       } as EntityOf<K>;
       issued.current.push(entity.number);
       saveItem(collection, entity);
-      log(entity, 'history.created', titleOfEntity(collection, entity));
+      logActivity(collection, entity, "history.created");
       return entity;
     },
-    [collection, items, log, saveItem],
+    [collection, items, logActivity, saveItem],
   );
 
   const update = useCallback(
     (
       id: string,
       values: Partial<EntityOf<K>>,
-      action = 'history.updated',
-      user = currentActor().name || 'System',
+      action = "history.updated",
+      user = currentActor().name || "System",
     ) => {
       const now = new Date().toISOString();
       const current = index.get(id);
       if (!current) return;
-      const next = {
+      const merged = {
         ...current,
         ...values,
         /** Kennung, Nummer und Anlagedatum bleiben dauerhaft unveraendert. */
@@ -407,21 +458,40 @@ export function useCollection<K extends CollectionKey>(collection: K): Collectio
         number: current.number,
         createdAt: current.createdAt,
         updatedAt: now,
-        history: [...current.history, { id: newId('h'), at: now, user, action }],
+      } as BaseEntity;
+      /** Welche Felder sich geaendert haben, steht in der Historie des Datensatzes. */
+      const changes = describeChanges(
+        collection,
+        current as BaseEntity,
+        merged,
+        store,
+      );
+      const next = {
+        ...merged,
+        history: [
+          ...current.history,
+          {
+            id: newId("h"),
+            at: now,
+            user,
+            action,
+            ...(changes.length > 0 ? { changes } : {}),
+          },
+        ],
       };
       saveItem(collection, next as BaseEntity);
-      log(next as BaseEntity, action, titleOfEntity(collection, next as BaseEntity));
+      logActivity(collection, next as BaseEntity, action, changes);
     },
-    [collection, index, log, saveItem],
+    [collection, index, logActivity, saveItem, store],
   );
 
   const remove = useCallback(
     (id: string) => {
       const current = index.get(id);
-      if (current) log(current, 'history.deleted', titleOfEntity(collection, current));
+      if (current) logActivity(collection, current, "history.deleted");
       removeItem(collection, id);
     },
-    [collection, index, log, removeItem],
+    [collection, index, logActivity, removeItem],
   );
 
   const replaceAll = useCallback(
@@ -444,13 +514,16 @@ export function useEntityIndex<K extends CollectionKey>(
 }
 
 /** Nur-lesender Zugriff auf eine Sammlung, z. B. fuer Auswahllisten. */
-export function useCollectionItems<K extends CollectionKey>(collection: K): EntityOf<K>[] {
+export function useCollectionItems<K extends CollectionKey>(
+  collection: K,
+): EntityOf<K>[] {
   const { store } = useData();
   return store[collection] as EntityOf<K>[];
 }
 
 /** Alle Sammlungen auf einmal, z. B. um Verknuepfungen beim Excel-Import aufzuloesen. */
-export const useAllCollections = (): Record<CollectionKey, BaseEntity[]> => useData().store;
+export const useAllCollections = (): Record<CollectionKey, BaseEntity[]> =>
+  useData().store;
 
 /** Papierkorb: geloeschte Datensaetze mit Wiederherstellung. */
 export interface TrashApi {

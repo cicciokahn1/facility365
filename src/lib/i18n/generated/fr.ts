@@ -1301,5 +1301,10 @@ export const table: Record<string, string> = {
   "favorites.remove": "Retirer des favoris",
   "favorites.empty": "Aucun favori pour l’instant. L’étoile ⭐ d’un enregistrement l’ajoute ici.",
   "favorites.recent": "Utilisés récemment",
+  "history.restored": "Restauré",
+  "history.purged": "Supprimé définitivement",
+  "history.emptyValue": "vide",
+  "activity.allModules": "Tous les modules",
+  "activity.allActions": "Toutes les actions",
   "favorites.recentEmpty": "Aucun enregistrement ouvert pour l’instant.",
 };
