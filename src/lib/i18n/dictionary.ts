@@ -7162,6 +7162,36 @@ export const dictionary = {
     it: "Usati di recente",
     en: "Recently used",
   },
+  "history.restored": {
+    de: "Wiederhergestellt",
+    fr: "Restauré",
+    it: "Ripristinato",
+    en: "Restored",
+  },
+  "history.purged": {
+    de: "Endgültig gelöscht",
+    fr: "Supprimé définitivement",
+    it: "Eliminato definitivamente",
+    en: "Permanently deleted",
+  },
+  "history.emptyValue": {
+    de: "leer",
+    fr: "vide",
+    it: "vuoto",
+    en: "empty",
+  },
+  "activity.allModules": {
+    de: "Alle Module",
+    fr: "Tous les modules",
+    it: "Tutti i moduli",
+    en: "All modules",
+  },
+  "activity.allActions": {
+    de: "Alle Vorgänge",
+    fr: "Toutes les actions",
+    it: "Tutte le azioni",
+    en: "All actions",
+  },
   "favorites.recentEmpty": {
     de: "Noch keine geöffneten Datensätze.",
     fr: "Aucun enregistrement ouvert pour l’instant.",

@@ -107,11 +107,22 @@ export interface DocumentFile {
   category?: string;
 }
 
+/** Einzelne Feldaenderung: Bezeichnung des Feldes, alter und neuer Wert. */
+export interface FieldChange {
+  /** Uebersetzungsschluessel der Feldbezeichnung. */
+  labelKey: string;
+  /** Werte als Text; bei Auswahlfeldern der Uebersetzungsschluessel. */
+  from: string;
+  to: string;
+}
+
 export interface HistoryEntry {
   id: string;
   at: string;
   user: string;
   action: string;
+  /** Was sich geaendert hat; fehlt bei Anlage und Loeschung. */
+  changes?: FieldChange[];
 }
 
 /** Gemeinsamer Kern jedes Datensatzes. */
@@ -1332,6 +1343,8 @@ export interface Activity extends BaseEntity {
   entityTitle: string;
   /** Uebersetzungsschluessel der Handlung, z. B. history.updated. */
   action: string;
+  /** Geaenderte Felder mit altem und neuem Wert. */
+  changes?: FieldChange[];
 }
 
 /** Zuordnung von Sammlung zu Datensatztyp. */
