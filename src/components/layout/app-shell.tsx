@@ -6,12 +6,13 @@
  * Desktop: feste Seitenleiste. Tablet und Telefon: Kopfzeile mit Menue und
  * Navigation am unteren Rand. Der Inhalt bleibt in allen Faellen gleich.
  */
-import { Suspense, useEffect, useState } from "react";
-import { Menu, WifiOff } from "lucide-react";
+import { Suspense, useState } from "react";
+import { Menu } from "lucide-react";
 
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { GlobalSearch } from "@/components/layout/global-search";
 import { Sidebar } from "@/components/layout/sidebar";
+import { SyncBanner } from "@/components/layout/sync-banner";
 import { TrialBadge, TrialNotice } from "@/components/layout/trial-banner";
 import { TrialGuard } from "@/components/layout/trial-guard";
 import { Button } from "@/components/ui/button";
@@ -29,20 +30,8 @@ import { useSettings } from "@/lib/settings/provider";
 export function AppShell({ children }: { children: React.ReactNode }) {
   const t = useT();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [offline, setOffline] = useState(false);
   const storageError = useStorageError();
   const { settings } = useSettings();
-
-  useEffect(() => {
-    const update = () => setOffline(!navigator.onLine);
-    update();
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
-    return () => {
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
-    };
-  }, []);
 
   return (
     <TrialGuard>
@@ -97,15 +86,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <TrialNotice />
 
-          {offline ? (
-            <p
-              data-testid="offline-banner"
-              className="flex items-center gap-2 bg-warning/20 px-4 py-2 text-sm text-warning-foreground"
-            >
-              <WifiOff className="size-4" aria-hidden />
-              {t("offline.text")}
-            </p>
-          ) : null}
+          <SyncBanner />
 
           {storageError ? (
             <p
