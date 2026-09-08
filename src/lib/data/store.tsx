@@ -15,6 +15,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 
 import { toast } from "sonner";
@@ -25,6 +26,13 @@ import { ensureDailySnapshot } from "@/lib/data/backup";
 import { COLLECTIONS } from "@/lib/data/collections";
 import { NUMBER_PAD, NUMBER_PREFIX, emptyEntity } from "@/lib/data/factories";
 import { describeChanges } from "@/lib/data/changes";
+import {
+  SyncState,
+  offlineRepository,
+  subscribeSync,
+  syncState,
+  watchConnection,
+} from "@/lib/data/offline-repository";
 import {
   Repository,
   StorageFullError,
@@ -113,10 +121,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
   const [storageError, setStorageError] = useState(false);
 
-  /** Mit Anmeldung gegen die Datenbank, ohne Anmeldung lokal im Browser. */
-  const repository: Repository = auth.enabled
-    ? supabaseRepository
-    : localRepository;
+  /**
+   * Mit Anmeldung gegen die Datenbank, ohne Anmeldung lokal im Browser.
+   *
+   * Der Datenbankzugriff laeuft ueber die Offline-Schicht: sie spiegelt den
+   * Stand auf dem Geraet und haelt Aenderungen ohne Verbindung zurueck.
+   */
+  const repository: Repository = useMemo(
+    () =>
+      auth.enabled ? offlineRepository(supabaseRepository) : localRepository,
+    [auth.enabled],
+  );
   /** Datenraum: das Konto, sonst das Geraet. Wechselt er, gilt der alte Inhalt nicht mehr. */
   const scope = auth.enabled ? (auth.user?.id ?? "") : "local";
   const [loaded, setLoaded] = useState<{ scope: string; store: Store }>({
@@ -186,6 +201,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, [repository, revision, scope]);
 
   const reload = useCallback(() => setRevision((value) => value + 1), []);
+
+  /** Wartende Aenderungen gehen bei Rueckkehr der Verbindung von selbst raus. */
+  useEffect(() => {
+    if (!auth.enabled) return;
+    return watchConnection(supabaseRepository, reload);
+  }, [auth.enabled, reload]);
 
   const setStore = useCallback(
     (update: (current: Store) => Store) =>
@@ -555,6 +576,15 @@ export const useCompleteStore = (): Record<CollectionKey, BaseEntity[]> => {
     return next;
   }, [store, trash]);
 };
+
+/**
+ * Stand der Synchronisierung.
+ *
+ * Zeigt, ob eine Verbindung besteht, wie viele Aenderungen warten und wann
+ * zuletzt uebertragen wurde.
+ */
+export const useSync = (): SyncState =>
+  useSyncExternalStore(subscribeSync, syncState, syncState);
 
 export const useStorageError = (): boolean => useData().storageError;
 export const useDataReady = (): boolean => useData().ready;

@@ -3172,6 +3172,42 @@ export const dictionary = {
     it: "Nessuna connessione – le modifiche vengono salvate localmente.",
     en: "No connection – changes are stored locally.",
   },
+  "sync.pending": {
+    de: "Änderungen warten auf die Übertragung.",
+    fr: "Des modifications attendent d’être transmises.",
+    it: "Alcune modifiche attendono la sincronizzazione.",
+    en: "Changes are waiting to be synchronised.",
+  },
+  "sync.running": {
+    de: "Änderungen werden übertragen …",
+    fr: "Transmission des modifications …",
+    it: "Sincronizzazione in corso …",
+    en: "Synchronising changes …",
+  },
+  "sync.failed": {
+    de: "Einige Änderungen konnten nicht übertragen werden.",
+    fr: "Certaines modifications n’ont pas pu être transmises.",
+    it: "Alcune modifiche non sono state trasmesse.",
+    en: "Some changes could not be synchronised.",
+  },
+  "sync.count": {
+    de: "{n} offen",
+    fr: "{n} en attente",
+    it: "{n} in sospeso",
+    en: "{n} pending",
+  },
+  "sync.now": {
+    de: "Jetzt synchronisieren",
+    fr: "Synchroniser maintenant",
+    it: "Sincronizza ora",
+    en: "Sync now",
+  },
+  "history.conflict": {
+    de: "Konflikt zusammengeführt",
+    fr: "Conflit fusionné",
+    it: "Conflitto unito",
+    en: "Conflict merged",
+  },
 
   "dashboard.criticalOrders": {
     de: "Dringende Aufträge",
