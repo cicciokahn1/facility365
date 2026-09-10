@@ -640,6 +640,7 @@ export const table: Record<string, string> = {
   "settings.hourlyRate": "Tarif horaire",
   "settings.hourlyRates": "Tarifs horaires",
   "settings.hourlyRatesHint": "Les tarifs par rôle servent de standard. Le tarif individuel d’une personne ou entreprise ainsi que celui du mandat ou rapport prime.",
+  "material.fromStock": "Choisir dans le stock",
   "settings.paymentData": "Données de paiement",
   "settings.paymentRecipient": "Bénéficiaire",
   "settings.paymentAddress": "Adresse du bénéficiaire",

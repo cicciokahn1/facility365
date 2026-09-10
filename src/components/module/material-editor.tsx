@@ -1,12 +1,20 @@
 'use client';
 
-/** Verbrauchtes Material mit Summe. */
+/** Verbrauchtes Material mit Summe; Positionen frei oder aus dem Lager. */
 import { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
 import { MaterialItem } from '@/lib/types';
@@ -22,8 +30,25 @@ export function MaterialEditor({
 }) {
   const t = useT();
   const { settings } = useSettings();
-  const [draft, setDraft] = useState({ name: '', quantity: '1', unit: 'Stk', price: '' });
+  const stock = useCollectionItems('stock');
+  const empty = { name: '', quantity: '1', unit: 'Stk', price: '', stockItemId: '' };
+  const [draft, setDraft] = useState(empty);
   const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+
+  const pickStock = (stockItemId: string) => {
+    const item = stock.find((entry) => entry.id === stockItemId);
+    if (!item) {
+      setDraft({ ...draft, stockItemId: '' });
+      return;
+    }
+    setDraft({
+      ...draft,
+      stockItemId,
+      name: item.title,
+      unit: item.unit || 'Stk',
+      price: typeof item.price === 'number' ? String(item.price) : '',
+    });
+  };
 
   const add = () => {
     const name = draft.name.trim();
@@ -36,9 +61,10 @@ export function MaterialEditor({
         quantity: Number(draft.quantity.replace(',', '.')) || 0,
         unit: draft.unit,
         price: Number(draft.price.replace(',', '.')) || 0,
+        ...(draft.stockItemId ? { stockItemId: draft.stockItemId } : {}),
       },
     ]);
-    setDraft({ name: '', quantity: '1', unit: 'Stk', price: '' });
+    setDraft(empty);
   };
 
   return (
@@ -75,12 +101,29 @@ export function MaterialEditor({
         </ul>
       )}
 
+      {stock.length > 0 ? (
+        <Select value={draft.stockItemId || 'none'} onValueChange={(value) => pickStock(value === 'none' ? '' : value)}>
+          <SelectTrigger data-testid="material-stock" aria-label={t('material.fromStock')}>
+            <SelectValue placeholder={t('material.fromStock')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">{t('material.fromStock')}</SelectItem>
+            {stock.map((item) => (
+              <SelectItem key={item.id} value={item.id}>
+                {[item.articleNumber, item.title].filter(Boolean).join(' · ')}
+                {typeof item.price === 'number' ? ` – ${formatMoney(item.price, settings.currency)}` : ''}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : null}
+
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
         <Input
           className="col-span-2"
           placeholder={t('common.name')}
           value={draft.name}
-          onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+          onChange={(event) => setDraft({ ...draft, name: event.target.value, stockItemId: '' })}
           data-testid="material-name"
         />
         <Input

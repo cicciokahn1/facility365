@@ -502,6 +502,8 @@ export interface MaterialItem {
   quantity: number;
   unit: string;
   price: number;
+  /** Lagerartikel, aus dem die Position übernommen wurde. */
+  stockItemId?: string;
   billable?: boolean;
   invoicedAt?: string;
   invoicedInvoiceId?: string;
@@ -1118,6 +1120,8 @@ export interface Cleaner extends BaseEntity {
   /** Externe Reinigungsfirma; leer bei eigenem Personal. */
   supplierId: string;
   status: ActiveStatus;
+  /** Individueller Verrechnungssatz; der Rollenansatz dient als Fallback. */
+  hourlyRate?: number;
 }
 
 /**
@@ -1193,6 +1197,8 @@ export interface CleaningTask extends BaseEntity {
   /** Arbeitsende als HH:MM; optional. */
   workEnd: string;
   breakMinutes: number;
+  /** Verwendeter Stundenansatz; überschreibt Personal- und Rollenansatz. */
+  hourlyRate?: number;
   completedAt: string;
   checklist: ChecklistItem[];
   /** Reinigungsmittel und Material. */
@@ -1331,6 +1337,8 @@ export interface AppSettings {
   currency: string;
   /** Rollenbasierte Verrechnungssätze; alte hourlyRate-Werte bleiben lesbar. */
   roleHourlyRates?: Partial<Record<UserRole, number>>;
+  /** Verrechnungssätze je Reinigungsrolle. */
+  cleanerRoleHourlyRates?: Partial<Record<CleanerRole, number>>;
   vatRate: number;
   paymentRecipient: string;
   paymentAddress: Address;

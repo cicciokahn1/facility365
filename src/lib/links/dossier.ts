@@ -98,18 +98,6 @@ const isMaterialList = (value: unknown): value is MaterialItem[] =>
       'price' in item,
   );
 
-/** Kosten eines Datensatzes aus Material oder Positionen. */
-const costOf = (entity: BaseEntity): number => {
-  const total = numberField(entity, 'total');
-  if (total > 0) return total;
-  const materials = fieldValue(entity, 'materials');
-  if (!isMaterialList(materials)) return 0;
-  return materials.reduce(
-    (sum, item) => sum + (item.quantity || 0) * (item.price || 0),
-    0,
-  );
-};
-
 /** Erfasste Arbeitszeit eines Datensatzes in Stunden. */
 const hoursOf = (entity: BaseEntity): number => {
   const start = stringField(entity, 'workStart');
@@ -120,6 +108,25 @@ const hoursOf = (entity: BaseEntity): number => {
     end,
     breakMinutes: numberField(entity, 'breakMinutes'),
   });
+};
+
+const sumOf = (value: unknown): number =>
+  isMaterialList(value)
+    ? value.reduce(
+        (sum, item) => sum + (item.quantity || 0) * (item.price || 0),
+        0,
+      )
+    : 0;
+
+/** Kosten eines Datensatzes aus Positionen oder aus Arbeitszeit, Material und Fremdleistungen. */
+const costOf = (entity: BaseEntity): number => {
+  const total = numberField(entity, 'total');
+  if (total > 0) return total;
+  return (
+    hoursOf(entity) * numberField(entity, 'hourlyRate') +
+    sumOf(fieldValue(entity, 'materials')) +
+    sumOf(fieldValue(entity, 'externalServices'))
+  );
 };
 
 /** Das erste Datumsfeld eines Moduls fuehrt den Vorgang zeitlich. */

@@ -3394,6 +3394,12 @@ export const dictionary = {
     it: "Le tariffe per ruolo fungono da standard. Prevale la tariffa individuale della persona o azienda e quella dell’ordine o rapporto.",
     en: "Role rates are the default. An individual person or company rate, or a rate on the order or report, takes precedence.",
   },
+  "material.fromStock": {
+    de: "Aus Lager wählen",
+    fr: "Choisir dans le stock",
+    it: "Scegli dal magazzino",
+    en: "Pick from stock",
+  },
   "settings.paymentData": { de: "Zahlungsdaten", fr: "Données de paiement", it: "Dati di pagamento", en: "Payment data" },
   "settings.paymentRecipient": { de: "Zahlungsempfänger", fr: "Bénéficiaire", it: "Beneficiario", en: "Payee" },
   "settings.paymentAddress": { de: "Adresse des Zahlungsempfängers", fr: "Adresse du bénéficiaire", it: "Indirizzo del beneficiario", en: "Payee address" },

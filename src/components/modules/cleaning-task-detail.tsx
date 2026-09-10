@@ -14,10 +14,17 @@ import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
 import { CleaningPdfPanel } from '@/components/modules/cleaning-pdf-panel';
 import { WorkTimePanel } from '@/components/modules/work-time-panel';
+import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
+import { hourlyRateFor } from '@/lib/reports/hourly-rate';
+import { useSettings } from '@/lib/settings/provider';
 
 export function CleaningTaskDetail({ id }: { id: string }) {
   const t = useT();
+  const cleaners = useCollectionItems('cleaners');
+  const users = useCollectionItems('users');
+  const suppliers = useCollectionItems('suppliers');
+  const { settings } = useSettings();
 
   return (
     <EntityDetail
@@ -56,11 +63,19 @@ export function CleaningTaskDetail({ id }: { id: string }) {
                 breakMinutes: task.breakMinutes,
               }}
               onChange={(values) => {
+                const cleaner = cleaners.find((entry) => entry.id === task.cleanerId);
                 update({
                   date: values.workDate,
                   workStart: values.workStart,
                   workEnd: values.workEnd,
                   breakMinutes: values.breakMinutes,
+                  hourlyRate: hourlyRateFor({
+                    explicit: task.hourlyRate,
+                    user: users.find((entry) => entry.id === task.assigneeUserId),
+                    cleaner,
+                    supplier: suppliers.find((entry) => entry.id === cleaner?.supplierId),
+                    settings,
+                  }),
                 });
                 toast.success(t('toast.saved'));
               }}

@@ -640,6 +640,7 @@ export const table: Record<string, string> = {
   "settings.hourlyRate": "Tariffa oraria",
   "settings.hourlyRates": "Tariffe orarie",
   "settings.hourlyRatesHint": "Le tariffe per ruolo fungono da standard. Prevale la tariffa individuale della persona o azienda e quella dell’ordine o rapporto.",
+  "material.fromStock": "Scegli dal magazzino",
   "settings.paymentData": "Dati di pagamento",
   "settings.paymentRecipient": "Beneficiario",
   "settings.paymentAddress": "Indirizzo del beneficiario",
