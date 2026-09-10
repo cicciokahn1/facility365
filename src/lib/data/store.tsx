@@ -62,7 +62,7 @@ const TRACKED: CollectionKey[] = COLLECTIONS.filter(
 );
 
 /** Häufig benötigte Stammdaten und Arbeitsvorgänge zuerst laden. */
-const CORE_COLLECTIONS: CollectionKey[] = [
+const CORE_COLLECTIONS: CollectionKey[] = ([
   "users",
   "customers",
   "organizations",
@@ -76,7 +76,7 @@ const CORE_COLLECTIONS: CollectionKey[] = [
   "damages",
   "maintenances",
   "reports",
-].filter((key): key is CollectionKey => COLLECTIONS.includes(key));
+] satisfies CollectionKey[]).filter((key) => COLLECTIONS.includes(key));
 
 const DEFERRED_COLLECTIONS = COLLECTIONS.filter(
   (key) => !CORE_COLLECTIONS.includes(key),
