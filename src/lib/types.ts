@@ -199,6 +199,8 @@ export interface Supplier extends BaseEntity {
   website: string;
   category: string;
   status: ActiveStatus;
+  /** Individueller Verrechnungssatz für externe Leistungen. */
+  hourlyRate?: number;
 }
 
 export type AppointmentStatus = "planned" | "done" | "cancelled";
@@ -1327,7 +1329,8 @@ export interface AppSettings {
   profileEmail: string;
   profileRole: string;
   currency: string;
-  hourlyRate?: number;
+  /** Rollenbasierte Verrechnungssätze; alte hourlyRate-Werte bleiben lesbar. */
+  roleHourlyRates?: Partial<Record<UserRole, number>>;
   vatRate: number;
   paymentRecipient: string;
   paymentAddress: Address;
@@ -1411,6 +1414,8 @@ export interface AppUser extends BaseEntity {
   /** Kennung beim Anmeldedienst, spaeter die Objekt-Kennung aus Entra ID. */
   externalId: string;
   authProvider: AuthProvider;
+  /** Individueller Verrechnungssatz; der Rollenansatz dient als Fallback. */
+  hourlyRate?: number;
 }
 
 /**

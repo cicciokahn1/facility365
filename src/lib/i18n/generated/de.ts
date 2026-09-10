@@ -638,6 +638,8 @@ export const table: Record<string, string> = {
   "settings.billing": "Verrechnung",
   "settings.currency": "Währung",
   "settings.hourlyRate": "Stundenansatz",
+  "settings.hourlyRates": "Stundenansätze",
+  "settings.hourlyRatesHint": "Rollenansätze dienen als Standard. Ein individueller Ansatz bei Mitarbeitenden oder Firmen sowie ein Ansatz im Auftrag oder Rapport hat Vorrang.",
   "settings.paymentData": "Zahlungsdaten",
   "settings.paymentRecipient": "Zahlungsempfänger",
   "settings.paymentAddress": "Adresse des Zahlungsempfängers",

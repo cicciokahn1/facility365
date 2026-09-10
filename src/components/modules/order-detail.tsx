@@ -12,11 +12,17 @@ import { WorkTimePanel } from '@/components/modules/work-time-panel';
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
 import { useReportFromOrder } from '@/lib/reports/from-order';
+import { hourlyRateFor } from '@/lib/reports/hourly-rate';
+import { useCollectionItems } from '@/lib/data/store';
+import { useSettings } from '@/lib/settings/provider';
 
 export function OrderDetail({ id }: { id: string }) {
   const t = useT();
   const router = useRouter();
   const reports = useReportFromOrder();
+  const users = useCollectionItems('users');
+  const suppliers = useCollectionItems('suppliers');
+  const { settings } = useSettings();
 
   return (
     <EntityDetail
@@ -59,7 +65,15 @@ export function OrderDetail({ id }: { id: string }) {
                 breakMinutes: order.breakMinutes,
               }}
               onChange={(values) => {
-                update(values);
+                update({
+                  ...values,
+                  hourlyRate: hourlyRateFor({
+                    explicit: order.hourlyRate,
+                    user: users.find((user) => user.id === order.assigneeUserId),
+                    supplier: suppliers.find((supplier) => supplier.id === order.supplierId),
+                    settings,
+                  }),
+                });
                 toast.success(t('toast.saved'));
               }}
             />

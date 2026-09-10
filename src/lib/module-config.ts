@@ -176,6 +176,7 @@ const suppliersConfig: ModuleConfig<"suppliers"> = {
     { kind: "tel", name: "mobile", labelKey: "common.mobile" },
     { kind: "email", name: "email", labelKey: "common.email" },
     text("website", "common.website"),
+    { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
   searchOf: (supplier) =>
@@ -857,7 +858,6 @@ const appointmentsConfig: ModuleConfig<"appointments"> = {
       collection: "assets",
     },
     text("assignee", "common.assignee"),
-    { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
     {
       kind: "relation",
       name: "assigneeUserId",
@@ -962,6 +962,7 @@ const ordersConfig: ModuleConfig<"orders"> = {
       filter: true,
     },
     text("assigneeTeam", "user.team"),
+    { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
     { kind: "date", name: "dueDate", labelKey: "common.dueDate" },
     {
       kind: "textarea",
@@ -2204,6 +2205,7 @@ const reportsConfig: ModuleConfig<"reports"> = {
     },
     { kind: "date", name: "date", labelKey: "common.date" },
     text("author", "common.author"),
+    { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
     {
       kind: "relation",
       name: "customerId",
@@ -2810,6 +2812,7 @@ const usersConfig: ModuleConfig<"users"> = {
       filter: true,
     },
     text("team", "user.team"),
+    { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
   searchOf: (user) =>

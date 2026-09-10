@@ -29,6 +29,7 @@ export const defaultSettings: AppSettings = {
   profileRole: '',
   currency: 'CHF',
   vatRate: 8.1,
+  roleHourlyRates: {},
   paymentRecipient: 'Facility365',
   paymentAddress: { street: '', zip: '', city: '', country: 'Schweiz' },
   paymentIban: '',

@@ -3382,6 +3382,18 @@ export const dictionary = {
     it: "Tariffa oraria",
     en: "Hourly rate",
   },
+  "settings.hourlyRates": {
+    de: "Stundenansätze",
+    fr: "Tarifs horaires",
+    it: "Tariffe orarie",
+    en: "Hourly rates",
+  },
+  "settings.hourlyRatesHint": {
+    de: "Rollenansätze dienen als Standard. Ein individueller Ansatz bei Mitarbeitenden oder Firmen sowie ein Ansatz im Auftrag oder Rapport hat Vorrang.",
+    fr: "Les tarifs par rôle servent de standard. Le tarif individuel d’une personne ou entreprise ainsi que celui du mandat ou rapport prime.",
+    it: "Le tariffe per ruolo fungono da standard. Prevale la tariffa individuale della persona o azienda e quella dell’ordine o rapporto.",
+    en: "Role rates are the default. An individual person or company rate, or a rate on the order or report, takes precedence.",
+  },
   "settings.paymentData": { de: "Zahlungsdaten", fr: "Données de paiement", it: "Dati di pagamento", en: "Payment data" },
   "settings.paymentRecipient": { de: "Zahlungsempfänger", fr: "Bénéficiaire", it: "Beneficiario", en: "Payee" },
   "settings.paymentAddress": { de: "Adresse des Zahlungsempfängers", fr: "Adresse du bénéficiaire", it: "Indirizzo del beneficiario", en: "Payee address" },

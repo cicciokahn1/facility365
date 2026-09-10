@@ -37,6 +37,7 @@ export const reportValuesFromOrder = (order: Order): Partial<Report> => ({
   workStart: order.workStart,
   workEnd: order.workEnd,
   breakMinutes: order.breakMinutes,
+  hourlyRate: order.hourlyRate,
   /** Material und Fotos werden kopiert, damit der Rapport eigenstaendig bleibt. */
   materials: order.materials.map((item) => ({ ...item, id: newId('mat') })),
   photos: order.photos.map((photo) => ({ ...photo, id: newId('pho') })),

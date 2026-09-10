@@ -4,12 +4,13 @@
  * Rechnung aus einem abgeschlossenen Rapport.
  *
  * Uebernommen werden Kunde, Objekt, Auftrag, Rapportnummer, Datum, Leistungen,
- * Arbeitszeit, Material und MwSt. Der Stundensatz stammt aus den Einstellungen;
- * ist dort keiner erfasst, bleibt er 0.00 statt erfunden zu werden.
+ * Arbeitszeit, Material und MwSt. Der Stundensatz folgt der Zuordnung:
+ * Rapport/Auftrag, Person, externe Firma, Rolle.
  */
 import { useCallback } from 'react';
 
 import { useCollection, useCollectionItems } from '@/lib/data/store';
+import { hourlyRateFor } from '@/lib/reports/hourly-rate';
 import { workedHours } from '@/lib/reports/work-time';
 import { useSettings } from '@/lib/settings/provider';
 import { Invoice, InvoicePaymentData, LineItem, Report } from '@/lib/types';
@@ -78,6 +79,8 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
   const { update: updateReport } = useCollection('reports');
   const invoices = useCollectionItems('invoices');
   const { items: orders } = useCollection('orders');
+  const users = useCollectionItems('users');
+  const suppliers = useCollectionItems('suppliers');
   const { settings } = useSettings();
 
   return useCallback(
@@ -96,6 +99,8 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
         referenceType: settings.paymentReferenceType,
       };
       const order = orders.find((entry) => entry.id === report.orderId);
+      const user = users.find((entry) => entry.id === order?.assigneeUserId);
+      const supplier = suppliers.find((entry) => entry.id === order?.supplierId);
       const additionalMaterials = report.materials.length > 0
         ? (report.externalServices ?? [])
         : [...(order?.materials ?? []), ...(order?.externalServices ?? [])];
@@ -113,10 +118,12 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
             report,
             workLabel,
             settings.vatRate,
-            report.hourlyRate
-              ?? order?.hourlyRate
-              ?? settings.hourlyRate
-              ?? 0,
+            hourlyRateFor({
+              explicit: report.hourlyRate ?? order?.hourlyRate,
+              user,
+              supplier,
+              settings,
+            }),
             additionalMaterials.map((material) => ({
               id: material.id,
               position: 0,
@@ -155,8 +162,10 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
       update,
       updateReport,
       orders,
+      suppliers,
+      users,
       settings.currency,
-      settings.hourlyRate,
+      settings.roleHourlyRates,
       settings.paymentAddress,
       settings.paymentBank,
       settings.paymentBic,
