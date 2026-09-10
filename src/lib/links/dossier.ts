@@ -27,13 +27,18 @@ import { BaseEntity, CollectionKey, MaterialItem } from '@/lib/types';
 /** Ebene, zu der ein Dossier gehoert. */
 export type DossierLevel = 'properties' | 'buildings' | 'rooms' | 'assets';
 
-/** Beziehungsfelder, ueber die ein Datensatz auf ein Objekt zeigt. */
-const OBJECT_FIELDS: Record<DossierLevel, string> = {
-  properties: 'propertyId',
-  buildings: 'buildingId',
-  rooms: 'roomId',
-  assets: 'assetId',
+const OBJECT_FIELD_LEVEL: Record<string, DossierLevel> = {
+  propertyId: 'properties',
+  buildingId: 'buildings',
+  roomId: 'rooms',
+  assetId: 'assets',
 };
+const OBJECT_COLLECTIONS: CollectionKey[] = [
+  'properties',
+  'buildings',
+  'rooms',
+  'assets',
+];
 
 /** Sammlungen, die nie im Dossier stehen: Stammdaten und Protokolle. */
 const EXCLUDED: CollectionKey[] = [
@@ -136,16 +141,25 @@ const dateFieldsOf = (collection: CollectionKey): string[] =>
     .map((field) => field.name);
 
 /** Beziehungsfelder eines Moduls auf Liegenschaft, Gebaeude, Raum und Anlage. */
-const objectFieldsOf = (collection: CollectionKey): string[] =>
-  configOf(collection)
-    .fields.filter(
-      (field) =>
-        field.kind === 'relation' &&
-        (
-          ['properties', 'buildings', 'rooms', 'assets'] as CollectionKey[]
-        ).includes(field.collection),
+type ObjectField = { name: string; level: DossierLevel };
+const OBJECT_FIELD_CACHE = new Map<CollectionKey, ObjectField[]>();
+
+const objectFieldsOf = (collection: CollectionKey): ObjectField[] => {
+  const cached = OBJECT_FIELD_CACHE.get(collection);
+  if (cached) return cached;
+  const fields: ObjectField[] = [];
+  for (const field of configOf(collection).fields) {
+    if (
+      field.kind !== 'relation' ||
+      !OBJECT_COLLECTIONS.includes(field.collection)
     )
-    .map((field) => field.name);
+      continue;
+    const level = OBJECT_FIELD_LEVEL[field.name];
+    if (level) fields.push({ name: field.name, level });
+  }
+  OBJECT_FIELD_CACHE.set(collection, fields);
+  return fields;
+};
 
 /**
  * Dossier eines Objekts samt untergeordneter Objekte.
@@ -162,11 +176,15 @@ export function useDossier(level: DossierLevel, id: string): Dossier {
 
   return useMemo(() => {
     /** Zu jedem Objekt auch die untergeordneten Kennungen sammeln. */
+    const propertyIds = new Set<string>();
+    const buildingIds = new Set<string>();
+    const roomIds = new Set<string>();
+    const assetIds = new Set<string>();
     const ids: Record<DossierLevel, Set<string>> = {
-      properties: new Set(),
-      buildings: new Set(),
-      rooms: new Set(),
-      assets: new Set(),
+      properties: propertyIds,
+      buildings: buildingIds,
+      rooms: roomIds,
+      assets: assetIds,
     };
     ids[level].add(id);
 
@@ -191,14 +209,17 @@ export function useDossier(level: DossierLevel, id: string): Dossier {
         .forEach((asset) => ids.assets.add(asset.id));
     }
 
+    const objectFields = new Map(
+      (Object.keys(store) as CollectionKey[]).map((collection) => [
+        collection,
+        objectFieldsOf(collection),
+      ]),
+    );
     const matches = (collection: CollectionKey, item: BaseEntity): boolean =>
-      objectFieldsOf(collection).some((name) => {
+      (objectFields.get(collection) ?? []).some(({ name, level: target }) => {
         const value = stringField(item, name);
         if (!value) return false;
-        const target = (Object.keys(OBJECT_FIELDS) as DossierLevel[]).find(
-          (key) => OBJECT_FIELDS[key] === name,
-        );
-        return target ? ids[target].has(value) : false;
+        return ids[target].has(value);
       });
 
     const entries: DossierEntry[] = [];

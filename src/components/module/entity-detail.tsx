@@ -41,7 +41,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAccess } from "@/lib/auth/scope";
-import { useCollection, useCollectionItems } from "@/lib/data/store";
+import { indexOf, useCollection, useCollectionItems } from "@/lib/data/store";
 import { useMarks } from "@/lib/favorites/use-marks";
 import { fieldValue, stringField, valuesOf } from "@/lib/entity-values";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
@@ -422,7 +422,7 @@ function MasterRow({ field, entity }: { field: FieldDef; entity: BaseEntity }) {
   let display = "";
   switch (field.kind) {
     case "relation": {
-      const target = relationItems.find((item) => item.id === asString(raw));
+      const target = indexOf(relationItems).get(asString(raw));
       display = target ? titleOfEntity(field.collection, target) : "";
       break;
     }

@@ -12,6 +12,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -112,7 +113,6 @@ const emptyStore = (): Store =>
 const EMPTY_STORE: Store = emptyStore();
 
 interface DataContextValue {
-  store: Store;
   ready: boolean;
   /** Letzter Speicherfehler, z. B. voller Browser-Speicher. */
   storageError: boolean;
@@ -126,8 +126,6 @@ interface DataContextValue {
     changes?: FieldChange[],
   ) => void;
   removeItem: (collection: CollectionKey, id: string) => void;
-  /** Datensaetze im Papierkorb je Sammlung. */
-  trash: Store;
   restoreItem: (collection: CollectionKey, id: string) => void;
   purgeItem: (collection: CollectionKey, id: string) => void;
   clearAll: () => void;
@@ -135,9 +133,21 @@ interface DataContextValue {
   repository: Repository;
   /** Stand neu aus der Ablage lesen, etwa nach einer Wiederherstellung. */
   reload: () => void;
+  subscribe: (listener: () => void) => () => void;
+  getStore: () => Store;
+  getTrash: () => Store;
 }
 
 const DataContext = createContext<DataContextValue | null>(null);
+const INDEX_CACHE = new WeakMap<BaseEntity[], Map<string, BaseEntity>>();
+
+export function indexOf<T extends BaseEntity>(items: T[]): Map<string, T> {
+  const cached = INDEX_CACHE.get(items);
+  if (cached) return cached as Map<string, T>;
+  const index = new Map(items.map((item) => [item.id, item]));
+  INDEX_CACHE.set(items, index as Map<string, BaseEntity>);
+  return index;
+}
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
@@ -195,6 +205,22 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
     return next;
   }, [all]);
+  const allRef = useRef(all);
+  // eslint-disable-next-line react-hooks/refs -- aktueller Stand fuer stabile Rueckruffunktionen
+  allRef.current = all;
+  const snapshot = useRef({ store: EMPTY_STORE, trash: EMPTY_STORE });
+  const listeners = useRef(new Set<() => void>());
+  const subscribe = useCallback((listener: () => void) => {
+    listeners.current.add(listener);
+    return () => listeners.current.delete(listener);
+  }, []);
+  const getStore = useCallback(() => snapshot.current.store, []);
+  const getTrash = useCallback(() => snapshot.current.trash, []);
+
+  useLayoutEffect(() => {
+    snapshot.current = { store, trash };
+    listeners.current.forEach((listener) => listener());
+  }, [store, trash]);
 
   useEffect(() => {
     if (!scope) return;
@@ -268,7 +294,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const setCollection = useCallback(
     (collection: CollectionKey, items: BaseEntity[]) => {
       /** Der Papierkorb bleibt unberuehrt, auch wenn eine ganze Liste ersetzt wird. */
-      const kept = all[collection].filter((entry) => entry.deletedAt);
+      const kept = allRef.current[collection].filter((entry) => entry.deletedAt);
       const written = [...items, ...kept];
       setStore((state) => ({ ...state, [collection]: written }));
       void repository
@@ -276,7 +302,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         .then(() => setStorageError(false))
         .catch(report);
     },
-    [all, repository, report, setStore],
+    [repository, report, setStore],
   );
 
   const saveItem = useCallback(
@@ -314,7 +340,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       changes?: FieldChange[],
     ) => {
       if (!TRACKED.includes(collection)) return;
-      const activities = all.activities;
+      const activities = allRef.current.activities;
       issuedActivities.current = issuedActivities.current.filter(
         (number) => !activities.some((item) => item.number === number),
       );
@@ -367,13 +393,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             : {}),
         });
     },
-    [all, saveItem],
+    [saveItem],
   );
 
   /** Loeschen heisst Papierkorb: der Datensatz bleibt wiederherstellbar. */
   const moveTo = useCallback(
     (collection: CollectionKey, id: string, deletedAt: string | undefined) => {
-      const entry = all[collection].find((item) => item.id === id);
+      const entry = allRef.current[collection].find((item) => item.id === id);
       if (!entry) return;
       const next: BaseEntity = { ...entry, deletedAt };
       setStore((state) => ({
@@ -387,7 +413,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         .then(() => setStorageError(false))
         .catch(report);
     },
-    [all, repository, report, setStore],
+    [repository, report, setStore],
   );
 
   const removeItem = useCallback(
@@ -398,17 +424,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const restoreItem = useCallback(
     (collection: CollectionKey, id: string) => {
-      const entry = all[collection].find((item) => item.id === id);
+      const entry = allRef.current[collection].find((item) => item.id === id);
       if (entry) logActivity(collection, entry, "history.restored");
       moveTo(collection, id, undefined);
     },
-    [all, logActivity, moveTo],
+    [logActivity, moveTo],
   );
 
   /** Endgueltig entfernen; nur aus dem Papierkorb heraus moeglich. */
   const purgeItem = useCallback(
     (collection: CollectionKey, id: string) => {
-      const entry = all[collection].find((item) => item.id === id);
+      const entry = allRef.current[collection].find((item) => item.id === id);
       /** Der Datensatz verschwindet, der Eintrag in der Historie bleibt. */
       if (entry) logActivity(collection, entry, "history.purged");
       setStore((state) => ({
@@ -417,7 +443,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       }));
       void repository.removeOne(collection, id).catch(report);
     },
-    [all, logActivity, repository, report, setStore],
+    [logActivity, repository, report, setStore],
   );
 
   const clearAll = useCallback(() => {
@@ -427,8 +453,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<DataContextValue>(
     () => ({
-      store,
-      trash,
       ready,
       storageError,
       setCollection,
@@ -440,12 +464,15 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       clearAll,
       repository,
       reload,
+      subscribe,
+      getStore,
+      getTrash,
     }),
     [
+      getStore,
+      getTrash,
       repository,
       reload,
-      store,
-      trash,
       ready,
       storageError,
       setCollection,
@@ -455,6 +482,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       restoreItem,
       purgeItem,
       clearAll,
+      subscribe,
     ],
   );
 
@@ -486,9 +514,9 @@ export interface CollectionApi<K extends CollectionKey> {
 export function useCollection<K extends CollectionKey>(
   collection: K,
 ): CollectionApi<K> {
-  const { store, ready, setCollection, saveItem, removeItem, logActivity } =
+  const { ready, setCollection, saveItem, removeItem, logActivity, getStore } =
     useData();
-  const items = store[collection] as EntityOf<K>[];
+  const items = useCollectionItems(collection);
   const index = useEntityIndex(collection);
   /** Bereits vergebene Nummern, solange der neue Stand noch nicht angezeigt wird. */
   const issued = useRef<string[]>([]);
@@ -546,7 +574,7 @@ export function useCollection<K extends CollectionKey>(
         collection,
         current as BaseEntity,
         merged,
-        store,
+        getStore(),
       );
       const next = {
         ...merged,
@@ -564,7 +592,7 @@ export function useCollection<K extends CollectionKey>(
       saveItem(collection, next as BaseEntity);
       logActivity(collection, next as BaseEntity, action, changes);
     },
-    [collection, index, logActivity, saveItem, store],
+    [collection, getStore, index, logActivity, saveItem],
   );
 
   const remove = useCallback(
@@ -591,21 +619,26 @@ export function useCollection<K extends CollectionKey>(
 export function useEntityIndex<K extends CollectionKey>(
   collection: K,
 ): Map<string, EntityOf<K>> {
-  const items = useCollectionItems(collection);
-  return useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
+  return indexOf(useCollectionItems(collection));
 }
 
 /** Nur-lesender Zugriff auf eine Sammlung, z. B. fuer Auswahllisten. */
 export function useCollectionItems<K extends CollectionKey>(
   collection: K,
 ): EntityOf<K>[] {
-  const { store } = useData();
-  return store[collection] as EntityOf<K>[];
+  const { subscribe, getStore } = useData();
+  return useSyncExternalStore(
+    subscribe,
+    () => getStore()[collection],
+    () => EMPTY_STORE[collection],
+  ) as EntityOf<K>[];
 }
 
 /** Alle Sammlungen auf einmal, z. B. um Verknuepfungen beim Excel-Import aufzuloesen. */
-export const useAllCollections = (): Record<CollectionKey, BaseEntity[]> =>
-  useData().store;
+export const useAllCollections = (): Record<CollectionKey, BaseEntity[]> => {
+  const { subscribe, getStore } = useData();
+  return useSyncExternalStore(subscribe, getStore, () => EMPTY_STORE);
+};
 
 /** Papierkorb: geloeschte Datensaetze mit Wiederherstellung. */
 export interface TrashApi {
@@ -615,7 +648,8 @@ export interface TrashApi {
 }
 
 export function useTrash(): TrashApi {
-  const { trash, restoreItem, purgeItem } = useData();
+  const { subscribe, getTrash, restoreItem, purgeItem } = useData();
+  const trash = useSyncExternalStore(subscribe, getTrash, () => EMPTY_STORE);
   return useMemo(
     () => ({ items: trash, restore: restoreItem, purge: purgeItem }),
     [purgeItem, restoreItem, trash],
@@ -630,7 +664,8 @@ export const useReloadData = (): (() => void) => useData().reload;
 
 /** Alle Datensaetze inklusive Papierkorb, z. B. fuer eine vollstaendige Sicherung. */
 export const useCompleteStore = (): Record<CollectionKey, BaseEntity[]> => {
-  const { store, trash } = useData();
+  const store = useAllCollections();
+  const { items: trash } = useTrash();
   return useMemo(() => {
     const next = emptyStore();
     for (const key of COLLECTIONS) next[key] = [...store[key], ...trash[key]];
