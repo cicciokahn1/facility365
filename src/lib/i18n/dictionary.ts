@@ -3233,6 +3233,13 @@ export const dictionary = {
     it: "Almeno una posizione è a 0.00 – da verificare prima dell’invio.",
     en: "At least one line item is priced 0.00 – please check before sending.",
   },
+  "invoice.payment": { de: "Zahlteil", fr: "Section paiement", it: "Sezione pagamento", en: "Payment part" },
+  "invoice.receipt": { de: "Empfangsschein", fr: "Récépissé", it: "Ricevuta", en: "Receipt" },
+  "invoice.account": { de: "Konto", fr: "Compte", it: "Conto", en: "Account" },
+  "invoice.payableBy": { de: "Zahlbar durch", fr: "Payable par", it: "Pagabile da", en: "Payable by" },
+  "invoice.reference": { de: "Referenz", fr: "Référence", it: "Riferimento", en: "Reference" },
+  "invoice.amount": { de: "Betrag", fr: "Montant", it: "Importo", en: "Amount" },
+  "invoice.currency": { de: "Währung", fr: "Devise", it: "Valuta", en: "Currency" },
 
   "analytics.title": {
     de: "Berichte",
@@ -3375,6 +3382,14 @@ export const dictionary = {
     it: "Tariffa oraria",
     en: "Hourly rate",
   },
+  "settings.paymentData": { de: "Zahlungsdaten", fr: "Données de paiement", it: "Dati di pagamento", en: "Payment data" },
+  "settings.paymentRecipient": { de: "Zahlungsempfänger", fr: "Bénéficiaire", it: "Beneficiario", en: "Payee" },
+  "settings.paymentAddress": { de: "Adresse des Zahlungsempfängers", fr: "Adresse du bénéficiaire", it: "Indirizzo del beneficiario", en: "Payee address" },
+  "settings.paymentIban": { de: "IBAN", fr: "IBAN", it: "IBAN", en: "IBAN" },
+  "settings.paymentQrIban": { de: "QR-IBAN", fr: "QR-IBAN", it: "QR-IBAN", en: "QR IBAN" },
+  "settings.paymentBank": { de: "Bank", fr: "Banque", it: "Banca", en: "Bank" },
+  "settings.paymentBic": { de: "BIC / SWIFT", fr: "BIC / SWIFT", it: "BIC / SWIFT", en: "BIC / SWIFT" },
+  "settings.paymentReferenceType": { de: "Referenzart", fr: "Type de référence", it: "Tipo di riferimento", en: "Reference type" },
   "settings.vatRate": {
     de: "MwSt.-Satz (%)",
     fr: "Taux TVA (%)",

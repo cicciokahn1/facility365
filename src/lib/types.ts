@@ -500,6 +500,9 @@ export interface MaterialItem {
   quantity: number;
   unit: string;
   price: number;
+  billable?: boolean;
+  invoicedAt?: string;
+  invoicedInvoiceId?: string;
 }
 
 export interface Order extends BaseEntity {
@@ -534,6 +537,7 @@ export interface Order extends BaseEntity {
   breakMinutes: number;
   checklist: ChecklistItem[];
   materials: MaterialItem[];
+  externalServices?: MaterialItem[];
   signature: string;
   signedBy: string;
   /** Modul, aus dem der Auftrag entstanden ist, z. B. eine Kontrolle. */
@@ -546,6 +550,7 @@ export interface Order extends BaseEntity {
   graphEventId?: string;
   /** Zeitpunkt des letzten Abgleichs mit Microsoft 365. */
   graphSyncedAt?: string;
+  hourlyRate?: number;
 }
 
 export type MaintenanceStatus = "planned" | "due" | "overdue" | "done";
@@ -990,6 +995,7 @@ export interface Report extends BaseEntity {
   /** Pause in Minuten. */
   breakMinutes: number;
   materials: MaterialItem[];
+  externalServices?: MaterialItem[];
   /** Im Kundenportal sichtbar; ohne Freigabe bleibt der Rapport intern. */
   sharedWithCustomer: boolean;
   /** Unterschrift als Data-URL (PNG). */
@@ -997,6 +1003,10 @@ export interface Report extends BaseEntity {
   signedBy: string;
   /** Zeitpunkt der Unterschrift als ISO-Zeichenkette. */
   signedAt: string;
+  billable?: boolean;
+  invoicedAt?: string;
+  invoicedInvoiceId?: string;
+  hourlyRate?: number;
 }
 
 export type QuoteStatus =
@@ -1011,6 +1021,18 @@ export interface LineItem {
   unitPrice: number;
   /** Mehrwertsteuersatz in Prozent. */
   vatRate: number;
+}
+
+export type InvoiceReferenceType = "QRR" | "SCOR";
+
+export interface InvoicePaymentData {
+  recipient: string;
+  address: Address;
+  iban: string;
+  qrIban: string;
+  bank: string;
+  bic: string;
+  referenceType: InvoiceReferenceType;
 }
 
 export interface Quote extends BaseEntity {
@@ -1043,6 +1065,8 @@ export interface Invoice extends BaseEntity {
   currency: string;
   /** Schweizer QR-Referenz; bleibt leer, solange keine Bankdaten erfasst sind. */
   qrReference: string;
+  /** Zum Zeitpunkt der Rechnung gespeicherte Zahlungsdaten des Zahlungsempfängers. */
+  payment?: InvoicePaymentData;
 }
 
 /** Eigenstaendiger Dokumenteneintrag des Moduls "Dokumente". */
@@ -1305,6 +1329,13 @@ export interface AppSettings {
   currency: string;
   hourlyRate?: number;
   vatRate: number;
+  paymentRecipient: string;
+  paymentAddress: Address;
+  paymentIban: string;
+  paymentQrIban: string;
+  paymentBank: string;
+  paymentBic: string;
+  paymentReferenceType: InvoiceReferenceType;
   /** Grenzwerte und Intervall der Legionellenkontrolle. */
   legionellaHotMin: number;
   legionellaColdMax: number;

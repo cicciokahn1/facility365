@@ -687,6 +687,7 @@ export const emptyInvoice = (): Omit<Invoice, "id" | "number"> => ({
   items: [],
   currency: "CHF",
   qrReference: "",
+  payment: undefined,
 });
 
 export const emptyCleaningArea = (): Omit<CleaningArea, "id" | "number"> => ({
