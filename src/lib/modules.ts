@@ -33,7 +33,6 @@ import {
   Network,
   PackageSearch,
   type LucideIcon,
-  Receipt,
   Settings,
   Sun,
   SunMedium,
@@ -68,7 +67,6 @@ export type NavGroup =
   | "energy"
   | "operations"
   | "documents"
-  | "finance"
   | "analytics"
   | "users"
   | "admin";
@@ -643,7 +641,6 @@ export const NAV_GROUPS: NavGroupDefinition[] = [
   { key: "energy", labelKey: "nav.energy", icon: Gauge },
   { key: "operations", labelKey: "nav.operations", icon: PackageSearch },
   { key: "documents", labelKey: "nav.documents", icon: Files },
-  { key: "finance", labelKey: "nav.finance", icon: Receipt },
   { key: "analytics", labelKey: "nav.analytics", icon: FileSpreadsheet },
   { key: "users", labelKey: "nav.users", icon: UserCog },
   { key: "admin", labelKey: "nav.admin", icon: Settings },
