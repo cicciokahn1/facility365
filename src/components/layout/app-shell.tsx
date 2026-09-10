@@ -11,6 +11,7 @@ import { Menu } from "lucide-react";
 
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { GlobalSearch } from "@/components/layout/global-search";
+import { ScanButton } from "@/components/layout/scan-button";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SyncBanner } from "@/components/layout/sync-banner";
 import { TrialBadge, TrialNotice } from "@/components/layout/trial-banner";
@@ -80,6 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <div className="ml-auto flex flex-1 items-center justify-end gap-2 lg:ml-0 lg:justify-start">
               <GlobalSearch />
+              <ScanButton />
               <TrialBadge />
             </div>
           </header>

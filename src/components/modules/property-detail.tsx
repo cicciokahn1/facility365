@@ -2,6 +2,7 @@
 
 import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
+import { AreaOverview } from '@/components/modules/area-overview';
 import { PlanManager } from '@/components/modules/plan-manager';
 
 export function PropertyDetail({ id }: { id: string }) {
@@ -14,6 +15,11 @@ export function PropertyDetail({ id }: { id: string }) {
           value: 'buildings',
           labelKey: 'module.buildings',
           content: <RelatedList collection="buildings" field="propertyId" value={property.id} />,
+        },
+        {
+          value: 'areas',
+          labelKey: 'tab.areas',
+          content: <AreaOverview level="properties" id={property.id} />,
         },
         {
           value: 'plans',

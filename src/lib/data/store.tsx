@@ -39,6 +39,7 @@ import {
   localRepository,
 } from "@/lib/data/repository";
 import { supabaseRepository } from "@/lib/data/supabase-repository";
+import { sendWebhookEvent, webhookEventOf } from "@/lib/integrations/webhooks";
 import { titleOfEntity } from "@/lib/module-config";
 import {
   Activity,
@@ -305,6 +306,27 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       };
       issuedActivities.current.push(record.number);
       saveItem("activities", record);
+      const event = webhookEventOf(action);
+      if (event)
+        sendWebhookEvent({
+          event,
+          module: collection,
+          recordId: record.entityId,
+          recordNumber: record.entityNumber,
+          recordTitle: record.entityTitle,
+          userId: record.userId,
+          userName: record.userName,
+          at: record.at,
+          ...(changes && changes.length > 0
+            ? {
+                changes: changes.map((change) => ({
+                  field: change.labelKey,
+                  from: change.from,
+                  to: change.to,
+                })),
+              }
+            : {}),
+        });
     },
     [all, saveItem],
   );
