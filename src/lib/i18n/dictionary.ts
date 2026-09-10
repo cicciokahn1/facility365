@@ -7127,7 +7127,7 @@ export const dictionary = {
     en: "Bulk entry",
   },
   "bulk.hint": {
-    de: "Bereich waehlen, Raeume oder Anlagen auswaehlen und je Auswahl eine Kontrolle erstellen.",
+    de: "Bereich wählen, Räume oder Anlagen auswählen und je Auswahl eine Kontrolle erstellen.",
     fr: "Choisir le perimetre, selectionner les locaux ou installations et creer un controle par selection.",
     it: "Scegliere l’ambito, selezionare locali o impianti e creare un controllo per ogni selezione.",
     en: "Choose the scope, select rooms or assets and create one check per selection.",
@@ -7139,7 +7139,7 @@ export const dictionary = {
     en: "Selection",
   },
   "bulk.selectAll": {
-    de: "Alle auswaehlen",
+    de: "Alle auswählen",
     fr: "Tout selectionner",
     it: "Seleziona tutto",
     en: "Select all",
@@ -7151,7 +7151,7 @@ export const dictionary = {
     en: "Clear selection",
   },
   "bulk.empty": {
-    de: "Keine Raeume oder Anlagen im gewaehlten Bereich.",
+    de: "Keine Räume oder Anlagen im gewählten Bereich.",
     fr: "Aucun local ou installation dans le perimetre choisi.",
     it: "Nessun locale o impianto nell’ambito scelto.",
     en: "No rooms or assets in the selected scope.",
@@ -7175,7 +7175,7 @@ export const dictionary = {
     en: "Nothing changed",
   },
   "bulk.created": {
-    de: "Datensaetze erstellt",
+    de: "Datensätze erstellt",
     fr: "Enregistrements crees",
     it: "Record creati",
     en: "Records created",
@@ -7193,7 +7193,7 @@ export const dictionary = {
     en: "Copy created",
   },
   "list.resetFilters": {
-    de: "Filter zuruecksetzen",
+    de: "Filter zurücksetzen",
     fr: "Reinitialiser les filtres",
     it: "Azzera filtri",
     en: "Reset filters",
