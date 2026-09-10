@@ -84,6 +84,76 @@ export interface ModuleDefinition {
   singularKey: TranslationKey;
 }
 
+/**
+ * Fachliche Reihenfolge innerhalb der Ordner.
+ *
+ * Die Sammlung und die Adresse eines Moduls bleiben unveraendert; diese
+ * Reihenfolge betrifft ausschliesslich die Darstellung in der Navigation.
+ */
+const NAVIGATION_ORDER: ModuleKey[] = [
+  "customers",
+  "organizations",
+  "sites",
+  "properties",
+  "buildings",
+  "rooms",
+  "assets",
+  "maintenances",
+  "inspections",
+  "legionella",
+  "rcd",
+  "firechecks",
+  "playgroundchecks",
+  "damages",
+  "orders",
+  "tickets",
+  "reports",
+  "handover",
+  "cleaning",
+  "cleaningtasks",
+  "cleaningplans",
+  "cleaningareas",
+  "cleaners",
+  "cleaningchecks",
+  "cleaningcomplaints",
+  "energy",
+  "solarplants",
+  "solaryields",
+  "suppliers",
+  "sources",
+  "keys",
+  "inventory",
+  "tools",
+  "stock",
+  "vehicles",
+  "portal",
+  "documents",
+  "contracts",
+  "quotes",
+  "invoices",
+  "analytics",
+  "audit",
+  "users",
+  "activities",
+  "microsoft",
+  "trash",
+  "help",
+  "settings",
+];
+
+const navigationIndex = new Map(
+  NAVIGATION_ORDER.map((key, index) => [key, index]),
+);
+
+export const sortNavigationModules = (
+  modules: ModuleDefinition[],
+): ModuleDefinition[] =>
+  [...modules].sort(
+    (left, right) =>
+      (navigationIndex.get(left.key) ?? Number.MAX_SAFE_INTEGER) -
+      (navigationIndex.get(right.key) ?? Number.MAX_SAFE_INTEGER),
+  );
+
 export const MODULES: ModuleDefinition[] = [
   {
     key: "dashboard",
@@ -140,7 +210,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "suppliers",
     path: "/suppliers",
     icon: Truck,
-    group: "objects",
+    group: "operations",
     labelKey: "module.suppliers",
     singularKey: "module.suppliers.singular",
   },
@@ -149,7 +219,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "sources",
     path: "/sources",
     icon: ShoppingBag,
-    group: "objects",
+    group: "operations",
     labelKey: "module.sources",
     singularKey: "module.sources.singular",
   },
@@ -320,7 +390,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "legionella",
     path: "/legionella",
     icon: Droplets,
-    group: "energy",
+    group: "technics",
     labelKey: "module.legionella",
     singularKey: "module.legionella.singular",
   },
@@ -329,7 +399,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "rcd",
     path: "/rcd",
     icon: Zap,
-    group: "energy",
+    group: "technics",
     labelKey: "module.rcd",
     singularKey: "module.rcd.singular",
   },
@@ -374,7 +444,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "damages",
     path: "/damages",
     icon: ShieldAlert,
-    group: "work",
+    group: "technics",
     labelKey: "module.damages",
     singularKey: "module.damages.singular",
   },
@@ -392,7 +462,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "quotes",
     path: "/quotes",
     icon: FileSpreadsheet,
-    group: "finance",
+    group: "documents",
     labelKey: "module.quotes",
     singularKey: "module.quotes.singular",
   },
@@ -401,7 +471,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "invoices",
     path: "/invoices",
     icon: Receipt,
-    group: "finance",
+    group: "documents",
     labelKey: "module.invoices",
     singularKey: "module.invoices.singular",
   },

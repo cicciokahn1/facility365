@@ -10,7 +10,13 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/provider';
 import { useAccess } from '@/lib/auth/scope';
 import { BRAND_MARK_SRC, isBrandLogo } from '@/lib/branding/logo';
-import { MODULES, NAV_GROUPS, NavGroup, groupOfPath } from '@/lib/modules';
+import {
+  MODULES,
+  NAV_GROUPS,
+  NavGroup,
+  groupOfPath,
+  sortNavigationModules,
+} from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
 import { initials } from '@/lib/utils/format';
@@ -37,8 +43,10 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     () =>
       NAV_GROUPS.map((group) => ({
         ...group,
-        modules: MODULES.filter(
-          (module) => module.group === group.key && access.canRead(module.key),
+        modules: sortNavigationModules(
+          MODULES.filter(
+            (module) => module.group === group.key && access.canRead(module.key),
+          ),
         ),
       })).filter((group) => group.modules.length > 0),
     [access],
