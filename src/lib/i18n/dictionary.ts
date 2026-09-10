@@ -1481,6 +1481,12 @@ export const dictionary = {
     it: "Danni",
     en: "Damages",
   },
+  "module.tickets": {
+    de: "Helpdesk",
+    fr: "Helpdesk",
+    it: "Helpdesk",
+    en: "Helpdesk",
+  },
   "module.reports": {
     de: "Rapporte",
     fr: "Rapports",
@@ -1565,6 +1571,12 @@ export const dictionary = {
     fr: "Dommage",
     it: "Danno",
     en: "Damage",
+  },
+  "module.tickets.singular": {
+    de: "Ticket",
+    fr: "Ticket",
+    it: "Ticket",
+    en: "Ticket",
   },
   "module.reports.singular": {
     de: "Rapport",
@@ -1885,6 +1897,12 @@ export const dictionary = {
     it: "Lista di controllo",
     en: "Checklist",
   },
+  "tab.comments": {
+    de: "Kommentare",
+    fr: "Commentaires",
+    it: "Commenti",
+    en: "Comments",
+  },
   "tab.material": {
     de: "Material",
     fr: "Matériel",
@@ -1892,6 +1910,78 @@ export const dictionary = {
     en: "Material",
   },
 
+  "ticket.category.fault": {
+    de: "Störung",
+    fr: "Panne",
+    it: "Guasto",
+    en: "Fault",
+  },
+  "ticket.category.damage": {
+    de: "Schaden",
+    fr: "Dommage",
+    it: "Danno",
+    en: "Damage",
+  },
+  "ticket.category.cleaning": {
+    de: "Reinigung",
+    fr: "Nettoyage",
+    it: "Pulizia",
+    en: "Cleaning",
+  },
+  "ticket.category.request": {
+    de: "Anfrage",
+    fr: "Demande",
+    it: "Richiesta",
+    en: "Request",
+  },
+  "ticket.category.question": {
+    de: "Frage",
+    fr: "Question",
+    it: "Domanda",
+    en: "Question",
+  },
+  "ticket.category.other": {
+    de: "Sonstiges",
+    fr: "Autre",
+    it: "Altro",
+    en: "Other",
+  },
+  "ticket.toOrder": {
+    de: "In Auftrag umwandeln",
+    fr: "Convertir en ordre",
+    it: "Converti in ordine",
+    en: "Convert to order",
+  },
+  "ticket.openOrder": {
+    de: "Auftrag öffnen",
+    fr: "Ouvrir l\'ordre",
+    it: "Apri ordine",
+    en: "Open order",
+  },
+  "ticket.orderCreated": {
+    de: "Auftrag aus Ticket erstellt",
+    fr: "Ordre créé à partir du ticket",
+    it: "Ordine creato dal ticket",
+    en: "Order created from ticket",
+  },
+  "comment.add": {
+    de: "Kommentieren",
+    fr: "Commenter",
+    it: "Commenta",
+    en: "Comment",
+  },
+  "comment.placeholder": {
+    de: "Kommentar schreiben …",
+    fr: "Écrire un commentaire …",
+    it: "Scrivi un commento …",
+    en: "Write a comment …",
+  },
+  "comment.empty": {
+    de: "Noch keine Kommentare",
+    fr: "Aucun commentaire",
+    it: "Nessun commento",
+    en: "No comments yet",
+  },
   "list.searchPlaceholder": {
     de: "Suchen …",
     fr: "Rechercher …",
@@ -2507,6 +2597,18 @@ export const dictionary = {
     fr: "En pause",
     it: "In pausa",
     en: "Paused",
+  },
+  "status.waiting": {
+    de: "Wartet",
+    fr: "En attente",
+    it: "In attesa",
+    en: "Waiting",
+  },
+  "status.closed": {
+    de: "Geschlossen",
+    fr: "Clôturé",
+    it: "Chiuso",
+    en: "Closed",
   },
   "status.done": {
     de: "Erledigt",

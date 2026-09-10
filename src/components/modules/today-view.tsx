@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Persoenliche Tagesansicht.
@@ -7,21 +7,21 @@
  * faellig oder ueberfaellig ist - Auftraege, Wartungen, Reinigungen,
  * Kontrollen und Termine aus dem Kalender.
  */
-import { useMemo } from 'react';
-import Link from 'next/link';
+import { useMemo } from "react";
+import Link from "next/link";
 
-import { EmptyState } from '@/components/common/empty-state';
-import { useAccess } from '@/lib/auth/scope';
-import { useRelevantEvents } from '@/lib/calendar/relevant';
-import { useCollectionItems } from '@/lib/data/store';
-import { stringField } from '@/lib/entity-values';
-import { useT } from '@/lib/i18n/provider';
-import { titleOfEntity } from '@/lib/module-config';
-import { moduleByCollection, moduleByKey } from '@/lib/modules';
-import { useSettings } from '@/lib/settings/provider';
-import { BaseEntity, CollectionKey } from '@/lib/types';
-import { formatDate, today } from '@/lib/utils/format';
-import { CompletableKey, isDone } from '@/lib/workflow/complete';
+import { EmptyState } from "@/components/common/empty-state";
+import { useAccess } from "@/lib/auth/scope";
+import { useRelevantEvents } from "@/lib/calendar/relevant";
+import { useCollectionItems } from "@/lib/data/store";
+import { stringField } from "@/lib/entity-values";
+import { useT } from "@/lib/i18n/provider";
+import { titleOfEntity } from "@/lib/module-config";
+import { moduleByCollection, moduleByKey } from "@/lib/modules";
+import { useSettings } from "@/lib/settings/provider";
+import { BaseEntity, CollectionKey } from "@/lib/types";
+import { formatDate, today } from "@/lib/utils/format";
+import { CompletableKey, isDone } from "@/lib/workflow/complete";
 
 interface Row {
   key: string;
@@ -34,14 +34,15 @@ interface Row {
 
 /** Sammlungen, die eine persoenliche Zuweisung kennen. */
 const ASSIGNABLE: CompletableKey[] = [
-  'orders',
-  'maintenances',
-  'damages',
-  'cleaningtasks',
-  'inspections',
-  'firechecks',
-  'playgroundchecks',
-  'rcd',
+  "orders",
+  "maintenances",
+  "damages",
+  "cleaningtasks",
+  "inspections",
+  "firechecks",
+  "playgroundchecks",
+  "rcd",
+  "tickets",
 ];
 
 export function TodayView() {
@@ -50,17 +51,18 @@ export function TodayView() {
   const { settings } = useSettings();
   const day = today();
   const events = useRelevantEvents();
-  const orders = useCollectionItems('orders');
-  const maintenances = useCollectionItems('maintenances');
-  const damages = useCollectionItems('damages');
-  const cleaningtasks = useCollectionItems('cleaningtasks');
-  const inspections = useCollectionItems('inspections');
-  const firechecks = useCollectionItems('firechecks');
-  const playgroundchecks = useCollectionItems('playgroundchecks');
-  const rcd = useCollectionItems('rcd');
+  const orders = useCollectionItems("orders");
+  const maintenances = useCollectionItems("maintenances");
+  const damages = useCollectionItems("damages");
+  const cleaningtasks = useCollectionItems("cleaningtasks");
+  const inspections = useCollectionItems("inspections");
+  const firechecks = useCollectionItems("firechecks");
+  const playgroundchecks = useCollectionItems("playgroundchecks");
+  const rcd = useCollectionItems("rcd");
+  const tickets = useCollectionItems("tickets");
 
   const assigned = useMemo(() => {
-    const userId = access.user?.id ?? '';
+    const userId = access.user?.id ?? "";
     if (!userId) return [];
     const byCollection: Record<CompletableKey, BaseEntity[]> = {
       orders,
@@ -71,20 +73,21 @@ export function TodayView() {
       firechecks,
       playgroundchecks,
       rcd,
+      tickets,
     };
     const rows: Row[] = [];
     ASSIGNABLE.forEach((collection) => {
       if (!access.canRead(collection)) return;
       byCollection[collection]
-        .filter((item) => stringField(item, 'assigneeUserId') === userId)
-        .filter((item) => !isDone(collection, stringField(item, 'status')))
+        .filter((item) => stringField(item, "assigneeUserId") === userId)
+        .filter((item) => !isDone(collection, stringField(item, "status")))
         .filter((item) => access.visible(collection, item))
         .forEach((item) => {
           const date =
-            stringField(item, 'dueDate') ||
-            stringField(item, 'nextDate') ||
-            stringField(item, 'date') ||
-            '';
+            stringField(item, "dueDate") ||
+            stringField(item, "nextDate") ||
+            stringField(item, "date") ||
+            "";
           rows.push({
             key: `${collection}-${item.id}`,
             href: `${moduleByCollection(collection).path}/${item.id}`,
@@ -95,7 +98,9 @@ export function TodayView() {
           });
         });
     });
-    return rows.sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
+    return rows.sort((a, b) =>
+      (a.date || "9999").localeCompare(b.date || "9999"),
+    );
   }, [
     access,
     cleaningtasks,
@@ -108,6 +113,7 @@ export function TodayView() {
     playgroundchecks,
     rcd,
     t,
+    tickets,
   ]);
 
   const due = useMemo(
@@ -131,16 +137,28 @@ export function TodayView() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">{t('today.title')}</h1>
-        <p className="text-sm text-muted-foreground">{t('today.hint')}</p>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t("today.title")}
+        </h1>
+        <p className="text-sm text-muted-foreground">{t("today.hint")}</p>
       </header>
 
       {empty ? (
-        <EmptyState icon={moduleByKey('today').icon} titleKey="today.empty" />
+        <EmptyState icon={moduleByKey("today").icon} titleKey="today.empty" />
       ) : (
         <>
-          <Section testId="today-assigned" title={t('today.assigned')} rows={assigned} language={settings.language} />
-          <Section testId="today-due" title={t('today.due')} rows={due} language={settings.language} />
+          <Section
+            testId="today-assigned"
+            title={t("today.assigned")}
+            rows={assigned}
+            language={settings.language}
+          />
+          <Section
+            testId="today-due"
+            title={t("today.due")}
+            rows={due}
+            language={settings.language}
+          />
         </>
       )}
     </div>
@@ -174,11 +192,19 @@ function Section({
             >
               <span className="min-w-0">
                 <span className="block truncate font-medium">{row.title}</span>
-                <span className="block text-xs text-muted-foreground">{row.label}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {row.label}
+                </span>
               </span>
-              <span className={row.overdue ? 'text-xs text-destructive' : 'text-xs text-muted-foreground'}>
-                {row.date ? formatDate(row.date, language) : ''}
-                {row.overdue ? ` · ${t('notify.overdue')}` : ''}
+              <span
+                className={
+                  row.overdue
+                    ? "text-xs text-destructive"
+                    : "text-xs text-muted-foreground"
+                }
+              >
+                {row.date ? formatDate(row.date, language) : ""}
+                {row.overdue ? ` · ${t("notify.overdue")}` : ""}
               </span>
             </Link>
           </li>

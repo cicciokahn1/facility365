@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Termine des Kalenders.
@@ -7,29 +7,30 @@
  * und leitet daraus Termine ab. Wiederkehrende Wartungen erzeugen aus dem
  * naechsten Termin und dem Intervall die Folgetermine.
  */
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { cleaningDates } from '@/lib/cleaning/schedule';
-import { useCollectionItems } from '@/lib/data/store';
-import type { TranslationKey } from '@/lib/i18n/dictionary';
-import { isContractOpen, reminderDate } from '@/lib/contracts/reminder';
-import { CollectionKey, MaintenanceInterval } from '@/lib/types';
-import { isDone } from '@/lib/workflow/complete';
+import { cleaningDates } from "@/lib/cleaning/schedule";
+import { useCollectionItems } from "@/lib/data/store";
+import type { TranslationKey } from "@/lib/i18n/dictionary";
+import { isContractOpen, reminderDate } from "@/lib/contracts/reminder";
+import { CollectionKey, MaintenanceInterval } from "@/lib/types";
+import { isDone } from "@/lib/workflow/complete";
 
 export type CalendarEventKind =
-  | 'appointment'
-  | 'order'
-  | 'maintenance'
-  | 'legionella'
-  | 'rcd'
-  | 'inspection'
-  | 'playground'
-  | 'fire'
-  | 'document'
-  | 'vehicle'
-  | 'contract'
-  | 'solar'
-  | 'cleaning';
+  | "appointment"
+  | "order"
+  | "maintenance"
+  | "legionella"
+  | "rcd"
+  | "inspection"
+  | "playground"
+  | "fire"
+  | "document"
+  | "vehicle"
+  | "contract"
+  | "solar"
+  | "cleaning"
+  | "ticket";
 
 export interface CalendarEvent {
   id: string;
@@ -82,35 +83,41 @@ const CLEANING_MAX_EVENTS = 120;
 
 const addMonths = (date: string, months: number): string => {
   const parsed = new Date(`${date}T00:00:00`);
-  if (Number.isNaN(parsed.getTime())) return '';
+  if (Number.isNaN(parsed.getTime())) return "";
   const day = parsed.getDate();
   parsed.setDate(1);
   parsed.setMonth(parsed.getMonth() + months);
   /** Kuerzere Monate: der Termin rutscht auf den letzten Tag des Monats. */
-  const lastDay = new Date(parsed.getFullYear(), parsed.getMonth() + 1, 0).getDate();
+  const lastDay = new Date(
+    parsed.getFullYear(),
+    parsed.getMonth() + 1,
+    0,
+  ).getDate();
   parsed.setDate(Math.min(day, lastDay));
   return parsed.toISOString().slice(0, 10);
 };
 
-const horizon = (): string => addMonths(new Date().toISOString().slice(0, 10), HORIZON_MONTHS);
+const horizon = (): string =>
+  addMonths(new Date().toISOString().slice(0, 10), HORIZON_MONTHS);
 
 /** Termine, sortiert nach Tag und Uhrzeit. */
 export function useCalendarEvents(): CalendarEvent[] {
-  const appointments = useCollectionItems('appointments');
-  const orders = useCollectionItems('orders');
-  const maintenances = useCollectionItems('maintenances');
-  const legionella = useCollectionItems('legionella');
-  const rcd = useCollectionItems('rcd');
-  const inspections = useCollectionItems('inspections');
-  const playgroundChecks = useCollectionItems('playgroundchecks');
-  const fireChecks = useCollectionItems('firechecks');
-  const documents = useCollectionItems('documents');
-  const vehicles = useCollectionItems('vehicles');
-  const solarPlants = useCollectionItems('solarplants');
-  const contracts = useCollectionItems('contracts');
-  const cleaningTasks = useCollectionItems('cleaningtasks');
-  const cleaningPlans = useCollectionItems('cleaningplans');
-  const cleaningAreas = useCollectionItems('cleaningareas');
+  const appointments = useCollectionItems("appointments");
+  const orders = useCollectionItems("orders");
+  const maintenances = useCollectionItems("maintenances");
+  const legionella = useCollectionItems("legionella");
+  const rcd = useCollectionItems("rcd");
+  const inspections = useCollectionItems("inspections");
+  const playgroundChecks = useCollectionItems("playgroundchecks");
+  const fireChecks = useCollectionItems("firechecks");
+  const documents = useCollectionItems("documents");
+  const vehicles = useCollectionItems("vehicles");
+  const solarPlants = useCollectionItems("solarplants");
+  const contracts = useCollectionItems("contracts");
+  const cleaningTasks = useCollectionItems("cleaningtasks");
+  const cleaningPlans = useCollectionItems("cleaningplans");
+  const cleaningAreas = useCollectionItems("cleaningareas");
+  const tickets = useCollectionItems("tickets");
 
   return useMemo(() => {
     const events: CalendarEvent[] = [];
@@ -118,14 +125,16 @@ export function useCalendarEvents(): CalendarEvent[] {
 
     /** Eigene Termine des Kalenders. */
     appointments
-      .filter((appointment) => appointment.status !== 'cancelled' && appointment.date)
+      .filter(
+        (appointment) => appointment.status !== "cancelled" && appointment.date,
+      )
       .forEach((appointment) => {
         events.push({
           id: `appointment-${appointment.id}`,
-          kind: 'appointment',
+          kind: "appointment",
           sourceId: appointment.id,
           href: `/appointments/${appointment.id}`,
-          labelKey: 'module.appointments.singular',
+          labelKey: "module.appointments.singular",
           title: appointment.title || appointment.number,
           date: appointment.date,
           time: appointment.timeStart,
@@ -134,21 +143,21 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: appointment.buildingId,
           assetId: appointment.assetId,
           recurring: false,
-          source: { collection: 'appointments', field: 'date' },
+          source: { collection: "appointments", field: "date" },
         });
       });
 
     orders
-      .filter((order) => !isDone('orders', order.status))
+      .filter((order) => !isDone("orders", order.status))
       .forEach((order) => {
         const date = order.dueDate || order.workDate;
         if (!date) return;
         events.push({
           id: `order-${order.id}`,
-          kind: 'order',
+          kind: "order",
           sourceId: order.id,
           href: `/orders/${order.id}`,
-          labelKey: 'module.orders.singular',
+          labelKey: "module.orders.singular",
           title: order.title || order.number,
           date,
           time: order.workStart,
@@ -157,12 +166,18 @@ export function useCalendarEvents(): CalendarEvent[] {
           buildingId: order.buildingId,
           assetId: order.assetId,
           recurring: false,
-          source: { collection: 'orders', field: order.dueDate ? 'dueDate' : 'workDate' },
+          source: {
+            collection: "orders",
+            field: order.dueDate ? "dueDate" : "workDate",
+          },
         });
       });
 
     maintenances
-      .filter((maintenance) => !isDone('maintenances', maintenance.status) && maintenance.nextDate)
+      .filter(
+        (maintenance) =>
+          !isDone("maintenances", maintenance.status) && maintenance.nextDate,
+      )
       .forEach((maintenance) => {
         const step = INTERVAL_MONTHS[maintenance.interval] ?? 12;
         let date = maintenance.nextDate;
@@ -170,19 +185,22 @@ export function useCalendarEvents(): CalendarEvent[] {
         while (date && date <= until) {
           events.push({
             id: `maintenance-${maintenance.id}-${index}`,
-            kind: 'maintenance',
+            kind: "maintenance",
             sourceId: maintenance.id,
             href: `/maintenances/${maintenance.id}`,
-            labelKey: 'module.maintenances.singular',
+            labelKey: "module.maintenances.singular",
             title: maintenance.title || maintenance.number,
             date,
-            time: '',
-            customerId: '',
+            time: "",
+            customerId: "",
             propertyId: maintenance.propertyId,
             buildingId: maintenance.buildingId,
             assetId: maintenance.assetId,
             recurring: index > 0,
-            source: index === 0 ? { collection: 'maintenances', field: 'nextDate' } : undefined,
+            source:
+              index === 0
+                ? { collection: "maintenances", field: "nextDate" }
+                : undefined,
           });
           index += 1;
           date = addMonths(date, step);
@@ -194,98 +212,98 @@ export function useCalendarEvents(): CalendarEvent[] {
       .forEach((check) => {
         events.push({
           id: `legionella-${check.id}`,
-          kind: 'legionella',
+          kind: "legionella",
           sourceId: check.id,
           href: `/legionella/${check.id}`,
-          labelKey: 'module.legionella.singular',
+          labelKey: "module.legionella.singular",
           title: check.title || check.system || check.number,
           date: check.nextDate,
-          time: '',
-          customerId: '',
+          time: "",
+          customerId: "",
           propertyId: check.propertyId,
           buildingId: check.buildingId,
-          assetId: '',
+          assetId: "",
           recurring: false,
-          source: { collection: 'legionella', field: 'nextDate' },
+          source: { collection: "legionella", field: "nextDate" },
         });
       });
 
     rcd
-      .filter((check) => check.status !== 'done' && check.nextDate)
+      .filter((check) => check.status !== "done" && check.nextDate)
       .forEach((check) => {
         events.push({
           id: `rcd-${check.id}`,
-          kind: 'rcd',
+          kind: "rcd",
           sourceId: check.id,
           href: `/rcd/${check.id}`,
-          labelKey: 'module.rcd.singular',
+          labelKey: "module.rcd.singular",
           title: check.title || check.device || check.number,
           date: check.nextDate,
-          time: '',
-          customerId: '',
+          time: "",
+          customerId: "",
           propertyId: check.propertyId,
           buildingId: check.buildingId,
           assetId: check.assetId,
           recurring: false,
-          source: { collection: 'rcd', field: 'nextDate' },
+          source: { collection: "rcd", field: "nextDate" },
         });
       });
 
     inspections
-      .filter((check) => check.status !== 'done' && check.nextDate)
+      .filter((check) => check.status !== "done" && check.nextDate)
       .forEach((check) => {
         events.push({
           id: `inspection-${check.id}`,
-          kind: 'inspection',
+          kind: "inspection",
           sourceId: check.id,
           href: `/inspections/${check.id}`,
-          labelKey: 'module.inspections.singular',
+          labelKey: "module.inspections.singular",
           title: check.title || check.customType || check.number,
           date: check.nextDate,
-          time: '',
-          customerId: '',
+          time: "",
+          customerId: "",
           propertyId: check.propertyId,
           buildingId: check.buildingId,
           assetId: check.assetId,
           recurring: false,
-          source: { collection: 'inspections', field: 'nextDate' },
+          source: { collection: "inspections", field: "nextDate" },
         });
       });
 
     playgroundChecks
-      .filter((check) => check.status !== 'done' && check.nextDate)
+      .filter((check) => check.status !== "done" && check.nextDate)
       .forEach((check) => {
         events.push({
           id: `playground-${check.id}`,
-          kind: 'playground',
+          kind: "playground",
           sourceId: check.id,
           href: `/playgrounds/${check.id}`,
-          labelKey: 'module.playgroundchecks.singular',
+          labelKey: "module.playgroundchecks.singular",
           title: check.title || check.number,
           date: check.nextDate,
-          time: '',
-          customerId: '',
+          time: "",
+          customerId: "",
           propertyId: check.propertyId,
           buildingId: check.buildingId,
-          assetId: '',
+          assetId: "",
           recurring: false,
-          source: { collection: 'playgroundchecks', field: 'nextDate' },
+          source: { collection: "playgroundchecks", field: "nextDate" },
         });
       });
 
     /** Brandschutz: naechste Kontrolle und Frist zur Behebung der Maengel. */
     fireChecks
-      .filter((check) => check.status !== 'done')
+      .filter((check) => check.status !== "done")
       .forEach((check) => {
         const title = check.title || check.number;
         const shared = {
-          kind: 'fire' as const,
+          kind: "fire" as const,
           sourceId: check.id,
           href: `/firesafety/${check.id}`,
-          labelKey: 'module.firechecks.singular' as const,
+          labelKey: "module.firechecks.singular" as const,
           title,
-          time: '',
-          customerId: '',
+          time: "",
+          customerId: "",
           propertyId: check.propertyId,
           buildingId: check.buildingId,
           assetId: check.assetId,
@@ -296,7 +314,7 @@ export function useCalendarEvents(): CalendarEvent[] {
             ...shared,
             id: `fire-${check.id}`,
             date: check.nextDate,
-            source: { collection: 'firechecks', field: 'nextDate' },
+            source: { collection: "firechecks", field: "nextDate" },
           });
         }
         if (check.dueDate) {
@@ -304,7 +322,7 @@ export function useCalendarEvents(): CalendarEvent[] {
             ...shared,
             id: `fire-due-${check.id}`,
             date: check.dueDate,
-            source: { collection: 'firechecks', field: 'dueDate' },
+            source: { collection: "firechecks", field: "dueDate" },
           });
         }
       });
@@ -315,49 +333,49 @@ export function useCalendarEvents(): CalendarEvent[] {
       .forEach((document) => {
         events.push({
           id: `document-${document.id}`,
-          kind: 'document',
+          kind: "document",
           sourceId: document.id,
           href: `/documents/${document.id}`,
-          labelKey: 'documents.validUntil',
+          labelKey: "documents.validUntil",
           title: document.title || document.file?.name || document.number,
           date: document.validUntil,
-          time: '',
+          time: "",
           customerId: document.customerId,
           propertyId: document.propertyId,
           buildingId: document.buildingId,
           assetId: document.assetId,
           recurring: false,
-          source: { collection: 'documents', field: 'validUntil' },
+          source: { collection: "documents", field: "validUntil" },
         });
       });
 
     /** Fahrzeuge: Service, Reifenwechsel, amtliche Pruefung und Ablauf der Versicherung. */
     vehicles
-      .filter((vehicle) => vehicle.status !== 'retired')
+      .filter((vehicle) => vehicle.status !== "retired")
       .forEach((vehicle) => {
         const title = vehicle.title || vehicle.plate || vehicle.number;
         const dates: [string, TranslationKey][] = [
-          [vehicle.nextService, 'vehicle.nextService'],
-          [vehicle.tireChange, 'vehicle.tireChange'],
-          [vehicle.nextInspection, 'vehicle.nextInspection'],
-          [vehicle.insuranceUntil, 'vehicle.insuranceUntil'],
+          [vehicle.nextService, "vehicle.nextService"],
+          [vehicle.tireChange, "vehicle.tireChange"],
+          [vehicle.nextInspection, "vehicle.nextInspection"],
+          [vehicle.insuranceUntil, "vehicle.insuranceUntil"],
         ];
         dates
           .filter(([date]) => Boolean(date))
           .forEach(([date, labelKey]) => {
             events.push({
               id: `vehicle-${vehicle.id}-${labelKey}`,
-              kind: 'vehicle',
+              kind: "vehicle",
               sourceId: vehicle.id,
               href: `/vehicles/${vehicle.id}`,
               labelKey,
               title,
               date,
-              time: '',
-              customerId: '',
+              time: "",
+              customerId: "",
               propertyId: vehicle.propertyId,
-              buildingId: '',
-              assetId: '',
+              buildingId: "",
+              assetId: "",
               recurring: false,
             });
           });
@@ -367,21 +385,24 @@ export function useCalendarEvents(): CalendarEvent[] {
     contracts.filter(isContractOpen).forEach((contract) => {
       const title = contract.title || contract.partner || contract.number;
       const reminder = reminderDate(contract);
-      const dates = reminder && reminder !== contract.end ? [reminder, contract.end] : [contract.end];
+      const dates =
+        reminder && reminder !== contract.end
+          ? [reminder, contract.end]
+          : [contract.end];
       dates.forEach((date, index) => {
         events.push({
           id: `contract-${contract.id}-${index}`,
-          kind: 'contract',
+          kind: "contract",
           sourceId: contract.id,
           href: `/contracts/${contract.id}`,
-          labelKey: 'module.contracts.singular',
+          labelKey: "module.contracts.singular",
           title,
           date,
-          time: '',
+          time: "",
           customerId: contract.customerId,
           propertyId: contract.propertyId,
           buildingId: contract.buildingId,
-          assetId: '',
+          assetId: "",
           recurring: false,
         });
       });
@@ -389,75 +410,108 @@ export function useCalendarEvents(): CalendarEvent[] {
 
     /** Offene Reinigungsaufgaben mit Termin. */
     cleaningTasks
-      .filter((task) => !isDone('cleaningtasks', task.status) && task.date)
+      .filter((task) => !isDone("cleaningtasks", task.status) && task.date)
       .forEach((task) => {
         events.push({
           id: `cleaning-task-${task.id}`,
-          kind: 'cleaning',
+          kind: "cleaning",
           sourceId: task.id,
           href: `/cleaning/tasks/${task.id}`,
-          labelKey: 'module.cleaningtasks.singular',
+          labelKey: "module.cleaningtasks.singular",
           title: task.title || task.number,
           date: task.date,
           time: task.workStart,
-          customerId: '',
+          customerId: "",
           propertyId: task.propertyId,
           buildingId: task.buildingId,
-          assetId: '',
+          assetId: "",
           recurring: false,
-          source: { collection: 'cleaningtasks', field: 'date' },
+          source: { collection: "cleaningtasks", field: "date" },
         });
       });
 
     /** Wiederkehrende Reinigungen aus den Plaenen. */
-    const cleaningUntil = addMonths(new Date().toISOString().slice(0, 10), CLEANING_HORIZON_MONTHS);
+    const cleaningUntil = addMonths(
+      new Date().toISOString().slice(0, 10),
+      CLEANING_HORIZON_MONTHS,
+    );
     cleaningPlans
-      .filter((plan) => plan.status === 'active' && plan.nextDate)
+      .filter((plan) => plan.status === "active" && plan.nextDate)
       .forEach((plan) => {
         const area = cleaningAreas.find((entry) => entry.id === plan.areaId);
-        cleaningDates(plan.nextDate, plan, cleaningUntil, CLEANING_MAX_EVENTS).forEach(
-          (date, index) => {
-            events.push({
-              id: `cleaning-plan-${plan.id}-${index}`,
-              kind: 'cleaning',
-              sourceId: plan.id,
-              href: `/cleaning/plans/${plan.id}`,
-              labelKey: 'module.cleaningplans.singular',
-              title: plan.title || plan.number,
-              date,
-              time: plan.timeStart,
-              customerId: '',
-              propertyId: area?.propertyId ?? '',
-              buildingId: area?.buildingId ?? '',
-              assetId: '',
-              recurring: index > 0,
-            });
-          },
-        );
+        cleaningDates(
+          plan.nextDate,
+          plan,
+          cleaningUntil,
+          CLEANING_MAX_EVENTS,
+        ).forEach((date, index) => {
+          events.push({
+            id: `cleaning-plan-${plan.id}-${index}`,
+            kind: "cleaning",
+            sourceId: plan.id,
+            href: `/cleaning/plans/${plan.id}`,
+            labelKey: "module.cleaningplans.singular",
+            title: plan.title || plan.number,
+            date,
+            time: plan.timeStart,
+            customerId: "",
+            propertyId: area?.propertyId ?? "",
+            buildingId: area?.buildingId ?? "",
+            assetId: "",
+            recurring: index > 0,
+          });
+        });
       });
 
     solarPlants
-      .filter((plant) => plant.status !== 'inactive' && Boolean(plant.nextMaintenance))
+      .filter(
+        (plant) =>
+          plant.status !== "inactive" && Boolean(plant.nextMaintenance),
+      )
       .forEach((plant) => {
         events.push({
           id: `solar-${plant.id}`,
-          kind: 'solar',
+          kind: "solar",
           sourceId: plant.id,
           href: `/solar/${plant.id}`,
-          labelKey: 'solar.nextMaintenance',
+          labelKey: "solar.nextMaintenance",
           title: plant.name || plant.number,
           date: plant.nextMaintenance,
-          time: '',
-          customerId: '',
+          time: "",
+          customerId: "",
           propertyId: plant.propertyId,
           buildingId: plant.buildingId,
           assetId: plant.assetId,
           recurring: false,
-          source: { collection: 'solarplants', field: 'nextMaintenance' },
+          source: { collection: "solarplants", field: "nextMaintenance" },
         });
       });
 
-    return events.sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
+    /** Helpdesk-Tickets mit Frist; erledigte und geschlossene bleiben aussen vor. */
+    tickets
+      .filter((ticket) => !isDone("tickets", ticket.status) && ticket.dueDate)
+      .forEach((ticket) => {
+        events.push({
+          id: `ticket-${ticket.id}`,
+          kind: "ticket",
+          sourceId: ticket.id,
+          href: `/tickets/${ticket.id}`,
+          labelKey: "module.tickets.singular",
+          title: ticket.title || ticket.number,
+          date: ticket.dueDate,
+          time: "",
+          customerId: ticket.customerId,
+          propertyId: ticket.propertyId,
+          buildingId: ticket.buildingId,
+          assetId: ticket.assetId,
+          recurring: false,
+          source: { collection: "tickets", field: "dueDate" },
+        });
+      });
+
+    return events.sort((a, b) =>
+      `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`),
+    );
   }, [
     appointments,
     cleaningAreas,
@@ -473,10 +527,13 @@ export function useCalendarEvents(): CalendarEvent[] {
     fireChecks,
     rcd,
     solarPlants,
+    tickets,
     vehicles,
   ]);
 }
 
 /** Termine eines Tages. */
-export const eventsOn = (events: CalendarEvent[], date: string): CalendarEvent[] =>
-  events.filter((event) => event.date === date);
+export const eventsOn = (
+  events: CalendarEvent[],
+  date: string,
+): CalendarEvent[] => events.filter((event) => event.date === date);

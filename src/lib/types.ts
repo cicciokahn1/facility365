@@ -38,6 +38,7 @@ export type ModuleKey =
   | "stock"
   | "contracts"
   | "damages"
+  | "tickets"
   | "reports"
   | "quotes"
   | "invoices"
@@ -910,6 +911,48 @@ export interface Damage extends BaseEntity {
   estimatedCost?: number;
 }
 
+/** Helpdesk: Bearbeitungsstand einer Meldung. */
+export type TicketStatus = "new" | "inProgress" | "waiting" | "done" | "closed";
+
+export type TicketCategory =
+  "fault" | "damage" | "cleaning" | "request" | "question" | "other";
+
+/** Wortmeldung im Verlauf eines Tickets. */
+export interface TicketComment {
+  id: string;
+  at: string;
+  author: string;
+  text: string;
+}
+
+export interface Ticket extends BaseEntity {
+  title: string;
+  description: string;
+  category: TicketCategory;
+  status: TicketStatus;
+  priority: Priority;
+  customerId: string;
+  organizationId: string;
+  siteId: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  assetId: string;
+  reportedBy: string;
+  reportedById: string;
+  assigneeUserId: string;
+  reportedAt: string;
+  /** Frist; ueberschritten gilt das Ticket als ueberfaellig. */
+  dueDate: string;
+  closedAt: string;
+  /** Auftrag, der aus dem Ticket entstanden ist. */
+  orderId: string;
+  damageId: string;
+  maintenanceId: string;
+  reportId: string;
+  comments: TicketComment[];
+}
+
 export type ReportType =
   "daily" | "weekly" | "order" | "maintenance" | "damage" | "inspection";
 export type ReportStatus = "draft" | "final";
@@ -1377,6 +1420,7 @@ export interface CollectionMap {
   stock: StockItem;
   contracts: ContractEntity;
   damages: Damage;
+  tickets: Ticket;
   reports: Report;
   quotes: Quote;
   invoices: Invoice;

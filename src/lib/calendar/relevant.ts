@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Termine, die die angemeldete Person etwas angehen.
@@ -8,63 +8,70 @@
  * Zustaendigkeit liegt. Damit sehen Kalender, «Heute» und die Mitteilungen
  * dieselbe Auswahl.
  */
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { useAccess } from '@/lib/auth/scope';
-import { CalendarEvent, CalendarEventKind, useCalendarEvents } from '@/lib/calendar/events';
-import { useCollectionItems } from '@/lib/data/store';
-import { BaseEntity, CollectionKey } from '@/lib/types';
+import { useAccess } from "@/lib/auth/scope";
+import {
+  CalendarEvent,
+  CalendarEventKind,
+  useCalendarEvents,
+} from "@/lib/calendar/events";
+import { useCollectionItems } from "@/lib/data/store";
+import { BaseEntity, CollectionKey } from "@/lib/types";
 
 const COLLECTION_OF: Record<CalendarEventKind, CollectionKey> = {
-  appointment: 'appointments',
-  order: 'orders',
-  maintenance: 'maintenances',
-  legionella: 'legionella',
-  rcd: 'rcd',
-  inspection: 'inspections',
-  playground: 'playgroundchecks',
-  fire: 'firechecks',
-  vehicle: 'vehicles',
-  document: 'documents',
-  contract: 'contracts',
-  solar: 'solarplants',
-  cleaning: 'cleaningtasks',
+  appointment: "appointments",
+  order: "orders",
+  maintenance: "maintenances",
+  legionella: "legionella",
+  rcd: "rcd",
+  inspection: "inspections",
+  playground: "playgroundchecks",
+  fire: "firechecks",
+  vehicle: "vehicles",
+  document: "documents",
+  contract: "contracts",
+  solar: "solarplants",
+  cleaning: "cleaningtasks",
+  ticket: "tickets",
 };
 
 export function useRelevantEvents(): CalendarEvent[] {
   const access = useAccess();
   const events = useCalendarEvents();
-  const appointments = useCollectionItems('appointments');
-  const orders = useCollectionItems('orders');
-  const maintenances = useCollectionItems('maintenances');
-  const legionella = useCollectionItems('legionella');
-  const rcd = useCollectionItems('rcd');
-  const inspections = useCollectionItems('inspections');
-  const playgroundchecks = useCollectionItems('playgroundchecks');
-  const firechecks = useCollectionItems('firechecks');
-  const documents = useCollectionItems('documents');
-  const vehicles = useCollectionItems('vehicles');
-  const contracts = useCollectionItems('contracts');
-  const solarplants = useCollectionItems('solarplants');
-  const cleaningtasks = useCollectionItems('cleaningtasks');
+  const appointments = useCollectionItems("appointments");
+  const orders = useCollectionItems("orders");
+  const maintenances = useCollectionItems("maintenances");
+  const legionella = useCollectionItems("legionella");
+  const rcd = useCollectionItems("rcd");
+  const inspections = useCollectionItems("inspections");
+  const playgroundchecks = useCollectionItems("playgroundchecks");
+  const firechecks = useCollectionItems("firechecks");
+  const documents = useCollectionItems("documents");
+  const vehicles = useCollectionItems("vehicles");
+  const contracts = useCollectionItems("contracts");
+  const solarplants = useCollectionItems("solarplants");
+  const cleaningtasks = useCollectionItems("cleaningtasks");
+  const tickets = useCollectionItems("tickets");
 
   const sources = useMemo(() => {
     const map = new Map<CollectionKey, Map<string, BaseEntity>>();
     const add = (collection: CollectionKey, items: BaseEntity[]) =>
       map.set(collection, new Map(items.map((item) => [item.id, item])));
-    add('appointments', appointments);
-    add('orders', orders);
-    add('maintenances', maintenances);
-    add('legionella', legionella);
-    add('rcd', rcd);
-    add('inspections', inspections);
-    add('playgroundchecks', playgroundchecks);
-    add('firechecks', firechecks);
-    add('vehicles', vehicles);
-    add('documents', documents);
-    add('contracts', contracts);
-    add('solarplants', solarplants);
-    add('cleaningtasks', cleaningtasks);
+    add("appointments", appointments);
+    add("orders", orders);
+    add("maintenances", maintenances);
+    add("legionella", legionella);
+    add("rcd", rcd);
+    add("inspections", inspections);
+    add("playgroundchecks", playgroundchecks);
+    add("firechecks", firechecks);
+    add("vehicles", vehicles);
+    add("documents", documents);
+    add("contracts", contracts);
+    add("solarplants", solarplants);
+    add("cleaningtasks", cleaningtasks);
+    add("tickets", tickets);
     return map;
   }, [
     appointments,
@@ -79,6 +86,7 @@ export function useRelevantEvents(): CalendarEvent[] {
     playgroundchecks,
     rcd,
     solarplants,
+    tickets,
     vehicles,
   ]);
 

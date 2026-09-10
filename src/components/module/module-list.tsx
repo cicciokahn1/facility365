@@ -52,6 +52,9 @@ type SortKey = "newest" | "oldest" | "name";
 /** Auswahl "offen": alles ausser den abgeschlossenen Zustaenden. */
 const OPEN_FILTER = "__open";
 
+/** Auswahl "abgeschlossen": alle erledigten Zustaende eines Moduls. */
+export const CLOSED_FILTER = "__closed";
+
 /** Feste Einschraenkung der Liste, z. B. auf die eigenen Reinigungsaufgaben. */
 export interface ListRestriction {
   field: string;
@@ -61,9 +64,15 @@ export interface ListRestriction {
 export function ModuleList({
   collection,
   only,
+  extraFilter,
+  initialStatus,
 }: {
   collection: CollectionKey;
   only?: ListRestriction;
+  /** Zusaetzliche Eingrenzung, z. B. ueberfaellige Tickets. */
+  extraFilter?: (item: BaseEntity) => boolean;
+  /** Vorbelegter Statusfilter; ohne Angabe die offenen Datensaetze. */
+  initialStatus?: string;
 }) {
   const t = useT();
   const router = useRouter();
@@ -84,7 +93,7 @@ export function ModuleList({
 
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>(
-    closed.length ? OPEN_FILTER : "all",
+    initialStatus ?? (closed.length ? OPEN_FILTER : "all"),
   );
   const [relationFilters, setRelationFilters] = useState<
     Record<string, string>
@@ -124,12 +133,15 @@ export function ModuleList({
     );
     const result = items.filter((item) => {
       if (only && stringField(item, only.field) !== only.value) return false;
+      if (extraFilter && !extraFilter(item)) return false;
       if (needle && !searchOf(item).toLowerCase().includes(needle))
         return false;
       if (statusFilter !== "all" && config.statusField) {
         const status = stringField(item, config.statusField);
         if (statusFilter === OPEN_FILTER) {
           if (closed.includes(status)) return false;
+        } else if (statusFilter === CLOSED_FILTER) {
+          if (!closed.includes(status)) return false;
         } else if (status !== statusFilter) return false;
       }
       return active.every(([name, value]) => stringField(item, name) === value);
@@ -142,7 +154,17 @@ export function ModuleList({
       if (sort === "oldest") return a.createdAt.localeCompare(b.createdAt);
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [closed, config, items, only, query, relationFilters, sort, statusFilter]);
+  }, [
+    closed,
+    config,
+    extraFilter,
+    items,
+    only,
+    query,
+    relationFilters,
+    sort,
+    statusFilter,
+  ]);
 
   /** Anzahl je Status in einem Durchgang statt einer Suche je Auswahl. */
   const statusCounts = useMemo(() => {
@@ -151,8 +173,9 @@ export function ModuleList({
     items.forEach((item) => {
       const value = stringField(item, statusField.name);
       counts.set(value, (counts.get(value) ?? 0) + 1);
-      if (!closed.includes(value))
-        counts.set(OPEN_FILTER, (counts.get(OPEN_FILTER) ?? 0) + 1);
+      if (closed.includes(value))
+        counts.set(CLOSED_FILTER, (counts.get(CLOSED_FILTER) ?? 0) + 1);
+      else counts.set(OPEN_FILTER, (counts.get(OPEN_FILTER) ?? 0) + 1);
     });
     return counts;
   }, [closed, items, statusField]);
