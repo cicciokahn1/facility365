@@ -43,7 +43,8 @@ import { moduleByCollection } from "@/lib/modules";
 import { closedStatusValues } from "@/lib/module-status";
 import { FormValues, SelectField, asString } from "@/lib/schema";
 import { useSettings } from "@/lib/settings/provider";
-import { BaseEntity, CollectionKey } from "@/lib/types";
+import { BaseEntity, CollectionKey, InvoicePaymentData } from "@/lib/types";
+import { referenceFor } from "@/lib/invoices/swiss-qr";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
 
@@ -78,7 +79,7 @@ export function ModuleList({
   const router = useRouter();
   const moduleDef = moduleByCollection(collection);
   const config = configOf(collection);
-  const { items: all, create } = useCollection(collection);
+  const { items: all, create, update } = useCollection(collection);
   const access = useAccess();
   /** Nur Datensaetze des eigenen Sichtbereichs; die Rolle entscheidet. */
   const items = useMemo(
@@ -186,10 +187,27 @@ export function ModuleList({
   );
 
   const handleCreate = (values: FormValues) => {
+    const payment: InvoicePaymentData = {
+      recipient: settings.paymentRecipient,
+      address: settings.paymentAddress,
+      iban: settings.paymentIban,
+      qrIban: settings.paymentQrIban,
+      bank: settings.paymentBank,
+      bic: settings.paymentBic,
+      referenceType: settings.paymentReferenceType,
+    };
     const entity = create(
-      values as never,
+      collection === "invoices"
+        ? { ...values, payment, qrReference: "" }
+        : values as never,
       settings.profileName || settings.companyName,
     );
+    if (collection === "invoices") {
+      update(entity.id, {
+        payment,
+        qrReference: referenceFor(entity.number, payment),
+      } as never);
+    }
     toast.success(t("toast.created"));
     router.push(`${moduleDef.path}/${entity.id}`);
   };

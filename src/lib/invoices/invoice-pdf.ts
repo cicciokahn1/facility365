@@ -5,6 +5,7 @@
  * (Kunde, Objekt, Auftrag, Rapport), Positionen, MwSt. und Gesamttotal.
  */
 import { jsPDF } from 'jspdf';
+import QRCode from 'qrcode';
 
 import { drawLogo } from '@/lib/branding/pdf-logo';
 
@@ -34,6 +35,17 @@ export interface InvoicePdfData {
   vat: string;
   gross: string;
   notes: string;
+  payment: {
+    recipient: string;
+    addressLines: string[];
+    iban: string;
+    bank: string;
+    bic: string;
+    reference: string;
+    amount: string;
+    currency: string;
+    payload: string;
+  };
 }
 
 export interface InvoicePdfLabels {
@@ -56,6 +68,13 @@ export interface InvoicePdfLabels {
   grandTotal: string;
   notes: string;
   vatNumber: string;
+  payment: string;
+  receipt: string;
+  account: string;
+  payableBy: string;
+  reference: string;
+  amount: string;
+  currency: string;
 }
 
 export interface InvoicePdfBranding {
@@ -242,6 +261,45 @@ const drawItems = (doc: jsPDF, data: InvoicePdfData, labels: InvoicePdfLabels, y
   return cursor + 10;
 };
 
+const drawPaymentPart = async (
+  doc: jsPDF,
+  data: InvoicePdfData,
+  labels: InvoicePdfLabels,
+): Promise<void> => {
+  const image = await QRCode.toDataURL(data.payment.payload, {
+    margin: 0,
+    width: 720,
+    errorCorrectionLevel: "M",
+  });
+  doc.addPage();
+  const top = 18;
+  const split = 82;
+  doc.setDrawColor(...LINE);
+  doc.rect(MARGIN, top, split, 104);
+  doc.rect(MARGIN + split, top, CONTENT - split, 104);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(...INK);
+  doc.text(labels.receipt, MARGIN + 5, top + 8);
+  doc.text(labels.payment, MARGIN + split + 5, top + 8);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  const recipient = [data.payment.recipient, ...data.payment.addressLines].filter(Boolean);
+  recipient.forEach((line, index) => doc.text(line, MARGIN + 5, top + 18 + index * 4.5));
+  doc.text(`${labels.account}: ${data.payment.iban}`, MARGIN + 5, top + 43);
+  if (data.payment.bank) doc.text(data.payment.bank, MARGIN + 5, top + 48);
+  if (data.payment.bic) doc.text(data.payment.bic, MARGIN + 5, top + 53);
+  doc.text(`${labels.reference}: ${data.payment.reference}`, MARGIN + 5, top + 61);
+  doc.text(`${labels.amount}: ${data.payment.amount} ${data.payment.currency}`, MARGIN + 5, top + 70);
+  doc.addImage(image, "PNG", MARGIN + split + 8, top + 16, 55, 55);
+  doc.text(`${labels.account}: ${data.payment.iban}`, MARGIN + split + 5, top + 78);
+  doc.text(`${labels.reference}: ${data.payment.reference}`, MARGIN + split + 5, top + 85);
+  doc.text(`${labels.payableBy}: ${data.customerName || "–"}`, MARGIN + split + 5, top + 94);
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.text(`${labels.amount}: ${data.payment.amount} ${data.payment.currency}`, MARGIN + 5, top + 94);
+};
+
 const drawFooters = (doc: jsPDF, data: InvoicePdfData, labels: InvoicePdfLabels, branding: InvoicePdfBranding): void => {
   const pages = doc.getNumberOfPages();
   for (let page = 1; page <= pages; page += 1) {
@@ -261,7 +319,8 @@ export const buildInvoicePdf = (
   data: InvoicePdfData,
   labels: InvoicePdfLabels,
   branding: InvoicePdfBranding,
-): jsPDF => {
+): Promise<jsPDF> => {
+  return (async () => {
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
   let y = drawHeader(doc, data, labels, branding);
 
@@ -289,8 +348,12 @@ export const buildInvoicePdf = (
     });
   }
 
+  if (data.payment.payload && data.payment.iban) {
+    await drawPaymentPart(doc, data, labels);
+  }
   drawFooters(doc, data, labels, branding);
   return doc;
+  })();
 };
 
 export const invoicePdfFileName = (data: InvoicePdfData): string => `Rechnung-${data.number}.pdf`;
@@ -299,16 +362,19 @@ export const downloadInvoicePdf = (
   data: InvoicePdfData,
   labels: InvoicePdfLabels,
   branding: InvoicePdfBranding,
-): void => {
-  buildInvoicePdf(data, labels, branding).save(invoicePdfFileName(data));
+): Promise<void> => {
+  return buildInvoicePdf(data, labels, branding).then((doc) => {
+    doc.save(invoicePdfFileName(data));
+  });
 };
 
 export const printInvoicePdf = (
   data: InvoicePdfData,
   labels: InvoicePdfLabels,
   branding: InvoicePdfBranding,
-): void => {
-  const doc = buildInvoicePdf(data, labels, branding);
+): Promise<void> => {
+  return buildInvoicePdf(data, labels, branding).then((doc) => {
   doc.autoPrint();
   window.open(doc.output('bloburl'), '_blank');
+  });
 };

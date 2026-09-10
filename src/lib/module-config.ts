@@ -857,6 +857,7 @@ const appointmentsConfig: ModuleConfig<"appointments"> = {
       collection: "assets",
     },
     text("assignee", "common.assignee"),
+    { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
     {
       kind: "relation",
       name: "assigneeUserId",

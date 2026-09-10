@@ -9,10 +9,11 @@
  */
 import { useCallback } from 'react';
 
-import { useCollection } from '@/lib/data/store';
+import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { workedHours } from '@/lib/reports/work-time';
 import { useSettings } from '@/lib/settings/provider';
-import { Invoice, LineItem, Report } from '@/lib/types';
+import { Invoice, InvoicePaymentData, LineItem, Report } from '@/lib/types';
+import { referenceFor } from '@/lib/invoices/swiss-qr';
 import { newId } from '@/lib/utils/id';
 import { today } from '@/lib/utils/format';
 
@@ -21,6 +22,7 @@ export const invoiceItemsFromReport = (
   workLabel: string,
   vatRate: number,
   hourlyRate: number,
+  additionalMaterials: LineItem[] = [],
 ): LineItem[] => {
   const hours = workedHours({
     start: report.workStart,
@@ -29,7 +31,7 @@ export const invoiceItemsFromReport = (
   });
   const items: LineItem[] = [];
 
-  if (hours > 0) {
+    if (hours > 0 && report.billable !== false && !report.invoicedInvoiceId) {
     items.push({
       id: newId('li'),
       position: 1,
@@ -41,7 +43,7 @@ export const invoiceItemsFromReport = (
     });
   }
 
-  report.materials.forEach((material) => {
+  report.materials.filter((material) => material.billable !== false && !material.invoicedInvoiceId).forEach((material) => {
     items.push({
       id: newId('li'),
       position: items.length + 1,
@@ -53,7 +55,12 @@ export const invoiceItemsFromReport = (
     });
   });
 
-  return items;
+  return [...items, ...additionalMaterials.map((item, index) => ({
+    ...item,
+    id: newId('li'),
+    position: items.length + index + 1,
+    vatRate,
+  }))];
 };
 
 /** Leistungen des Rapports als Text der Rechnung; Doppelungen werden ausgelassen. */
@@ -67,13 +74,32 @@ const servicesOf = (report: Report): string =>
     .join('\n\n');
 
 export function useInvoiceFromReport(): (report: Report, workLabel: string) => Invoice {
-  const { create } = useCollection('invoices');
+  const { create, update } = useCollection('invoices');
+  const { update: updateReport } = useCollection('reports');
+  const invoices = useCollectionItems('invoices');
   const { items: orders } = useCollection('orders');
   const { settings } = useSettings();
 
   return useCallback(
-    (report: Report, workLabel: string) =>
-      create({
+    (report: Report, workLabel: string) => {
+      const existing = report.invoicedInvoiceId
+        ? invoices.find((invoice) => invoice.id === report.invoicedInvoiceId)
+        : undefined;
+      if (existing) return existing;
+      const payment: InvoicePaymentData = {
+        recipient: settings.paymentRecipient,
+        address: settings.paymentAddress,
+        iban: settings.paymentIban,
+        qrIban: settings.paymentQrIban,
+        bank: settings.paymentBank,
+        bic: settings.paymentBic,
+        referenceType: settings.paymentReferenceType,
+      };
+      const order = orders.find((entry) => entry.id === report.orderId);
+      const additionalMaterials = report.materials.length > 0
+        ? (report.externalServices ?? [])
+        : [...(order?.materials ?? []), ...(order?.externalServices ?? [])];
+      const invoice = create({
         title: report.title || report.number,
         status: 'draft',
         customerId: report.customerId,
@@ -84,14 +110,61 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
         reportId: report.id,
         date: report.date || today(),
         items: invoiceItemsFromReport(
-          report,
-          workLabel,
-          settings.vatRate,
-          settings.hourlyRate ?? 0,
-        ),
+            report,
+            workLabel,
+            settings.vatRate,
+            report.hourlyRate
+              ?? order?.hourlyRate
+              ?? settings.hourlyRate
+              ?? 0,
+            additionalMaterials.map((material) => ({
+              id: material.id,
+              position: 0,
+              description: material.name,
+              quantity: material.quantity,
+              unit: material.unit,
+              unitPrice: material.price,
+              vatRate: settings.vatRate,
+            })),
+          ),
         currency: settings.currency,
         notes: servicesOf(report),
-      }),
-    [create, orders, settings.currency, settings.hourlyRate, settings.vatRate],
+        payment,
+      });
+      const qrReference = referenceFor(invoice.number, payment);
+      update(invoice.id, { qrReference, payment });
+      updateReport(report.id, {
+        invoicedAt: new Date().toISOString(),
+        invoicedInvoiceId: invoice.id,
+        materials: report.materials.map((material) =>
+          material.billable === false || material.invoicedInvoiceId
+            ? material
+            : { ...material, invoicedAt: new Date().toISOString(), invoicedInvoiceId: invoice.id },
+        ),
+        externalServices: report.externalServices?.map((service) =>
+          service.billable === false || service.invoicedInvoiceId
+            ? service
+            : { ...service, invoicedAt: new Date().toISOString(), invoicedInvoiceId: invoice.id },
+        ),
+      });
+      return { ...invoice, qrReference, payment };
+    },
+    [
+      create,
+      invoices,
+      update,
+      updateReport,
+      orders,
+      settings.currency,
+      settings.hourlyRate,
+      settings.paymentAddress,
+      settings.paymentBank,
+      settings.paymentBic,
+      settings.paymentIban,
+      settings.paymentQrIban,
+      settings.paymentRecipient,
+      settings.paymentReferenceType,
+      settings.vatRate,
+    ],
   );
 }

@@ -297,6 +297,60 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
 
       <Card>
         <CardHeader>
+          <CardTitle className="text-base">{t('settings.paymentData')}</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-2">
+          <Field label={t('settings.paymentRecipient')}>
+            <Input value={draft.paymentRecipient} onChange={(event) => set('paymentRecipient', event.target.value)} />
+          </Field>
+          <Field label={t('settings.paymentBank')}>
+            <Input value={draft.paymentBank} onChange={(event) => set('paymentBank', event.target.value)} />
+          </Field>
+          <Field label={t('settings.paymentIban')}>
+            <Input value={draft.paymentIban} onChange={(event) => set('paymentIban', event.target.value)} />
+          </Field>
+          <Field label={t('settings.paymentQrIban')}>
+            <Input value={draft.paymentQrIban} onChange={(event) => set('paymentQrIban', event.target.value)} />
+          </Field>
+          <Field label={t('settings.paymentBic')}>
+            <Input value={draft.paymentBic} onChange={(event) => set('paymentBic', event.target.value)} />
+          </Field>
+          <Field label={t('settings.paymentReferenceType')}>
+            <Select
+              value={draft.paymentReferenceType}
+              onValueChange={(value) => set('paymentReferenceType', value as AppSettings['paymentReferenceType'])}
+            >
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="QRR">QR-Referenz</SelectItem>
+                <SelectItem value="SCOR">Creditor Reference (SCOR)</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+          <div className="sm:col-span-2">
+            <Field label={t('settings.paymentAddress')}>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Input
+                  placeholder={t('common.street')}
+                  value={draft.paymentAddress.street}
+                  onChange={(event) => set('paymentAddress', { ...draft.paymentAddress, street: event.target.value })}
+                />
+                <Input
+                  placeholder={`${t('common.zip')} / ${t('common.city')}`}
+                  value={[draft.paymentAddress.zip, draft.paymentAddress.city].filter(Boolean).join(' ')}
+                  onChange={(event) => {
+                    const [zip = '', ...city] = event.target.value.split(' ');
+                    set('paymentAddress', { ...draft.paymentAddress, zip, city: city.join(' ') });
+                  }}
+                />
+              </div>
+            </Field>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle className="text-base">{t('settings.legionella')}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">

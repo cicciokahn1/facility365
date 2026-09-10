@@ -13,7 +13,8 @@ import type {
   InvoicePdfLabels,
 } from '@/lib/invoices/invoice-pdf';
 import { useSettings } from '@/lib/settings/provider';
-import { Address, Invoice } from '@/lib/types';
+import { Address, Invoice, InvoicePaymentData } from '@/lib/types';
+import { referenceFor, swissQrPayload } from '@/lib/invoices/swiss-qr';
 import { formatDate, formatMoney } from '@/lib/utils/format';
 
 export interface InvoicePdfApi {
@@ -56,6 +57,30 @@ export function useInvoicePdf(): InvoicePdfApi {
       const customerName = customer
         ? [customer.firstName, customer.name].filter(Boolean).join(' ')
         : '';
+      const payment: InvoicePaymentData = invoice.payment ?? {
+        recipient: settings.paymentRecipient,
+        address: settings.paymentAddress,
+        iban: settings.paymentIban,
+        qrIban: settings.paymentQrIban,
+        bank: settings.paymentBank,
+        bic: settings.paymentBic,
+        referenceType: settings.paymentReferenceType,
+      };
+      const reference = invoice.qrReference || referenceFor(invoice.number, payment);
+      const debtorLines = [
+        customerName,
+        ...addressLines(billing ?? customer?.address),
+      ];
+      const payload = payment.iban || payment.qrIban
+        ? swissQrPayload(
+            payment,
+            debtorLines,
+            totals.gross,
+            currency,
+            reference,
+            invoice.number,
+          )
+        : '';
 
       return {
         number: invoice.number,
@@ -83,9 +108,35 @@ export function useInvoicePdf(): InvoicePdfApi {
         vat: formatMoney(totals.vat, currency),
         gross: formatMoney(totals.gross, currency),
         notes: invoice.notes,
+        payment: {
+          recipient: payment.recipient,
+          addressLines: addressLines(payment.address),
+          iban: payment.qrIban || payment.iban,
+          bank: payment.bank,
+          bic: payment.bic,
+          reference,
+          amount: formatMoney(totals.gross, currency),
+          currency,
+          payload,
+        },
       };
     },
-    [customers, orders, properties, quotes, reports, settings.currency, settings.language],
+    [
+      customers,
+      orders,
+      properties,
+      quotes,
+      reports,
+      settings.currency,
+      settings.language,
+      settings.paymentAddress,
+      settings.paymentBank,
+      settings.paymentBic,
+      settings.paymentIban,
+      settings.paymentQrIban,
+      settings.paymentRecipient,
+      settings.paymentReferenceType,
+    ],
   );
 
   const labels = useCallback(
@@ -109,6 +160,13 @@ export function useInvoicePdf(): InvoicePdfApi {
       grandTotal: t('invoice.grandTotal'),
       notes: t('common.notes'),
       vatNumber: t('settings.vatNumber'),
+      payment: t('invoice.payment'),
+      receipt: t('invoice.receipt'),
+      account: t('invoice.account'),
+      payableBy: t('invoice.payableBy'),
+      reference: t('invoice.reference'),
+      amount: t('invoice.amount'),
+      currency: t('invoice.currency'),
     }),
     [t],
   );
