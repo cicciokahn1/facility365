@@ -15,6 +15,7 @@ import { RelatedList } from '@/components/module/related-list';
 import { AssetDocuments } from '@/components/modules/asset-documents';
 import { AssetPassport } from '@/components/modules/asset-passport';
 import { AssetServiceHistory } from '@/components/modules/asset-service-history';
+import { PlanLocation } from '@/components/modules/plan-location';
 import { QrPanel } from '@/components/modules/qr-panel';
 import { findAsset } from '@/lib/assets/passport';
 import { useCollectionItems } from '@/lib/data/store';
@@ -47,6 +48,11 @@ export function AssetDetail({ id }: { id: string }) {
           value: 'service',
           labelKey: 'tab.service',
           content: <AssetServiceHistory asset={asset} />,
+        },
+        {
+          value: 'plan',
+          labelKey: 'tab.plans',
+          content: <PlanLocation assetId={asset.id} />,
         },
         {
           value: 'qr',

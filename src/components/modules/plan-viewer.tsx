@@ -1,20 +1,33 @@
 'use client';
 
 /**
- * Plananzeige mit Zoom, Fassungen und Anlagenmarkern.
+ * Plananzeige mit Zoom, Fassungen und Markern fuer Anlagen und Raeume.
  *
  * Bilder werden mit eigenem Zoom dargestellt, PDF im Anzeigeprogramm des
  * Browsers. Marker gibt es deshalb nur auf Bildplaenen - eine Markierung auf
  * einer fremden PDF-Anzeige liesse sich nicht verlaesslich positionieren.
+ * Marker lassen sich setzen, verschieben, bearbeiten und loeschen; ein Klick
+ * fuehrt zum verknuepften Raum oder zur Anlage.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Download, MapPin, Minus, Plus, X } from 'lucide-react';
+import Link from 'next/link';
+import {
+  Download,
+  ExternalLink,
+  MapPin,
+  Minus,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
 
 import { RelationSelect } from '@/components/module/relation-select';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { dataUrlToBlobUrl, downloadDataUrl, isPdf } from '@/lib/media';
 import { Plan, PlanMarker, PlanVersion } from '@/lib/types';
@@ -25,6 +38,14 @@ const ZOOM_STEPS = [1, 1.5, 2, 3, 4];
 export const currentVersionOf = (plan: Plan): PlanVersion | undefined =>
   plan.versions.find((version) => version.id === plan.currentVersionId) ??
   plan.versions[plan.versions.length - 1];
+
+/** Ziel eines Markers, damit der Plan zum Datensatz fuehrt. */
+const targetOf = (marker: PlanMarker): string =>
+  marker.roomId
+    ? `/rooms/${marker.roomId}`
+    : marker.assetId
+      ? `/assets/${marker.assetId}`
+      : '';
 
 export function PlanViewer({
   plan,
@@ -38,9 +59,13 @@ export function PlanViewer({
   onChange: (plan: Plan) => void;
 }) {
   const t = useT();
+  const rooms = useCollectionItems('rooms');
+  const assets = useCollectionItems('assets');
   const [zoomIndex, setZoomIndex] = useState(0);
   const [markerMode, setMarkerMode] = useState(false);
   const [draftMarker, setDraftMarker] = useState<PlanMarker | null>(null);
+  /** Marker, der gerade verschoben wird; der naechste Klick setzt ihn neu. */
+  const [movingId, setMovingId] = useState('');
   const version = currentVersionOf(plan);
   const pdf = version ? isPdf(version.mimeType, version.fileName) : false;
 
@@ -55,18 +80,65 @@ export function PlanViewer({
 
   if (!version) return null;
 
-  const placeMarker = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!markerMode) return;
+  /** Bezeichnung eines Markers aus Raum, Anlage oder eigenem Text. */
+  const labelOf = (marker: PlanMarker): string => {
+    const room = marker.roomId
+      ? rooms.find((entry) => entry.id === marker.roomId)
+      : undefined;
+    const asset = marker.assetId
+      ? assets.find((entry) => entry.id === marker.assetId)
+      : undefined;
+    return (
+      marker.label ||
+      (room ? [room.roomNumber, room.name].filter(Boolean).join(' · ') : '') ||
+      asset?.name ||
+      ''
+    );
+  };
+
+  const clickPlan = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!markerMode && !movingId) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - bounds.left) / bounds.width) * 100;
     const y = ((event.clientY - bounds.top) / bounds.height) * 100;
-    setDraftMarker({ id: newId('marker'), x, y, assetId: '', label: '', note: '' });
+    if (movingId) {
+      onChange({
+        ...plan,
+        markers: plan.markers.map((marker) =>
+          marker.id === movingId ? { ...marker, x, y } : marker,
+        ),
+      });
+      setMovingId('');
+      return;
+    }
+    setDraftMarker({
+      id: newId('marker'),
+      x,
+      y,
+      assetId: '',
+      roomId: '',
+      label: '',
+      note: '',
+    });
     setMarkerMode(false);
   };
 
   const saveMarker = () => {
     if (!draftMarker) return;
-    onChange({ ...plan, markers: [...plan.markers, draftMarker] });
+    const exists = plan.markers.some((marker) => marker.id === draftMarker.id);
+    onChange({
+      ...plan,
+      markers: exists
+        ? plan.markers.map((marker) =>
+            marker.id === draftMarker.id ? draftMarker : marker,
+          )
+        : [...plan.markers, draftMarker],
+    });
+    setDraftMarker(null);
+  };
+
+  const removeMarker = (id: string) => {
+    onChange({ ...plan, markers: plan.markers.filter((marker) => marker.id !== id) });
     setDraftMarker(null);
   };
 
@@ -119,7 +191,10 @@ export function PlanViewer({
               </Button>
               <Button
                 variant={markerMode ? 'default' : 'outline'}
-                onClick={() => setMarkerMode((value) => !value)}
+                onClick={() => {
+                  setMovingId('');
+                  setMarkerMode((value) => !value);
+                }}
                 data-testid="plan-marker-mode"
               >
                 <MapPin className="size-4" aria-hidden />
@@ -152,27 +227,86 @@ export function PlanViewer({
             <div
               className="relative w-full origin-top-left"
               style={{ width: `${ZOOM_STEPS[zoomIndex] * 100}%` }}
-              onClick={placeMarker}
+              onClick={clickPlan}
               data-testid="plan-canvas"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- Plan liegt als Data-URL vor */}
               <img src={version.url} alt={plan.title} className="w-full select-none" />
               {plan.markers.map((marker) => (
-                <span
+                <button
                   key={marker.id}
+                  type="button"
                   data-testid="plan-marker"
                   className="absolute -translate-x-1/2 -translate-y-full"
                   style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
-                  title={marker.label}
+                  title={labelOf(marker)}
+                  aria-label={labelOf(marker) || t('plan.marker')}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (markerMode || movingId) return;
+                    setDraftMarker({ roomId: '', ...marker });
+                  }}
                 >
-                  <MapPin className="size-6 fill-primary text-primary-foreground" />
-                </span>
+                  <MapPin
+                    className={
+                      marker.id === movingId
+                        ? 'size-6 animate-pulse fill-destructive text-destructive-foreground'
+                        : marker.roomId
+                          ? 'size-6 fill-secondary text-secondary-foreground'
+                          : 'size-6 fill-primary text-primary-foreground'
+                    }
+                  />
+                </button>
               ))}
             </div>
           )}
         </div>
-        {markerMode ? (
+        {markerMode || movingId ? (
           <p className="text-sm text-muted-foreground">{t('plan.markerHint')}</p>
+        ) : null}
+
+        {plan.markers.length > 0 && !pdf ? (
+          <ul className="max-h-40 divide-y overflow-auto rounded-lg border text-sm">
+            {plan.markers.map((marker) => {
+              const href = targetOf(marker);
+              return (
+                <li key={marker.id} className="flex items-center gap-2 p-2">
+                  <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <span className="min-w-0 flex-1 truncate">
+                    {labelOf(marker) || t('plan.marker')}
+                  </span>
+                  {href ? (
+                    <Button asChild size="sm" variant="ghost">
+                      <Link href={href}>
+                        <ExternalLink className="size-4" aria-hidden />
+                        {t('action.open')}
+                      </Link>
+                    </Button>
+                  ) : null}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    data-testid="marker-move"
+                    onClick={() => {
+                      setMarkerMode(false);
+                      setMovingId(marker.id);
+                    }}
+                  >
+                    {t('plan.moveMarker')}
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label={t('action.delete')}
+                    data-testid="marker-delete"
+                    onClick={() => removeMarker(marker.id)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
         ) : null}
 
         <Dialog open={draftMarker !== null} onOpenChange={(value) => !value && setDraftMarker(null)}>
@@ -186,14 +320,34 @@ export function PlanViewer({
                   onChange={(event) => setDraftMarker({ ...draftMarker, label: event.target.value })}
                   data-testid="marker-label"
                 />
-                <RelationSelect
-                  collection="assets"
-                  value={draftMarker.assetId}
-                  onChange={(value) => setDraftMarker({ ...draftMarker, assetId: value })}
-                />
-                <Button onClick={saveMarker} data-testid="marker-save">
-                  {t('action.save')}
-                </Button>
+                <div className="flex flex-col gap-1">
+                  <Label>{t('module.rooms.singular')}</Label>
+                  <RelationSelect
+                    collection="rooms"
+                    value={draftMarker.roomId ?? ''}
+                    onChange={(value) => setDraftMarker({ ...draftMarker, roomId: value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label>{t('module.assets.singular')}</Label>
+                  <RelationSelect
+                    collection="assets"
+                    value={draftMarker.assetId}
+                    onChange={(value) => setDraftMarker({ ...draftMarker, assetId: value })}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={saveMarker} data-testid="marker-save" className="flex-1">
+                    {t('action.save')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => removeMarker(draftMarker.id)}
+                    aria-label={t('action.delete')}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
               </div>
             ) : null}
           </DialogContent>

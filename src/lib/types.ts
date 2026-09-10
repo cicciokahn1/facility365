@@ -331,6 +331,10 @@ export interface Room extends BaseEntity {
   floorId: string;
   type: string;
   area?: number;
+  /** Anzahl Arbeitsplaetze im Raum. */
+  workplaces?: number;
+  /** Nutzer, Abteilung oder Mieter des Raums. */
+  occupant?: string;
   status: ActiveStatus;
   description: string;
 }
@@ -1251,6 +1255,8 @@ export interface PlanMarker {
   x: number;
   y: number;
   assetId: string;
+  /** Raum, den der Marker auf dem Plan bezeichnet. */
+  roomId?: string;
   label: string;
   note: string;
   /** Seite eines mehrseitigen PDF-Plans. */

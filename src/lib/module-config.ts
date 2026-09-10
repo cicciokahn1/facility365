@@ -450,6 +450,8 @@ const roomsConfig: ModuleConfig<"rooms"> = {
     },
     text("type", "common.type"),
     { kind: "number", name: "area", labelKey: "common.area" },
+    { kind: "number", name: "workplaces", labelKey: "room.workplaces" },
+    text("occupant", "room.occupant"),
     {
       kind: "select",
       name: "status",
@@ -465,7 +467,7 @@ const roomsConfig: ModuleConfig<"rooms"> = {
     },
   ],
   searchOf: (room) =>
-    [room.number, room.name, room.roomNumber, room.type]
+    [room.number, room.name, room.roomNumber, room.type, room.occupant ?? ""]
       .filter(Boolean)
       .join(" "),
 };

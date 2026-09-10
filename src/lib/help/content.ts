@@ -123,6 +123,41 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           "anlage",
         ],
       },
+      {
+        id: "plans",
+        title: "Gebaeudeplaene, Flaechen und Arbeitsplaetze",
+        summary: "Plaene nutzen, Raeume und Anlagen darauf setzen.",
+        paragraphs: [
+          "Zu jedem Gebaeude und jeder Liegenschaft lassen sich Plaene hinterlegen (Bild oder PDF), je Stockwerk und mit Fassungen - eine neue Fassung ersetzt die alte nicht, sondern legt sich darueber.",
+          "Auf Bildplaenen koennen Raeume und Anlagen als Markierung gesetzt, verschoben, bearbeitet und wieder entfernt werden. Ein Klick auf die Markierung fuehrt direkt zum Raum oder zur Anlage; umgekehrt zeigt der Reiter «Plaene» beim Raum und bei der Anlage, auf welchem Plan sie stehen.",
+          "Flaechen werden beim Gebaeude, beim Stockwerk und beim Raum erfasst; beim Raum zusaetzlich die Anzahl Arbeitsplaetze und die Nutzung bzw. Abteilung. Der Reiter «Flaechen» beim Gebaeude und bei der Liegenschaft wertet das aus: Gesamtflaeche, Flaeche je Stockwerk und je Raumart, Anzahl Arbeitsplaetze und die Raeume, bei denen die Flaeche noch fehlt.",
+        ],
+        steps: [
+          OPEN("ein Gebaeude → Reiter «Plaene»"),
+          {
+            title: "2. Erstellen",
+            text: "Plan hochladen, Titel und Stockwerk waehlen.",
+          },
+          {
+            title: "3. Bearbeiten",
+            text: "Plan oeffnen, Markierung setzen, auf die Stelle klicken und Raum oder Anlage zuordnen.",
+          },
+          SAVE,
+          {
+            title: "5. Abschliessen",
+            text: "Im Reiter «Flaechen» pruefen, ob bei allen Raeumen Flaeche und Arbeitsplaetze erfasst sind.",
+          },
+        ],
+        path: "/buildings",
+        keywords: [
+          "plan",
+          "grundriss",
+          "flaeche",
+          "quadratmeter",
+          "arbeitsplatz",
+          "markierung",
+        ],
+      },
     ],
   },
   {
@@ -593,6 +628,24 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           "benachrichtigung",
           "paket",
           "sicherung",
+        ],
+      },
+      {
+        id: "api",
+        title: "Schnittstellen: API und Webhooks",
+        summary: "Daten und Ereignisse an andere Systeme.",
+        paragraphs: [
+          "Fremdsysteme koennen Daten lesen ueber «GET /api/v1/<modul>?tenant=<organisation>» mit der Kopfzeile «x-api-key». Der Schluessel wird serverseitig hinterlegt (FACILITY365_API_KEY), der Datenbankzugriff ebenfalls (SUPABASE_SERVICE_ROLE_KEY). Die Organisation ist Pflicht: es werden nie Daten mehrerer Mandanten zusammen geliefert.",
+          "Ereignisse werden als Webhook gemeldet: Erstellen, Aendern, Abschliessen, Loeschen und Wiederherstellen (record.created, record.updated, record.completed, record.deleted, record.restored) mit Modul, Datensatz, Person, Zeitpunkt und geaenderten Feldern. Die Empfaengeradressen stehen in FACILITY365_WEBHOOK_URLS, das Geheimnis fuer die Signatur in FACILITY365_WEBHOOK_SECRET; jede Meldung traegt die Kopfzeile «x-facility365-signature» (HMAC SHA-256).",
+          "Ohne hinterlegte Adressen bleibt alles unveraendert - es werden keine Daten nach aussen gegeben.",
+        ],
+        path: "/settings",
+        keywords: [
+          "api",
+          "webhook",
+          "schnittstelle",
+          "integration",
+          "ereignis",
         ],
       },
       {
