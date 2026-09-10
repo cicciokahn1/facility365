@@ -15,6 +15,7 @@ import {
   NavGroup,
   groupOfPath,
   moduleByKey,
+  sortNavigationModules,
 } from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
 import { cn } from '@/lib/utils';
@@ -30,8 +31,10 @@ export function BottomNav() {
     () =>
       NAV_GROUPS.map((group) => ({
         ...group,
-        modules: MODULES.filter(
-          (module) => module.group === group.key && access.canRead(module.key),
+        modules: sortNavigationModules(
+          MODULES.filter(
+            (module) => module.group === group.key && access.canRead(module.key),
+          ),
         ),
       })).filter((group) => group.modules.length > 0),
     [access],
