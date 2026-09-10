@@ -32,6 +32,7 @@ import {
   MessageSquareWarning,
   Network,
   PackageSearch,
+  Receipt,
   type LucideIcon,
   Settings,
   Sun,

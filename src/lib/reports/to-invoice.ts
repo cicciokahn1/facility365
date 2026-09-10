@@ -164,16 +164,7 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
       orders,
       suppliers,
       users,
-      settings.currency,
-      settings.roleHourlyRates,
-      settings.paymentAddress,
-      settings.paymentBank,
-      settings.paymentBic,
-      settings.paymentIban,
-      settings.paymentQrIban,
-      settings.paymentRecipient,
-      settings.paymentReferenceType,
-      settings.vatRate,
+      settings,
     ],
   );
 }
