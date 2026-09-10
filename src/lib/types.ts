@@ -532,6 +532,10 @@ export interface Order extends BaseEntity {
   materials: MaterialItem[];
   signature: string;
   signedBy: string;
+  /** Modul, aus dem der Auftrag entstanden ist, z. B. eine Kontrolle. */
+  sourceCollection?: CollectionKey;
+  /** Datensatz, aus dem der Auftrag entstanden ist. */
+  sourceId?: string;
   /** Nachricht aus Outlook, aus der der Auftrag entstanden ist. */
   graphMessageId?: string;
   /** Zugehoeriger Termin im Outlook-Kalender. */
@@ -951,6 +955,10 @@ export interface Ticket extends BaseEntity {
   maintenanceId: string;
   reportId: string;
   comments: TicketComment[];
+  /** Modul, aus dem die Meldung entstanden ist, z. B. eine Kontrolle. */
+  sourceCollection?: CollectionKey;
+  /** Datensatz, aus dem die Meldung entstanden ist. */
+  sourceId?: string;
 }
 
 export type ReportType =
