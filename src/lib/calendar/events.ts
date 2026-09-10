@@ -10,7 +10,7 @@
 import { useMemo } from "react";
 
 import { cleaningDates } from "@/lib/cleaning/schedule";
-import { useCollectionItems } from "@/lib/data/store";
+import { indexOf, useCollectionItems } from "@/lib/data/store";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
 import { isContractOpen, reminderDate } from "@/lib/contracts/reminder";
 import { CollectionKey, MaintenanceInterval } from "@/lib/types";
@@ -435,10 +435,11 @@ export function useCalendarEvents(): CalendarEvent[] {
       new Date().toISOString().slice(0, 10),
       CLEANING_HORIZON_MONTHS,
     );
+    const cleaningAreaIndex = indexOf(cleaningAreas);
     cleaningPlans
       .filter((plan) => plan.status === "active" && plan.nextDate)
       .forEach((plan) => {
-        const area = cleaningAreas.find((entry) => entry.id === plan.areaId);
+        const area = cleaningAreaIndex.get(plan.areaId);
         cleaningDates(
           plan.nextDate,
           plan,

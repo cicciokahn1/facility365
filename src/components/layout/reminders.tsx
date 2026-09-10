@@ -10,7 +10,7 @@ import { useCallback } from 'react';
 
 import { useAccess } from '@/lib/auth/scope';
 import { useRelevantEvents } from '@/lib/calendar/relevant';
-import { useAllCollections, useCollectionItems } from '@/lib/data/store';
+import { indexOf, useAllCollections, useCollectionItems } from '@/lib/data/store';
 import { stringField } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
 import { titleOfEntity } from '@/lib/module-config';
@@ -43,6 +43,8 @@ export function Reminders() {
   const store = useAllCollections();
   const buildings = useCollectionItems('buildings');
   const properties = useCollectionItems('properties');
+  const buildingIndex = indexOf(buildings);
+  const propertyIndex = indexOf(properties);
 
   /**
    * Neu zugewiesene Vorgaenge.
@@ -79,8 +81,8 @@ export function Reminders() {
       .filter((event) => event.date <= day)
       .map((event) => {
         const place =
-          buildings.find((building) => building.id === event.buildingId)?.name ??
-          properties.find((property) => property.id === event.propertyId)?.name ??
+          buildingIndex.get(event.buildingId)?.name ??
+          propertyIndex.get(event.propertyId)?.name ??
           '';
         const { title, body } = reminderText(event, place, {
           dueToday: t('notify.dueToday'),
@@ -89,7 +91,7 @@ export function Reminders() {
           return { key: `${day}-${event.id}`, title, body, href: event.href };
         }),
     ];
-  }, [assigned, buildings, events, properties, t]);
+  }, [assigned, buildingIndex, events, propertyIndex, t]);
 
   useDueReminders(settings.notificationsEnabled, pending);
 

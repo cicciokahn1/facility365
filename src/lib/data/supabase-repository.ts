@@ -55,13 +55,18 @@ const rowOf = <K extends CollectionKey>(item: EntityOf<K>, userId: string, tenan
 
 export const supabaseRepository: Repository = {
   async read<K extends CollectionKey>(collection: K): Promise<EntityOf<K>[]> {
-    const { data, error } = await (await client())
+    const query = (await client())
       .from(collection)
-      .select('id, number, data, deleted_at')
-      .order('created_at', { ascending: true });
+      .select('id, number, data, deleted_at');
+    const { data, error } =
+      collection === 'activities'
+        ? await query.order('created_at', { ascending: false }).limit(1500)
+        : await query.order('created_at', { ascending: true });
     if (error) throw new Error(error.message);
     /** Der Papierkorb steht in der Spalte; die Oberflaeche liest ihn am Datensatz. */
-    return (data as Row[]).map(
+    const rows = data as Row[];
+    if (collection === 'activities') rows.reverse();
+    return rows.map(
       (row) =>
         ({
           ...row.data,
