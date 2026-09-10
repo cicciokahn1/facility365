@@ -61,6 +61,27 @@ const TRACKED: CollectionKey[] = COLLECTIONS.filter(
   (key) => key !== "activities",
 );
 
+/** Häufig benötigte Stammdaten und Arbeitsvorgänge zuerst laden. */
+const CORE_COLLECTIONS: CollectionKey[] = [
+  "users",
+  "customers",
+  "organizations",
+  "sites",
+  "properties",
+  "buildings",
+  "rooms",
+  "assets",
+  "orders",
+  "tickets",
+  "damages",
+  "maintenances",
+  "reports",
+].filter((key): key is CollectionKey => COLLECTIONS.includes(key));
+
+const DEFERRED_COLLECTIONS = COLLECTIONS.filter(
+  (key) => !CORE_COLLECTIONS.includes(key),
+);
+
 type Store = Record<CollectionKey, BaseEntity[]>;
 
 interface IdleWindow {
@@ -180,20 +201,38 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     const load = async () => {
       const next = emptyStore();
-      try {
+      const read = async (keys: CollectionKey[]) => {
         await Promise.all(
-          COLLECTIONS.map(async (key) => {
+          keys.map(async (key) => {
             next[key] = (await repository.read(key)) as BaseEntity[];
           }),
         );
+      };
+      try {
+        await read(CORE_COLLECTIONS);
       } catch (error) {
         if (!cancelled)
           toast.error(error instanceof Error ? error.message : String(error));
       }
       if (cancelled) return;
       setLoaded({ scope, store: next });
-      /** Taegliche Sicherung erst in einer Ruhephase; scheitert sie, bleibt der Betrieb unberuehrt. */
-      whenIdle(() => void ensureDailySnapshot(next).catch(() => undefined));
+      whenIdle(() => {
+        void (async () => {
+          try {
+            await read(DEFERRED_COLLECTIONS);
+            if (cancelled) return;
+            setLoaded((state) => {
+              if (state.scope !== scope) return state;
+              return { scope, store: { ...state.store, ...next } };
+            });
+            /** Die Sicherung erst nach dem vollständigen Laden im Hintergrund erstellen. */
+            void ensureDailySnapshot(next).catch(() => undefined);
+          } catch (error) {
+            if (!cancelled)
+              toast.error(error instanceof Error ? error.message : String(error));
+          }
+        })();
+      });
     };
     void load();
     return () => {
