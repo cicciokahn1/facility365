@@ -22,6 +22,11 @@ import {
   LinkedDocuments,
   documentLinkOf,
 } from "@/components/module/linked-documents";
+import {
+  FollowUpActions,
+  LinkedRecordsPanel,
+} from "@/components/module/linked-records";
+import { ObjectDossier } from "@/components/module/object-dossier";
 import { PhotoGallery } from "@/components/module/photo-gallery";
 import {
   AlertDialog,
@@ -52,6 +57,8 @@ import {
   EntityOf,
   Photo,
 } from "@/lib/types";
+import { FOLLOW_UP_SOURCES } from "@/lib/links/follow-up";
+import { DossierLevel } from "@/lib/links/dossier";
 import { isCompletable } from "@/lib/workflow/complete";
 import { formatDate, formatMonth, formatMoney } from "@/lib/utils/format";
 
@@ -150,6 +157,35 @@ export function EntityDetail<K extends CollectionKey>({
   };
 
   const tabs = extraTabs?.(entity, applyUpdate) ?? [];
+
+  /** Objekte der Hierarchie zeigen zusaetzlich ihren modeluebergreifenden Verlauf. */
+  const dossierLevel: DossierLevel | undefined = (
+    ["properties", "buildings", "rooms", "assets"] as CollectionKey[]
+  ).includes(collection)
+    ? (collection as DossierLevel)
+    : undefined;
+  if (dossierLevel) {
+    tabs.unshift({
+      value: "dossier",
+      labelKey: "tab.dossier",
+      content: <ObjectDossier level={dossierLevel} id={id} />,
+    });
+  } else if (!tabs.some((tab) => tab.value === "linked")) {
+    tabs.push({
+      value: "linked",
+      labelKey: "tab.linked",
+      content: <LinkedRecordsPanel collection={collection} entity={entity} />,
+    });
+  }
+
+  /**
+   * Folgevorgaenge: Module mit eigener Umwandlung (Ticket, Brandschutz,
+   * Spielplatz, Offerte) bringen ihre Schaltflaechen selbst mit.
+   */
+  const showFollowUp =
+    FOLLOW_UP_SOURCES.includes(collection) &&
+    !headerExtra &&
+    collection !== "tickets";
   /** Dokumente des Moduls "Dokumente", die auf diesen Datensatz verweisen. */
   const documentLink = documentLinkOf(collection, entity);
 
@@ -182,6 +218,9 @@ export function EntityDetail<K extends CollectionKey>({
                 id={id}
                 status={stringField(entity, config.statusField)}
               />
+            ) : null}
+            {showFollowUp ? (
+              <FollowUpActions collection={collection} entity={entity} />
             ) : null}
             {headerExtra?.(entity, applyUpdate)}
           </div>
