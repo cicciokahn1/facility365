@@ -281,17 +281,6 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               onChange={(event) => set('vatRate', Number(event.target.value))}
             />
           </Field>
-          <Field label={t('settings.hourlyRate')}>
-            <Input
-              type="number"
-              step="0.05"
-              data-testid="hourly-rate"
-              value={draft.hourlyRate ?? ''}
-              onChange={(event) =>
-                set('hourlyRate', event.target.value === '' ? undefined : Number(event.target.value))
-              }
-            />
-          </Field>
         </CardContent>
       </Card>
 
@@ -346,59 +335,6 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               </div>
             </Field>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t('settings.legionella')}</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2">
-          <Field label={`${t('legionella.hotTemp')} (min. °C)`}>
-            <Input
-              type="number"
-              step="1"
-              data-testid="legionella-hot-min"
-              value={draft.legionellaHotMin}
-              onChange={(event) => set('legionellaHotMin', Number(event.target.value))}
-            />
-          </Field>
-          <Field label={`${t('legionella.coldTemp')} (max. °C)`}>
-            <Input
-              type="number"
-              step="1"
-              data-testid="legionella-cold-max"
-              value={draft.legionellaColdMax}
-              onChange={(event) => set('legionellaColdMax', Number(event.target.value))}
-            />
-          </Field>
-          <Field label={`${t('legionella.cfu')} (${t('legionella.warning')})`}>
-            <Input
-              type="number"
-              step="10"
-              data-testid="legionella-warn-cfu"
-              value={draft.legionellaWarnCfu}
-              onChange={(event) => set('legionellaWarnCfu', Number(event.target.value))}
-            />
-          </Field>
-          <Field label={`${t('legionella.cfu')} (${t('legionella.critical')})`}>
-            <Input
-              type="number"
-              step="10"
-              data-testid="legionella-limit-cfu"
-              value={draft.legionellaLimitCfu}
-              onChange={(event) => set('legionellaLimitCfu', Number(event.target.value))}
-            />
-          </Field>
-          <Field label={t('legionella.intervalMonths')}>
-            <Input
-              type="number"
-              step="1"
-              data-testid="legionella-interval"
-              value={draft.legionellaIntervalMonths}
-              onChange={(event) => set('legionellaIntervalMonths', Number(event.target.value))}
-            />
-          </Field>
         </CardContent>
       </Card>
 
