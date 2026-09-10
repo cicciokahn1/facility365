@@ -21,6 +21,7 @@ import {
   Files,
   Gauge,
   Handshake,
+  Headset,
   Home,
   KeyRound,
   LayoutDashboard,
@@ -358,6 +359,15 @@ export const MODULES: ModuleDefinition[] = [
     group: "technics",
     labelKey: "module.firechecks",
     singularKey: "module.firechecks.singular",
+  },
+  {
+    key: "tickets",
+    collection: "tickets",
+    path: "/tickets",
+    icon: Headset,
+    group: "work",
+    labelKey: "module.tickets",
+    singularKey: "module.tickets.singular",
   },
   {
     key: "damages",

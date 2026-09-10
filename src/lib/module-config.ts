@@ -58,6 +58,8 @@ import {
   APPOINTMENT_STATUS_OPTIONS,
   APPOINTMENT_TYPE_OPTIONS,
   SOURCE_CATEGORY_OPTIONS,
+  TICKET_CATEGORY_OPTIONS,
+  TICKET_STATUS_OPTIONS,
   SOURCE_RATING_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
   asString,
@@ -2047,6 +2049,135 @@ const damagesConfig: ModuleConfig<"damages"> = {
       .join(" "),
 };
 
+const ticketsConfig: ModuleConfig<"tickets"> = {
+  collection: "tickets",
+  titleOf: (ticket) => ticket.title || ticket.number,
+  statusField: "status",
+  statusOptions: TICKET_STATUS_OPTIONS,
+  fields: [
+    text("title", "common.title", { required: true, span: 2 }),
+    {
+      kind: "select",
+      name: "category",
+      labelKey: "common.category",
+      options: TICKET_CATEGORY_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: "select",
+      name: "status",
+      labelKey: "common.status",
+      options: TICKET_STATUS_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: "select",
+      name: "priority",
+      labelKey: "common.priority",
+      options: PRIORITY_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: "relation",
+      name: "customerId",
+      labelKey: "module.customers.singular",
+      collection: "customers",
+      filter: true,
+    },
+    {
+      kind: "relation",
+      name: "organizationId",
+      labelKey: "module.organizations.singular",
+      collection: "organizations",
+    },
+    {
+      kind: "relation",
+      name: "siteId",
+      labelKey: "module.sites.singular",
+      collection: "sites",
+    },
+    {
+      kind: "relation",
+      name: "propertyId",
+      labelKey: "module.properties.singular",
+      collection: "properties",
+      filter: true,
+    },
+    {
+      kind: "relation",
+      name: "buildingId",
+      labelKey: "module.buildings.singular",
+      collection: "buildings",
+      parentValueField: "propertyId",
+      parentKey: "propertyId",
+    },
+    {
+      kind: "relation",
+      name: "roomId",
+      labelKey: "module.rooms.singular",
+      collection: "rooms",
+      parentValueField: "buildingId",
+      parentKey: "buildingId",
+    },
+    {
+      kind: "relation",
+      name: "assetId",
+      labelKey: "module.assets.singular",
+      collection: "assets",
+    },
+    text("reportedBy", "common.author"),
+    {
+      kind: "relation",
+      name: "reportedById",
+      labelKey: "user.reporter",
+      collection: "users",
+    },
+    {
+      kind: "relation",
+      name: "assigneeUserId",
+      labelKey: "user.assignee",
+      collection: "users",
+      filter: true,
+    },
+    { kind: "date", name: "reportedAt", labelKey: "common.date" },
+    { kind: "date", name: "dueDate", labelKey: "common.dueDate" },
+    {
+      kind: "relation",
+      name: "orderId",
+      labelKey: "module.orders.singular",
+      collection: "orders",
+    },
+    {
+      kind: "relation",
+      name: "damageId",
+      labelKey: "module.damages.singular",
+      collection: "damages",
+    },
+    {
+      kind: "relation",
+      name: "maintenanceId",
+      labelKey: "module.maintenances.singular",
+      collection: "maintenances",
+    },
+    {
+      kind: "relation",
+      name: "reportId",
+      labelKey: "module.reports.singular",
+      collection: "reports",
+    },
+    {
+      kind: "textarea",
+      name: "description",
+      labelKey: "common.description",
+      span: 2,
+    },
+  ],
+  searchOf: (ticket) =>
+    [ticket.number, ticket.title, ticket.description, ticket.reportedBy]
+      .filter(Boolean)
+      .join(" "),
+};
+
 const reportsConfig: ModuleConfig<"reports"> = {
   collection: "reports",
   titleOf: (report) => report.title || report.number,
@@ -2739,6 +2870,7 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   stock: stockConfig,
   contracts: contractsConfig,
   damages: damagesConfig,
+  tickets: ticketsConfig,
   reports: reportsConfig,
   quotes: quotesConfig,
   invoices: invoicesConfig,
