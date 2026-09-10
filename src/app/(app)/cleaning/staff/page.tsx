@@ -1,5 +1,11 @@
 import { ModuleList } from '@/components/module/module-list';
+import { CleanerRateSettings } from '@/components/modules/user-rate-settings';
 
 export default function CleanersPage() {
-  return <ModuleList collection="cleaners" />;
+  return (
+    <>
+      <CleanerRateSettings />
+      <ModuleList collection="cleaners" />
+    </>
+  );
 }

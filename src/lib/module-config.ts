@@ -2469,6 +2469,7 @@ const cleanersConfig: ModuleConfig<"cleaners"> = {
       collection: "suppliers",
       filter: true,
     },
+    { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
   searchOf: (cleaner) =>
@@ -2628,6 +2629,7 @@ const cleaningTasksConfig: ModuleConfig<"cleaningtasks"> = {
     text("workStart", "work.start"),
     text("workEnd", "work.end"),
     { kind: "number", name: "breakMinutes", labelKey: "work.break" },
+    { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
     { kind: "textarea", name: "notes", labelKey: "cleaning.remarks", span: 2 },
   ],
   searchOf: (task) =>

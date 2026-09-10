@@ -640,6 +640,7 @@ export const table: Record<string, string> = {
   "settings.hourlyRate": "Hourly rate",
   "settings.hourlyRates": "Hourly rates",
   "settings.hourlyRatesHint": "Role rates are the default. An individual person or company rate, or a rate on the order or report, takes precedence.",
+  "material.fromStock": "Pick from stock",
   "settings.paymentData": "Payment data",
   "settings.paymentRecipient": "Payee",
   "settings.paymentAddress": "Payee address",

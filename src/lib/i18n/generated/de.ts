@@ -640,6 +640,7 @@ export const table: Record<string, string> = {
   "settings.hourlyRate": "Stundenansatz",
   "settings.hourlyRates": "Stundenansätze",
   "settings.hourlyRatesHint": "Rollenansätze dienen als Standard. Ein individueller Ansatz bei Mitarbeitenden oder Firmen sowie ein Ansatz im Auftrag oder Rapport hat Vorrang.",
+  "material.fromStock": "Aus Lager wählen",
   "settings.paymentData": "Zahlungsdaten",
   "settings.paymentRecipient": "Zahlungsempfänger",
   "settings.paymentAddress": "Adresse des Zahlungsempfängers",
