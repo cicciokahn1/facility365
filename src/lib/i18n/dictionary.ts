@@ -6717,17 +6717,17 @@ export const dictionary = {
     it: "Facility365 Property",
     en: "Facility365 Property",
   },
-  "package.school": {
-    de: "Facility365 School",
-    fr: "Facility365 School",
-    it: "Facility365 School",
-    en: "Facility365 School",
-  },
   "package.care": {
     de: "Facility365 Care",
     fr: "Facility365 Care",
     it: "Facility365 Care",
     en: "Facility365 Care",
+  },
+  "package.institution": {
+    de: "Facility365 Institution",
+    fr: "Facility365 Institution",
+    it: "Facility365 Institution",
+    en: "Facility365 Institution",
   },
   "package.industry": {
     de: "Facility365 Industry",
@@ -6740,6 +6740,54 @@ export const dictionary = {
     fr: "Facility365 Public",
     it: "Facility365 Public",
     en: "Facility365 Public",
+  },
+  "package.targetGroup": {
+    de: "Zielgruppe",
+    fr: "Groupe cible",
+    it: "Destinatari",
+    en: "Target group",
+  },
+  "package.professional.target": {
+    de: "Hauswartungen, FM-Dienstleister und kleinere Betriebe",
+    fr: "Entreprises de conciergerie, prestataires FM et petites entreprises",
+    it: "Imprese di facility management, fornitori FM e piccole aziende",
+    en: "Facility services, FM providers and smaller businesses",
+  },
+  "package.property.target": {
+    de: "Immobilien- und Liegenschaftsverwaltungen",
+    fr: "Administrations immobilières et gestionnaires d’immeubles",
+    it: "Amministrazioni immobiliari e gestori di immobili",
+    en: "Real estate and property management companies",
+  },
+  "package.care.target": {
+    de: "Pflegeheime, Alterszentren sowie Pflege- und Betreuungseinrichtungen",
+    fr: "Établissements médico-sociaux, centres pour personnes âgées et structures de soins et d’accompagnement",
+    it: "Case di cura, centri per anziani e strutture di cura e assistenza",
+    en: "Nursing homes, senior centers, and care and support facilities",
+  },
+  "package.institution.target": {
+    de: "Soziale Institutionen, Wohnheime und Einrichtungen",
+    fr: "Institutions sociales, foyers et établissements",
+    it: "Istituzioni sociali, residenze e strutture",
+    en: "Social institutions, residential homes and facilities",
+  },
+  "package.industry.target": {
+    de: "Industrie, Produktion und technische Betriebe",
+    fr: "Industrie, production et entreprises techniques",
+    it: "Industria, produzione e aziende tecniche",
+    en: "Industry, manufacturing, and technical businesses",
+  },
+  "package.public.target": {
+    de: "Gemeinden, Städte, Schulen und öffentliche Verwaltungen",
+    fr: "Communes, villes, écoles et administrations publiques",
+    it: "Comuni, città, scuole e amministrazioni pubbliche",
+    en: "Municipalities, cities, schools, and public administrations",
+  },
+  "package.custom.target": {
+    de: "Grosse Organisationen und spezielle Anforderungen",
+    fr: "Grandes organisations et exigences particulières",
+    it: "Grandi organizzazioni ed esigenze specifiche",
+    en: "Large organizations and special requirements",
   },
   "package.core": {
     de: "Immer aktiv",
