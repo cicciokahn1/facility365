@@ -1229,6 +1229,7 @@ export const table: Record<string, string> = {
   "cleaning.ownTasksHint": "Vengono mostrate solo le attività assegnate a te.",
   "settings.package": "Pacchetto settoriale",
   "settings.packageHint": "Il pacchetto preseleziona i moduli adatti; ogni modulo resta attivabile. Un modulo disattivato scompare solo dalla navigazione – i dati restano invariati.",
+  "settings.moduleOverrideHint": "Il pacchetto è la configurazione di partenza. I moduli modificati manualmente hanno la precedenza e restano invariati al caricamento successivo; i dati dei moduli disattivati restano completamente salvati.",
   "settings.packageModules": "Moduli",
   "package.all": "Tutti i moduli",
   "package.custom": "Personalizzato",

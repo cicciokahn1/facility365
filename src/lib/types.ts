@@ -1319,6 +1319,11 @@ export type IndustryPackage =
   | "public"
   | "custom";
 
+export interface ModuleConfig {
+  industryPackage: IndustryPackage;
+  disabledModules: ModuleKey[];
+}
+
 export type Language = "de" | "fr" | "it" | "en";
 export type ThemeMode = "light" | "dark" | "system";
 

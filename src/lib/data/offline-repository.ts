@@ -19,6 +19,7 @@ import {
   CollectionKey,
   EntityOf,
   HistoryEntry,
+  ModuleConfig,
 } from "@/lib/types";
 import { newId } from "@/lib/utils/id";
 
@@ -447,6 +448,34 @@ export const offlineRepository = (remote: Repository): Repository => ({
     if (!isOnline()) return;
     try {
       await remote.writeSettings(settings);
+    } catch {
+      /* Einstellungen folgen beim naechsten Speichern mit Verbindung. */
+    }
+  },
+
+  async readModuleConfig(): Promise<Partial<ModuleConfig> | null> {
+    if (!isOnline())
+      return readJson<Partial<ModuleConfig> | null>(
+        `${workspacePrefix()}sync.modules`,
+        null,
+      );
+    try {
+      const config = await remote.readModuleConfig();
+      writeJson(`${workspacePrefix()}sync.modules`, config);
+      return config;
+    } catch {
+      return readJson<Partial<ModuleConfig> | null>(
+        `${workspacePrefix()}sync.modules`,
+        null,
+      );
+    }
+  },
+
+  async writeModuleConfig(config: ModuleConfig): Promise<void> {
+    writeJson(`${workspacePrefix()}sync.modules`, config);
+    if (!isOnline()) return;
+    try {
+      await remote.writeModuleConfig(config);
     } catch {
       /* Einstellungen folgen beim naechsten Speichern mit Verbindung. */
     }
