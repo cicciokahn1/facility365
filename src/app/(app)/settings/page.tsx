@@ -65,7 +65,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
   const set = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
-  /** Das Paket waehlt vor; die Schalter darunter bleiben frei bedienbar. */
+  /** Paket = Ausgangskonfiguration; Schalter darunter sind die Ueberschreibung und haben Vorrang. */
   const choosePackage = (key: IndustryPackage) =>
     setDraft((current) => ({
       ...current,
@@ -76,10 +76,11 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
   const toggleModule = (module: ModuleKey, active: boolean) =>
     setDraft((current) => ({
       ...current,
-      industryPackage: 'custom',
       disabledModules: active
         ? current.disabledModules.filter((key) => key !== module)
-        : [...current.disabledModules, module],
+        : current.disabledModules.includes(module)
+          ? current.disabledModules
+          : [...current.disabledModules, module],
     }));
 
   return (
@@ -391,6 +392,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               </label>
             ))}
           </div>
+          <p className="text-xs text-muted-foreground">{t('settings.moduleOverrideHint')}</p>
         </CardContent>
       </Card>
 

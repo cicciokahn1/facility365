@@ -14,7 +14,13 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { Repository } from '@/lib/data/repository';
 import { supabase } from '@/lib/supabase/client';
-import { AppSettings, BaseEntity, CollectionKey, EntityOf } from '@/lib/types';
+import {
+  AppSettings,
+  BaseEntity,
+  CollectionKey,
+  EntityOf,
+  ModuleConfig,
+} from '@/lib/types';
 
 interface Row {
   id: string;
@@ -43,6 +49,9 @@ export const currentTenantId = async (): Promise<string> => {
   if (!tenant) throw new Error('Keine Organisation zugeordnet');
   return tenant;
 };
+
+const tenantSettingsMissing = (error: { code?: string; message?: string }): boolean =>
+  error.code === '42P01' || error.message?.includes('tenant_settings') === true;
 
 const rowOf = <K extends CollectionKey>(item: EntityOf<K>, userId: string, tenantId: string) => ({
   id: item.id,
@@ -132,6 +141,33 @@ export const supabaseRepository: Repository = {
       .from('settings')
       .upsert({ user_id: userId, data: settings }, { onConflict: 'user_id' });
     if (error) throw new Error(error.message);
+  },
+
+  async readModuleConfig(): Promise<Partial<ModuleConfig> | null> {
+    const { data, error } = await (await client())
+      .from('tenant_settings')
+      .select('data')
+      .maybeSingle();
+    if (error) {
+      if (tenantSettingsMissing(error)) return null;
+      throw new Error(error.message);
+    }
+    return (data?.data as Partial<ModuleConfig> | undefined) ?? null;
+  },
+
+  async writeModuleConfig(config: ModuleConfig): Promise<void> {
+    const tenantId = await currentTenantId();
+    const { error } = await (await client())
+      .from('tenant_settings')
+      .upsert(
+        {
+          tenant_id: tenantId,
+          data: config,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'tenant_id' },
+      );
+    if (error && !tenantSettingsMissing(error)) throw new Error(error.message);
   },
 
   async clear(): Promise<void> {

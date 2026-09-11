@@ -1229,6 +1229,7 @@ export const table: Record<string, string> = {
   "cleaning.ownTasksHint": "Only your own assigned tasks are shown.",
   "settings.package": "Industry package",
   "settings.packageHint": "The package preselects the matching modules; each module can still be switched on or off. Disabled modules only disappear from navigation – their data is kept.",
+  "settings.moduleOverrideHint": "The package is the starting configuration. Manually changed modules take precedence and remain in place on the next load; data from disabled modules remains fully stored.",
   "settings.packageModules": "Modules",
   "package.all": "All modules",
   "package.custom": "Custom",

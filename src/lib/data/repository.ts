@@ -7,7 +7,7 @@
  * bleiben in beiden Faellen unveraendert.
  */
 import { workspacePrefix } from "@/lib/trial/trial";
-import { AppSettings, CollectionKey, EntityOf } from "@/lib/types";
+import { AppSettings, CollectionKey, EntityOf, ModuleConfig } from "@/lib/types";
 
 export interface Repository {
   read<K extends CollectionKey>(collection: K): Promise<EntityOf<K>[]>;
@@ -24,6 +24,8 @@ export interface Repository {
   ): Promise<void>;
   readSettings(): Promise<Partial<AppSettings> | null>;
   writeSettings(settings: AppSettings): Promise<void>;
+  readModuleConfig(): Promise<Partial<ModuleConfig> | null>;
+  writeModuleConfig(config: ModuleConfig): Promise<void>;
   clear(): Promise<void>;
 }
 
@@ -35,6 +37,7 @@ export interface Repository {
  */
 const prefix = (): string => workspacePrefix();
 const settingsKey = (): string => `${prefix()}settings`;
+const moduleConfigKey = (): string => `${prefix()}modules`;
 
 /** Fehler beim Schreiben, damit die Oberflaeche einen vollen Speicher melden kann. */
 export class StorageFullError extends Error {
@@ -150,6 +153,26 @@ export const localRepository: Repository = {
     if (typeof window === "undefined") return;
     try {
       window.localStorage.setItem(settingsKey(), JSON.stringify(settings));
+    } catch {
+      throw new StorageFullError();
+    }
+  },
+
+  async readModuleConfig(): Promise<Partial<ModuleConfig> | null> {
+    if (typeof window === "undefined") return null;
+    const raw = window.localStorage.getItem(moduleConfigKey());
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as Partial<ModuleConfig>;
+    } catch {
+      return null;
+    }
+  },
+
+  async writeModuleConfig(config: ModuleConfig): Promise<void> {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(moduleConfigKey(), JSON.stringify(config));
     } catch {
       throw new StorageFullError();
     }

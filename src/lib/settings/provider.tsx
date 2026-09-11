@@ -3,8 +3,9 @@
 /**
  * Anwendungseinstellungen.
  *
- * Die Einstellungen wirken global (Sprache, Erscheinungsbild, Firmenangaben)
- * und werden mit einem Entwurf bearbeitet: nichts wirkt vor dem Speichern.
+ * Persoenliche Einstellungen wirken konto-bezogen, die Modulkonfiguration
+ * mandantenweit. Beides wird mit einem Entwurf bearbeitet: nichts wirkt vor
+ * dem Speichern.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
@@ -13,8 +14,8 @@ import { BRAND_LOGO_DATA_URL } from '@/lib/branding/logo';
 import { localRepository } from '@/lib/data/repository';
 import { supabaseRepository } from '@/lib/data/supabase-repository';
 import { I18nProvider } from '@/lib/i18n/provider';
-import { normalizePackage } from '@/lib/packages/packages';
-import { AppSettings, ThemeMode } from '@/lib/types';
+import { normalizePackage, OPTIONAL_MODULES } from '@/lib/packages/packages';
+import { AppSettings, ModuleKey, ThemeMode } from '@/lib/types';
 
 export const defaultSettings: AppSettings = {
   companyName: 'Facility365',
@@ -72,7 +73,7 @@ const applyTheme = (theme: ThemeMode) => {
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
 
-  /** Einstellungen gehoeren zum Konto, nicht zum Geraet. */
+  /** Persoenliche Einstellungen gehoeren zum Konto; Module zum Mandanten. */
   const repository = auth.enabled ? supabaseRepository : localRepository;
   const scope = auth.enabled ? auth.user?.id ?? '' : 'local';
   const [loaded, setLoaded] = useState<{ scope: string; settings: AppSettings }>({
@@ -87,20 +88,35 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!scope) return;
     let cancelled = false;
-    void repository
-      .readSettings()
-      .catch(() => null)
-      .then((stored) => {
-        if (cancelled) return;
-        setLoaded({
-          scope,
-          settings: {
-            ...defaultSettings,
-            ...(stored ?? {}),
-            industryPackage: normalizePackage(stored?.industryPackage),
-          },
-        });
+    void Promise.all([
+      repository.readSettings().catch(() => null),
+      repository.readModuleConfig().catch(() => null),
+    ]).then(([stored, moduleConfig]) => {
+      if (cancelled) return;
+      const modulesOf = (value: unknown): ModuleKey[] | null => {
+        if (!Array.isArray(value)) return null;
+        return value.filter(
+          (module): module is ModuleKey =>
+            typeof module === 'string' &&
+            OPTIONAL_MODULES.includes(module as ModuleKey),
+        );
+      };
+      const disabledModules =
+        modulesOf(moduleConfig?.disabledModules) ??
+        modulesOf(stored?.disabledModules) ??
+        [];
+      setLoaded({
+        scope,
+        settings: {
+          ...defaultSettings,
+          ...(stored ?? {}),
+          industryPackage: normalizePackage(
+            moduleConfig?.industryPackage ?? stored?.industryPackage,
+          ),
+          disabledModules,
+        },
       });
+    });
     return () => {
       cancelled = true;
     };
@@ -120,6 +136,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     (next: AppSettings) => {
       setLoaded({ scope, settings: next });
       void repository.writeSettings(next).catch(() => undefined);
+      void repository
+        .writeModuleConfig({
+          industryPackage: next.industryPackage,
+          disabledModules: next.disabledModules,
+        })
+        .catch(() => undefined);
     },
     [repository, scope],
   );

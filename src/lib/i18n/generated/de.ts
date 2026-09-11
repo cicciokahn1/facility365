@@ -1229,6 +1229,7 @@ export const table: Record<string, string> = {
   "cleaning.ownTasksHint": "Es werden nur die eigenen zugewiesenen Aufgaben angezeigt.",
   "settings.package": "Branchenpaket",
   "settings.packageHint": "Das Paket wählt die passenden Module vor; einzelne Module lassen sich danach frei ein- und ausschalten. Abgeschaltete Module verschwinden nur aus der Navigation – ihre Daten bleiben vollständig erhalten.",
+  "settings.moduleOverrideHint": "Das Paket ist die Ausgangskonfiguration. Manuell geänderte Module haben Vorrang und bleiben beim nächsten Laden erhalten; Daten ausgeschalteter Module bleiben vollständig gespeichert.",
   "settings.packageModules": "Module",
   "package.all": "Alle Module",
   "package.custom": "Individuell",
