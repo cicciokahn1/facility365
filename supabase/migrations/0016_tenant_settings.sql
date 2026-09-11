@@ -4,7 +4,7 @@
 -- Anmeldekonto. Dadurch sehen alle Personen einer Organisation dieselbe
 -- Ausgangskonfiguration und dieselben manuellen Ueberschreibungen.
 
-create table public.tenant_settings (
+create table if not exists public.tenant_settings (
   tenant_id uuid primary key references public.tenants(id) on delete cascade,
   data jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
