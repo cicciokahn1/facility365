@@ -108,10 +108,10 @@ const PACKAGES: Record<Exclude<IndustryPackage, '' | 'custom'>, ModuleKey[]> = {
   professional: OPTIONAL_MODULES,
   /** Immobilienverwaltung: Bestand, Betreiberpflichten und Kaufmaennisches. */
   property: [...STRUCTURE, ...TECHNICS, ...CONTROLS, ...COMMERCE, 'vehicles'],
-  /** Schulen und Gemeindeliegenschaften: Betrieb und Reinigung. */
-  school: [...STRUCTURE, ...TECHNICS, ...CONTROLS, ...CLEANING, 'contracts', 'analytics'],
   /** Alters- und Pflegeheime, Spitaeler: Hygiene, Reinigung und Nachweise. */
   care: [...STRUCTURE, ...TECHNICS, ...CONTROLS, ...CLEANING, 'contracts', 'analytics'],
+  /** Soziale Institutionen, Wohnheime: Betrieb, Technik und Reinigung. */
+  institution: [...STRUCTURE, ...TECHNICS, ...CONTROLS, ...CLEANING, 'contracts', 'analytics'],
   /** Industrie: Technik, Fahrzeuge, Werkzeuge und Kosten. */
   industry: [...STRUCTURE, ...TECHNICS, 'vehicles', ...CONTROLS, ...COMMERCE],
   /** Gemeinden und oeffentliche Verwaltungen: Betrieb, Reinigung und Berichte. */
@@ -131,8 +131,8 @@ export const PACKAGE_KEYS: IndustryPackage[] = [
   '',
   'professional',
   'property',
-  'school',
   'care',
+  'institution',
   'industry',
   'public',
   'custom',
@@ -142,6 +142,32 @@ export const packageLabelKey = (key: IndustryPackage): TranslationKey => {
   if (key === '') return 'package.all';
   if (key === 'custom') return 'package.custom';
   return `package.${key}` as TranslationKey;
+};
+
+export const packageTargetKey = (key: IndustryPackage): TranslationKey | null => {
+  if (key === '') return null;
+  return `package.${key}.target` as TranslationKey;
+};
+
+/** Preise werden spaeter zentral hier hinterlegt; solange leer, zeigt die App keine Preise. */
+export interface PackagePrice {
+  currency: 'CHF';
+  monthly?: number;
+  yearly?: number;
+  perUser?: boolean;
+}
+
+export const PACKAGE_PRICES: Partial<
+  Record<Exclude<IndustryPackage, ''>, PackagePrice>
+> = {};
+
+export const packagePrice = (key: IndustryPackage): PackagePrice | undefined =>
+  key === '' ? undefined : PACKAGE_PRICES[key];
+
+export const normalizePackage = (value: string | undefined): IndustryPackage => {
+  if (value === 'school') return 'public';
+  if (PACKAGE_KEYS.includes(value as IndustryPackage)) return value as IndustryPackage;
+  return '';
 };
 
 /** Module, die ein Paket abschaltet. */

@@ -37,6 +37,7 @@ import {
   PACKAGE_KEYS,
   disabledByPackage,
   packageLabelKey,
+  packageTargetKey,
 } from '@/lib/packages/packages';
 import { useSettings } from '@/lib/settings/provider';
 import { AppSettings, IndustryPackage, Language, ModuleKey, ThemeMode } from '@/lib/types';
@@ -357,11 +358,23 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               <SelectContent>
                 {PACKAGE_KEYS.map((key) => (
                   <SelectItem key={key || 'all'} value={key || 'all'}>
-                    {t(packageLabelKey(key))}
+                    <span className="flex flex-col">
+                      <span>{t(packageLabelKey(key))}</span>
+                      {packageTargetKey(key) && (
+                        <span className="block text-xs text-muted-foreground">
+                          {t(packageTargetKey(key)!)}
+                        </span>
+                      )}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {packageTargetKey(draft.industryPackage) && (
+              <p className="text-xs text-muted-foreground">
+                {t('package.targetGroup')}: {t(packageTargetKey(draft.industryPackage)!)}
+              </p>
+            )}
           </Field>
           <div className="grid gap-1 sm:grid-cols-2" data-testid="package-modules">
             {OPTIONAL_MODULES.map((module) => (

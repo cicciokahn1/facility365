@@ -1313,8 +1313,8 @@ export type IndustryPackage =
   | ""
   | "professional"
   | "property"
-  | "school"
   | "care"
+  | "institution"
   | "industry"
   | "public"
   | "custom";

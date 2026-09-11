@@ -13,6 +13,7 @@ import { BRAND_LOGO_DATA_URL } from '@/lib/branding/logo';
 import { localRepository } from '@/lib/data/repository';
 import { supabaseRepository } from '@/lib/data/supabase-repository';
 import { I18nProvider } from '@/lib/i18n/provider';
+import { normalizePackage } from '@/lib/packages/packages';
 import { AppSettings, ThemeMode } from '@/lib/types';
 
 export const defaultSettings: AppSettings = {
@@ -91,7 +92,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       .catch(() => null)
       .then((stored) => {
         if (cancelled) return;
-        setLoaded({ scope, settings: { ...defaultSettings, ...(stored ?? {}) } });
+        setLoaded({
+          scope,
+          settings: {
+            ...defaultSettings,
+            ...(stored ?? {}),
+            industryPackage: normalizePackage(stored?.industryPackage),
+          },
+        });
       });
     return () => {
       cancelled = true;
