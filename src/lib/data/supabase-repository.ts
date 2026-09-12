@@ -144,9 +144,11 @@ export const supabaseRepository: Repository = {
   },
 
   async readModuleConfig(): Promise<Partial<ModuleConfig> | null> {
+    const tenantId = await currentTenantId();
     const { data, error } = await (await client())
       .from('tenant_settings')
       .select('data')
+      .eq('tenant_id', tenantId)
       .maybeSingle();
     if (error) {
       if (tenantSettingsMissing(error)) return null;

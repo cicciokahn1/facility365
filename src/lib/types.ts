@@ -1322,6 +1322,8 @@ export type IndustryPackage =
 export interface ModuleConfig {
   industryPackage: IndustryPackage;
   disabledModules: ModuleKey[];
+  /** Zeitpunkt der letzten Speicherung; entscheidet, welche Quelle gilt. */
+  updatedAt?: string;
 }
 
 export type Language = "de" | "fr" | "it" | "en";
@@ -1385,6 +1387,8 @@ export interface AppSettings {
   industryPackage: IndustryPackage;
   /** Abgeschaltete Module; ihre Daten bleiben erhalten. */
   disabledModules: ModuleKey[];
+  /** Zeitpunkt der letzten Speicherung der Modulkonfiguration. */
+  modulesUpdatedAt?: string;
 }
 
 /**

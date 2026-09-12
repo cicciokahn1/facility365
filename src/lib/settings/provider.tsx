@@ -91,7 +91,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     void Promise.all([
       repository.readSettings().catch(() => null),
       repository.readModuleConfig().catch(() => null),
-    ]).then(([stored, moduleConfig]) => {
+      localRepository.readModuleConfig().catch(() => null),
+    ]).then(([stored, remoteModules, localModules]) => {
       if (cancelled) return;
       const modulesOf = (value: unknown): ModuleKey[] | null => {
         if (!Array.isArray(value)) return null;
@@ -101,19 +102,45 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             OPTIONAL_MODULES.includes(module as ModuleKey),
         );
       };
-      const disabledModules =
-        modulesOf(moduleConfig?.disabledModules) ??
-        modulesOf(stored?.disabledModules) ??
-        [];
+      /**
+       * Mandantenweite und konto-bezogene Konfiguration koennen auseinander
+       * laufen, etwa wenn das Schreiben in den Mandanten nicht erlaubt ist.
+       * Es gilt darum immer die zuletzt gespeicherte Fassung.
+       */
+      const candidates = [
+        {
+          modules: modulesOf(remoteModules?.disabledModules),
+          industryPackage: remoteModules?.industryPackage,
+          stamp: remoteModules?.updatedAt ?? '',
+        },
+        {
+          modules: modulesOf(stored?.disabledModules),
+          industryPackage: stored?.industryPackage,
+          stamp: stored?.modulesUpdatedAt ?? '',
+        },
+        {
+          modules: modulesOf(localModules?.disabledModules),
+          industryPackage: localModules?.industryPackage,
+          stamp: localModules?.updatedAt ?? '',
+        },
+      ].filter((entry) => entry.modules !== null);
+      const newest = candidates.reduce<(typeof candidates)[number] | null>(
+        (best, entry) => (best === null || entry.stamp > best.stamp ? entry : best),
+        null,
+      );
+      const source = {
+        modules: newest?.modules ?? [],
+        industryPackage: newest?.industryPackage,
+        stamp: newest?.stamp ?? '',
+      };
       setLoaded({
         scope,
         settings: {
           ...defaultSettings,
           ...(stored ?? {}),
-          industryPackage: normalizePackage(
-            moduleConfig?.industryPackage ?? stored?.industryPackage,
-          ),
-          disabledModules,
+          industryPackage: normalizePackage(source.industryPackage),
+          disabledModules: source.modules,
+          modulesUpdatedAt: source.stamp || undefined,
         },
       });
     });
@@ -134,14 +161,19 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const save = useCallback(
     (next: AppSettings) => {
-      setLoaded({ scope, settings: next });
-      void repository.writeSettings(next).catch(() => undefined);
-      void repository
-        .writeModuleConfig({
-          industryPackage: next.industryPackage,
-          disabledModules: next.disabledModules,
-        })
-        .catch(() => undefined);
+      const stamp = new Date().toISOString();
+      const saved: AppSettings = { ...next, modulesUpdatedAt: stamp };
+      setLoaded({ scope, settings: saved });
+      const config = {
+        industryPackage: saved.industryPackage,
+        disabledModules: saved.disabledModules,
+        updatedAt: stamp,
+      };
+      void repository.writeSettings(saved).catch(() => undefined);
+      void repository.writeModuleConfig(config).catch(() => undefined);
+      if (repository !== localRepository) {
+        void localRepository.writeModuleConfig(config).catch(() => undefined);
+      }
     },
     [repository, scope],
   );
