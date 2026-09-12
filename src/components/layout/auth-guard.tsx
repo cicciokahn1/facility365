@@ -25,12 +25,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     router.replace(`/login?next=${encodeURIComponent(pathname)}`);
   }, [auth.enabled, auth.ready, auth.user, pathname, router]);
 
-  if (auth.enabled && (!auth.ready || !auth.user)) {
+  if (auth.enabled && (!auth.ready || !auth.user || !auth.membershipReady)) {
     return <div className="min-h-dvh bg-background" data-testid="auth-pending" />;
   }
 
-  /** Deaktivierte Mitgliedschaft: kein Zugriff, aber alle Daten bleiben bestehen. */
-  if (auth.membership && auth.membership.status !== 'active') {
+  /** Fehlende oder deaktivierte Mitgliedschaft: kein Zugriff, Daten bleiben bestehen. */
+  if (auth.membershipReady && (!auth.membership || auth.membership.status !== 'active')) {
     return (
       <div
         className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-6 text-center"
