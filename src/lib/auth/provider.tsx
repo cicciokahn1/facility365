@@ -81,6 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data } = await client.auth.getSession();
       if (!active) return;
       const current = data.session?.user;
+      setMembership(null);
       setUser(
         current
           ? {
@@ -103,6 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!client || !active) return;
       const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
         const next = session?.user;
+        setMembership(null);
         setUser(
           next
             ? { id: next.id, email: next.email ?? '', verified: Boolean(next.email_confirmed_at) }
@@ -128,15 +130,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const load = async () => {
       const client = await supabase();
       if (!client || !user) {
-        setMembership(null);
         return;
       }
-      const { data } = await client
+      const { data, error } = await client
         .from('memberships')
         .select('tenant_id, role, status')
         .eq('auth_user_id', user.id)
+        .eq('status', 'active')
         .maybeSingle();
       if (!active) return;
+      if (error) return;
       const row = data as MembershipRow | null;
       setMembership(
         row ? { tenantId: row.tenant_id, role: row.role, status: row.status } : null,
