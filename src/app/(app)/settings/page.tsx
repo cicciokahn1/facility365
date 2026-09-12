@@ -54,7 +54,7 @@ export default function SettingsPage() {
 
 function SettingsForm({ settings }: { settings: AppSettings }) {
   const t = useT();
-  const { save } = useSettings();
+  const { settings: live, save } = useSettings();
   const clearAll = useClearAllData();
   const cleaners = useCollectionItems('cleaners');
   const users = useCollectionItems('users');
@@ -65,23 +65,30 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
   const set = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
+  /**
+   * Paket und Modulschalter wirken sofort und werden sofort gespeichert, damit
+   * sie auch beim Wechsel auf eine andere Seite erhalten bleiben. Uebrige
+   * Felder bleiben bis zum Speichern ein Entwurf.
+   */
+  const applyModules = (industryPackage: IndustryPackage, disabledModules: ModuleKey[]) => {
+    setDraft((current) => ({ ...current, industryPackage, disabledModules }));
+    save({ ...live, industryPackage, disabledModules });
+    toast.success(t('settings.saved'));
+  };
+
   /** Paket = Ausgangskonfiguration; Schalter darunter sind die Ueberschreibung und haben Vorrang. */
   const choosePackage = (key: IndustryPackage) =>
-    setDraft((current) => ({
-      ...current,
-      industryPackage: key,
-      disabledModules: key === 'custom' ? current.disabledModules : disabledByPackage(key),
-    }));
+    applyModules(key, key === 'custom' ? draft.disabledModules : disabledByPackage(key));
 
   const toggleModule = (module: ModuleKey, active: boolean) =>
-    setDraft((current) => ({
-      ...current,
-      disabledModules: active
-        ? current.disabledModules.filter((key) => key !== module)
-        : current.disabledModules.includes(module)
-          ? current.disabledModules
-          : [...current.disabledModules, module],
-    }));
+    applyModules(
+      draft.industryPackage,
+      active
+        ? draft.disabledModules.filter((key) => key !== module)
+        : draft.disabledModules.includes(module)
+          ? draft.disabledModules
+          : [...draft.disabledModules, module],
+    );
 
   return (
     <div className="flex max-w-3xl flex-col gap-4">
@@ -534,7 +541,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
       </Card>
 
       <div className="safe-bottom sticky bottom-16 flex justify-end gap-2 rounded-xl border bg-card/95 p-3 backdrop-blur lg:bottom-4">
-        <Button variant="outline" onClick={() => setDraft(settings)} data-testid="settings-cancel">
+        <Button variant="outline" onClick={() => setDraft(live)} data-testid="settings-cancel">
           {t('action.cancel')}
         </Button>
         <Button

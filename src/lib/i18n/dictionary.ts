@@ -6688,10 +6688,10 @@ export const dictionary = {
     en: "The package preselects the matching modules; each module can still be switched on or off. Disabled modules only disappear from navigation – their data is kept.",
   },
   "settings.moduleOverrideHint": {
-    de: "Das Paket ist die Ausgangskonfiguration. Manuell geänderte Module haben Vorrang und bleiben beim nächsten Laden erhalten; Daten ausgeschalteter Module bleiben vollständig gespeichert.",
-    fr: "Le pack est la configuration de départ. Les modules modifiés manuellement sont prioritaires et restent conservés au prochain chargement; les données des modules désactivés restent entièrement sauvegardées.",
-    it: "Il pacchetto è la configurazione di partenza. I moduli modificati manualmente hanno la precedenza e restano invariati al caricamento successivo; i dati dei moduli disattivati restano completamente salvati.",
-    en: "The package is the starting configuration. Manually changed modules take precedence and remain in place on the next load; data from disabled modules remains fully stored.",
+    de: "Das Paket ist die Ausgangskonfiguration. Manuell geänderte Module haben Vorrang, werden sofort gespeichert und bleiben beim nächsten Laden erhalten; Daten ausgeschalteter Module bleiben vollständig gespeichert.",
+    fr: "Le pack est la configuration de départ. Les modules modifiés manuellement sont prioritaires, sont enregistrés immédiatement et restent conservés au prochain chargement; les données des modules désactivés restent entièrement sauvegardées.",
+    it: "Il pacchetto è la configurazione di partenza. I moduli modificati manualmente hanno la precedenza, vengono salvati subito e restano invariati al caricamento successivo; i dati dei moduli disattivati restano completamente salvati.",
+    en: "The package is the starting configuration. Manually changed modules take precedence, are saved immediately and remain in place on the next load; data from disabled modules remains fully stored.",
   },
   "settings.packageModules": {
     de: "Module",
