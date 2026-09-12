@@ -37,6 +37,8 @@ export interface AuthApi {
   user: AuthUser | null;
   /** Mandant und Rolle aus der Datenbank; null, solange nichts geladen ist. */
   membership: Membership | null;
+  /** Die Mitgliedschaftsabfrage ist abgeschlossen. */
+  membershipReady: boolean;
   signIn: (email: string, password: string) => Promise<AuthMessage | null>;
   signUp: (email: string, password: string) => Promise<AuthMessage | null>;
   signOut: () => Promise<void>;
@@ -60,6 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const configured = isSupabaseConfigured();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
+  const [membershipReady, setMembershipReady] = useState(!configured);
   const [ready, setReady] = useState(!configured);
   /** Unerreichbares Projekt: die Anwendung bleibt bedienbar, aber lokal. */
   const [reachable, setReachable] = useState(configured);
@@ -71,7 +74,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const init = async () => {
       const client = await supabase();
-      if (!client || !active) return;
+      if (!client) {
+        if (active) {
+          setReachable(false);
+          setReady(true);
+        }
+        return;
+      }
+      if (!active) return;
       if (!(await isSupabaseReachable())) {
         if (!active) return;
         setReachable(false);
@@ -82,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!active) return;
       const current = data.session?.user;
       setMembership(null);
+      setMembershipReady(!current);
       setUser(
         current
           ? {
@@ -105,6 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
         const next = session?.user;
         setMembership(null);
+        setMembershipReady(!next);
         setUser(
           next
             ? { id: next.id, email: next.email ?? '', verified: Boolean(next.email_confirmed_at) }
@@ -130,6 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const load = async () => {
       const client = await supabase();
       if (!client || !user) {
+        setMembershipReady(true);
         return;
       }
       const { data, error } = await client
@@ -139,11 +152,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('status', 'active')
         .maybeSingle();
       if (!active) return;
-      if (error) return;
+      if (error) {
+        setMembershipReady(true);
+        return;
+      }
       const row = data as MembershipRow | null;
       setMembership(
         row ? { tenantId: row.tenant_id, role: row.role, status: row.status } : null,
       );
+      setMembershipReady(true);
     };
     void load();
     return () => {
@@ -175,6 +192,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await client.auth.signOut();
     setUser(null);
     setMembership(null);
+    setMembershipReady(true);
   }, []);
 
   const requestReset = useCallback(async (email: string) => {
@@ -210,6 +228,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ready,
       user,
       membership,
+      membershipReady,
       signIn,
       signUp,
       signOut,
@@ -222,6 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ready,
       user,
       membership,
+      membershipReady,
       signIn,
       signUp,
       signOut,

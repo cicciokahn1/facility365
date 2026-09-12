@@ -164,8 +164,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       auth.enabled ? offlineRepository(supabaseRepository) : localRepository,
     [auth.enabled],
   );
-  /** Datenraum: das Konto, sonst das Geraet. Wechselt er, gilt der alte Inhalt nicht mehr. */
-  const scope = auth.enabled ? (auth.user?.id ?? "") : "local";
+  /** Datenraum: Mandant und Konto, sonst das Geraet. */
+  const scope =
+    !auth.enabled
+      ? "local"
+      : auth.ready && auth.user && auth.membership
+        ? `${auth.user.id}:${auth.membership.tenantId}`
+        : "";
   const [loaded, setLoaded] = useState<{ scope: string; store: Store }>({
     scope: "",
     store: emptyStore(),
