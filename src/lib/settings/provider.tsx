@@ -4,8 +4,8 @@
  * Anwendungseinstellungen.
  *
  * Persoenliche Einstellungen wirken konto-bezogen, die Modulkonfiguration
- * mandantenweit. Beides wird mit einem Entwurf bearbeitet: nichts wirkt vor
- * dem Speichern.
+ * mandantenweit. Paket- und Modulschalter werden beim Aendern gespeichert;
+ * die uebrigen Felder bleiben bis zum Speichern ein Entwurf.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -76,7 +76,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   /** Persoenliche Einstellungen gehoeren zum Konto; Module zum Mandanten. */
   const repository = auth.enabled ? supabaseRepository : localRepository;
-  const scope = auth.enabled ? auth.user?.id ?? '' : 'local';
+  const scope =
+    !auth.enabled
+      ? 'local'
+      : auth.ready && auth.user && auth.membership
+        ? `${auth.user.id}:${auth.membership.tenantId}`
+        : '';
   const [loaded, setLoaded] = useState<{ scope: string; settings: AppSettings }>({
     scope: '',
     settings: defaultSettings,
@@ -133,10 +138,15 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         (best, entry) => (best === null || entry.stamp > best.stamp ? entry : best),
         null,
       );
+      const tenant = candidates[0];
+      const sourceCandidate =
+        auth.enabled && tenant?.modules !== null && tenant?.modules !== undefined
+          ? tenant
+          : newest;
       const source = {
-        modules: newest?.modules ?? [],
-        industryPackage: newest?.industryPackage,
-        stamp: newest?.stamp ?? '',
+        modules: sourceCandidate?.modules ?? [],
+        industryPackage: sourceCandidate?.industryPackage,
+        stamp: sourceCandidate?.stamp ?? '',
       };
       setLoaded({
         scope,
@@ -152,7 +162,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [repository, scope]);
+  }, [auth.enabled, repository, scope]);
 
   useEffect(() => applyTheme(settings.theme), [settings.theme]);
 
@@ -168,7 +178,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     (next: AppSettings) => {
       const stamp = new Date().toISOString();
       const saved: AppSettings = { ...next, modulesUpdatedAt: stamp };
-      saveVersion.current += 1;
+      const version = saveVersion.current + 1;
+      const previous = loaded;
+      saveVersion.current = version;
       setLoaded({ scope, settings: saved });
       const config = {
         industryPackage: saved.industryPackage,
@@ -181,9 +193,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       return Promise.all([
         repository.writeSettings(saved),
         repository.writeModuleConfig(config),
-      ]).then(() => undefined);
+      ])
+        .then(() => undefined)
+        .catch((error: unknown) => {
+          if (saveVersion.current === version) setLoaded(previous);
+          throw error;
+        });
     },
-    [repository, scope],
+    [loaded, repository, scope],
   );
 
   const value = useMemo<SettingsContextValue>(
