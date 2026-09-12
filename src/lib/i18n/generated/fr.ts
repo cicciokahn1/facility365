@@ -1229,7 +1229,7 @@ export const table: Record<string, string> = {
   "cleaning.ownTasksHint": "Seules les tâches qui vous sont attribuées sont affichées.",
   "settings.package": "Pack sectoriel",
   "settings.packageHint": "Le pack présélectionne les modules adaptés; chaque module reste activable ensuite. Un module désactivé disparaît seulement de la navigation – ses données sont conservées.",
-  "settings.moduleOverrideHint": "Le pack est la configuration de départ. Les modules modifiés manuellement sont prioritaires et restent conservés au prochain chargement; les données des modules désactivés restent entièrement sauvegardées.",
+  "settings.moduleOverrideHint": "Le pack est la configuration de départ. Les modules modifiés manuellement sont prioritaires, sont enregistrés immédiatement et restent conservés au prochain chargement; les données des modules désactivés restent entièrement sauvegardées.",
   "settings.packageModules": "Modules",
   "package.all": "Tous les modules",
   "package.custom": "Individuel",
