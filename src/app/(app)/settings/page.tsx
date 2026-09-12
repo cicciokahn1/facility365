@@ -70,10 +70,20 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
    * sie auch beim Wechsel auf eine andere Seite erhalten bleiben. Uebrige
    * Felder bleiben bis zum Speichern ein Entwurf.
    */
+  const persist = async (next: AppSettings) => {
+    try {
+      await save(next);
+      toast.success(t('settings.saved'));
+    } catch (error) {
+      toast.error(
+        `${t('settings.saveFailed')} ${error instanceof Error ? error.message : ''}`.trim(),
+      );
+    }
+  };
+
   const applyModules = (industryPackage: IndustryPackage, disabledModules: ModuleKey[]) => {
     setDraft((current) => ({ ...current, industryPackage, disabledModules }));
-    save({ ...live, industryPackage, disabledModules });
-    toast.success(t('settings.saved'));
+    void persist({ ...live, industryPackage, disabledModules });
   };
 
   /** Paket = Ausgangskonfiguration; Schalter darunter sind die Ueberschreibung und haben Vorrang. */
@@ -546,10 +556,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
         </Button>
         <Button
           data-testid="settings-save"
-          onClick={() => {
-            save(draft);
-            toast.success(t('settings.saved'));
-          }}
+          onClick={() => void persist(draft)}
         >
           {t('action.save')}
         </Button>

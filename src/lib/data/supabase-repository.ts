@@ -169,7 +169,7 @@ export const supabaseRepository: Repository = {
         },
         { onConflict: 'tenant_id' },
       );
-    if (error && !tenantSettingsMissing(error)) throw new Error(error.message);
+    if (error) throw new Error(error.message);
   },
 
   async clear(): Promise<void> {
