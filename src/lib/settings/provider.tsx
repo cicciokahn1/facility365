@@ -7,7 +7,7 @@
  * mandantenweit. Beides wird mit einem Entwurf bearbeitet: nichts wirkt vor
  * dem Speichern.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAuth } from '@/lib/auth/provider';
 import { BRAND_LOGO_DATA_URL } from '@/lib/branding/logo';
@@ -81,6 +81,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     settings: defaultSettings,
   });
 
+  /** Zaehlt Speicherungen; ein spaeter eintreffender Ladevorgang darf sie nicht ueberschreiben. */
+  const saveVersion = useRef(0);
+
   const current = loaded.scope === scope && scope !== '';
   const settings = current ? loaded.settings : defaultSettings;
   const ready = current;
@@ -88,12 +91,13 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!scope) return;
     let cancelled = false;
+    const version = saveVersion.current;
     void Promise.all([
       repository.readSettings().catch(() => null),
       repository.readModuleConfig().catch(() => null),
       localRepository.readModuleConfig().catch(() => null),
     ]).then(([stored, remoteModules, localModules]) => {
-      if (cancelled) return;
+      if (cancelled || saveVersion.current !== version) return;
       const modulesOf = (value: unknown): ModuleKey[] | null => {
         if (!Array.isArray(value)) return null;
         return value.filter(
@@ -163,6 +167,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     (next: AppSettings) => {
       const stamp = new Date().toISOString();
       const saved: AppSettings = { ...next, modulesUpdatedAt: stamp };
+      saveVersion.current += 1;
       setLoaded({ scope, settings: saved });
       const config = {
         industryPackage: saved.industryPackage,

@@ -6,7 +6,7 @@
  * zwischengespeicherte Fassung zurueck. Die Nutzdaten liegen ohnehin im
  * Browser, daher genuegt das fuer den vollstaendigen Offline-Betrieb.
  */
-const CACHE = 'facility365-v1';
+const CACHE = 'facility365-v2';
 const OFFLINE_URL = '/dashboard';
 
 self.addEventListener('install', (event) => {
@@ -27,7 +27,10 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  /* Seitendaten des App-Routers immer frisch, sonst bleibt eine alte Fassung haengen. */
+  if (request.headers.has('RSC') || url.searchParams.has('_rsc')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
