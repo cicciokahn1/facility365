@@ -659,6 +659,7 @@ export const table: Record<string, string> = {
   "settings.import": "Importer les données",
   "settings.reset": "Supprimer toutes les données",
   "settings.resetConfirm": "Toutes les données enregistrées dans ce navigateur seront supprimées.",
+  "settings.saveFailed": "Échec de l'enregistrement – les réglages n'ont pas pu être enregistrés dans la base de données.",
   "settings.saved": "Réglages enregistrés",
   "settings.unsavedHint": "Modifications non enregistrées",
   "settings.storageInfo": "Les données ne se trouvent actuellement que dans ce navigateur. La base de données et la connexion suivront dès que les accès seront disponibles.",

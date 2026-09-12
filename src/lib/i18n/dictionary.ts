@@ -3463,6 +3463,12 @@ export const dictionary = {
     it: "Tutti i dati salvati in questo browser verranno eliminati.",
     en: "All data stored in this browser will be deleted.",
   },
+  "settings.saveFailed": {
+    de: "Speichern fehlgeschlagen – die Einstellungen konnten nicht in der Datenbank abgelegt werden.",
+    fr: "Échec de l'enregistrement – les réglages n'ont pas pu être enregistrés dans la base de données.",
+    it: "Salvataggio non riuscito – le impostazioni non sono state salvate nel database.",
+    en: "Saving failed – the settings could not be stored in the database.",
+  },
   "settings.saved": {
     de: "Einstellungen gespeichert",
     fr: "Réglages enregistrés",

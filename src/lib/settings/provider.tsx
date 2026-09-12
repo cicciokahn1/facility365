@@ -57,7 +57,8 @@ export const defaultSettings: AppSettings = {
 interface SettingsContextValue {
   settings: AppSettings;
   ready: boolean;
-  save: (settings: AppSettings) => void;
+  /** Loest erst auf, wenn die Einstellungen dauerhaft gespeichert sind; verwirft bei Fehler. */
+  save: (settings: AppSettings) => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -174,11 +175,13 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         disabledModules: saved.disabledModules,
         updatedAt: stamp,
       };
-      void repository.writeSettings(saved).catch(() => undefined);
-      void repository.writeModuleConfig(config).catch(() => undefined);
       if (repository !== localRepository) {
         void localRepository.writeModuleConfig(config).catch(() => undefined);
       }
+      return Promise.all([
+        repository.writeSettings(saved),
+        repository.writeModuleConfig(config),
+      ]).then(() => undefined);
     },
     [repository, scope],
   );
