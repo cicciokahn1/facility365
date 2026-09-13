@@ -68,6 +68,7 @@ export function WorkPlanView({ onBack }: { onBack: () => void }) {
   const properties = useCollectionItems("properties");
   const buildings = useCollectionItems("buildings");
   const rooms = useCollectionItems("rooms");
+  const cleaningAreas = useCollectionItems("cleaningareas");
   const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()));
   const [employee, setEmployee] = useState("all");
   const [property, setProperty] = useState("all");
@@ -178,6 +179,73 @@ export function WorkPlanView({ onBack }: { onBack: () => void }) {
     toast.success("Einsatz gespeichert");
   };
 
+  const createExamplePlan = () => {
+    const exampleMarker = "BEISPIEL Arbeitsplan";
+    if (appointmentItems.some((item) => item.title.startsWith(exampleMarker)) || cleaningItems.some((item) => item.title.startsWith(exampleMarker))) {
+      toast.info("Der Beispielplan ist bereits vorhanden");
+      return;
+    }
+    const propertyId = properties[0]?.id ?? "";
+    const buildingId = buildings.find((item) => item.propertyId === propertyId)?.id ?? "";
+    const roomId = rooms.find((item) => item.buildingId === buildingId)?.id ?? "";
+    const selectedUsers = users.filter((user) => user.status === "active").slice(0, 3);
+    const assignments = [
+      ["Morgenrunde und Eingangsbereich", "06:30", "08:30"],
+      ["Zimmer und Nasszellen reinigen", "08:00", "11:30"],
+      ["Gemeinschaftsraum vorbereiten", "12:30", "14:00"],
+      ["Nachmittagskontrolle", "14:00", "15:30"],
+      ["Abschluss und Material auffüllen", "15:30", "16:30"],
+    ];
+    assignments.forEach(([title, start, end], index) => {
+      const date = addDays(iso(weekStart), index);
+      const user = selectedUsers[index % Math.max(selectedUsers.length, 1)];
+      appointments.create({
+        title: `${exampleMarker} – ${title}`,
+        type: "service",
+        status: "planned",
+        date,
+        timeStart: start,
+        timeEnd: end,
+        breakMinutes: index === 1 ? 15 : 0,
+        weeklyRepeat: index < 3,
+        assignee: user?.name ?? "",
+        assigneeUserId: user?.id ?? "",
+        propertyId,
+        buildingId,
+        roomId,
+        location: [nameOf(propertyId, properties), nameOf(roomId, rooms)].filter(Boolean).join(" / "),
+        description: "Beispielplan Pflegeheim – bitte anpassen.",
+      });
+    });
+    if (access.canWrite("cleaningtasks")) {
+      const areaId = cleaningAreas[0]?.id ?? "";
+      assignments.slice(0, 3).forEach(([title, start, end], index) => {
+        const user = selectedUsers[index % Math.max(selectedUsers.length, 1)];
+        cleaningtasks.create({
+          title: `${exampleMarker} – Reinigung ${title}`,
+          planId: "",
+          areaId,
+          propertyId,
+          buildingId,
+          roomId,
+          cleanerId: user?.id ?? "",
+          responsibleId: user?.id ?? "",
+          assigneeUserId: user?.id ?? "",
+          assigneeTeam: user?.team ?? "",
+          date: addDays(iso(weekStart), index),
+          status: "open",
+          workStart: start,
+          workEnd: end,
+          breakMinutes: 0,
+          completedAt: "",
+          checklist: [],
+          materials: [],
+        });
+      });
+    }
+    toast.success("Beispiel-Arbeitsplan erstellt");
+  };
+
   const print = (size: "A4" | "A3") => {
     const rows = visibleItems
       .map((item) => {
@@ -214,6 +282,7 @@ export function WorkPlanView({ onBack }: { onBack: () => void }) {
               <Plus className="size-4" aria-hidden /> Neuer Einsatz
             </Button>
           ) : null}
+          <Button variant="outline" onClick={createExamplePlan}>Beispiel laden</Button>
           <Button variant="outline" onClick={copyWeek}>
             <Copy className="size-4" aria-hidden /> Woche kopieren
           </Button>
