@@ -220,6 +220,10 @@ export interface Appointment extends BaseEntity {
   /** Uhrzeiten als HH:MM; leer, wenn nur der Tag feststeht. */
   timeStart: string;
   timeEnd: string;
+  /** Pause in Minuten fuer den Arbeitsplan. */
+  breakMinutes?: number;
+  /** Kennzeichnet einen Einsatz als woechentlich wiederholbar. */
+  weeklyRepeat?: boolean;
   location: string;
   assignee: string;
   assigneeUserId: string;
