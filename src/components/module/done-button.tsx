@@ -25,7 +25,7 @@ export function DoneButton({
 
   return (
     <Button
-      size="sm"
+      size="lg"
       onClick={() => {
         markDone(id);
         toast.success(t('action.markedDone'), { description: t('action.doneHint') });

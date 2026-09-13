@@ -9,7 +9,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Copy, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Camera, Copy, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { FavoriteButton } from "@/components/common/favorite-button";
@@ -107,6 +107,7 @@ export function EntityDetail<K extends CollectionKey>({
   const mayDelete = access.canDelete(moduleDef.key) && !deleteBlocked;
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(defaultTab);
 
   const entity = get(id);
   const { visit } = useMarks();
@@ -230,6 +231,18 @@ export function EntityDetail<K extends CollectionKey>({
             <FavoriteButton collection={collection} id={id} />
             {mayWrite ? (
               <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setActiveTab("photos")}
+                data-testid="add-photo"
+              >
+                <Camera className="size-4" aria-hidden />
+                <span className="hidden sm:inline">{t("tab.photos")}</span>
+              </Button>
+            ) : null}
+            {mayWrite ? (
+              <Button
+                size="lg"
                 variant="outline"
                 onClick={() => setEditOpen(true)}
                 data-testid="edit-entity"
@@ -242,29 +255,34 @@ export function EntityDetail<K extends CollectionKey>({
                 {t("access.readOnly")}
               </span>
             )}
-            {mayWrite ? (
-              <Button
-                variant="outline"
-                onClick={duplicate}
-                data-testid="duplicate-entity"
-              >
-                <Copy className="size-4" aria-hidden />
-                <span className="sr-only sm:not-sr-only">
-                  {t("action.duplicate")}
-                </span>
-              </Button>
-            ) : null}
-            {mayDelete ? (
-              <Button
-                variant="outline"
-                onClick={() => setDeleteOpen(true)}
-                data-testid="delete-entity"
-              >
-                <Trash2 className="size-4 text-destructive" aria-hidden />
-                <span className="sr-only sm:not-sr-only">
-                  {t("action.delete")}
-                </span>
-              </Button>
+            {mayWrite || mayDelete ? (
+              <details className="relative">
+                <summary className="flex h-11 cursor-pointer list-none items-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent [&::-webkit-details-marker]:hidden">
+                  Mehr
+                </summary>
+                <div className="absolute right-0 z-10 mt-2 flex min-w-44 flex-col gap-2 rounded-lg border bg-popover p-2 shadow-lg">
+                  {mayWrite ? (
+                    <Button
+                      variant="outline"
+                      onClick={duplicate}
+                      data-testid="duplicate-entity"
+                    >
+                      <Copy className="size-4" aria-hidden />
+                      {t("action.duplicate")}
+                    </Button>
+                  ) : null}
+                  {mayDelete ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => setDeleteOpen(true)}
+                      data-testid="delete-entity"
+                    >
+                      <Trash2 className="size-4 text-destructive" aria-hidden />
+                      {t("action.delete")}
+                    </Button>
+                  ) : null}
+                </div>
+              </details>
             ) : null}
           </div>
           {deleteBlocked && deleteBlockedKey ? (
@@ -278,7 +296,7 @@ export function EntityDetail<K extends CollectionKey>({
         </div>
       </div>
 
-      <Tabs defaultValue={defaultTab}>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="no-scrollbar -mx-1 overflow-x-auto px-1">
           <TabsList>
             <TabsTrigger value="master">{t("tab.master")}</TabsTrigger>

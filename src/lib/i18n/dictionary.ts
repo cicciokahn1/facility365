@@ -2673,6 +2673,24 @@ export const dictionary = {
     it: "Pulizia",
     en: "Cleaning",
   },
+  "dashboard.quick.inspection": {
+    de: "Kontrolle durchführen",
+    fr: "Effectuer un contrôle",
+    it: "Eseguire controllo",
+    en: "Perform inspection",
+  },
+  "dashboard.quick.workTime": {
+    de: "Arbeitszeit erfassen",
+    fr: "Saisir le temps",
+    it: "Registra ore",
+    en: "Record work time",
+  },
+  "dashboard.quick.photo": {
+    de: "Foto hinzufügen",
+    fr: "Ajouter une photo",
+    it: "Aggiungi foto",
+    en: "Add photo",
+  },
   "dashboard.overdue": {
     de: "überfällig",
     fr: "en retard",
