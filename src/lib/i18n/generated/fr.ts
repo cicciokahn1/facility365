@@ -1124,6 +1124,7 @@ export const table: Record<string, string> = {
   "auth.errorRate": "Trop de tentatives. Réessayez plus tard.",
   "auth.errorNetwork": "Pas de connexion au service de comptes.",
   "auth.blocked": "Ce compte est désactivé. Veuillez contacter l’administration de votre organisation.",
+  "auth.membershipMissing": "Aucune organisation n’a été trouvée pour ce compte. Veuillez exécuter la mise à jour 0017 de la base de données ou contacter l’administration.",
   "auth.errorGeneric": "Cela n’a pas fonctionné. Veuillez réessayer.",
   "account.title": "Compte utilisateur",
   "account.intro": "Connexion, mot de passe, organisation et protection des données.",
