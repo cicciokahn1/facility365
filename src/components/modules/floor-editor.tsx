@@ -26,6 +26,7 @@ export function FloorEditor({
     grossArea: '',
     netArea: '',
     usableArea: '',
+    energyReferenceArea: '',
   });
   const sorted = [...floors].sort((a, b) => b.level - a.level);
 
@@ -42,10 +43,21 @@ export function FloorEditor({
         grossArea: draft.grossArea ? Number(draft.grossArea.replace(',', '.')) : undefined,
         netArea: draft.netArea ? Number(draft.netArea.replace(',', '.')) : undefined,
         usableArea: draft.usableArea ? Number(draft.usableArea.replace(',', '.')) : undefined,
+        energyReferenceArea: draft.energyReferenceArea
+          ? Number(draft.energyReferenceArea.replace(',', '.'))
+          : undefined,
         note: '',
       },
     ]);
-    setDraft({ name: '', level: '0', area: '', grossArea: '', netArea: '', usableArea: '' });
+    setDraft({
+      name: '',
+      level: '0',
+      area: '',
+      grossArea: '',
+      netArea: '',
+      usableArea: '',
+      energyReferenceArea: '',
+    });
   };
 
   return (
@@ -66,6 +78,9 @@ export function FloorEditor({
                     {floor.area} m²
                     {typeof floor.netArea === 'number' ? ` · NF ${floor.netArea} m²` : ''}
                     {typeof floor.usableArea === 'number' ? ` · HNF ${floor.usableArea} m²` : ''}
+                    {typeof floor.energyReferenceArea === 'number'
+                      ? ` · EBF ${floor.energyReferenceArea} m²`
+                      : ''}
                   </span>
                 ) : null}
               </span>
@@ -82,7 +97,7 @@ export function FloorEditor({
         </ul>
       )}
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-7">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-8">
         <Input
           placeholder={t('common.name')}
           value={draft.name}
@@ -119,6 +134,14 @@ export function FloorEditor({
           placeholder="HNF m²"
           value={draft.usableArea}
           onChange={(event) => setDraft({ ...draft, usableArea: event.target.value })}
+        />
+        <Input
+          inputMode="decimal"
+          placeholder="EBF m²"
+          value={draft.energyReferenceArea}
+          onChange={(event) =>
+            setDraft({ ...draft, energyReferenceArea: event.target.value })
+          }
         />
         <Button onClick={add} data-testid="floor-add">
           <Plus className="size-4" aria-hidden />

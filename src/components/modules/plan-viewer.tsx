@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
@@ -62,8 +63,12 @@ export function PlanViewer({
   const rooms = useCollectionItems('rooms');
   const assets = useCollectionItems('assets');
   const [zoomIndex, setZoomIndex] = useState(0);
-  const [markerMode, setMarkerMode] = useState(false);
+  const [markerMode, setMarkerMode] = useState<'marker' | 'note' | 'scale' | 'measure' | false>(false);
   const [draftMarker, setDraftMarker] = useState<PlanMarker | null>(null);
+  const [points, setPoints] = useState<{ x: number; y: number }[]>([]);
+  const [scaleMeters, setScaleMeters] = useState('');
+  const [scaleDialog, setScaleDialog] = useState(false);
+  const [measuredDistance, setMeasuredDistance] = useState<number | null>(null);
   const [newLayerName, setNewLayerName] = useState('');
   const layers = plan.layers?.length
     ? plan.layers
@@ -116,6 +121,27 @@ export function PlanViewer({
       setMovingId('');
       return;
     }
+    if (markerMode === 'scale' || markerMode === 'measure') {
+      const next = [...points, { x, y }];
+      if (next.length < 2) {
+        setPoints(next);
+        return;
+      }
+      if (markerMode === 'scale') {
+        setPoints(next);
+        setScaleDialog(true);
+      } else {
+        const [from, to] = next;
+        const distance = Math.hypot(to.x - from.x, to.y - from.y);
+        setMeasuredDistance(
+          plan.scale ? distance * plan.scale.meters /
+            Math.hypot(plan.scale.toX - plan.scale.fromX, plan.scale.toY - plan.scale.fromY) : distance,
+        );
+        setMarkerMode(false);
+        setPoints([]);
+      }
+      return;
+    }
     setDraftMarker({
       id: newId('marker'),
       x,
@@ -125,6 +151,7 @@ export function PlanViewer({
       layerId: activeLayerId === 'all' ? layers[0].id : activeLayerId,
       label: '',
       note: '',
+      kind: markerMode === 'note' ? 'note' : 'asset',
     });
     setMarkerMode(false);
   };
@@ -236,16 +263,33 @@ export function PlanViewer({
                 <Plus className="size-4" />
               </Button>
               <Button
-                variant={markerMode ? 'default' : 'outline'}
-                onClick={() => {
-                  setMovingId('');
-                  setMarkerMode((value) => !value);
-                }}
+                  variant={markerMode === 'marker' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setMovingId('');
+                    setPoints([]);
+                    setMarkerMode((value) => value === 'marker' ? false : 'marker');
+                  }}
                 data-testid="plan-marker-mode"
               >
                 <MapPin className="size-4" aria-hidden />
                 {t('plan.addMarker')}
               </Button>
+              <Button variant={markerMode === 'note' ? 'default' : 'outline'} onClick={() => {
+                setMovingId('');
+                setPoints([]);
+                setMarkerMode((value) => value === 'note' ? false : 'note');
+              }}>{t('plan.addNote')}</Button>
+              <Button variant={markerMode === 'scale' ? 'default' : 'outline'} onClick={() => {
+                setMovingId('');
+                setPoints([]);
+                setMarkerMode((value) => value === 'scale' ? false : 'scale');
+              }}>{t('plan.setScale')}</Button>
+              <Button variant={markerMode === 'measure' ? 'default' : 'outline'} onClick={() => {
+                setMovingId('');
+                setPoints([]);
+                setMeasuredDistance(null);
+                setMarkerMode((value) => value === 'measure' ? false : 'measure');
+              }}>{t('plan.measure')}</Button>
             </div>
           ) : null}
 
@@ -314,8 +358,24 @@ export function PlanViewer({
           )}
         </div>
         {markerMode || movingId ? (
-          <p className="text-sm text-muted-foreground">{t('plan.markerHint')}</p>
+          <p className="text-sm text-muted-foreground">
+            {markerMode === 'scale' ? t('plan.scaleHint') : markerMode === 'measure' ? t('plan.measureHint') : t('plan.markerHint')}
+          </p>
         ) : null}
+        {measuredDistance !== null ? (
+          <p className="text-sm font-medium">{plan.scale ? `${measuredDistance.toFixed(2)} m` : `${measuredDistance.toFixed(2)} %`}</p>
+        ) : null}
+
+        <ul className="divide-y rounded-lg border text-xs">
+          {plan.versions.map((entry) => (
+            <li key={entry.id} className="flex flex-wrap gap-2 p-2">
+              <span>{t('plan.version')} {entry.version}</span>
+              <span>{entry.uploadedAt.slice(0, 10)}</span>
+              <span>{entry.uploadedBy}</span>
+              {entry.note ? <span className="text-muted-foreground">{entry.note}</span> : null}
+            </li>
+          ))}
+        </ul>
 
         {plan.markers.length > 0 && !pdf ? (
           <ul className="max-h-40 divide-y overflow-auto rounded-lg border text-sm">
@@ -363,31 +423,36 @@ export function PlanViewer({
 
         <Dialog open={draftMarker !== null} onOpenChange={(value) => !value && setDraftMarker(null)}>
           <DialogContent>
-            <DialogTitle>{t('plan.addMarker')}</DialogTitle>
+            <DialogTitle>{draftMarker?.kind === 'note' ? t('plan.addNote') : t('plan.addMarker')}</DialogTitle>
             {draftMarker ? (
               <div className="flex flex-col gap-3">
                 <Input
                   placeholder={t('common.title')}
-                  value={draftMarker.label}
+                    value={draftMarker.label}
                   onChange={(event) => setDraftMarker({ ...draftMarker, label: event.target.value })}
                   data-testid="marker-label"
                 />
-                <div className="flex flex-col gap-1">
+                <Textarea
+                  placeholder={t('common.notes')}
+                  value={draftMarker.note}
+                  onChange={(event) => setDraftMarker({ ...draftMarker, note: event.target.value })}
+                />
+                {draftMarker.kind !== 'note' ? <div className="flex flex-col gap-1">
                   <Label>{t('module.rooms.singular')}</Label>
                   <RelationSelect
                     collection="rooms"
                     value={draftMarker.roomId ?? ''}
                     onChange={(value) => setDraftMarker({ ...draftMarker, roomId: value })}
                   />
-                </div>
-                <div className="flex flex-col gap-1">
+                </div> : null}
+                {draftMarker.kind !== 'note' ? <div className="flex flex-col gap-1">
                   <Label>{t('module.assets.singular')}</Label>
                   <RelationSelect
                     collection="assets"
-                    value={draftMarker.assetId}
+                    value={draftMarker.assetId ?? ''}
                     onChange={(value) => setDraftMarker({ ...draftMarker, assetId: value })}
                   />
-                </div>
+                </div> : null}
                 <div className="flex gap-2">
                   <Button onClick={saveMarker} data-testid="marker-save" className="flex-1">
                     {t('action.save')}
@@ -402,6 +467,20 @@ export function PlanViewer({
                 </div>
               </div>
             ) : null}
+          </DialogContent>
+        </Dialog>
+        <Dialog open={scaleDialog} onOpenChange={setScaleDialog}>
+          <DialogContent>
+            <DialogTitle>{t('plan.setScale')}</DialogTitle>
+            <Input type="number" min="0" step="0.01" value={scaleMeters} onChange={(event) => setScaleMeters(event.target.value)} placeholder={t('plan.meters')} />
+            <Button onClick={() => {
+              if (points.length < 2 || !Number(scaleMeters)) return;
+              onChange({ ...plan, scale: { fromX: points[0].x, fromY: points[0].y, toX: points[1].x, toY: points[1].y, meters: Number(scaleMeters) } });
+              setScaleDialog(false);
+              setScaleMeters('');
+              setPoints([]);
+              setMarkerMode(false);
+            }}>{t('action.save')}</Button>
           </DialogContent>
         </Dialog>
       </DialogContent>

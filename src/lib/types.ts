@@ -330,6 +330,8 @@ export interface BuildingFloor {
   trafficArea?: number;
   functionalArea?: number;
   secondaryArea?: number;
+  /** Energiebezugsflaeche nach SIA 380 in m². */
+  energyReferenceArea?: number;
   note: string;
 }
 
@@ -350,8 +352,16 @@ export interface Room extends BaseEntity {
   type: string;
   area?: number;
   sia416AreaType?: Sia416AreaType;
+  /** Nutzungsart nach DIN 277. */
+  din277AreaType?: "NUF" | "TF" | "VF" | "KGF" | "BGF";
   /** Anzahl Arbeitsplaetze im Raum. */
   workplaces?: number;
+  workplaceList?: {
+    id: string;
+    code: string;
+    occupant: string;
+    status: "free" | "occupied" | "reserved";
+  }[];
   /** Nutzer, Abteilung oder Mieter des Raums. */
   occupant?: string;
   status: ActiveStatus;
@@ -393,6 +403,19 @@ export interface Asset extends BaseEntity {
   contractId?: string;
   costCenter?: string;
   criticality?: "low" | "medium" | "high";
+  locationHistory?: {
+    id: string;
+    date: string;
+    buildingId: string;
+    roomId: string;
+    location: string;
+    note: string;
+  }[];
+  conditionRating?: 1 | 2 | 3 | 4 | 5;
+  conditionAssessedAt?: string;
+  conditionNote?: string;
+  replacementCost?: number;
+  plannedReplacementYear?: string;
 }
 
 export type EnergyType =
@@ -607,6 +630,8 @@ export interface Maintenance extends BaseEntity {
   lastDate: string;
   nextDate: string;
   checklist: ChecklistItem[];
+  legalBasis?: string;
+  dutyCategory?: string;
 }
 
 /** Bewertung einer Legionellenkontrolle. */
@@ -711,6 +736,8 @@ export interface Inspection extends BaseEntity {
   result: RcdResult;
   status: RcdStatus;
   measures: string;
+  legalBasis?: string;
+  dutyCategory?: string;
 }
 
 /** Art einer Spielplatzkontrolle. */
@@ -1134,6 +1161,7 @@ export interface DocumentEntity extends BaseEntity {
   validUntil: string;
   /** Im Kundenportal sichtbar; ohne Freigabe bleibt das Dokument intern. */
   sharedWithCustomer: boolean;
+  safetyEvidence?: boolean;
 }
 
 /** Rolle einer Person der Reinigung. */
@@ -1171,6 +1199,8 @@ export interface CleaningArea extends BaseEntity {
   /** Stockwerk oder naehere Ortsangabe. */
   location: string;
   area?: number;
+  floorCovering?: string;
+  minutesPer100m2?: number;
   /** Verantwortliche Person der Reinigung. */
   responsibleId: string;
   status: ActiveStatus;
@@ -1203,6 +1233,9 @@ export interface CleaningPlan extends BaseEntity {
   status: CleaningPlanStatus;
   /** Checkliste des Plans; ohne eigene gilt die des Bereichs. */
   checklist: ChecklistItem[];
+  tour?: string;
+  tourOrder?: number;
+  durationMinutes?: number;
 }
 
 export type CleaningTaskStatus = "open" | "inProgress" | "done";
@@ -1302,7 +1335,7 @@ export interface PlanVersion {
   size: number;
   uploadedAt: string;
   uploadedBy: string;
-  note: string;
+  note?: string;
 }
 
 /**
@@ -1316,7 +1349,8 @@ export interface PlanMarker {
   /** Position 0-100 in Prozent. */
   x: number;
   y: number;
-  assetId: string;
+  kind?: "asset" | "room" | "note";
+  assetId?: string;
   /** Raum, den der Marker auf dem Plan bezeichnet. */
   roomId?: string;
   label: string;
@@ -1343,6 +1377,13 @@ export interface Plan {
   /** Angezeigte Fassung; leer = neueste. */
   currentVersionId: string;
   markers: PlanMarker[];
+  scale?: {
+    fromX: number;
+    fromY: number;
+    toX: number;
+    toY: number;
+    meters: number;
+  };
   layers?: PlanLayer[];
   createdAt: string;
 }

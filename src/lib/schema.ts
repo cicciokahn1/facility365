@@ -169,6 +169,22 @@ export const SIA416_AREA_OPTIONS: SelectOption[] = [
   option("KF", "area.sia416.kf"),
 ];
 
+export const DIN277_AREA_OPTIONS: SelectOption[] = [
+  option("NUF", "area.din277.nuf"),
+  option("TF", "area.din277.tf"),
+  option("VF", "area.din277.vf"),
+  option("KGF", "area.din277.kgf"),
+  option("BGF", "area.din277.bgf"),
+];
+
+export const CONDITION_RATING_OPTIONS: SelectOption[] = [
+  option("1", "asset.condition.1",),
+  option("2", "asset.condition.2",),
+  option("3", "asset.condition.3",),
+  option("4", "asset.condition.4",),
+  option("5", "asset.condition.5",),
+];
+
 export const ASSET_LIFECYCLE_OPTIONS: SelectOption[] = [
   option("planned", "asset.lifecycle.planned"),
   option("inOperation", "asset.lifecycle.inOperation"),

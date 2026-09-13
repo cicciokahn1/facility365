@@ -42,7 +42,7 @@ export function AssetDetail({ id }: { id: string }) {
         {
           value: 'passport',
           labelKey: 'tab.passport',
-          content: <AssetPassport asset={asset} />,
+          content: <AssetPassport asset={asset} onChange={(values) => update(values as Partial<Asset>, 'asset.locationChanged')} />,
         },
         {
           value: 'service',

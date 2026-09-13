@@ -52,7 +52,7 @@ export function PlanManager({
   const [versionFor, setVersionFor] = useState<string>('');
   const versionInputRef = useRef<HTMLInputElement>(null);
 
-  const makeVersion = async (file: File, version: number): Promise<PlanVersion> => ({
+  const makeVersion = async (file: File, version: number, note = ''): Promise<PlanVersion> => ({
     id: newId('planv'),
     version,
     fileName: file.name,
@@ -61,7 +61,7 @@ export function PlanManager({
     size: file.size,
     uploadedAt: new Date().toISOString(),
     uploadedBy: settings.profileName || settings.companyName,
-    note: '',
+    note,
   });
 
   const savePlan = async () => {
@@ -97,7 +97,8 @@ export function PlanManager({
       toast.error(t('plan.wrongType'));
       return;
     }
-    const version = await makeVersion(file, plan.versions.length + 1);
+    const note = window.prompt(t('plan.revisionNote')) ?? '';
+    const version = await makeVersion(file, plan.versions.length + 1, note);
     onChange(
       plans.map((entry) =>
         entry.id === plan.id
