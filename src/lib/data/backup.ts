@@ -70,6 +70,30 @@ export const mergeSnapshot = async (
   return added;
 };
 
+const TEST_SEED_KEY = 'facility365.testdata.seeded';
+
+/**
+ * Mitgelieferte TEST-Liegenschaften einmalig ergaenzen.
+ *
+ * Die Datensaetze tragen feste TEST-Kennungen; bereits vorhandene werden
+ * uebersprungen, nichts wird ueberschrieben. Je Datenraum laeuft der Abgleich
+ * nur einmal, damit bewusst geloeschte Testdaten nicht wiederkehren.
+ */
+export const ensureTestData = async (
+  scope: string,
+  repository: Repository,
+): Promise<number> => {
+  if (typeof window === 'undefined') return 0;
+  const seeded = window.localStorage.getItem(TEST_SEED_KEY)?.split(',') ?? [];
+  if (seeded.includes(scope)) return 0;
+  const { default: snapshot } = await import(
+    '../../../testdata/Facility365-realistische-testdaten.json'
+  );
+  const added = await mergeSnapshot(snapshot as unknown as Snapshot, repository);
+  window.localStorage.setItem(TEST_SEED_KEY, [...seeded, scope].join(','));
+  return added;
+};
+
 /** Sicherung als Datei anbieten. */
 export const downloadSnapshot = (snapshot: Snapshot): void => {
   const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
