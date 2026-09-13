@@ -22,6 +22,14 @@ import {
 import { DataExchange } from "@/components/module/data-exchange";
 import { EntityForm } from "@/components/module/entity-form";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -106,7 +114,21 @@ export function ModuleList({
   );
   /** Serienerfassung: eine Kontrolle fuer viele Raeume oder Anlagen zugleich. */
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [massOpen, setMassOpen] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [massField, setMassField] = useState("");
+  const [massValue, setMassValue] = useState("");
   const mayBulk = mayWrite && BULK_COLLECTIONS.includes(collection);
+  const massFields = useMemo(
+    () =>
+      config.fields.filter(
+        (field) =>
+          field.kind === "select" ||
+          field.kind === "text" ||
+          field.kind === "number",
+      ),
+    [config],
+  );
 
   const statusField = useMemo(
     () =>
@@ -181,6 +203,21 @@ export function ModuleList({
     return counts;
   }, [closed, items, statusField]);
 
+  const allSelected =
+    filtered.length > 0 && filtered.every((item) => selected.includes(item.id));
+  const applyMassEdit = () => {
+    const field = massFields.find((entry) => entry.name === massField);
+    if (!field || selected.length === 0) return;
+    const value = field.kind === "number" ? (massValue ? Number(massValue) : undefined) : massValue;
+    selected.forEach((id) =>
+      update(id, { [massField]: value } as never, "history.bulkUpdated"),
+    );
+    setSelected([]);
+    setMassField("");
+    setMassValue("");
+    setMassOpen(false);
+  };
+
   const initialValues = useMemo(
     () => defaultValuesOf(collection),
     [collection],
@@ -225,6 +262,19 @@ export function ModuleList({
         </div>
         {mayWrite ? (
           <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setSelected(allSelected ? [] : filtered.map((item) => item.id))
+              }
+            >
+              {t("list.selectAll")}
+            </Button>
+            {selected.length > 0 ? (
+              <Button variant="outline" onClick={() => setMassOpen(true)}>
+                {t("list.bulkEdit")} ({selected.length})
+              </Button>
+            ) : null}
             {mayBulk ? (
               <Button
                 variant="outline"
@@ -365,12 +415,27 @@ export function ModuleList({
           key={`${collection}|${query}|${statusFilter}|${sort}|${JSON.stringify(relationFilters)}`}
           items={filtered}
           render={(item) => (
-            <li key={item.id}>
+            <li key={item.id} className="relative">
+              {mayWrite ? (
+                <Checkbox
+                  className="absolute left-3 top-3 z-10 bg-card"
+                  onClick={(event) => event.stopPropagation()}
+                  checked={selected.includes(item.id)}
+                  onCheckedChange={(checked) =>
+                    setSelected((current) =>
+                      checked
+                        ? [...new Set([...current, item.id])]
+                        : current.filter((id) => id !== item.id),
+                    )
+                  }
+                  aria-label={t("list.select")}
+                />
+              ) : null}
               <Link
                 href={`${moduleDef.path}/${item.id}`}
                 prefetch={false}
                 data-testid="entity-card"
-                className="flex h-full flex-col gap-2 rounded-xl border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-accent/40"
+                className="flex h-full flex-col gap-2 rounded-xl border bg-card p-4 pl-10 transition-colors hover:border-primary/40 hover:bg-accent/40"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -413,6 +478,69 @@ export function ModuleList({
           onOpenChange={setBulkOpen}
         />
       ) : null}
+
+      <Dialog open={massOpen} onOpenChange={setMassOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("list.bulkEdit")}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3">
+            <Select
+              value={massField}
+              onValueChange={(value) => {
+                setMassField(value);
+                setMassValue("");
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("list.field")} />
+              </SelectTrigger>
+              <SelectContent>
+                {massFields.map((field) => (
+                  <SelectItem key={field.name} value={field.name}>
+                    {t(field.labelKey)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {massFields.find((field) => field.name === massField)?.kind === "select" ? (
+              <Select value={massValue} onValueChange={setMassValue}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("list.value")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {(
+                    massFields.find((field) => field.name === massField) as
+                      | SelectField
+                      | undefined
+                  )?.options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {t(option.labelKey)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input
+                type={
+                  massFields.find((field) => field.name === massField)?.kind ===
+                  "number"
+                    ? "number"
+                    : "text"
+                }
+                value={massValue}
+                onChange={(event) => setMassValue(event.target.value)}
+                placeholder={t("list.value")}
+              />
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={applyMassEdit} disabled={!massField}>
+              {t("action.save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <EntityForm
         open={formOpen}

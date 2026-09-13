@@ -132,6 +132,22 @@ export function AreaOverview({
           ? t(`area.sia416.${room.sia416AreaType.toLowerCase()}` as Parameters<typeof t>[0])
           : t('area.noType'),
       })),
+      byDin277: bucketsOf(own, (room) => ({
+        key: room.din277AreaType || 'none',
+        label: room.din277AreaType
+          ? t(`area.din277.${room.din277AreaType.toLowerCase()}` as Parameters<typeof t>[0])
+          : t('area.noType'),
+      })),
+      energyReferenceArea: sum(
+        scope.flatMap((building) =>
+          building.floors.map((floor) => floor.energyReferenceArea ?? 0),
+        ),
+      ),
+      energyByBuilding: scope.map((building) => ({
+        id: building.id,
+        name: building.name,
+        area: sum(building.floors.map((floor) => floor.energyReferenceArea ?? 0)),
+      })),
       missing: own.filter((room) => !room.area),
     };
   }, [buildings, id, level, rooms, t]);
@@ -164,6 +180,23 @@ export function AreaOverview({
       <Table title={t('area.byFloor')} buckets={data.byFloor} />
       <Table title={t('area.byType')} buckets={data.byType} />
       <Table title={t('area.sia416.type')} buckets={data.bySia416} />
+      <Table title={t('area.din277.type')} buckets={data.byDin277} />
+      <Metric
+        icon={Ruler}
+        label={t('area.energyReferenceArea')}
+        value={`${data.energyReferenceArea} m²`}
+      />
+      <section className="flex flex-col gap-2">
+        <h3 className="text-xs font-semibold text-muted-foreground">{t('area.energyByBuilding')}</h3>
+        <ul className="divide-y rounded-xl border bg-card text-sm">
+          {data.energyByBuilding.map((building) => (
+            <li key={building.id} className="flex items-center justify-between gap-3 p-3">
+              <span>{building.name}</span>
+              <span className="tabular-nums">{building.area} m²</span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {data.missing.length > 0 ? (
         <section className="flex flex-col gap-2">

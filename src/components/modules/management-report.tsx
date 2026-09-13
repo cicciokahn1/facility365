@@ -21,6 +21,7 @@ import {
   yearRange,
 } from '@/lib/reports/management';
 import { useSettings } from '@/lib/settings/provider';
+import { useCollectionItems } from '@/lib/data/store';
 import { formatDate, formatMoney, formatNumber, today } from '@/lib/utils/format';
 
 type Mode = 'month' | 'year' | 'custom';
@@ -43,6 +44,30 @@ export function ManagementReport() {
   }, [from, mode, month, to, year]);
 
   const report = useManagementReport(range);
+  const assets = useCollectionItems('assets');
+  const inspections = useCollectionItems('inspections');
+  const maintenances = useCollectionItems('maintenances');
+  const documents = useCollectionItems('documents');
+  const cafm = useMemo(() => {
+    const todayValue = today();
+    const investments = new Map<string, { cost: number; count: number }>();
+    assets.forEach((asset) => {
+      if (!asset.plannedReplacementYear) return;
+      const row = investments.get(asset.plannedReplacementYear) ?? { cost: 0, count: 0 };
+      row.cost += asset.replacementCost ?? 0;
+      if ((asset.conditionRating ?? 0) >= 4) row.count += 1;
+      investments.set(asset.plannedReplacementYear, row);
+    });
+    return {
+      investments: [...investments.entries()].sort(([a], [b]) => a.localeCompare(b)),
+      criticalAssets: assets.filter((asset) => (asset.conditionRating ?? 0) >= 4).length,
+      overdueInspections: inspections.filter((item) => item.nextDate && item.nextDate < todayValue).length,
+      overdueMaintenance: maintenances.filter((item) => item.nextDate && item.nextDate < todayValue).length,
+      expiredEvidence: documents.filter(
+        (document) => document.safetyEvidence && document.validUntil && document.validUntil < todayValue,
+      ).length,
+    };
+  }, [assets, documents, inspections, maintenances]);
 
   const years = useMemo(() => {
     const current = Number(now.slice(0, 4));
@@ -245,6 +270,43 @@ export function ManagementReport() {
         label={label}
         language={settings.language}
       />
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('report.investmentPlanning')}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="border-b p-4 text-sm">
+            {t('report.criticalAssets')}: <strong>{cafm.criticalAssets}</strong>
+          </div>
+          <ul className="divide-y">
+            {cafm.investments.map(([replacementYear, row]) => (
+              <li key={replacementYear} className="flex items-center justify-between gap-3 p-3 text-sm">
+                <span>{replacementYear}</span>
+                <span className="text-right">{formatMoney(row.cost)} · {row.count}</span>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('report.operatorDuties')}</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-3">
+          <ReportCount label={t('report.overdueInspections')} value={cafm.overdueInspections} />
+          <ReportCount label={t('report.overdueMaintenance')} value={cafm.overdueMaintenance} />
+          <ReportCount label={t('report.expiredSafetyEvidence')} value={cafm.expiredEvidence} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function ReportCount({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-2xl font-semibold">{value}</p>
     </div>
   );
 }

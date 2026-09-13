@@ -195,6 +195,8 @@ export const emptyRoom = (): Omit<Room, "id" | "number"> => ({
   floorId: "",
   type: "",
   sia416AreaType: "NF",
+  din277AreaType: "NUF",
+  workplaceList: [],
   status: "active",
   description: "",
 });
@@ -219,6 +221,7 @@ export const emptyAsset = (): Omit<Asset, "id" | "number"> => ({
   supplierId: "",
   parentAssetId: "",
   relatedAssetIds: [],
+  locationHistory: [],
   lifecycle: "inOperation",
   decommissionedAt: "",
   contractId: "",
@@ -289,6 +292,7 @@ export const emptyDocument = (): Omit<DocumentEntity, "id" | "number"> => ({
   maintenanceId: "",
   validUntil: "",
   sharedWithCustomer: false,
+  safetyEvidence: false,
 });
 
 export const emptyEnergyEntry = (): Omit<EnergyEntry, "id" | "number"> => ({
@@ -380,6 +384,8 @@ export const emptyInspection = (): Omit<Inspection, "id" | "number"> => ({
   result: "pending",
   status: "open",
   measures: "",
+  legalBasis: "",
+  dutyCategory: "",
 });
 
 export const emptyPlaygroundCheck = (): Omit<
@@ -593,6 +599,8 @@ export const emptyMaintenance = (): Omit<Maintenance, "id" | "number"> => ({
   lastDate: "",
   nextDate: "",
   checklist: [],
+  legalBasis: "",
+  dutyCategory: "",
 });
 
 export const emptyDamage = (): Omit<Damage, "id" | "number"> => ({
@@ -706,6 +714,8 @@ export const emptyCleaningArea = (): Omit<CleaningArea, "id" | "number"> => ({
   buildingId: "",
   roomId: "",
   location: "",
+  floorCovering: "",
+  minutesPer100m2: undefined,
   responsibleId: "",
   status: "active",
   description: "",
@@ -736,6 +746,9 @@ export const emptyCleaningPlan = (): Omit<CleaningPlan, "id" | "number"> => ({
   nextDate: new Date().toISOString().slice(0, 10),
   status: "active",
   checklist: [],
+  tour: "",
+  tourOrder: undefined,
+  durationMinutes: undefined,
 });
 
 export const emptyCleaningTask = (): Omit<CleaningTask, "id" | "number"> => ({
