@@ -6001,6 +6001,12 @@ export const dictionary = {
     it: "Questo account è disattivato. Contatta l’amministrazione della tua organizzazione.",
     en: "This account is deactivated. Please contact your organisation’s administration.",
   },
+  "auth.membershipMissing": {
+    de: "Für dieses Konto wurde keine Organisation gefunden. Bitte die Datenbank-Anpassung 0017 ausführen oder die Administration kontaktieren.",
+    fr: "Aucune organisation n’a été trouvée pour ce compte. Veuillez exécuter la mise à jour 0017 de la base de données ou contacter l’administration.",
+    it: "Per questo account non è stata trovata alcuna organizzazione. Eseguire l’aggiornamento 0017 del database o contattare l’amministrazione.",
+    en: "No organisation was found for this account. Please run database update 0017 or contact the administration.",
+  },
   "auth.errorGeneric": {
     de: "Das hat nicht geklappt. Bitte erneut versuchen.",
     fr: "Cela n’a pas fonctionné. Veuillez réessayer.",

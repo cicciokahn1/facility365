@@ -44,6 +44,8 @@ export interface AuthApi {
   membership: Membership | null;
   /** Die Mitgliedschaftsabfrage ist abgeschlossen. */
   membershipReady: boolean;
+  /** Die Mitgliedschaft konnte nicht gelesen werden (Datenbank/Regeln). */
+  membershipError: boolean;
   signIn: (email: string, password: string) => Promise<AuthMessage | null>;
   signUp: (email: string, password: string) => Promise<AuthMessage | null>;
   signOut: () => Promise<void>;
@@ -68,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [membershipReady, setMembershipReady] = useState(!configured);
+  const [membershipError, setMembershipError] = useState(false);
   const [ready, setReady] = useState(!configured);
   /** Unerreichbares Projekt: die Anwendung bleibt bedienbar, aber lokal. */
   const [reachable, setReachable] = useState(configured);
@@ -150,18 +153,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setMembershipReady(true);
         return;
       }
-      const { data, error } = await client
-        .from('memberships')
-        .select('tenant_id, role, status')
-        .eq('auth_user_id', user.id)
-        .eq('status', 'active')
-        .maybeSingle();
-      if (!active) return;
-      if (error) {
-        setMembershipReady(true);
-        return;
+      let row: MembershipRow | null = null;
+      const rpc = await client.rpc('my_membership');
+      if (!rpc.error) {
+        row = ((rpc.data as MembershipRow[] | null) ?? [])[0] ?? null;
+      } else {
+        const fallback = await client
+          .from('memberships')
+          .select('tenant_id, role, status')
+          .eq('auth_user_id', user.id)
+          .order('created_at', { ascending: true })
+          .limit(1);
+        if (!active) return;
+        if (fallback.error) {
+          setMembershipError(true);
+          setMembershipReady(true);
+          return;
+        }
+        row = ((fallback.data as MembershipRow[] | null) ?? [])[0] ?? null;
       }
-      const row = data as MembershipRow | null;
+      if (!active) return;
+      setMembershipError(false);
       setMembership(
         row ? { tenantId: row.tenant_id, role: row.role, status: row.status } : null,
       );
@@ -234,6 +246,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       membership,
       membershipReady,
+      membershipError,
       signIn,
       signUp,
       signOut,
@@ -247,6 +260,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       membership,
       membershipReady,
+      membershipError,
       signIn,
       signUp,
       signOut,

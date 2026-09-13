@@ -29,14 +29,15 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     return <div className="min-h-dvh bg-background" data-testid="auth-pending" />;
   }
 
-  /** Fehlende oder deaktivierte Mitgliedschaft: kein Zugriff, Daten bleiben bestehen. */
-  if (auth.membershipReady && (!auth.membership || auth.membership.status !== 'active')) {
+  /** Deaktivierte oder nicht lesbare Mitgliedschaft: kein Zugriff, Daten bleiben bestehen. */
+  const deactivated = auth.membership !== null && auth.membership.status !== 'active';
+  if (auth.enabled && auth.membershipReady && (deactivated || !auth.membership)) {
     return (
       <div
         className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-6 text-center"
         data-testid="auth-blocked"
       >
-        <p className="text-sm">{t('auth.blocked')}</p>
+        <p className="text-sm">{t(deactivated ? 'auth.blocked' : 'auth.membershipMissing')}</p>
         <Button variant="outline" onClick={() => void auth.signOut()}>
           {t('auth.signOut')}
         </Button>
