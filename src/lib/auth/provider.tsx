@@ -7,6 +7,9 @@
  * Anwendung lokal weiter; dann meldet `enabled` false und die Oberflaeche
  * verlangt keine Anmeldung.
  *
+ * Die Anmeldung ist erst verbindlich, wenn NEXT_PUBLIC_AUTH_REQUIRED=true
+ * gesetzt ist. Bis dahin bleibt sie eingebaut, wird aber nicht erzwungen.
+ *
  * Neben der Sitzung liefert der Anbieter die Mitgliedschaft: welcher Mandant
  * (Organisation) und welche Rolle in der Datenbank hinterlegt sind. Massgeblich
  * bleibt die Datenbank - die Oberflaeche zeigt nur, was dort erlaubt ist.
@@ -15,6 +18,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 
 import { authMessage, AuthMessage } from '@/lib/auth/errors';
 import { isSupabaseConfigured, isSupabaseReachable, supabase } from '@/lib/supabase/client';
+
+export const AUTH_REQUIRED = process.env.NEXT_PUBLIC_AUTH_REQUIRED === 'true';
 
 export interface AuthUser {
   id: string;
@@ -59,7 +64,7 @@ interface MembershipRow {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const configured = isSupabaseConfigured();
+  const configured = AUTH_REQUIRED && isSupabaseConfigured();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [membershipReady, setMembershipReady] = useState(!configured);
