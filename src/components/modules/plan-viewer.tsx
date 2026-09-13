@@ -64,6 +64,11 @@ export function PlanViewer({
   const [zoomIndex, setZoomIndex] = useState(0);
   const [markerMode, setMarkerMode] = useState(false);
   const [draftMarker, setDraftMarker] = useState<PlanMarker | null>(null);
+  const [newLayerName, setNewLayerName] = useState('');
+  const layers = plan.layers?.length
+    ? plan.layers
+    : [{ id: 'default', name: 'Standard', visible: true }];
+  const [activeLayerId, setActiveLayerId] = useState('all');
   /** Marker, der gerade verschoben wird; der naechste Klick setzt ihn neu. */
   const [movingId, setMovingId] = useState('');
   const version = currentVersionOf(plan);
@@ -117,6 +122,7 @@ export function PlanViewer({
       y,
       assetId: '',
       roomId: '',
+      layerId: activeLayerId === 'all' ? layers[0].id : activeLayerId,
       label: '',
       note: '',
     });
@@ -151,6 +157,46 @@ export function PlanViewer({
         <DialogTitle className="pr-8 text-base">{plan.title}</DialogTitle>
 
         <div className="flex flex-wrap items-center gap-2">
+          {layers.length > 1 ? (
+            <Select value={activeLayerId} onValueChange={setActiveLayerId}>
+              <SelectTrigger className="w-44" data-testid="plan-layer">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('plan.layerAll')}</SelectItem>
+                {layers.map((layer) => (
+                  <SelectItem key={layer.id} value={layer.id}>
+                    {layer.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
+          <Input
+            className="w-36"
+            placeholder={t('plan.layerName')}
+            value={newLayerName}
+            onChange={(event) => setNewLayerName(event.target.value)}
+            aria-label={t('plan.layerName')}
+          />
+          <Button
+            variant="outline"
+            onClick={() => {
+              const name = newLayerName.trim();
+              if (!name) return;
+              const next = {
+                id: newId('layer'),
+                name,
+                visible: true,
+              };
+              onChange({ ...plan, layers: [...layers, next] });
+              setNewLayerName('');
+              setActiveLayerId(next.id);
+            }}
+          >
+            <Plus className="size-4" aria-hidden />
+            {t('action.add')}
+          </Button>
           {plan.versions.length > 1 ? (
             <Select
               value={version.id}
@@ -232,7 +278,13 @@ export function PlanViewer({
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- Plan liegt als Data-URL vor */}
               <img src={version.url} alt={plan.title} className="w-full select-none" />
-              {plan.markers.map((marker) => (
+              {plan.markers
+                .filter(
+                  (marker) =>
+                    activeLayerId === 'all' ||
+                    (marker.layerId ?? layers[0].id) === activeLayerId,
+                )
+                .map((marker) => (
                 <button
                   key={marker.id}
                   type="button"
@@ -257,7 +309,7 @@ export function PlanViewer({
                     }
                   />
                 </button>
-              ))}
+                ))}
             </div>
           )}
         </div>

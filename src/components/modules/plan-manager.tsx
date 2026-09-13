@@ -81,6 +81,7 @@ export function PlanManager({
         versions: [version],
         currentVersionId: version.id,
         markers: [],
+        layers: [{ id: newId('layer'), name: 'Standard', visible: true }],
         createdAt: new Date().toISOString(),
       },
     ]);

@@ -87,6 +87,11 @@ export function AssetDetail({ id }: { id: string }) {
           content: <RelatedList collection="orders" field="assetId" value={asset.id} />,
         },
         {
+          value: 'subassets',
+          labelKey: 'asset.subassets',
+          content: <RelatedList collection="assets" field="parentAssetId" value={asset.id} />,
+        },
+        {
           value: 'solarplants',
           labelKey: 'module.solarplants',
           content: <RelatedList collection="solarplants" field="assetId" value={asset.id} />,

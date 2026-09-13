@@ -8,6 +8,8 @@ import type { TranslationKey } from "@/lib/i18n/dictionary";
 import {
   ACTIVE_OPTIONS,
   ASSET_CATEGORY_OPTIONS,
+  ASSET_CRITICALITY_OPTIONS,
+  ASSET_LIFECYCLE_OPTIONS,
   ASSET_STATUS_OPTIONS,
   CLEANER_ROLE_OPTIONS,
   CLEANING_AREA_TYPE_OPTIONS,
@@ -45,6 +47,7 @@ import {
   USER_ROLE_OPTIONS,
   USER_STATUS_OPTIONS,
   RCD_STATUS_OPTIONS,
+  SIA416_AREA_OPTIONS,
   REPORT_STATUS_OPTIONS,
   REPORT_TYPE_OPTIONS,
   SelectOption,
@@ -451,6 +454,12 @@ const roomsConfig: ModuleConfig<"rooms"> = {
     },
     text("type", "common.type"),
     { kind: "number", name: "area", labelKey: "common.area" },
+    {
+      kind: "select",
+      name: "sia416AreaType",
+      labelKey: "area.sia416.type",
+      options: SIA416_AREA_OPTIONS,
+    },
     { kind: "number", name: "workplaces", labelKey: "room.workplaces" },
     text("occupant", "room.occupant"),
     {
@@ -522,6 +531,20 @@ const assetsConfig: ModuleConfig<"assets"> = {
     text("model", "asset.model"),
     text("serialNumber", "asset.serial"),
     text("manufacturedYear", "asset.year"),
+    {
+      kind: "select",
+      name: "lifecycle",
+      labelKey: "asset.lifecycle",
+      options: ASSET_LIFECYCLE_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: "select",
+      name: "criticality",
+      labelKey: "asset.criticality",
+      options: ASSET_CRITICALITY_OPTIONS,
+      filter: true,
+    },
     { kind: "date", name: "installedAt", labelKey: "asset.installedAt" },
     { kind: "date", name: "warrantyUntil", labelKey: "asset.warrantyUntil" },
     {
@@ -531,6 +554,21 @@ const assetsConfig: ModuleConfig<"assets"> = {
       collection: "suppliers",
       filter: true,
     },
+    {
+      kind: "relation",
+      name: "parentAssetId",
+      labelKey: "asset.parent",
+      collection: "assets",
+      filter: true,
+    },
+    {
+      kind: "relation",
+      name: "contractId",
+      labelKey: "module.contracts.singular",
+      collection: "contracts",
+      filter: true,
+    },
+    text("costCenter", "cost.costCenter"),
     text("warrantyNote", "asset.warrantyNote", { span: 2 }),
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
@@ -543,6 +581,8 @@ const assetsConfig: ModuleConfig<"assets"> = {
       asset.model,
       asset.serialNumber,
       asset.manufacturedYear,
+      asset.lifecycle ?? "",
+      asset.costCenter ?? "",
     ]
       .filter(Boolean)
       .join(" "),
@@ -630,7 +670,12 @@ const documentsConfig: ModuleConfig<"documents"> = {
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
   searchOf: (document) =>
-    [document.number, document.title, document.category, document.file?.name]
+    [
+      document.number,
+      document.title,
+      document.category,
+      document.file?.name,
+    ]
       .filter(Boolean)
       .join(" "),
 };

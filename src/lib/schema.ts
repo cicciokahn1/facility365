@@ -159,6 +159,30 @@ export const ACTIVE_OPTIONS: SelectOption[] = [
   option("inactive", "status.inactive"),
 ];
 
+export const SIA416_AREA_OPTIONS: SelectOption[] = [
+  option("GF", "area.sia416.gf"),
+  option("NF", "area.sia416.nf"),
+  option("HNF", "area.sia416.hnf"),
+  option("NNF", "area.sia416.nnf"),
+  option("VF", "area.sia416.vf"),
+  option("FF", "area.sia416.ff"),
+  option("KF", "area.sia416.kf"),
+];
+
+export const ASSET_LIFECYCLE_OPTIONS: SelectOption[] = [
+  option("planned", "asset.lifecycle.planned"),
+  option("inOperation", "asset.lifecycle.inOperation"),
+  option("maintained", "asset.lifecycle.maintained"),
+  option("retired", "asset.lifecycle.retired"),
+  option("disposed", "asset.lifecycle.disposed"),
+];
+
+export const ASSET_CRITICALITY_OPTIONS: SelectOption[] = [
+  option("low", "priority.low"),
+  option("medium", "priority.medium"),
+  option("high", "priority.high"),
+];
+
 /** Erfasste Energiearten. */
 /** Uebliche Einheiten je Energieart; die erste ist der Vorschlag. */
 export const ENERGY_UNIT_SUGGESTIONS: Record<string, string[]> = {
