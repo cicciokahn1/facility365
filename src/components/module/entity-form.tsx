@@ -83,10 +83,17 @@ function FormBody({
   const t = useT();
   const [values, setValues] = useState<FormValues>(initialValues);
   const [touched, setTouched] = useState(false);
+  const [showAllFields, setShowAllFields] = useState(false);
 
-  const visibleFields = fields.filter(
+  const availableFields = fields.filter(
     (field) => !field.visibleWhen || field.visibleWhen(values),
   );
+  const visibleFields =
+    showAllFields || availableFields.length <= 8
+      ? availableFields
+      : availableFields.filter(
+          (field, index) => field.required || index < 5,
+        );
 
   const missing = visibleFields
     .filter(
@@ -159,6 +166,25 @@ function FormBody({
           );
         })}
       </div>
+      {availableFields.length > visibleFields.length ? (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full sm:w-auto"
+          onClick={() => setShowAllFields(true)}
+        >
+          Weitere Angaben anzeigen
+        </Button>
+      ) : showAllFields && availableFields.length > 8 ? (
+        <Button
+          type="button"
+          variant="ghost"
+          className="w-full sm:w-auto"
+          onClick={() => setShowAllFields(false)}
+        >
+          Weniger Angaben anzeigen
+        </Button>
+      ) : null}
 
       <DialogFooter className="gap-2 sm:gap-2">
         <Button

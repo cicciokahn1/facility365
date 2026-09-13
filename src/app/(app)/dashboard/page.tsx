@@ -301,9 +301,9 @@ export default function DashboardPage() {
                 <Link
                   href={action.href}
                   data-testid="quick-action"
-                  className="flex h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-card p-3 text-center text-sm font-medium transition-colors hover:border-primary/40 hover:bg-accent/40"
+                  className="flex h-28 touch-manipulation flex-col items-center justify-center gap-2 rounded-xl border bg-card p-3 text-center text-base font-medium transition-colors hover:border-primary/40 hover:bg-accent/40"
                 >
-                  <Icon className="size-5 text-primary" aria-hidden />
+                  <Icon className="size-6 text-primary" aria-hidden />
                   <span className="line-clamp-2">{t(action.labelKey)}</span>
                 </Link>
               </li>

@@ -253,7 +253,7 @@ export function ModuleList({
     <div className="flex flex-col gap-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             {t(moduleDef.labelKey)}
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -285,7 +285,7 @@ export function ModuleList({
                 {t("bulk.action")}
               </Button>
             ) : null}
-            <Button onClick={() => setFormOpen(true)} data-testid="new-entity">
+            <Button size="lg" onClick={() => setFormOpen(true)} data-testid="new-entity">
               <Plus className="size-4" aria-hidden />
               {t("action.new")}
             </Button>
