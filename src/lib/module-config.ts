@@ -886,6 +886,8 @@ const appointmentsConfig: ModuleConfig<"appointments"> = {
     { kind: "date", name: "date", labelKey: "common.date", required: true },
     text("timeStart", "work.start"),
     text("timeEnd", "work.end"),
+    { kind: "number", name: "breakMinutes", labelKey: "work.break" },
+    { kind: "switch", name: "weeklyRepeat", labelKey: "calendar.recurring" },
     text("location", "common.location"),
     {
       kind: "relation",

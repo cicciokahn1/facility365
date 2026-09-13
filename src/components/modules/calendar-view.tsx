@@ -42,6 +42,7 @@ import { toast } from "sonner";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { CalendarBulkDialog } from "@/components/modules/calendar-bulk-dialog";
+import { WorkPlanView } from "@/components/modules/work-plan-view";
 import { EntityForm } from "@/components/module/entity-form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -132,6 +133,7 @@ export function CalendarView() {
   const [selectMode, setSelectMode] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [workPlanOpen, setWorkPlanOpen] = useState(false);
 
   const [cursor, setCursor] = useState(() => {
     const now = new Date();
@@ -205,6 +207,10 @@ export function CalendarView() {
     toast.success(t("toast.deleted"));
   };
 
+  if (workPlanOpen) {
+    return <WorkPlanView onBack={() => setWorkPlanOpen(false)} />;
+  }
+
   const step = (delta: number) =>
     setCursor((current) => {
       const date = new Date(current.year, current.month + delta, 1);
@@ -223,6 +229,14 @@ export function CalendarView() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setWorkPlanOpen(true)}
+            data-testid="calendar-work-plan"
+          >
+            Arbeitsplan
+          </Button>
           {mayCreate ? (
             <Button
               size="sm"
