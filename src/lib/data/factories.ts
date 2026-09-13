@@ -194,6 +194,7 @@ export const emptyRoom = (): Omit<Room, "id" | "number"> => ({
   buildingId: "",
   floorId: "",
   type: "",
+  sia416AreaType: "NF",
   status: "active",
   description: "",
 });
@@ -216,6 +217,13 @@ export const emptyAsset = (): Omit<Asset, "id" | "number"> => ({
   warrantyNote: "",
   maintenanceInterval: "",
   supplierId: "",
+  parentAssetId: "",
+  relatedAssetIds: [],
+  lifecycle: "inOperation",
+  decommissionedAt: "",
+  contractId: "",
+  costCenter: "",
+  criticality: "medium",
 });
 
 export const emptySupplier = (): Omit<Supplier, "id" | "number"> => ({

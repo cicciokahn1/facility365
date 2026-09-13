@@ -76,6 +76,10 @@ export function AssetPassport({ asset }: { asset: Asset }) {
           <Row label={t('asset.model')} value={asset.model} />
           <Row label={t('asset.serial')} value={asset.serialNumber} mono />
           <Row label={t('asset.year')} value={year} />
+          <Row label={t('asset.lifecycle')} value={asset.lifecycle ? t(`asset.lifecycle.${asset.lifecycle}` as Parameters<typeof t>[0]) : ''} />
+          <Row label={t('asset.criticality')} value={asset.criticality ? t(`priority.${asset.criticality}` as Parameters<typeof t>[0]) : ''} />
+          <Row label={t('cost.costCenter')} value={asset.costCenter ?? ''} />
+          <Row label={t('asset.parent')} value={asset.parentAssetId ?? ''} mono />
         </dl>
       </div>
 

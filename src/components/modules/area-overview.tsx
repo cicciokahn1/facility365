@@ -126,6 +126,12 @@ export function AreaOverview({
         key: room.type || 'none',
         label: room.type || t('area.noType'),
       })),
+      bySia416: bucketsOf(own, (room) => ({
+        key: room.sia416AreaType || 'none',
+        label: room.sia416AreaType
+          ? t(`area.sia416.${room.sia416AreaType.toLowerCase()}` as Parameters<typeof t>[0])
+          : t('area.noType'),
+      })),
       missing: own.filter((room) => !room.area),
     };
   }, [buildings, id, level, rooms, t]);
@@ -157,6 +163,7 @@ export function AreaOverview({
 
       <Table title={t('area.byFloor')} buckets={data.byFloor} />
       <Table title={t('area.byType')} buckets={data.byType} />
+      <Table title={t('area.sia416.type')} buckets={data.bySia416} />
 
       {data.missing.length > 0 ? (
         <section className="flex flex-col gap-2">

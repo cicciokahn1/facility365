@@ -323,8 +323,24 @@ export interface BuildingFloor {
   /** Ebene: -1 Untergeschoss, 0 Erdgeschoss, 1 erstes Obergeschoss. */
   level: number;
   area?: number;
+  /** SIA-416-nahe Teilflaechen in m². */
+  grossArea?: number;
+  netArea?: number;
+  usableArea?: number;
+  trafficArea?: number;
+  functionalArea?: number;
+  secondaryArea?: number;
   note: string;
 }
+
+export type Sia416AreaType =
+  | "NF"
+  | "HNF"
+  | "NNF"
+  | "VF"
+  | "FF"
+  | "KF"
+  | "GF";
 
 export interface Room extends BaseEntity {
   name: string;
@@ -333,6 +349,7 @@ export interface Room extends BaseEntity {
   floorId: string;
   type: string;
   area?: number;
+  sia416AreaType?: Sia416AreaType;
   /** Anzahl Arbeitsplaetze im Raum. */
   workplaces?: number;
   /** Nutzer, Abteilung oder Mieter des Raums. */
@@ -342,6 +359,12 @@ export interface Room extends BaseEntity {
 }
 
 export type AssetStatus = "active" | "maintenance" | "defect" | "inactive";
+export type AssetLifecycle =
+  | "planned"
+  | "inOperation"
+  | "maintained"
+  | "retired"
+  | "disposed";
 
 export interface Asset extends BaseEntity {
   name: string;
@@ -363,6 +386,13 @@ export interface Asset extends BaseEntity {
   maintenanceInterval: string;
   /** Lieferant oder Servicepartner der Anlage. */
   supplierId: string;
+  parentAssetId?: string;
+  relatedAssetIds?: string[];
+  lifecycle?: AssetLifecycle;
+  decommissionedAt?: string;
+  contractId?: string;
+  costCenter?: string;
+  criticality?: "low" | "medium" | "high";
 }
 
 export type EnergyType =
@@ -1291,8 +1321,16 @@ export interface PlanMarker {
   roomId?: string;
   label: string;
   note: string;
+  layerId?: string;
   /** Seite eines mehrseitigen PDF-Plans. */
   page?: number;
+}
+
+export interface PlanLayer {
+  id: string;
+  name: string;
+  visible: boolean;
+  color?: string;
 }
 
 export interface Plan {
@@ -1305,6 +1343,7 @@ export interface Plan {
   /** Angezeigte Fassung; leer = neueste. */
   currentVersionId: string;
   markers: PlanMarker[];
+  layers?: PlanLayer[];
   createdAt: string;
 }
 
