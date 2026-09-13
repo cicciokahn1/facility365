@@ -48,8 +48,9 @@ const QUICK_ACTIONS: {
   module: ModuleKey;
   labelKey: TranslationKey;
   icon: typeof Plus;
+  primary?: boolean;
 }[] = [
-  { href: '/orders?new=1', module: 'orders', labelKey: 'dashboard.quick.order', icon: ClipboardList },
+  { href: '/orders?new=1', module: 'orders', labelKey: 'dashboard.quick.order', icon: ClipboardList, primary: true },
   {
     href: '/customers?new=1',
     module: 'customers',
@@ -61,11 +62,12 @@ const QUICK_ACTIONS: {
     module: 'maintenances',
     labelKey: 'dashboard.quick.maintenance',
     icon: Wrench,
+    primary: true,
   },
-  { href: '/damages?new=1', module: 'damages', labelKey: 'dashboard.quick.damage', icon: ShieldAlert },
-  { href: '/reports?new=1', module: 'reports', labelKey: 'dashboard.quick.report', icon: FileText },
-  { href: '/inspections?new=1', module: 'inspections', labelKey: 'dashboard.quick.inspection', icon: ClipboardCheck },
-  { href: '/cleaning/tasks?new=1', module: 'cleaningtasks', labelKey: 'dashboard.quick.cleaning', icon: SprayCan },
+  { href: '/damages?new=1', module: 'damages', labelKey: 'dashboard.quick.damage', icon: ShieldAlert, primary: true },
+  { href: '/reports?new=1', module: 'reports', labelKey: 'dashboard.quick.report', icon: FileText, primary: true },
+  { href: '/inspections?new=1', module: 'inspections', labelKey: 'dashboard.quick.inspection', icon: ClipboardCheck, primary: true },
+  { href: '/cleaning/tasks?new=1', module: 'cleaningtasks', labelKey: 'dashboard.quick.cleaning', icon: SprayCan, primary: true },
   { href: '/reports?new=1&workTime=1', module: 'reports', labelKey: 'dashboard.quick.workTime', icon: Clock3 },
   { href: '/documents?new=1&photo=1', module: 'documents', labelKey: 'dashboard.quick.photo', icon: Camera },
   { href: '/analytics', module: 'analytics', labelKey: 'report.openReport', icon: BarChart3 },
@@ -300,7 +302,7 @@ export default function DashboardPage() {
           {t('dashboard.quickActions')}
         </h2>
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {QUICK_ACTIONS.filter((action) => access.canRead(action.module)).map((action) => {
+          {QUICK_ACTIONS.filter((action) => action.primary && access.canRead(action.module)).map((action) => {
             const Icon = action.icon;
             return (
               <li key={action.href}>
@@ -316,6 +318,28 @@ export default function DashboardPage() {
             );
           })}
         </ul>
+        <details className="mt-3">
+          <summary className="cursor-pointer list-none rounded-lg border px-4 py-3 text-center text-sm font-medium text-muted-foreground">
+            Weitere Aktionen
+          </summary>
+          <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {QUICK_ACTIONS.filter((action) => !action.primary && access.canRead(action.module)).map((action) => {
+              const Icon = action.icon;
+              return (
+                <li key={action.href}>
+                  <Link
+                    href={action.href}
+                    data-testid="secondary-quick-action"
+                    className="flex h-24 touch-manipulation flex-col items-center justify-center gap-2 rounded-xl border bg-card p-3 text-center text-sm font-medium transition-colors hover:border-primary/40 hover:bg-accent/40"
+                  >
+                    <Icon className="size-5 text-primary" aria-hidden />
+                    <span className="line-clamp-2">{t(action.labelKey)}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </details>
       </section>
 
       <div className="grid gap-4 xl:grid-cols-2">
@@ -377,7 +401,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="hidden gap-4 sm:grid xl:grid-cols-3">
         <RecentCard
           titleKey="dashboard.openOrders"
           href="/orders"

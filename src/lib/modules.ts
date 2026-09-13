@@ -657,9 +657,9 @@ export const groupOfPath = (pathname: string): NavGroup | undefined =>
 /** Vier Module in der Telefonnavigation; alles Weitere liegt unter «Mehr». */
 export const MOBILE_NAV_KEYS: ModuleKey[] = [
   "dashboard",
+  "today",
   "orders",
   "damages",
-  "assets",
 ];
 
 export const moduleByKey = (key: ModuleKey): ModuleDefinition => {

@@ -262,29 +262,36 @@ export function ModuleList({
         </div>
         {mayWrite ? (
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() =>
-                setSelected(allSelected ? [] : filtered.map((item) => item.id))
-              }
-            >
-              {t("list.selectAll")}
-            </Button>
-            {selected.length > 0 ? (
-              <Button variant="outline" onClick={() => setMassOpen(true)}>
-                {t("list.bulkEdit")} ({selected.length})
-              </Button>
-            ) : null}
-            {mayBulk ? (
-              <Button
-                variant="outline"
-                onClick={() => setBulkOpen(true)}
-                data-testid="bulk-new"
-              >
-                <CopyPlus className="size-4" aria-hidden />
-                {t("bulk.action")}
-              </Button>
-            ) : null}
+            <details className="relative">
+              <summary className="flex h-11 cursor-pointer list-none items-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent [&::-webkit-details-marker]:hidden">
+                Mehr
+              </summary>
+              <div className="absolute right-0 z-10 mt-2 flex min-w-48 flex-col gap-2 rounded-lg border bg-popover p-2 shadow-lg">
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setSelected(allSelected ? [] : filtered.map((item) => item.id))
+                  }
+                >
+                  {t("list.selectAll")}
+                </Button>
+                {selected.length > 0 ? (
+                  <Button variant="outline" onClick={() => setMassOpen(true)}>
+                    {t("list.bulkEdit")} ({selected.length})
+                  </Button>
+                ) : null}
+                {mayBulk ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => setBulkOpen(true)}
+                    data-testid="bulk-new"
+                  >
+                    <CopyPlus className="size-4" aria-hidden />
+                    {t("bulk.action")}
+                  </Button>
+                ) : null}
+              </div>
+            </details>
             <Button size="lg" onClick={() => setFormOpen(true)} data-testid="new-entity">
               <Plus className="size-4" aria-hidden />
               {t("action.new")}
@@ -298,11 +305,18 @@ export function ModuleList({
       </header>
 
       <div className="flex flex-col gap-3">
-        <DataExchange
-          collection={collection}
-          items={filtered}
-          mayWrite={mayWrite}
-        />
+        <details>
+          <summary className="cursor-pointer list-none rounded-lg border px-4 py-3 text-center text-sm font-medium text-muted-foreground">
+            Mehr
+          </summary>
+          <div className="mt-2">
+            <DataExchange
+              collection={collection}
+              items={filtered}
+              mayWrite={mayWrite}
+            />
+          </div>
+        </details>
 
         <Input
           data-testid="module-search"
