@@ -52,6 +52,14 @@ export const defaultSettings: AppSettings = {
   activeUserId: '',
   industryPackage: '',
   disabledModules: [],
+  subscription: {
+    package: '',
+    yearlyPrice: 0,
+    setupFee: 0,
+    contractStart: '',
+    nextRenewal: '',
+    currency: 'CHF',
+  },
 };
 
 interface SettingsContextValue {
@@ -121,16 +129,19 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         {
           modules: modulesOf(remoteModules?.disabledModules),
           industryPackage: remoteModules?.industryPackage,
+          subscription: remoteModules?.subscription,
           stamp: remoteModules?.updatedAt ?? '',
         },
         {
           modules: modulesOf(stored?.disabledModules),
           industryPackage: stored?.industryPackage,
+          subscription: stored?.subscription,
           stamp: stored?.modulesUpdatedAt ?? '',
         },
         {
           modules: modulesOf(localModules?.disabledModules),
           industryPackage: localModules?.industryPackage,
+          subscription: localModules?.subscription,
           stamp: localModules?.updatedAt ?? '',
         },
       ].filter((entry) => entry.modules !== null);
@@ -147,6 +158,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         modules: sourceCandidate?.modules ?? [],
         industryPackage: sourceCandidate?.industryPackage,
         stamp: sourceCandidate?.stamp ?? '',
+        subscription: sourceCandidate?.subscription,
       };
       setLoaded({
         scope,
@@ -156,6 +168,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
           industryPackage: normalizePackage(source.industryPackage),
           disabledModules: source.modules,
           modulesUpdatedAt: source.stamp || undefined,
+          subscription: source.subscription ?? defaultSettings.subscription,
         },
       });
     });
@@ -185,6 +198,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       const config = {
         industryPackage: saved.industryPackage,
         disabledModules: saved.disabledModules,
+        subscription: saved.subscription,
         updatedAt: stamp,
       };
       if (repository !== localRepository) {

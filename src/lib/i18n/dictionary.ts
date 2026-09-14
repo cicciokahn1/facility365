@@ -6746,6 +6746,48 @@ export const dictionary = {
     it: "Pacchetto settoriale",
     en: "Industry package",
   },
+  "settings.subscription": {
+    de: "Abonnement",
+    fr: "Abonnement",
+    it: "Abbonamento",
+    en: "Subscription",
+  },
+  "settings.subscriptionHint": {
+    de: "Das Abonnement gilt für die Organisation und nicht für einzelne Benutzer. Es enthält keine Zahlungsabwicklung.",
+    fr: "L’abonnement s’applique à l’organisation et non aux utilisateurs individuels. Aucun paiement n’est traité.",
+    it: "L’abbonamento vale per l’organizzazione e non per singoli utenti. Non include pagamenti.",
+    en: "The subscription belongs to the organisation, not individual users. No payment processing is included.",
+  },
+  "settings.yearlyPrice": {
+    de: "Jahrespreis",
+    fr: "Prix annuel",
+    it: "Prezzo annuale",
+    en: "Annual price",
+  },
+  "settings.setupFee": {
+    de: "Einrichtungsgebühr",
+    fr: "Frais d’installation",
+    it: "Costo di configurazione",
+    en: "Setup fee",
+  },
+  "settings.contractStart": {
+    de: "Vertragsbeginn",
+    fr: "Début du contrat",
+    it: "Inizio del contratto",
+    en: "Contract start",
+  },
+  "settings.nextRenewal": {
+    de: "Nächste Verlängerung",
+    fr: "Prochain renouvellement",
+    it: "Prossimo rinnovo",
+    en: "Next renewal",
+  },
+  "settings.activeModules": {
+    de: "Aktive Module",
+    fr: "Modules actifs",
+    it: "Moduli attivi",
+    en: "Active modules",
+  },
   "settings.packageHint": {
     de: "Das Paket wählt die passenden Module vor; einzelne Module lassen sich danach frei ein- und ausschalten. Abgeschaltete Module verschwinden nur aus der Navigation – ihre Daten bleiben vollständig erhalten.",
     fr: "Le pack présélectionne les modules adaptés; chaque module reste activable ensuite. Un module désactivé disparaît seulement de la navigation – ses données sont conservées.",
@@ -6812,6 +6854,12 @@ export const dictionary = {
     it: "Facility365 Public",
     en: "Facility365 Public",
   },
+  "package.enterprise": {
+    de: "Facility365 Enterprise",
+    fr: "Facility365 Enterprise",
+    it: "Facility365 Enterprise",
+    en: "Facility365 Enterprise",
+  },
   "package.targetGroup": {
     de: "Zielgruppe",
     fr: "Groupe cible",
@@ -6853,6 +6901,12 @@ export const dictionary = {
     fr: "Communes, villes, écoles et administrations publiques",
     it: "Comuni, città, scuole e amministrazioni pubbliche",
     en: "Municipalities, cities, schools, and public administrations",
+  },
+  "package.enterprise.target": {
+    de: "Grosse Organisationen und individuelle Enterprise-Verträge",
+    fr: "Grandes organisations et contrats Enterprise individuels",
+    it: "Grandi organizzazioni e contratti Enterprise individuali",
+    en: "Large organisations and individual enterprise contracts",
   },
   "package.custom.target": {
     de: "Grosse Organisationen und spezielle Anforderungen",

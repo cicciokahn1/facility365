@@ -1401,11 +1401,22 @@ export type IndustryPackage =
   | "institution"
   | "industry"
   | "public"
+  | "enterprise"
   | "custom";
+
+export interface OrganizationSubscription {
+  package: IndustryPackage;
+  yearlyPrice: number;
+  setupFee: number;
+  contractStart: string;
+  nextRenewal: string;
+  currency: "CHF";
+}
 
 export interface ModuleConfig {
   industryPackage: IndustryPackage;
   disabledModules: ModuleKey[];
+  subscription?: OrganizationSubscription;
   /** Zeitpunkt der letzten Speicherung; entscheidet, welche Quelle gilt. */
   updatedAt?: string;
 }
@@ -1473,6 +1484,8 @@ export interface AppSettings {
   disabledModules: ModuleKey[];
   /** Zeitpunkt der letzten Speicherung der Modulkonfiguration. */
   modulesUpdatedAt?: string;
+  /** Organisationsbezogene Abo-Daten; die tenant_settings-Konfiguration ist führend. */
+  subscription?: OrganizationSubscription;
 }
 
 /**
