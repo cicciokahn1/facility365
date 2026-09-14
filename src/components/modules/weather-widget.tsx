@@ -85,7 +85,7 @@ export function WeatherWidget() {
   useEffect(() => {
     if (started.current) return;
     started.current = true;
-    const timer = window.setTimeout(() => {
+    const start = () => {
       void (async () => {
         const saved = readPlace();
         if (saved) {
@@ -104,7 +104,13 @@ export function WeatherWidget() {
         writePlace(target);
         await load(target);
       })();
-    }, 0);
+    };
+    const idle = window.requestIdleCallback;
+    if (idle) {
+      const idleId = idle(start, { timeout: 2500 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+    const timer = window.setTimeout(start, 800);
     return () => window.clearTimeout(timer);
   }, [language, load]);
 

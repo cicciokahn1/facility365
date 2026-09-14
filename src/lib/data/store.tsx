@@ -134,6 +134,10 @@ interface DataContextValue {
   /** Stand neu aus der Ablage lesen, etwa nach einer Wiederherstellung. */
   reload: () => void;
   subscribe: (listener: () => void) => () => void;
+  subscribeCollection: (
+    collection: CollectionKey,
+    listener: () => void,
+  ) => () => void;
   getStore: () => Store;
   getTrash: () => Store;
 }
@@ -215,16 +219,33 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   allRef.current = all;
   const snapshot = useRef({ store: EMPTY_STORE, trash: EMPTY_STORE });
   const listeners = useRef(new Set<() => void>());
+  const collectionListeners = useRef(
+    new Map<CollectionKey, Set<() => void>>(),
+  );
   const subscribe = useCallback((listener: () => void) => {
     listeners.current.add(listener);
     return () => listeners.current.delete(listener);
   }, []);
+  const subscribeCollection = useCallback(
+    (collection: CollectionKey, listener: () => void) => {
+      const current = collectionListeners.current.get(collection) ?? new Set();
+      current.add(listener);
+      collectionListeners.current.set(collection, current);
+      return () => current.delete(listener);
+    },
+    [],
+  );
   const getStore = useCallback(() => snapshot.current.store, []);
   const getTrash = useCallback(() => snapshot.current.trash, []);
 
   useLayoutEffect(() => {
+    const previous = snapshot.current.store;
     snapshot.current = { store, trash };
     listeners.current.forEach((listener) => listener());
+    for (const key of COLLECTIONS) {
+      if (previous[key] === store[key]) continue;
+      collectionListeners.current.get(key)?.forEach((listener) => listener());
+    }
   }, [store, trash]);
 
   useEffect(() => {
@@ -471,6 +492,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       repository,
       reload,
       subscribe,
+      subscribeCollection,
       getStore,
       getTrash,
     }),
@@ -489,6 +511,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       purgeItem,
       clearAll,
       subscribe,
+      subscribeCollection,
     ],
   );
 
@@ -632,9 +655,9 @@ export function useEntityIndex<K extends CollectionKey>(
 export function useCollectionItems<K extends CollectionKey>(
   collection: K,
 ): EntityOf<K>[] {
-  const { subscribe, getStore } = useData();
+  const { subscribeCollection, getStore } = useData();
   return useSyncExternalStore(
-    subscribe,
+    (listener) => subscribeCollection(collection, listener),
     () => getStore()[collection],
     () => EMPTY_STORE[collection],
   ) as EntityOf<K>[];
