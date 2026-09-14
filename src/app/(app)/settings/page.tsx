@@ -34,13 +34,22 @@ import { INTEGRATIONS } from '@/lib/integrations/registry';
 import { moduleByKey } from '@/lib/modules';
 import {
   OPTIONAL_MODULES,
+  CORE_MODULES,
   PACKAGE_KEYS,
   disabledByPackage,
+  packagePrice,
   packageLabelKey,
   packageTargetKey,
 } from '@/lib/packages/packages';
 import { useSettings } from '@/lib/settings/provider';
-import { AppSettings, IndustryPackage, Language, ModuleKey, ThemeMode } from '@/lib/types';
+import {
+  AppSettings,
+  IndustryPackage,
+  Language,
+  ModuleKey,
+  OrganizationSubscription,
+  ThemeMode,
+} from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { formatBytes } from '@/lib/utils/format';
 
@@ -61,6 +70,14 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
   const [draft, setDraft] = useState<AppSettings>(settings);
   const [usage] = useState(() => storageUsage());
   const [resetOpen, setResetOpen] = useState(false);
+  const subscription: OrganizationSubscription = draft.subscription ?? {
+    package: draft.industryPackage,
+    yearlyPrice: packagePrice(draft.industryPackage)?.yearly ?? 0,
+    setupFee: 0,
+    contractStart: '',
+    nextRenewal: '',
+    currency: 'CHF',
+  };
 
   const set = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
@@ -82,8 +99,17 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
   };
 
   const applyModules = (industryPackage: IndustryPackage, disabledModules: ModuleKey[]) => {
-    setDraft((current) => ({ ...current, industryPackage, disabledModules }));
-    void persist({ ...live, industryPackage, disabledModules });
+    const yearly = packagePrice(industryPackage)?.yearly;
+    const nextSubscription: OrganizationSubscription = {
+      ...subscription,
+      package: industryPackage,
+      yearlyPrice:
+        subscription.package === industryPackage || yearly === undefined
+          ? subscription.yearlyPrice
+          : yearly,
+    };
+    setDraft((current) => ({ ...current, industryPackage, disabledModules, subscription: nextSubscription }));
+    void persist({ ...live, industryPackage, disabledModules, subscription: nextSubscription });
   };
 
   /** Paket = Ausgangskonfiguration; Schalter darunter sind die Ueberschreibung und haben Vorrang. */
@@ -199,6 +225,92 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               </div>
             </Field>
             <p className="pt-1 text-xs text-muted-foreground">{t('settings.logoHint')}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('settings.subscription')}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          <p className="text-sm text-muted-foreground">{t('settings.subscriptionHint')}</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label={t('settings.package')}>
+              <Select
+                value={subscription.package || 'all'}
+                onValueChange={(value) => {
+                  const nextPackage = value === 'all' ? '' : (value as IndustryPackage);
+                  choosePackage(nextPackage);
+                }}
+              >
+                <SelectTrigger data-testid="subscription-package"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {PACKAGE_KEYS.map((key) => (
+                    <SelectItem key={key || 'all'} value={key || 'all'}>
+                      {t(packageLabelKey(key))}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label={`${t('settings.yearlyPrice')} (CHF)`}>
+              <Input
+                type="number"
+                min="0"
+                step="100"
+                value={subscription.yearlyPrice}
+                onChange={(event) =>
+                  set('subscription', { ...subscription, yearlyPrice: Number(event.target.value) || 0 })
+                }
+                data-testid="subscription-yearly-price"
+              />
+            </Field>
+            <Field label={`${t('settings.setupFee')} (CHF)`}>
+              <Input
+                type="number"
+                min="0"
+                step="100"
+                value={subscription.setupFee}
+                onChange={(event) =>
+                  set('subscription', { ...subscription, setupFee: Number(event.target.value) || 0 })
+                }
+                data-testid="subscription-setup-fee"
+              />
+            </Field>
+            <Field label={t('settings.contractStart')}>
+              <Input
+                type="date"
+                value={subscription.contractStart}
+                onChange={(event) =>
+                  set('subscription', { ...subscription, contractStart: event.target.value })
+                }
+                data-testid="subscription-contract-start"
+              />
+            </Field>
+            <Field label={t('settings.nextRenewal')}>
+              <Input
+                type="date"
+                value={subscription.nextRenewal}
+                onChange={(event) =>
+                  set('subscription', { ...subscription, nextRenewal: event.target.value })
+                }
+                data-testid="subscription-next-renewal"
+              />
+            </Field>
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-medium">
+              {t('settings.activeModules')}: {CORE_MODULES.length + OPTIONAL_MODULES.filter((module) => !draft.disabledModules.includes(module)).length}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {[...CORE_MODULES, ...OPTIONAL_MODULES.filter((module) => !draft.disabledModules.includes(module))]
+                .map((module) => (
+                  <span key={module} className="rounded-full border px-2 py-1 text-xs text-muted-foreground">
+                    {t(moduleByKey(module).labelKey)}
+                  </span>
+                ))}
+            </div>
           </div>
         </CardContent>
       </Card>

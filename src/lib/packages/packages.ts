@@ -125,6 +125,8 @@ const PACKAGES: Record<Exclude<IndustryPackage, '' | 'custom'>, ModuleKey[]> = {
     'analytics',
     'portal',
   ],
+  /** Enterprise: vollständiger Umfang ohne individuelle Paketbeschränkung. */
+  enterprise: OPTIONAL_MODULES,
 };
 
 export const PACKAGE_KEYS: IndustryPackage[] = [
@@ -135,6 +137,7 @@ export const PACKAGE_KEYS: IndustryPackage[] = [
   'institution',
   'industry',
   'public',
+  'enterprise',
   'custom',
 ];
 
@@ -159,7 +162,15 @@ export interface PackagePrice {
 
 export const PACKAGE_PRICES: Partial<
   Record<Exclude<IndustryPackage, ''>, PackagePrice>
-> = {};
+> = {
+  professional: { currency: 'CHF', yearly: 9600 },
+  property: { currency: 'CHF', yearly: 12000 },
+  care: { currency: 'CHF', yearly: 14000 },
+  institution: { currency: 'CHF', yearly: 18000 },
+  industry: { currency: 'CHF', yearly: 20000 },
+  public: { currency: 'CHF', yearly: 24000 },
+  enterprise: { currency: 'CHF', yearly: 30000 },
+};
 
 export const packagePrice = (key: IndustryPackage): PackagePrice | undefined =>
   key === '' ? undefined : PACKAGE_PRICES[key];
