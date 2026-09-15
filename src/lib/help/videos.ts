@@ -25,6 +25,10 @@ export interface HelpVideo {
   scenes: HelpVideoScene[];
   /** Optionale echte Videodatei (MP4/WebM). */
   src?: string;
+  /** Vorschaubild zur Videodatei. */
+  poster?: string;
+  /** Länge der Videodatei in Sekunden. */
+  durationSeconds?: number;
 }
 
 const scene = (
@@ -38,6 +42,9 @@ export const HELP_INTRO_VIDEO: HelpVideo = {
   id: 'intro',
   title: 'Facility365 in 2 Minuten',
   summary: 'Vom Schaden bis zum erledigten Auftrag – ein kompletter Ablauf in der echten App.',
+  src: '/help/video/facility365-in-2-minuten.mp4',
+  poster: '/help/video/facility365-in-2-minuten.jpg',
+  durationSeconds: 124,
   scenes: [
     scene(
       'dashboard',

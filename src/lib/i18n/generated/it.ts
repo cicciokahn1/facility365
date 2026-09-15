@@ -1397,6 +1397,7 @@ export const table: Record<string, string> = {
   "help.video.previous": "Indietro",
   "help.video.next": "Avanti",
   "help.video.close": "Chiudi",
+  "help.video.fullscreen": "Schermo intero",
   "help.video.tryIt": "Prova tu stesso",
   "help.video.shorts": "Brevi video di aiuto",
   "help.video.duration": "ca. {minutes} min",

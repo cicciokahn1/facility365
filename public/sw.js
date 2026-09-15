@@ -6,7 +6,7 @@
  * zwischengespeicherte Fassung zurueck. Die Nutzdaten liegen ohnehin im
  * Browser, daher genuegt das fuer den vollstaendigen Offline-Betrieb.
  */
-const CACHE = 'facility365-v2';
+const CACHE = 'facility365-v3';
 const OFFLINE_URL = '/dashboard';
 
 self.addEventListener('install', (event) => {
@@ -31,6 +31,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
   /* Seitendaten des App-Routers immer frisch, sonst bleibt eine alte Fassung haengen. */
   if (request.headers.has('RSC') || url.searchParams.has('_rsc')) return;
+  /* Videos werden in Teilstuecken (Range) geladen; das gehoert direkt ans Netz. */
+  if (request.destination === 'video' || request.headers.has('range')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(

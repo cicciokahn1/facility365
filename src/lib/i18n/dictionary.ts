@@ -7546,6 +7546,7 @@ export const dictionary = {
   "help.video.previous": { de: "Zurück", fr: "Précédent", it: "Indietro", en: "Back" },
   "help.video.next": { de: "Weiter", fr: "Suivant", it: "Avanti", en: "Next" },
   "help.video.close": { de: "Schliessen", fr: "Fermer", it: "Chiudi", en: "Close" },
+  "help.video.fullscreen": { de: "Vollbild", fr: "Plein écran", it: "Schermo intero", en: "Fullscreen" },
   "help.video.tryIt": {
     de: "Selbst ausprobieren",
     fr: "Essayer soi-même",
