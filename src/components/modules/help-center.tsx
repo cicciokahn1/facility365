@@ -10,6 +10,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronDown, LifeBuoy, Search } from 'lucide-react';
 
+import { HelpVideos } from '@/components/modules/help-video';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -76,6 +77,8 @@ export function HelpCenter() {
           </div>
         </CardContent>
       </Card>
+
+      {query.trim() === '' && category === ALL ? <HelpVideos /> : null}
 
       {articles.length === 0 ? (
         <Card>
