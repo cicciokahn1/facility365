@@ -120,6 +120,7 @@ export function TodayView() {
     () =>
       events
         .filter((event) => event.date <= day)
+        .filter((event) => !assigned.some((row) => row.href === event.href))
         .map((event) => ({
           key: event.id,
           href: event.href,
@@ -129,7 +130,7 @@ export function TodayView() {
           overdue: event.date < day,
         }))
         .sort((a, b) => a.date.localeCompare(b.date)),
-    [day, events, t],
+    [assigned, day, events, t],
   );
 
   const empty = assigned.length === 0 && due.length === 0;
@@ -188,7 +189,8 @@ function Section({
           <li key={row.key}>
             <Link
               href={row.href}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-card p-3 text-sm hover:border-primary/40"
+              aria-label={`${row.title} · ${row.label}`}
+              className="flex min-h-16 flex-wrap items-center justify-between gap-2 rounded-lg border bg-card px-4 py-3 text-base hover:border-primary/40"
             >
               <span className="min-w-0">
                 <span className="block truncate font-medium">{row.title}</span>
