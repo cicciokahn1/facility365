@@ -11,6 +11,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import {
   AlertTriangle,
+  ArrowRight,
   BarChart3,
   Bell,
   CalendarDays,
@@ -72,6 +73,11 @@ const QUICK_ACTIONS: {
   { href: '/documents?new=1&photo=1', module: 'documents', labelKey: 'dashboard.quick.photo', icon: Camera },
   { href: '/analytics', module: 'analytics', labelKey: 'report.openReport', icon: BarChart3 },
 ];
+
+function dueUrgency(date: string) {
+  const days = daysUntil(date);
+  return days !== null && days < 0 ? 0 : 1;
+}
 
 export default function DashboardPage() {
   const t = useT();
@@ -163,6 +169,7 @@ export default function DashboardPage() {
             href: `/orders/${order.id}`,
             textKey: 'dashboard.overdueOrder' as TranslationKey,
             title: order.title,
+            urgency: 0,
           })),
         ...openMaintenances
           .filter((maintenance) => {
@@ -174,6 +181,7 @@ export default function DashboardPage() {
             href: `/maintenances/${maintenance.id}`,
             textKey: 'dashboard.dueMaintenance' as TranslationKey,
             title: maintenance.title,
+            urgency: dueUrgency(maintenance.nextDate),
           })),
         ...openDamages
           .filter((damage) => damage.priority === 'critical' || damage.priority === 'high')
@@ -182,6 +190,7 @@ export default function DashboardPage() {
             href: `/damages/${damage.id}`,
             textKey: 'dashboard.urgentDamage' as TranslationKey,
             title: damage.title,
+            urgency: damage.priority === 'critical' ? 0 : 1,
           })),
         ...legionella
           .filter((check) => {
@@ -193,6 +202,7 @@ export default function DashboardPage() {
             href: `/legionella/${check.id}`,
             textKey: 'dashboard.dueLegionella' as TranslationKey,
             title: check.title || check.system,
+            urgency: dueUrgency(check.nextDate),
           })),
         ...rcd
           .filter((check) => {
@@ -205,6 +215,7 @@ export default function DashboardPage() {
             href: `/rcd/${check.id}`,
             textKey: 'dashboard.dueRcd' as TranslationKey,
             title: check.title || check.device,
+            urgency: dueUrgency(check.nextDate),
           })),
         ...inspections
           .filter((check) => {
@@ -217,6 +228,7 @@ export default function DashboardPage() {
             href: `/inspections/${check.id}`,
             textKey: 'dashboard.dueInspection' as TranslationKey,
             title: check.title || check.customType,
+            urgency: dueUrgency(check.nextDate),
           })),
         ...documents
           .filter((document) => documentExpiryState(document.validUntil, today()) !== 'valid')
@@ -225,6 +237,7 @@ export default function DashboardPage() {
             href: `/documents/${document.id}`,
             textKey: 'dashboard.documentExpiring' as TranslationKey,
             title: document.title || document.number,
+            urgency: documentExpiryState(document.validUntil, today()) === 'expired' ? 0 : 1,
           })),
         ...contracts
           .filter((contract) => isReminderDue(contract, today()))
@@ -233,8 +246,11 @@ export default function DashboardPage() {
             href: `/contracts/${contract.id}`,
             textKey: 'dashboard.expiringContract' as TranslationKey,
             title: contract.title || contract.partner,
+            urgency: 1,
           })),
-      ].slice(0, 8),
+      ]
+        .sort((a, b) => a.urgency - b.urgency)
+        .slice(0, 8),
     [contracts, documents, inspections, legionella, openDamages, openMaintenances, openOrders, rcd],
   );
 
@@ -269,6 +285,17 @@ export default function DashboardPage() {
       <div className="sm:hidden">
         <WeatherWidget />
       </div>
+
+      <Link
+        href="/today"
+        className="flex min-h-20 items-center gap-4 rounded-xl border-2 border-primary/30 bg-primary/5 px-4 py-3 transition-colors hover:border-primary/60 hover:bg-primary/10"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block text-base font-semibold">{t('dashboard.today')}</span>
+          <span className="block text-sm text-muted-foreground">{t('today.hint')}</span>
+        </span>
+        <ArrowRight className="size-5 shrink-0 text-primary" aria-hidden />
+      </Link>
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
@@ -389,7 +416,7 @@ export default function DashboardPage() {
               <ul className="divide-y" data-testid="notification-list">
                 {notifications.map((notification) => (
                   <li key={notification.id}>
-                    <Link href={notification.href} className="flex flex-col gap-0.5 py-3">
+                    <Link href={notification.href} className="flex min-h-16 flex-col justify-center gap-0.5 py-3">
                       <span className="text-sm font-medium">{notification.title}</span>
                       <span className="text-xs text-muted-foreground">{t(notification.textKey)}</span>
                     </Link>
