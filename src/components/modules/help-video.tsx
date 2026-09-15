@@ -5,11 +5,12 @@
  *
  * Ein Video läuft als Abfolge echter Bildschirme mit Untertitel automatisch
  * ab. Bedienung bewusst minimal: «Video starten», Pause, Zurück/Weiter.
- * Ist eine echte Videodatei hinterlegt, wird sie direkt abgespielt.
+ * Ist eine echte Videodatei hinterlegt (Einführungsvideo), wird sie mit
+ * Start/Pause und Vollbild abgespielt.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play, PlayCircle, RotateCcw } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Maximize2, Pause, Play, PlayCircle, RotateCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +22,7 @@ import { useT } from '@/lib/i18n/provider';
 const TICK_MS = 100;
 
 function totalSeconds(video: HelpVideo) {
-  return video.scenes.reduce((sum, scene) => sum + scene.seconds, 0);
+  return video.durationSeconds ?? video.scenes.reduce((sum, scene) => sum + scene.seconds, 0);
 }
 
 function useDurationLabel() {
@@ -59,7 +60,7 @@ export function HelpVideos() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={HELP_INTRO_VIDEO.scenes[0].image}
+              src={HELP_INTRO_VIDEO.poster ?? HELP_INTRO_VIDEO.scenes[0].image}
               alt=""
               className="aspect-video w-full object-cover object-top opacity-90 transition-opacity group-hover:opacity-100"
               loading="lazy"
@@ -150,15 +151,7 @@ function HelpVideoPlayer({ video, onClose }: { video: HelpVideo; onClose: () => 
   };
 
   if (video.src) {
-    return (
-      <>
-        <DialogHeader>
-          <DialogTitle>{video.title}</DialogTitle>
-          <DialogDescription>{video.summary}</DialogDescription>
-        </DialogHeader>
-        <video src={video.src} controls autoPlay playsInline className="aspect-video w-full rounded-lg bg-black" />
-      </>
-    );
+    return <HelpVideoFile video={video} src={video.src} onClose={onClose} />;
   }
 
   return (
@@ -227,6 +220,117 @@ function HelpVideoPlayer({ video, onClose }: { video: HelpVideo; onClose: () => 
             {t('help.video.close')}
           </Button>
         </div>
+      </div>
+    </>
+  );
+}
+
+/** Echte Videodatei: grosse Start/Pause-Taste, Fortschritt, Vollbild. */
+function HelpVideoFile({ video, src, onClose }: { video: HelpVideo; src: string; onClose: () => void }) {
+  const t = useT();
+  const ref = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    void ref.current?.play().catch(() => setPlaying(false));
+  }, []);
+
+  const toggle = () => {
+    const element = ref.current;
+    if (!element) return;
+    if (element.paused) void element.play();
+    else element.pause();
+  };
+
+  const restart = () => {
+    const element = ref.current;
+    if (!element) return;
+    element.currentTime = 0;
+    void element.play();
+  };
+
+  const fullscreen = () => {
+    const element = ref.current;
+    if (!element) return;
+    if (element.requestFullscreen) void element.requestFullscreen();
+    else if ('webkitEnterFullscreen' in element) {
+      (element as HTMLVideoElement & { webkitEnterFullscreen: () => void }).webkitEnterFullscreen();
+    }
+  };
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>{video.title}</DialogTitle>
+        <DialogDescription>{video.summary}</DialogDescription>
+      </DialogHeader>
+
+      <div className="relative overflow-hidden rounded-lg border bg-black" data-testid="help-video-player">
+        <video
+          ref={ref}
+          src={src}
+          poster={video.poster}
+          playsInline
+          preload="metadata"
+          className="aspect-video w-full"
+          onClick={toggle}
+          onPlay={() => {
+            setPlaying(true);
+            setFinished(false);
+          }}
+          onPause={() => setPlaying(false)}
+          onEnded={() => setFinished(true)}
+          onTimeUpdate={(event) => {
+            const element = event.currentTarget;
+            if (element.duration > 0) setProgress((element.currentTime / element.duration) * 100);
+          }}
+        />
+        {!playing ? (
+          <button
+            type="button"
+            onClick={finished ? restart : toggle}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/30 text-white"
+            aria-label={finished ? t('help.video.restart') : t('help.video.start')}
+          >
+            <span className="flex size-20 items-center justify-center rounded-full bg-primary shadow-lg">
+              {finished ? (
+                <RotateCcw className="size-10" aria-hidden />
+              ) : (
+                <Play className="size-10 fill-current" aria-hidden />
+              )}
+            </span>
+            <span className="text-lg font-semibold">
+              {finished ? t('help.video.finished') : t('help.video.start')}
+            </span>
+          </button>
+        ) : null}
+      </div>
+
+      <Progress value={progress} className="h-1.5" />
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {finished ? (
+            <Button size="lg" onClick={restart} data-testid="help-video-restart">
+              <RotateCcw className="size-5" aria-hidden />
+              {t('help.video.restart')}
+            </Button>
+          ) : (
+            <Button size="lg" onClick={toggle} data-testid="help-video-toggle">
+              {playing ? <Pause className="size-5" aria-hidden /> : <Play className="size-5" aria-hidden />}
+              {playing ? t('help.video.pause') : t('help.video.start')}
+            </Button>
+          )}
+          <Button variant="outline" size="lg" onClick={fullscreen} data-testid="help-video-fullscreen">
+            <Maximize2 className="size-5" aria-hidden />
+            {t('help.video.fullscreen')}
+          </Button>
+        </div>
+        <Button variant="ghost" size="lg" onClick={onClose}>
+          {t('help.video.close')}
+        </Button>
       </div>
     </>
   );
