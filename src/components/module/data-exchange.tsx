@@ -120,7 +120,10 @@ export function DataExchange({
     }
 
     let created = 0;
+    const existingNumbers = new Set(items.map((item) => item.number.trim().toLowerCase()));
     rows.slice(1).forEach((row) => {
+      const importedNumber = (row[0] ?? '').trim().toLowerCase();
+      if (importedNumber && existingNumbers.has(importedNumber)) return;
       const values: FormValues = {};
       columns.forEach(({ field, index }) => {
         if (index < 0) return;
@@ -128,6 +131,7 @@ export function DataExchange({
       });
       if (Object.values(values).every((value) => value === '' || value === false)) return;
       create(values as never, settings.profileName || settings.companyName);
+      if (importedNumber) existingNumbers.add(importedNumber);
       created += 1;
     });
 

@@ -69,6 +69,7 @@ const QUICK_ACTIONS: {
   { href: '/reports?new=1', module: 'reports', labelKey: 'dashboard.quick.report', icon: FileText, primary: true },
   { href: '/inspections?new=1', module: 'inspections', labelKey: 'dashboard.quick.inspection', icon: ClipboardCheck, primary: true },
   { href: '/cleaning/tasks?new=1', module: 'cleaningtasks', labelKey: 'dashboard.quick.cleaning', icon: SprayCan, primary: true },
+  { href: '/tickets?new=1', module: 'tickets', labelKey: 'module.tickets.singular', icon: Bell, primary: true },
   { href: '/reports?new=1&workTime=1', module: 'reports', labelKey: 'dashboard.quick.workTime', icon: Clock3 },
   { href: '/documents?new=1&photo=1', module: 'documents', labelKey: 'dashboard.quick.photo', icon: Camera },
   { href: '/analytics', module: 'analytics', labelKey: 'report.openReport', icon: BarChart3 },
@@ -91,6 +92,8 @@ export default function DashboardPage() {
   const inspections = useCollectionItems('inspections');
   const documents = useCollectionItems('documents');
   const contracts = useCollectionItems('contracts');
+  const tickets = useCollectionItems('tickets');
+  const cleaningTasks = useCollectionItems('cleaningtasks');
 
   const openOrders = useMemo(
     () => orders.filter((order) => !isDone('orders', order.status)),
@@ -103,6 +106,14 @@ export default function DashboardPage() {
   const openDamages = useMemo(
     () => damages.filter((damage) => !isDone('damages', damage.status)),
     [damages],
+  );
+  const openTickets = useMemo(
+    () => tickets.filter((ticket) => !isDone('tickets', ticket.status)),
+    [tickets],
+  );
+  const openCleaningTasks = useMemo(
+    () => cleaningTasks.filter((task) => !isDone('cleaningtasks', task.status)),
+    [cleaningTasks],
   );
 
   const appointments = useMemo(
@@ -153,10 +164,28 @@ export default function DashboardPage() {
             date: check.nextDate,
             labelKey: 'module.inspections.singular' as TranslationKey,
           })),
+        ...openTickets
+          .filter((ticket) => ticket.dueDate)
+          .map((ticket) => ({
+            id: ticket.id,
+            href: `/tickets/${ticket.id}`,
+            title: ticket.title,
+            date: ticket.dueDate,
+            labelKey: 'module.tickets.singular' as TranslationKey,
+          })),
+        ...openCleaningTasks
+          .filter((task) => task.date)
+          .map((task) => ({
+            id: task.id,
+            href: `/cleaning/tasks/${task.id}`,
+            title: task.title,
+            date: task.date,
+            labelKey: 'module.cleaningtasks.singular' as TranslationKey,
+          })),
       ]
         .sort((a, b) => a.date.localeCompare(b.date))
         .slice(0, 6),
-    [inspections, legionella, openMaintenances, openOrders, rcd],
+    [inspections, legionella, openCleaningTasks, openMaintenances, openOrders, openTickets, rcd],
   );
 
   const notifications = useMemo(
@@ -248,10 +277,28 @@ export default function DashboardPage() {
             title: contract.title || contract.partner,
             urgency: 1,
           })),
+        ...openTickets
+          .filter((ticket) => ticket.dueDate && ticket.dueDate < today())
+          .map((ticket) => ({
+            id: `ticket-${ticket.id}`,
+            href: `/tickets/${ticket.id}`,
+            textKey: 'dashboard.overdueTicket' as TranslationKey,
+            title: ticket.title,
+            urgency: 0,
+          })),
+        ...openCleaningTasks
+          .filter((task) => task.date && task.date <= today())
+          .map((task) => ({
+            id: `cleaning-${task.id}`,
+            href: `/cleaning/tasks/${task.id}`,
+            textKey: 'dashboard.dueCleaning' as TranslationKey,
+            title: task.title,
+            urgency: task.date < today() ? 0 : 1,
+          })),
       ]
         .sort((a, b) => a.urgency - b.urgency)
         .slice(0, 8),
-    [contracts, documents, inspections, legionella, openDamages, openMaintenances, openOrders, rcd],
+    [contracts, documents, inspections, legionella, openCleaningTasks, openDamages, openMaintenances, openOrders, openTickets, rcd],
   );
 
   const criticalOrders = useMemo(
@@ -321,6 +368,18 @@ export default function DashboardPage() {
           labelKey="dashboard.criticalOrders"
           value={criticalOrders}
           icon={AlertTriangle}
+        />
+        <StatCard
+          href="/tickets"
+          labelKey="module.tickets"
+          value={openTickets.length}
+          icon={Bell}
+        />
+        <StatCard
+          href="/cleaning/tasks"
+          labelKey="module.cleaningtasks"
+          value={openCleaningTasks.length}
+          icon={SprayCan}
         />
       </section>
 
