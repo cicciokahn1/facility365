@@ -31,6 +31,8 @@ export interface HelpVideo {
   poster?: string;
   /** Länge der Videodatei in Sekunden. */
   durationSeconds?: number;
+  /** Optionale Untertiteldateien je App-Sprache. */
+  captions?: Partial<Record<Language, string>>;
 }
 
 const scene = (
@@ -278,4 +280,10 @@ const INTRO_COPY: Partial<Record<Language, Pick<HelpVideo, 'title' | 'summary'>>
 export const helpIntroFor = (language: Language): HelpVideo => ({
   ...HELP_INTRO_VIDEO,
   ...(INTRO_COPY[language] ?? {}),
+  captions: {
+    de: '/help/video/captions/de.vtt',
+    fr: '/help/video/captions/fr.vtt',
+    it: '/help/video/captions/it.vtt',
+    en: '/help/video/captions/en.vtt',
+  },
 });
