@@ -14,22 +14,47 @@ import { HelpVideos } from '@/components/modules/help-video';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { HELP_CATEGORIES, searchHelp } from '@/lib/help/content';
-import { useT } from '@/lib/i18n/provider';
+import { HELP_CATEGORIES } from '@/lib/help/content';
+import { localizedHelpCategories } from '@/lib/help/localized';
+import { useI18n, useT } from '@/lib/i18n/provider';
 import { cn } from '@/lib/utils';
 
 const ALL = 'all';
 
 export function HelpCenter() {
   const t = useT();
+  const { language } = useI18n();
+  const helpCategories = useMemo(() => localizedHelpCategories(language, HELP_CATEGORIES), [language]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>(ALL);
   const [open, setOpen] = useState<string | null>(null);
 
   const articles = useMemo(() => {
-    const found = searchHelp(query);
+    const allArticles = helpCategories.flatMap((item) =>
+      item.articles.map((article) => ({
+        ...article,
+        categoryId: item.id,
+        categoryTitle: item.title,
+      })),
+    );
+    const needle = query.trim().toLowerCase();
+    const found = !needle
+      ? allArticles
+      : allArticles.filter((article) =>
+          [
+            article.title,
+            article.summary,
+            article.categoryTitle,
+            ...article.paragraphs,
+            ...(article.steps ?? []).flatMap((step) => [step.title, step.text]),
+            ...(article.keywords ?? []),
+          ]
+            .join(' ')
+            .toLowerCase()
+            .includes(needle),
+        );
     return category === ALL ? found : found.filter((item) => item.categoryId === category);
-  }, [category, query]);
+  }, [category, helpCategories, query]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -63,7 +88,7 @@ export function HelpCenter() {
             >
               {t('common.all')}
             </Button>
-            {HELP_CATEGORIES.map((item) => (
+            {helpCategories.map((item) => (
               <Button
                 key={item.id}
                 variant={category === item.id ? 'default' : 'outline'}
