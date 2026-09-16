@@ -5332,6 +5332,18 @@ export const dictionary = {
     it: "Danno con priorità alta",
     en: "High priority damage",
   },
+  "dashboard.overdueTicket": {
+    de: "Helpdesk-Meldung überfällig",
+    fr: "Demande Helpdesk en retard",
+    it: "Segnalazione Helpdesk in ritardo",
+    en: "Overdue helpdesk request",
+  },
+  "dashboard.dueCleaning": {
+    de: "Reinigung heute fällig",
+    fr: "Nettoyage prévu aujourd’hui",
+    it: "Pulizia prevista oggi",
+    en: "Cleaning due today",
+  },
 
   "action.showAll": {
     de: "Alle anzeigen",

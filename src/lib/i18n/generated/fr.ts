@@ -1006,6 +1006,8 @@ export const table: Record<string, string> = {
   "keys.historyReturned": "Clé restituée",
   "dashboard.dueMaintenance": "Entretien à venir",
   "dashboard.urgentDamage": "Dommage à priorité élevée",
+  "dashboard.overdueTicket": "Demande Helpdesk en retard",
+  "dashboard.dueCleaning": "Nettoyage prévu aujourd’hui",
   "action.showAll": "Tout afficher",
   "action.preview": "Aperçu",
   "tab.qr": "Code QR",
