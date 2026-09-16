@@ -230,6 +230,7 @@ function HelpVideoPlayer({ video, onClose }: { video: HelpVideo; onClose: () => 
 
 /** Echte Videodatei: grosse Start/Pause-Taste, Fortschritt, Vollbild. */
 function HelpVideoFile({ video, src, onClose }: { video: HelpVideo; src: string; onClose: () => void }) {
+  const { language } = useI18n();
   const t = useT();
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -290,6 +291,15 @@ function HelpVideoFile({ video, src, onClose }: { video: HelpVideo; src: string;
             if (element.duration > 0) setProgress((element.currentTime / element.duration) * 100);
           }}
         />
+        {video.captions?.[language] ? (
+          <track
+            kind="captions"
+            src={video.captions[language]}
+            srcLang={language}
+            label={language.toUpperCase()}
+            default
+          />
+        ) : null}
         {!playing ? (
           <button
             type="button"
