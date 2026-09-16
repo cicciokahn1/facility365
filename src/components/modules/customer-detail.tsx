@@ -4,6 +4,7 @@ import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
 import { ContactEditor } from '@/components/modules/contact-editor';
 import { ContractEditor } from '@/components/modules/contract-editor';
+import { Facility365RequestDialog } from '@/components/modules/facility365-request-dialog';
 import { useCollectionItems } from '@/lib/data/store';
 
 export function CustomerDetail({ id }: { id: string }) {
@@ -15,6 +16,7 @@ export function CustomerDetail({ id }: { id: string }) {
     <EntityDetail
       collection="customers"
       id={id}
+      headerExtra={(customer) => <Facility365RequestDialog customer={customer} />}
       extraTabs={(customer, update) => [
         {
           value: 'contacts',

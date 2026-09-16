@@ -51,7 +51,7 @@ import {
   ThemeMode,
 } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { formatBytes } from '@/lib/utils/format';
+import { formatBytes, formatMoney } from '@/lib/utils/format';
 
 /** Das Formular wird erst eingehaengt, wenn die gespeicherten Werte vorliegen. */
 export default function SettingsPage() {
@@ -249,6 +249,9 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
                   {PACKAGE_KEYS.map((key) => (
                     <SelectItem key={key || 'all'} value={key || 'all'}>
                       {t(packageLabelKey(key))}
+                      {key
+                        ? ` · ${packagePrice(key)?.yearly === undefined ? t('settings.individualPrice') : formatMoney(packagePrice(key)?.yearly ?? 0)} / Jahr`
+                        : ''}
                     </SelectItem>
                   ))}
                 </SelectContent>
