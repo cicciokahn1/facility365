@@ -6764,6 +6764,48 @@ export const dictionary = {
     it: "Prezzo annuale",
     en: "Annual price",
   },
+  "settings.individualPrice": {
+    de: "individuell",
+    fr: "individuel",
+    it: "individuale",
+    en: "individual",
+  },
+  "customer.requestFacility365": {
+    de: "Facility365 anfragen",
+    fr: "Demander Facility365",
+    it: "Richiedi Facility365",
+    en: "Request Facility365",
+  },
+  "customer.requestHint": {
+    de: "Die Anfrage wird als E-Mail an die hinterlegte Facility365-Adresse vorbereitet.",
+    fr: "La demande est préparée comme e-mail à l’adresse Facility365 enregistrée.",
+    it: "La richiesta viene preparata come e-mail all’indirizzo Facility365 registrato.",
+    en: "The request is prepared as an email to the configured Facility365 address.",
+  },
+  "customer.desiredPackage": {
+    de: "Gewünschtes Paket",
+    fr: "Pack souhaité",
+    it: "Pacchetto desiderato",
+    en: "Desired package",
+  },
+  "customer.sendRequest": {
+    de: "Anfrage vorbereiten",
+    fr: "Préparer la demande",
+    it: "Prepara richiesta",
+    en: "Prepare request",
+  },
+  "customer.requestRequired": {
+    de: "Bitte alle Felder ausfüllen.",
+    fr: "Veuillez remplir tous les champs.",
+    it: "Compila tutti i campi.",
+    en: "Please complete all fields.",
+  },
+  "customer.requestEmailMissing": {
+    de: "Bitte zuerst die Facility365-E-Mail in den Einstellungen hinterlegen.",
+    fr: "Veuillez d’abord enregistrer l’adresse e-mail Facility365 dans les paramètres.",
+    it: "Inserisci prima l’e-mail Facility365 nelle impostazioni.",
+    en: "First configure the Facility365 email address in Settings.",
+  },
   "settings.setupFee": {
     de: "Einrichtungsgebühr",
     fr: "Frais d’installation",
