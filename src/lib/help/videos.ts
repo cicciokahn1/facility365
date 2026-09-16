@@ -1,3 +1,5 @@
+import type { Language } from '@/lib/i18n/dictionary';
+
 /**
  * Hilfevideos «Facility365 in 2 Minuten».
  *
@@ -200,3 +202,80 @@ export const HELP_SHORT_VIDEOS: HelpVideo[] = [
     ],
   },
 ];
+
+type VideoCopy = {
+  title: string;
+  summary: string;
+  captions: string[];
+};
+
+const SHORT_VIDEO_COPY: Partial<Record<Language, Record<string, VideoCopy>>> = {
+  fr: {
+    dashboard: { title: 'Tableau de bord', summary: 'Ce qui est important aujourd’hui – en un coup d’œil.', captions: ['En haut : Aujourd’hui, les mandats ouverts, les entretiens dus et les dommages.', 'Avec « Aujourd’hui », chaque personne ne voit que ce qui doit être fait maintenant.'] },
+    damage: { title: 'Signaler un dommage', summary: 'En trois étapes.', captions: ['Sous « Dommages », toutes les annonces apparaissent avec leur statut et leur priorité.', 'Appuyer sur « Nouveau », saisir le titre et le lieu, joindre une photo, enregistrer.', 'Le dommage devient un mandat en un clic.'] },
+    order: { title: 'Traiter et terminer un mandat', summary: 'Ouvrir, travailler, terminer.', captions: ['La liste des mandats affiche le statut, l’échéance et la personne responsable.', 'Les actions principales sont en haut : Terminer, Rapport, Photos, Modifier.', 'Saisir directement le temps de travail dans le mandat.'] },
+    maintenance: { title: 'Entretien', summary: 'Effectuer les entretiens dus.', captions: ['Les entretiens dus apparaissent sur le tableau de bord et dans la liste.', 'Effectuer le travail et appuyer sur « Terminé » – la prochaine date est créée.'] },
+    inspection: { title: 'Contrôle', summary: 'Contrôler et prouver.', captions: ['Contrôles avec intervalle et prochaine date.', '« Effectuer un contrôle » démarre directement depuis le tableau de bord.'] },
+    cleaning: { title: 'Nettoyage', summary: 'Tâches par pièce et par jour.', captions: ['Tâches de nettoyage avec pièce, fréquence et responsables. Les tâches terminées sont cochées.'] },
+    report: { title: 'Rapport et temps de travail', summary: 'Saisir le temps et créer un rapport.', captions: ['Temps de travail de/à avec pause – les heures sont calculées.', 'Les rapports regroupent le travail, le matériel et le temps – en PDF ou pour la facturation.'] },
+    qr: { title: 'Code QR', summary: 'Scanner et accéder directement à la fiche.', captions: ['Chaque installation et chaque pièce possède un code QR.', 'Scanner en haut à droite ouvre immédiatement la fiche correspondante.'] },
+  },
+  it: {
+    dashboard: { title: 'Dashboard', summary: 'Ciò che è importante oggi – a colpo d’occhio.', captions: ['In alto: Oggi, ordini aperti, manutenzioni in scadenza e segnalazioni.', 'Con «Oggi» ogni persona vede solo ciò che deve fare adesso.'] },
+    damage: { title: 'Segnalare un danno', summary: 'In tre passaggi.', captions: ['In «Danni» sono visibili tutte le segnalazioni con stato e priorità.', 'Toccare «Nuovo», inserire titolo e luogo, allegare una foto e salvare.', 'Con un tocco il danno diventa un ordine.'] },
+    order: { title: 'Gestire e chiudere un ordine', summary: 'Aprire, lavorare, completare.', captions: ['L’elenco mostra stato, scadenza e responsabile.', 'Le azioni principali sono in alto: Completa, Rapporto, Foto, Modifica.', 'Registrare direttamente il tempo di lavoro nell’ordine.'] },
+    maintenance: { title: 'Manutenzione', summary: 'Eseguire le manutenzioni in scadenza.', captions: ['Le manutenzioni in scadenza compaiono nel dashboard e nell’elenco.', 'Eseguire il lavoro e toccare «Completato» – viene impostata la prossima data.'] },
+    inspection: { title: 'Controllo', summary: 'Controllare e documentare.', captions: ['Controlli con intervallo e prossima data.', '«Esegui controllo» avvia direttamente il controllo dal dashboard.'] },
+    cleaning: { title: 'Pulizia', summary: 'Attività per locale e giorno.', captions: ['Attività di pulizia con locale, frequenza e responsabili. Le attività concluse vengono spuntate.'] },
+    report: { title: 'Rapporto e tempo di lavoro', summary: 'Registrare il tempo e creare un rapporto.', captions: ['Tempo di lavoro da/a con pausa – le ore vengono calcolate.', 'I rapporti riuniscono lavoro, materiale e tempo – come PDF o per la fatturazione.'] },
+    qr: { title: 'Codice QR', summary: 'Scansionare e aprire subito la scheda.', captions: ['Ogni impianto e ogni locale ha un codice QR.', 'La scansione in alto a destra apre subito la scheda corretta.'] },
+  },
+  en: {
+    dashboard: { title: 'Dashboard', summary: 'What matters today – at a glance.', captions: ['At the top: Today, open orders, due maintenance and reported damage.', 'Today shows each person only what needs to be done now.'] },
+    damage: { title: 'Report damage', summary: 'Done in three steps.', captions: ['Damage shows all reports with their status and priority.', 'Tap New, enter the title and location, add a photo and save.', 'Turn the damage report into an order with one tap.'] },
+    order: { title: 'Work on and complete an order', summary: 'Open, work, complete.', captions: ['The order list shows status, due date and responsibility.', 'The key actions are at the top: Complete, Report, Photos, Edit.', 'Record working time directly in the order.'] },
+    maintenance: { title: 'Maintenance', summary: 'Carry out due maintenance.', captions: ['Due maintenance appears on the dashboard and in the list.', 'Do the work and tap Complete – the next date is set automatically.'] },
+    inspection: { title: 'Inspection', summary: 'Check and document.', captions: ['Inspections with intervals and the next due date.', 'Start an inspection directly from the dashboard.'] },
+    cleaning: { title: 'Cleaning', summary: 'Tasks by room and day.', captions: ['Cleaning tasks show room, frequency and responsibility. Completed tasks are checked off.'] },
+    report: { title: 'Report and working time', summary: 'Record time and create a report.', captions: ['Working time from/to with a break – hours are calculated automatically.', 'Reports combine work, materials and time – as a PDF or for billing.'] },
+    qr: { title: 'QR code', summary: 'Scan and open the record directly.', captions: ['Every asset and room has a QR code.', 'Scan at the top right to open the matching record immediately.'] },
+  },
+};
+
+export const helpShortVideosFor = (language: Language): HelpVideo[] => {
+  const copies = SHORT_VIDEO_COPY[language];
+  if (!copies) return HELP_SHORT_VIDEOS;
+  return HELP_SHORT_VIDEOS.map((video) => {
+    const copy = copies[video.id];
+    if (!copy) return video;
+    return {
+      ...video,
+      title: copy.title,
+      summary: copy.summary,
+      scenes: video.scenes.map((item, index) => ({
+        ...item,
+        caption: copy.captions[index] ?? item.caption,
+      })),
+    };
+  });
+};
+
+const INTRO_COPY: Partial<Record<Language, Pick<HelpVideo, 'title' | 'summary'>>> = {
+  fr: {
+    title: 'Facility365 en 2 minutes',
+    summary: 'Du dommage au mandat terminé – un parcours complet dans l’application.',
+  },
+  it: {
+    title: 'Facility365 in 2 minuti',
+    summary: 'Dal danno all’ordine completato – un flusso completo nell’app.',
+  },
+  en: {
+    title: 'Facility365 in 2 minutes',
+    summary: 'From damage report to completed order – a complete workflow in the real app.',
+  },
+};
+
+export const helpIntroFor = (language: Language): HelpVideo => ({
+  ...HELP_INTRO_VIDEO,
+  ...(INTRO_COPY[language] ?? {}),
+});

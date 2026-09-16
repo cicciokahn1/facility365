@@ -16,8 +16,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { HELP_INTRO_VIDEO, HELP_SHORT_VIDEOS, type HelpVideo } from '@/lib/help/videos';
-import { useT } from '@/lib/i18n/provider';
+import { helpIntroFor, helpShortVideosFor, type HelpVideo } from '@/lib/help/videos';
+import { useI18n, useT } from '@/lib/i18n/provider';
 
 const TICK_MS = 100;
 
@@ -37,8 +37,11 @@ function useDurationLabel() {
 
 export function HelpVideos() {
   const t = useT();
+  const { language } = useI18n();
   const duration = useDurationLabel();
   const [active, setActive] = useState<HelpVideo | null>(null);
+  const introVideo = useMemo(() => helpIntroFor(language), [language]);
+  const shortVideos = useMemo(() => helpShortVideosFor(language), [language]);
 
   return (
     <>
@@ -53,14 +56,14 @@ export function HelpVideos() {
         <CardContent className="flex flex-col gap-5">
           <button
             type="button"
-            onClick={() => setActive(HELP_INTRO_VIDEO)}
+            onClick={() => setActive(introVideo)}
             className="group relative overflow-hidden rounded-xl border bg-muted text-left"
             data-testid="help-video-intro"
-            aria-label={`${t('help.video.start')}: ${HELP_INTRO_VIDEO.title}`}
+            aria-label={`${t('help.video.start')}: ${introVideo.title}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={HELP_INTRO_VIDEO.poster ?? HELP_INTRO_VIDEO.scenes[0].image}
+              src={introVideo.poster ?? introVideo.scenes[0].image}
               alt=""
               className="aspect-video w-full object-cover object-top opacity-90 transition-opacity group-hover:opacity-100"
               loading="lazy"
@@ -71,7 +74,7 @@ export function HelpVideos() {
               </span>
               <span className="text-lg font-semibold sm:text-xl">{t('help.video.start')}</span>
               <span className="text-xs opacity-90 sm:text-sm">
-                {HELP_INTRO_VIDEO.summary} · {duration(HELP_INTRO_VIDEO)}
+                {introVideo.summary} · {duration(introVideo)}
               </span>
             </span>
           </button>
@@ -79,7 +82,7 @@ export function HelpVideos() {
           <div>
             <p className="mb-2 text-sm font-semibold">{t('help.video.shorts')}</p>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-              {HELP_SHORT_VIDEOS.map((video) => (
+              {shortVideos.map((video) => (
                 <button
                   key={video.id}
                   type="button"
