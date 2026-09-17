@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,6 +43,14 @@ export function QuickWorkTime() {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
       <header>
+        <Button
+          variant="ghost"
+          className="mb-2 -ml-3 w-fit gap-2"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="size-4" aria-hidden />
+          {t('action.back')}
+        </Button>
         <h1 className="text-2xl font-semibold tracking-tight">{t('quickWorkTime.title')}</h1>
         <p className="text-sm text-muted-foreground">{t('quickWorkTime.hint')}</p>
       </header>
