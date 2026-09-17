@@ -40,6 +40,7 @@ export function SyncBanner() {
       ) : (
         <WifiOff className="size-4" aria-hidden />
       )}
+      {!sync.online ? <strong>{t("offline.title")}</strong> : null}
       <span>{label}</span>
       {sync.pending > 0 ? (
         <span data-testid="sync-pending" className="font-medium">

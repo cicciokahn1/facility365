@@ -6,12 +6,35 @@
  * zwischengespeicherte Fassung zurueck. Die Nutzdaten liegen ohnehin im
  * Browser, daher genuegt das fuer den vollstaendigen Offline-Betrieb.
  */
-const CACHE = 'facility365-v3';
+const CACHE = 'facility365-v4';
 const OFFLINE_URL = '/dashboard';
+const OFFLINE_ROUTES = [
+  OFFLINE_URL,
+  '/today',
+  '/orders',
+  '/maintenances',
+  '/inspections',
+  '/cleaning',
+  '/damages',
+  '/work-time',
+  '/reports',
+  '/manifest.webmanifest',
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll([OFFLINE_URL, '/manifest.webmanifest'])),
+    caches.open(CACHE).then(async (cache) => {
+      await Promise.all(
+        OFFLINE_ROUTES.map(async (route) => {
+          try {
+            const response = await fetch(route, { credentials: 'include' });
+            if (response.ok) await cache.put(route, response);
+          } catch {
+            /* Die App kann auch installiert werden, wenn einzelne Routen fehlen. */
+          }
+        }),
+      );
+    }),
   );
   self.skipWaiting();
 });
@@ -29,10 +52,23 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
-  /* Seitendaten des App-Routers immer frisch, sonst bleibt eine alte Fassung haengen. */
-  if (request.headers.has('RSC') || url.searchParams.has('_rsc')) return;
   /* Videos werden in Teilstuecken (Range) geladen; das gehoert direkt ans Netz. */
   if (request.destination === 'video' || request.headers.has('range')) return;
+
+  if (request.headers.has('RSC') || url.searchParams.has('_rsc')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            void caches.open(CACHE).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request)),
+    );
+    return;
+  }
 
   if (request.mode === 'navigate') {
     event.respondWith(
