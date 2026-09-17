@@ -58,6 +58,7 @@ import {
   EntityOf,
   Photo,
 } from "@/lib/types";
+import type { CleaningCheck } from "@/lib/types";
 import { FOLLOW_UP_SOURCES } from "@/lib/links/follow-up";
 import { DossierLevel } from "@/lib/links/dossier";
 import { isCompletable } from "@/lib/workflow/complete";
@@ -102,6 +103,7 @@ export function EntityDetail<K extends CollectionKey>({
   const moduleDef = moduleByCollection(collection);
   const config = configOf(collection);
   const { get, update, remove, create, ready } = useCollection(collection);
+  const cleaningTasks = useCollection("cleaningtasks");
   const { settings } = useSettings();
   const access = useAccess();
   const mayWrite = access.canWrite(moduleDef.key);
@@ -141,7 +143,50 @@ export function EntityDetail<K extends CollectionKey>({
   const applyUpdate = (
     values: Partial<EntityOf<K>>,
     action = "history.updated",
-  ) => update(id, values, action, settings.profileName || settings.companyName);
+  ) => {
+    update(id, values, action, settings.profileName || settings.companyName);
+    const result = (values as Partial<CleaningCheck>).result;
+    if (
+      collection === "cleaningchecks" &&
+      result &&
+      ["minor", "major"].includes(result)
+    ) {
+      const check = entity as CleaningCheck;
+      const title = `Nachbesserung: ${check.title || check.number}`;
+      const hasOpenTask = cleaningTasks.items.some(
+        (task) =>
+          task.areaId === check.areaId &&
+          task.title === title &&
+          !["done", "cancelled"].includes(task.status),
+      );
+      if (!hasOpenTask) {
+        cleaningTasks.create(
+          {
+            title,
+            planId: "",
+            areaId: check.areaId,
+            propertyId: "",
+            buildingId: "",
+            roomId: "",
+            cleanerId: "",
+            responsibleId: "",
+            assigneeUserId: "",
+            assigneeTeam: "",
+            date: new Date().toISOString().slice(0, 10),
+            status: "open",
+            workStart: "",
+            workEnd: "",
+            breakMinutes: 0,
+            completedAt: "",
+            checklist: [],
+            materials: [],
+            notes: check.measures,
+          },
+          settings.profileName || settings.companyName,
+        );
+      }
+    }
+  };
 
   /**
    * Kopie eines Datensatzes.
