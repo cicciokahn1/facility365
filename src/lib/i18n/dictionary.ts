@@ -7123,6 +7123,36 @@ export const dictionary = {
     it: "Nessuna colonna corrispondente. Esportare prima e poi completare il file.",
     en: "No matching columns found. Export first and add rows to that file.",
   },
+  "exchange.preview": {
+    de: "Import prüfen",
+    fr: "Vérifier l’importation",
+    it: "Verifica importazione",
+    en: "Review import",
+  },
+  "exchange.previewHint": {
+    de: "Vorschau vor dem Speichern. Bestehende Nummern werden übersprungen.",
+    fr: "Aperçu avant l’enregistrement. Les numéros existants sont ignorés.",
+    it: "Anteprima prima del salvataggio. I numeri esistenti vengono ignorati.",
+    en: "Preview before saving. Existing numbers are skipped.",
+  },
+  "exchange.validRows": {
+    de: "Neue Zeilen",
+    fr: "Nouvelles lignes",
+    it: "Nuove righe",
+    en: "New rows",
+  },
+  "exchange.duplicateRows": {
+    de: "Duplikate",
+    fr: "Doublons",
+    it: "Duplicati",
+    en: "Duplicates",
+  },
+  "exchange.emptyRows": {
+    de: "Leere Zeilen",
+    fr: "Lignes vides",
+    it: "Righe vuote",
+    en: "Empty rows",
+  },
   "exchange.calendarExport": {
     de: "Kalender-Export",
     fr: "Export calendrier",

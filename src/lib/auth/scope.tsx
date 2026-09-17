@@ -129,6 +129,14 @@ export function useAccess(): Access {
       if (collection === 'organizations') {
         return scope.allOrganizations || entity.id === scope.organizationId;
       }
+      if (collection === 'users') {
+        const organizationId = stringField(entity, 'organizationId');
+        return (
+          scope.allOrganizations ||
+          !organizationId ||
+          organizationId === scope.organizationId
+        );
+      }
       if (allowedSiteIds.length === 0) return true;
       if (WITHOUT_LOCATION.includes(collection)) return true;
       if (collection === 'sites') return allowedSiteIds.includes(entity.id);
