@@ -4,6 +4,8 @@ import { newId } from '@/lib/utils/id';
 
 const CHECKLISTS: Record<string, string[]> = {
   sanitary: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
     'WC reinigen',
     'WC-Sitz reinigen',
     'Waschbecken reinigen',
@@ -14,9 +16,24 @@ const CHECKLISTS: Record<string, string[]> = {
     'Toilettenpapier auffüllen',
     'Seife auffüllen',
     'Boden reinigen',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
+  sanitaryDeep: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Grobe Verschmutzungen entfernen',
+    'WC-Schüssel und Sitz gründlich reinigen',
+    'Fliesen, Fugen und Ablauf reinigen',
+    'Armaturen und Spiegel reinigen',
+    'Desinfizieren, falls vorgesehen',
+    'Boden gründlich reinigen',
+    'Arbeitsplatz sauber verlassen',
     'Sichtkontrolle',
   ],
   office: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
     'Abfall leeren',
     'Papierkorb kontrollieren',
     'Oberflächen reinigen',
@@ -24,25 +41,112 @@ const CHECKLISTS: Record<string, string[]> = {
     'Griffbereiche reinigen',
     'Boden reinigen',
     'Sichtbare Verschmutzungen entfernen',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
+  room: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Abfall leeren',
+    'Oberflächen und Kontaktbereiche reinigen',
+    'Bett und Einrichtung kontrollieren',
+    'Boden reinigen',
+    'Verbrauchsmaterial auffüllen',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
+  careRoom: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Abfall gemäss Vorgabe entfernen',
+    'Kontaktflächen reinigen und desinfizieren',
+    'Sanitärbereich reinigen',
+    'Boden reinigen',
+    'Verbrauchsmaterial auffüllen',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
+  bathroom: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Grobe Verschmutzungen entfernen',
+    'Dusche, Bad und Waschbecken reinigen',
+    'Armaturen und Spiegel reinigen',
+    'Boden reinigen',
+    'Arbeitsplatz sauber verlassen',
     'Sichtkontrolle',
   ],
   stairway: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
     'Handläufe reinigen',
     'Treppen reinigen',
     'Podeste reinigen',
     'Abfall entfernen',
     'Spinnweben entfernen',
+    'Arbeitsplatz sauber verlassen',
     'Sichtkontrolle',
   ],
-  corridor: ['Boden reinigen', 'Wände und Griffbereiche kontrollieren', 'Abfall entfernen', 'Sichtkontrolle'],
-  kitchen: ['Arbeitsflächen reinigen', 'Spüle und Armaturen reinigen', 'Abfall leeren', 'Boden reinigen', 'Sichtkontrolle'],
+  corridor: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Boden reinigen',
+    'Wände und Griffbereiche kontrollieren',
+    'Abfall entfernen',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
+  kitchen: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Grobe Verschmutzungen entfernen',
+    'Arbeitsflächen reinigen',
+    'Spüle und Armaturen reinigen',
+    'Abfall leeren',
+    'Boden reinigen',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
+  deep: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Grobe Verschmutzungen entfernen',
+    'Oberflächen und Kontaktbereiche gründlich reinigen',
+    'Ecken, Kanten und schwer zugängliche Stellen reinigen',
+    'Boden gründlich reinigen',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
+  disinfection: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Grobe Verschmutzungen entfernen',
+    'Kontaktflächen reinigen',
+    'Desinfektionsmittel nach Herstellerangaben dosieren',
+    'Einwirkzeit einhalten',
+    'Raum ausreichend lüften',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
+  waste: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
+    'Abfall sortieren und sicher entfernen',
+    'Behälter reinigen und neue Säcke einsetzen',
+    'Boden und Umfeld reinigen',
+    'Arbeitsplatz sauber verlassen',
+    'Sichtkontrolle',
+  ],
   window: [
+    'Vorbereitung und Material bereitstellen',
+    'PSA anziehen',
     'Rahmen reinigen',
     'Fensterbank reinigen',
     'Glas innen reinigen',
     'Glas aussen reinigen',
     'Griff reinigen',
     'Umgebung sauber hinterlassen',
+    'Arbeitsplatz sauber verlassen',
     'Sichtkontrolle',
   ],
 };
@@ -61,6 +165,30 @@ export interface CleaningStepGuidance {
 }
 
 const GUIDANCE: Record<string, Record<Language, CleaningStepGuidance>> = {
+  'vorbereitung und material bereitstellen': {
+    de: { icon: 'V', description: 'Arbeitsmittel, Produkte und Warnschild bereitstellen.' },
+    fr: { icon: 'V', description: 'Préparer le matériel, les produits et le panneau.' },
+    it: { icon: 'V', description: 'Preparare attrezzatura, prodotti e cartello.' },
+    en: { icon: 'V', description: 'Prepare equipment, products and warning sign.' },
+  },
+  'psa anziehen': {
+    de: { icon: 'P', description: 'Vorgesehene persönliche Schutzausrüstung anziehen.' },
+    fr: { icon: 'P', description: 'Mettre les équipements de protection prévus.' },
+    it: { icon: 'P', description: 'Indossare i dispositivi di protezione previsti.' },
+    en: { icon: 'P', description: 'Put on the required personal protective equipment.' },
+  },
+  'spiegel reinigen': {
+    de: { icon: 'S', description: 'Spiegel streifenfrei reinigen und trocken nachwischen.' },
+    fr: { icon: 'S', description: 'Nettoyer le miroir sans traces et essuyer.' },
+    it: { icon: 'S', description: 'Pulire lo specchio senza aloni e asciugare.' },
+    en: { icon: 'S', description: 'Clean the mirror streak-free and wipe dry.' },
+  },
+  'arbeitsplatz sauber verlassen': {
+    de: { icon: 'OK', description: 'Material versorgen und Bereich ordentlich verlassen.' },
+    fr: { icon: 'OK', description: 'Ranger le matériel et laisser la zone en ordre.' },
+    it: { icon: 'OK', description: 'Riporre il materiale e lasciare l’area in ordine.' },
+    en: { icon: 'OK', description: 'Store equipment and leave the area orderly.' },
+  },
   'wc reinigen': {
     de: { icon: 'WC', description: 'Becken, Rand und Spülbereich gründlich reinigen.' },
     fr: { icon: 'WC', description: 'Nettoyer soigneusement la cuvette et la zone de chasse.' },
@@ -126,6 +254,12 @@ export const safetyNotesFor = (type: string, language: Language): string[] => {
       it: ['Per lavori in quota usare solo attrezzatura idonea e sicura.', 'Dosare secondo il produttore e tenere asciutta l’area.'],
       en: ['Use suitable, safe equipment for work at height.', 'Dose according to the manufacturer and keep surrounding areas dry.'],
     },
+    disinfection: {
+      de: ['Schutzhandschuhe tragen; Augenschutz bei Spritzgefahr verwenden.', 'Desinfektionsmittel nie mischen, Dosierung und Einwirkzeit beachten.', 'Raum nach Vorgabe lüften und Sicherheitsdatenblatt beachten.'],
+      fr: ['Porter des gants; utiliser une protection oculaire en cas de projections.', 'Ne jamais mélanger les désinfectants; respecter le dosage et le temps d’action.', 'Aérer selon les consignes et respecter la fiche de données de sécurité.'],
+      it: ['Indossare guanti; usare protezione occhi in caso di schizzi.', 'Non mescolare i disinfettanti; rispettare dosaggio e tempo di contatto.', 'Aerare secondo le istruzioni e rispettare la scheda di sicurezza.'],
+      en: ['Wear gloves; use eye protection where splashes are possible.', 'Never mix disinfectants; follow dosage and contact time.', 'Ventilate as instructed and follow the safety data sheet.'],
+    },
   };
   return (notes[type] ?? {
     de: ['Herstellerangaben und Sicherheitsdatenblätter beachten.', 'Reinigungsmittel nie mischen und nasse Stellen kennzeichnen.'],
@@ -136,18 +270,35 @@ export const safetyNotesFor = (type: string, language: Language): string[] => {
 };
 
 export const equipmentFor = (type: string, language: Language): string[] => {
-  const base = {
-  de: ['Schutzhandschuhe', 'Mikrofasertücher', 'Eimer und Warnschild'],
-  fr: ['Gants de protection', 'Chiffons microfibres', 'Seau et panneau de sol humide'],
-  it: ['Guanti protettivi', 'Panni in microfibra', 'Secchio e cartello pavimento bagnato'],
-  en: ['Protective gloves', 'Microfibre cloths', 'Bucket and wet-floor sign'],
-  }[language];
-  if (type !== 'window') return base;
-  const heightEquipment: Record<Language, string> = {
-    de: 'Sichere Steighilfe',
-    fr: 'Escabeau sécurisé',
-    it: 'Scala sicura',
-    en: 'Safe step ladder',
+  const base: Record<Language, string[]> = {
+    de: ['Schutzhandschuhe', 'Mikrofasertücher', 'Eimer und Warnschild'],
+    fr: ['Gants de protection', 'Chiffons microfibres', 'Seau et panneau de sol humide'],
+    it: ['Guanti protettivi', 'Panni in microfibra', 'Secchio e cartello pavimento bagnato'],
+    en: ['Protective gloves', 'Microfibre cloths', 'Bucket and wet-floor sign'],
   };
-  return [...base, heightEquipment[language]];
+  if (type === 'window') {
+    const heightEquipment: Record<Language, string> = {
+      de: 'Sichere Steighilfe',
+      fr: 'Escabeau sécurisé',
+      it: 'Scala sicura',
+      en: 'Safe step ladder',
+    };
+    return [...base[language], heightEquipment[language]];
+  }
+  if (type === 'disinfection') {
+    const eyeProtection: Record<Language, string> = {
+      de: 'Augenschutz bei Spritzgefahr',
+      fr: 'Protection oculaire en cas de projections',
+      it: 'Protezione occhi in caso di schizzi',
+      en: 'Eye protection where splashes are possible',
+    };
+    const dosingAid: Record<Language, string> = {
+      de: 'Dosierhilfe',
+      fr: 'Doseur',
+      it: 'Dosatore',
+      en: 'Dosing aid',
+    };
+    return [...base[language], eyeProtection[language], dosingAid[language]];
+  }
+  return base[language];
 };

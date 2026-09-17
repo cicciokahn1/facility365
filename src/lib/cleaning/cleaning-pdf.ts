@@ -89,6 +89,14 @@ export interface CleaningPdfLabels {
   notDone: string;
   safety: string;
   equipment: string;
+  control: string;
+  fullyCleaned: string;
+  suppliesRefilled: string;
+  noVisibleSoiling: string;
+  leftTidy: string;
+  cleanerSignature: string;
+  signatureDate: string;
+  checkedBySignature: string;
 }
 
 export interface CleaningPdfBranding {
@@ -300,6 +308,32 @@ const drawMaterials = (
   return cursor + 4;
 };
 
+const drawControlAndSignatures = (
+  doc: jsPDF,
+  labels: CleaningPdfLabels,
+  y: number,
+): number => {
+  let cursor = ensureSpace(doc, y, 52);
+  cursor = drawSectionTitle(doc, labels.control, cursor);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...INK);
+  [labels.fullyCleaned, labels.suppliesRefilled, labels.noVisibleSoiling, labels.leftTidy].forEach((label) => {
+    doc.rect(MARGIN, cursor - 3, 3.4, 3.4);
+    doc.text(label, MARGIN + 6, cursor);
+    cursor += 6;
+  });
+  cursor += 2;
+  doc.text(`${labels.ok} □    ${labels.rework} □    ${labels.notDone} □`, MARGIN, cursor);
+  cursor += 9;
+  doc.text(`${labels.cleanerSignature}: __________________________________`, MARGIN, cursor);
+  cursor += 7;
+  doc.text(`${labels.signatureDate}: ________________________________`, MARGIN, cursor);
+  cursor += 7;
+  doc.text(`${labels.checkedBySignature}: ____________________________`, MARGIN, cursor);
+  return cursor + 5;
+};
+
 const drawChecks = (
   doc: jsPDF,
   data: CleaningPdfData,
@@ -394,7 +428,7 @@ export const buildCleaningPdf = (
   const areaEnd = drawPair(
     doc,
     labels.area,
-    [data.areaName, data.location].filter(Boolean).join('\n'),
+    [data.areaType, data.areaName, data.location].filter(Boolean).join('\n'),
     MARGIN,
     y,
     half,
@@ -437,6 +471,7 @@ export const buildCleaningPdf = (
   if (data.checklist.length > 0) y = drawChecklist(doc, data, labels, y);
   y = drawSafetyAndEquipment(doc, data, labels, y);
   if (data.materials.length > 0) y = drawMaterials(doc, data, labels, y);
+  y = drawControlAndSignatures(doc, labels, y);
 
   if (data.remarks) {
     y = ensureSpace(doc, y, 20);
