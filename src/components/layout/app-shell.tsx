@@ -7,7 +7,8 @@
  * Navigation am unteren Rand. Der Inhalt bleibt in allen Faellen gleich.
  */
 import { Suspense, useState } from "react";
-import { Menu } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowLeft, Menu } from "lucide-react";
 
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { GlobalSearch } from "@/components/layout/global-search";
@@ -30,6 +31,8 @@ import { useSettings } from "@/lib/settings/provider";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const t = useT();
+  const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const storageError = useStorageError();
   const { settings } = useSettings();
@@ -45,6 +48,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="safe-top sticky top-0 z-30 flex h-11 items-center gap-1 border-b bg-card/95 px-2 backdrop-blur lg:h-14 lg:gap-2 lg:px-6">
+            {pathname !== "/dashboard" ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-9 shrink-0"
+                aria-label={t("action.back")}
+                data-testid="global-back-button"
+                onClick={() => {
+                  if (window.history.length > 1) {
+                    router.back();
+                  } else {
+                    router.push("/dashboard");
+                  }
+                }}
+              >
+                <ArrowLeft className="size-5" aria-hidden />
+              </Button>
+            ) : null}
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
                 <Button
