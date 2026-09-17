@@ -48,6 +48,7 @@ const SEARCHABLE = [
   'stock',
   'contracts',
   'damages',
+  'tickets',
   'reports',
   'quotes',
   'invoices',
@@ -101,6 +102,7 @@ export function SearchDialog({
   const stock = useCollectionItems('stock');
   const contracts = useCollectionItems('contracts');
   const damages = useCollectionItems('damages');
+  const tickets = useCollectionItems('tickets');
   const reports = useCollectionItems('reports');
   const quotes = useCollectionItems('quotes');
   const invoices = useCollectionItems('invoices');
@@ -142,6 +144,7 @@ export function SearchDialog({
       stock,
       contracts,
       damages,
+      tickets,
       reports,
       quotes,
       invoices,
@@ -166,6 +169,7 @@ export function SearchDialog({
       contracts,
       customers,
       damages,
+      tickets,
       documents,
       energy,
       firechecks,
