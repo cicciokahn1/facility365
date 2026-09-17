@@ -185,6 +185,14 @@ export const CONDITION_RATING_OPTIONS: SelectOption[] = [
   option("5", "asset.condition.5",),
 ];
 
+export const ASSET_CONDITION_STATUS_OPTIONS: SelectOption[] = [
+  option("new", "asset.conditionStatus.new"),
+  option("good", "asset.conditionStatus.good"),
+  option("watch", "asset.conditionStatus.watch"),
+  option("critical", "asset.conditionStatus.critical"),
+  option("outOfService", "asset.conditionStatus.outOfService"),
+];
+
 export const ASSET_LIFECYCLE_OPTIONS: SelectOption[] = [
   option("planned", "asset.lifecycle.planned"),
   option("inOperation", "asset.lifecycle.inOperation"),

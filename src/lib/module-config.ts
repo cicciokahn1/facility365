@@ -8,6 +8,7 @@ import type { TranslationKey } from "@/lib/i18n/dictionary";
 import {
   ACTIVE_OPTIONS,
   ASSET_CATEGORY_OPTIONS,
+  ASSET_CONDITION_STATUS_OPTIONS,
   ASSET_CRITICALITY_OPTIONS,
   ASSET_LIFECYCLE_OPTIONS,
   ASSET_STATUS_OPTIONS,
@@ -116,6 +117,13 @@ const customersConfig: ModuleConfig<"customers"> = {
       name: "status",
       labelKey: "common.status",
       options: ACTIVE_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: "select",
+      name: "conditionStatus",
+      labelKey: "asset.conditionStatus",
+      options: ASSET_CONDITION_STATUS_OPTIONS,
       filter: true,
     },
     {
@@ -539,6 +547,9 @@ const assetsConfig: ModuleConfig<"assets"> = {
     text("model", "asset.model"),
     text("serialNumber", "asset.serial"),
     text("manufacturedYear", "asset.year"),
+    { kind: "money", name: "acquisitionCost", labelKey: "asset.acquisitionCost" },
+    { kind: "number", name: "expectedLifetimeYears", labelKey: "asset.expectedLifetimeYears" },
+    text("responsible", "common.responsible"),
     {
       kind: "select",
       name: "lifecycle",

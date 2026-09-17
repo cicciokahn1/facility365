@@ -373,6 +373,7 @@ export interface Room extends BaseEntity {
 }
 
 export type AssetStatus = "active" | "maintenance" | "defect" | "inactive";
+export type AssetConditionStatus = "new" | "good" | "watch" | "critical" | "outOfService";
 export type AssetLifecycle =
   | "planned"
   | "inOperation"
@@ -391,9 +392,13 @@ export interface Asset extends BaseEntity {
   roomId: string;
   location: string;
   status: AssetStatus;
+  conditionStatus?: AssetConditionStatus;
   /** Baujahr als vierstellige Jahreszahl; leer, wenn unbekannt. */
   manufacturedYear: string;
   installedAt: string;
+  acquisitionCost?: number;
+  expectedLifetimeYears?: number;
+  responsible?: string;
   /** Garantie bis; leer, wenn keine Garantie erfasst ist. */
   warrantyUntil: string;
   warrantyNote: string;
