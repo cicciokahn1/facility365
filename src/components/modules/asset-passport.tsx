@@ -48,6 +48,9 @@ export function AssetPassport({
   const maintenances = useCollectionItems('maintenances').filter(
     (maintenance) => maintenance.assetId === asset.id,
   );
+  const orders = useCollectionItems('orders').filter((order) => order.assetId === asset.id);
+  const damages = useCollectionItems('damages').filter((damage) => damage.assetId === asset.id);
+  const reports = useCollectionItems('reports').filter((report) => report.assetId === asset.id);
 
   const property = properties.find((entry) => entry.id === asset.propertyId);
   const building = buildings.find((entry) => entry.id === asset.buildingId);
@@ -55,6 +58,33 @@ export function AssetPassport({
   const last = lastMaintenanceDate(maintenances);
   const next = nextMaintenanceDate(maintenances);
   const year = asset.manufacturedYear || asset.installedAt.slice(0, 4);
+  const renewalYear =
+    asset.plannedReplacementYear ||
+    (asset.installedAt && asset.expectedLifetimeYears
+      ? String(Number(asset.installedAt.slice(0, 4)) + asset.expectedLifetimeYears)
+      : '');
+  const hoursOf = (start: string, end: string, pause = 0): number => {
+    const [startHours, startMinutes] = start.split(':').map(Number);
+    const [endHours, endMinutes] = end.split(':').map(Number);
+    if (![startHours, startMinutes, endHours, endMinutes].every(Number.isFinite)) return 0;
+    return Math.max(0, (endHours * 60 + endMinutes - startHours * 60 - startMinutes - pause) / 60);
+  };
+  const serviceCost = [
+    ...orders.flatMap((order) => [...order.materials, ...(order.externalServices ?? [])]),
+    ...reports.flatMap((report) => [...report.materials, ...(report.externalServices ?? [])]),
+  ].reduce((total, item) => total + item.quantity * item.price, 0)
+    + orders.reduce(
+      (total, order) => total + hoursOf(order.workStart, order.workEnd, order.breakMinutes) * (order.hourlyRate ?? 0),
+      0,
+    )
+    + reports.reduce(
+      (total, report) => total + hoursOf(report.workStart, report.workEnd, report.breakMinutes) * (report.hourlyRate ?? 0),
+      0,
+    );
+  const totalCost =
+    (asset.acquisitionCost ?? 0) +
+    serviceCost +
+    damages.reduce((total, damage) => total + (damage.estimatedCost ?? 0), 0);
   const [reporting, setReporting] = useState(false);
   const [moving, setMoving] = useState(false);
   const [moveBuilding, setMoveBuilding] = useState(asset.buildingId);
@@ -110,7 +140,16 @@ export function AssetPassport({
           <Row label={t('asset.serial')} value={asset.serialNumber} mono />
           <Row label={t('asset.year')} value={year} />
           <Row label={t('asset.lifecycle')} value={asset.lifecycle ? t(`asset.lifecycle.${asset.lifecycle}` as Parameters<typeof t>[0]) : ''} />
+          <Row
+            label={t('asset.conditionStatus')}
+            value={
+              asset.conditionStatus
+                ? t(`asset.conditionStatus.${asset.conditionStatus}` as Parameters<typeof t>[0])
+                : ''
+            }
+          />
           <Row label={t('asset.criticality')} value={asset.criticality ? t(`priority.${asset.criticality}` as Parameters<typeof t>[0]) : ''} />
+          <Row label={t('common.responsible')} value={asset.responsible ?? ''} />
           <Row label={t('cost.costCenter')} value={asset.costCenter ?? ''} />
           <Row label={t('asset.parent')} value={asset.parentAssetId ?? ''} mono />
         </dl>
@@ -121,6 +160,20 @@ export function AssetPassport({
           <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('asset.conditionRating')}</p>
           <p className="mt-1 text-lg font-semibold">{asset.conditionRating ?? '–'} / 5</p>
           {asset.conditionNote ? <p className="text-sm text-muted-foreground">{asset.conditionNote}</p> : null}
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('asset.totalCost')}</p>
+          <p className="mt-1 text-lg font-semibold">{formatMoney(totalCost, settings.currency)}</p>
+          <p className="text-sm text-muted-foreground">
+            {t('asset.maintenanceCount')}: {maintenances.length} · {t('asset.openDamages')}: {damages.filter((damage) => !['fixed', 'rejected'].includes(damage.status)).length}
+          </p>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('asset.renewalDate')}</p>
+          <p className="mt-1 text-lg font-semibold">{renewalYear || '–'}</p>
+          <p className="text-sm text-muted-foreground">
+            {asset.expectedLifetimeYears ? `${asset.expectedLifetimeYears} ${t('common.years')}` : ''}
+          </p>
         </div>
         <div className="rounded-xl border bg-card p-4">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('asset.plannedReplacementYear')}</p>
