@@ -66,10 +66,10 @@ const QUICK_ACTIONS: {
     primary: true,
   },
   { href: '/damages?new=1', module: 'damages', labelKey: 'dashboard.quick.damage', icon: ShieldAlert, primary: true },
-  { href: '/reports?new=1', module: 'reports', labelKey: 'dashboard.quick.report', icon: FileText, primary: true },
+  { href: '/reports?new=1', module: 'reports', labelKey: 'dashboard.quick.report', icon: FileText },
   { href: '/inspections?new=1', module: 'inspections', labelKey: 'dashboard.quick.inspection', icon: ClipboardCheck, primary: true },
   { href: '/cleaning/tasks?new=1', module: 'cleaningtasks', labelKey: 'dashboard.quick.cleaning', icon: SprayCan, primary: true },
-  { href: '/tickets?new=1', module: 'tickets', labelKey: 'module.tickets.singular', icon: Bell, primary: true },
+  { href: '/tickets?new=1', module: 'tickets', labelKey: 'module.tickets.singular', icon: Bell },
   { href: '/reports?new=1&workTime=1', module: 'reports', labelKey: 'dashboard.quick.workTime', icon: Clock3 },
   { href: '/documents?new=1&photo=1', module: 'documents', labelKey: 'dashboard.quick.photo', icon: Camera },
   { href: '/analytics', module: 'analytics', labelKey: 'report.openReport', icon: BarChart3 },
@@ -406,7 +406,7 @@ export default function DashboardPage() {
         </ul>
         <details className="mt-3">
           <summary className="cursor-pointer list-none rounded-lg border px-4 py-3 text-center text-sm font-medium text-muted-foreground">
-            Weitere Aktionen
+            {t('dashboard.moreActions')}
           </summary>
           <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {QUICK_ACTIONS.filter((action) => !action.primary && access.canRead(action.module)).map((action) => {

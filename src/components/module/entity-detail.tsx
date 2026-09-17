@@ -258,7 +258,7 @@ export function EntityDetail<K extends CollectionKey>({
             {mayWrite || mayDelete ? (
               <details className="relative">
                 <summary className="flex h-11 cursor-pointer list-none items-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent [&::-webkit-details-marker]:hidden">
-                  Mehr
+                  {t("nav.more")}
                 </summary>
                 <div className="absolute right-0 z-10 mt-2 flex min-w-44 flex-col gap-2 rounded-lg border bg-popover p-2 shadow-lg">
                   {mayWrite ? (
@@ -406,13 +406,17 @@ function MasterData({
 }) {
   const t = useT();
   const { settings } = useSettings();
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const simpleFields = fields.filter((field) => !field.advanced);
+  const advancedFields = fields.filter((field) => field.advanced);
 
   return (
-    <dl
-      data-testid="master-data"
-      className="grid grid-cols-1 gap-x-6 gap-y-3 rounded-xl border bg-card p-4 sm:grid-cols-2"
-    >
-      {fields.map((field) => (
+    <div className="flex flex-col gap-3">
+      <dl
+        data-testid="master-data"
+        className="grid grid-cols-1 gap-x-6 gap-y-3 rounded-xl border bg-card p-4 sm:grid-cols-2"
+      >
+      {simpleFields.map((field) => (
         <MasterRow key={field.name} field={field} entity={entity} />
       ))}
       <div className="sm:col-span-2">
@@ -423,7 +427,20 @@ function MasterData({
           {formatDate(entity.createdAt, settings.language)}
         </dd>
       </div>
-    </dl>
+      </dl>
+      {advancedFields.length > 0 ? (
+        <details open={showAdvanced} onToggle={(event) => setShowAdvanced(event.currentTarget.open)}>
+          <summary className="cursor-pointer list-none rounded-lg border px-4 py-3 text-sm font-medium text-muted-foreground">
+            {t("nav.more")}
+          </summary>
+          <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-3 rounded-xl border bg-card p-4 sm:grid-cols-2">
+            {advancedFields.map((field) => (
+              <MasterRow key={field.name} field={field} entity={entity} />
+            ))}
+          </dl>
+        </details>
+      ) : null}
+    </div>
   );
 }
 

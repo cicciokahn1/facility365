@@ -267,7 +267,7 @@ export function ModuleList({
           <div className="flex flex-wrap items-center gap-2">
             <details className="relative">
               <summary className="flex h-11 cursor-pointer list-none items-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent [&::-webkit-details-marker]:hidden">
-                Mehr
+                {t("nav.more")}
               </summary>
               <div className="absolute right-0 z-10 mt-2 flex min-w-48 flex-col gap-2 rounded-lg border bg-popover p-2 shadow-lg">
                 <Button
@@ -310,7 +310,7 @@ export function ModuleList({
       <div className="flex flex-col gap-3">
         <details open={exchangeOpen}>
           <summary className="cursor-pointer list-none rounded-lg border px-4 py-3 text-center text-sm font-medium text-muted-foreground">
-            Mehr
+            {t("nav.more")}
           </summary>
           <div className="mt-2">
             <DataExchange

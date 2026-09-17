@@ -88,12 +88,13 @@ function FormBody({
   const availableFields = fields.filter(
     (field) => !field.visibleWhen || field.visibleWhen(values),
   );
+  const simpleFields = availableFields.filter((field) => !field.advanced);
   const visibleFields =
-    showAllFields || availableFields.length <= 8
+    showAllFields
       ? availableFields
-      : availableFields.filter(
-          (field, index) => field.required || index < 5,
-        );
+      : simpleFields.length <= 8
+        ? simpleFields
+        : simpleFields.filter((field, index) => field.required || index < 8);
 
   const missing = visibleFields
     .filter(
@@ -173,7 +174,7 @@ function FormBody({
           className="w-full sm:w-auto"
           onClick={() => setShowAllFields(true)}
         >
-          Weitere Angaben anzeigen
+          {t("action.showMore")}
         </Button>
       ) : showAllFields && availableFields.length > 8 ? (
         <Button
@@ -182,7 +183,7 @@ function FormBody({
           className="w-full sm:w-auto"
           onClick={() => setShowAllFields(false)}
         >
-          Weniger Angaben anzeigen
+          {t("action.showLess")}
         </Button>
       ) : null}
 

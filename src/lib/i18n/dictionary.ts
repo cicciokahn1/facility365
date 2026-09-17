@@ -98,6 +98,8 @@ export const dictionary = {
   },
   "nav.system": { de: "System", fr: "Système", it: "Sistema", en: "System" },
   "nav.more": { de: "Mehr", fr: "Plus", it: "Altro", en: "More" },
+  "action.showMore": { de: "Mehr anzeigen", fr: "Afficher plus", it: "Mostra altro", en: "Show more" },
+  "action.showLess": { de: "Weniger anzeigen", fr: "Afficher moins", it: "Mostra meno", en: "Show less" },
   "nav.menu": { de: "Menü", fr: "Menu", it: "Menu", en: "Menu" },
   "nav.close": { de: "Schliessen", fr: "Fermer", it: "Chiudi", en: "Close" },
 
@@ -2637,6 +2639,12 @@ export const dictionary = {
     fr: "Actions rapides",
     it: "Azioni rapide",
     en: "Quick actions",
+  },
+  "dashboard.moreActions": {
+    de: "Weitere Aktionen",
+    fr: "Autres actions",
+    it: "Altre azioni",
+    en: "More actions",
   },
   "dashboard.quick.order": {
     de: "Neuer Auftrag",
