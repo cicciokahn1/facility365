@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { ChevronRight, LogOut } from 'lucide-react';
+import { ChevronRight, Clock3, LogOut } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/provider';
@@ -107,6 +107,24 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               <ul
                 className={cn('space-y-0.5', !group.flat && 'ml-4 border-l border-sidebar-border pl-2')}
               >
+                {group.key === 'work' && access.canRead('reports') ? (
+                  <li>
+                    <Link
+                      href="/work-time"
+                      onClick={onNavigate}
+                      data-active={pathname === '/work-time'}
+                      className={cn(
+                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                        pathname === '/work-time'
+                          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                          : 'text-sidebar-foreground/85 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground',
+                      )}
+                    >
+                      <Clock3 className="size-4 shrink-0" aria-hidden />
+                      <span className="truncate">{t('quickWorkTime.title')}</span>
+                    </Link>
+                  </li>
+                ) : null}
                 {modules.map((module) => {
                   const active = pathname === module.path || pathname.startsWith(`${module.path}/`);
                   const Icon = module.icon;

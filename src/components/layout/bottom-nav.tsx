@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ChevronRight, Clock3, MoreHorizontal } from 'lucide-react';
 
 import { useAccess } from '@/lib/auth/scope';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -115,6 +115,24 @@ export function BottomNav() {
                       {/* Kacheln entstehen erst beim Oeffnen des Ordners. */}
                       {!expanded ? null : (
                         <ul className="grid grid-cols-3 gap-2">
+                          {group.key === 'work' && access.canRead('reports') ? (
+                            <li>
+                              <Link
+                                href="/work-time"
+                                onClick={() => setOpen(false)}
+                                data-active={pathname === '/work-time'}
+                                className={cn(
+                                  'flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg border bg-card px-2 py-2 text-center text-xs font-medium',
+                                  pathname === '/work-time'
+                                    ? 'border-primary text-primary'
+                                    : 'text-foreground/80',
+                                )}
+                              >
+                                <Clock3 className="size-5" aria-hidden />
+                                <span className="line-clamp-2">{t('quickWorkTime.title')}</span>
+                              </Link>
+                            </li>
+                          ) : null}
                           {group.modules.map((module) => {
                             const Icon = module.icon;
                             const active =

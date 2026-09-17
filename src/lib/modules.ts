@@ -649,6 +649,9 @@ export const NAV_GROUPS: NavGroupDefinition[] = [
 
 /** Ordner, in dem die aufgerufene Seite liegt - fuer das automatische Aufklappen. */
 export const groupOfPath = (pathname: string): NavGroup | undefined =>
+  pathname === "/work-time" || pathname.startsWith("/work-time/")
+    ? "work"
+    :
   MODULES.filter(
     (module) =>
       pathname === module.path || pathname.startsWith(`${module.path}/`),

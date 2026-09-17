@@ -79,7 +79,7 @@ export function QuickWorkTime() {
           </div>
           <div className="flex flex-wrap gap-2 sm:col-span-2">
             <Button onClick={save} disabled={!date || !start || !end}>{t('action.save')}</Button>
-            <Button variant="outline" onClick={() => router.push('/reports')}>{t('action.cancel')}</Button>
+            <Button variant="outline" onClick={() => router.back()}>{t('action.cancel')}</Button>
           </div>
         </CardContent>
       </Card>
