@@ -27,6 +27,7 @@ import {
   LinkedRecordsPanel,
 } from "@/components/module/linked-records";
 import { ObjectDossier } from "@/components/module/object-dossier";
+import { SmartObjectView } from "@/components/modules/smart-object-view";
 import { PhotoGallery } from "@/components/module/photo-gallery";
 import {
   AlertDialog,
@@ -295,6 +296,10 @@ export function EntityDetail<K extends CollectionKey>({
           ) : null}
         </div>
       </div>
+
+      {dossierLevel ? (
+        <SmartObjectView collection={dossierLevel} entity={entity} />
+      ) : null}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="no-scrollbar -mx-1 overflow-x-auto px-1">

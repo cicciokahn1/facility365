@@ -2730,6 +2730,72 @@ export const dictionary = {
     it: "Nessun dato. Inizia con un cliente o un immobile.",
     en: "No data yet. Start with a customer or a property.",
   },
+  "smart.objectView": {
+    de: "Objektübersicht",
+    fr: "Vue d’ensemble de l’objet",
+    it: "Panoramica dell’oggetto",
+    en: "Object overview",
+  },
+  "smart.objectHint": {
+    de: "Wichtige Informationen und Aktionen an einem Ort.",
+    fr: "Les informations et actions importantes au même endroit.",
+    it: "Informazioni e azioni importanti in un unico posto.",
+    en: "Important information and actions in one place.",
+  },
+  "smart.openItems": {
+    de: "Offene Aufgaben",
+    fr: "Tâches ouvertes",
+    it: "Attività aperte",
+    en: "Open tasks",
+  },
+  "smart.area": {
+    de: "Fläche",
+    fr: "Surface",
+    it: "Superficie",
+    en: "Area",
+  },
+  "smart.condition": {
+    de: "Zustand",
+    fr: "État",
+    it: "Stato",
+    en: "Condition",
+  },
+  "smart.documents": {
+    de: "Dokumente",
+    fr: "Documents",
+    it: "Documenti",
+    en: "Documents",
+  },
+  "smart.photos": {
+    de: "Fotos",
+    fr: "Photos",
+    it: "Foto",
+    en: "Photos",
+  },
+  "smart.directActions": {
+    de: "Direktaktionen",
+    fr: "Actions directes",
+    it: "Azioni dirette",
+    en: "Direct actions",
+  },
+  "smart.noOpenItems": {
+    de: "Keine offenen Aufgaben.",
+    fr: "Aucune tâche ouverte.",
+    it: "Nessuna attività aperta.",
+    en: "No open tasks.",
+  },
+  "smart.lastWork": {
+    de: "Letzte Arbeiten",
+    fr: "Derniers travaux",
+    it: "Ultimi lavori",
+    en: "Recent work",
+  },
+  "smart.noHistory": {
+    de: "Noch keine Arbeiten verknüpft.",
+    fr: "Aucun travail lié.",
+    it: "Nessun lavoro collegato.",
+    en: "No linked work yet.",
+  },
 
   "customer.type": {
     de: "Kundenart",
