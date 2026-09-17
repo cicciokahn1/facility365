@@ -39,9 +39,10 @@ export type CompletableKey =
 /** Werte, die ein Abschluss je Modul setzt. */
 const doneValues = {
   orders: (): Partial<Order> => ({ status: "done", completedAt: today() }),
-  maintenances: (): Partial<Maintenance> => ({
-    status: "done",
+  maintenances: (maintenance: Maintenance): Partial<Maintenance> => ({
+    status: "planned",
     lastDate: today(),
+    nextDate: nextMaintenanceDate(today(), maintenance.interval),
   }),
   damages: (): Partial<Damage> => ({ status: "fixed", fixedAt: today() }),
   cleaningtasks: (): Partial<CleaningTask> => ({
@@ -54,6 +55,25 @@ const doneValues = {
   rcd: (): Partial<RcdCheck> => ({ status: "done" }),
   tickets: (): Partial<Ticket> => ({ status: "done", closedAt: today() }),
 };
+
+function nextMaintenanceDate(
+  date: string,
+  interval: Maintenance["interval"],
+): string {
+  const next = new Date(`${date}T00:00:00`);
+  const months =
+    interval === "monthly"
+      ? 1
+      : interval === "quarterly"
+        ? 3
+        : interval === "semiannual"
+          ? 6
+          : interval === "biennial"
+            ? 24
+            : 12;
+  next.setMonth(next.getMonth() + months);
+  return next.toISOString().slice(0, 10);
+}
 
 /** Erledigte Zustaende; sie zaehlen nirgends mehr als offen oder faellig. */
 const doneStatuses: Record<CompletableKey, string[]> = {
@@ -79,12 +99,24 @@ export const isDone = (collection: CompletableKey, status: string): boolean =>
 
 /** Setzt den Datensatz auf erledigt; der Aufrufer liefert nur die Kennung. */
 export function useMarkDone(collection: CompletableKey): (id: string) => void {
-  const { update } = useCollection(collection);
+  const { items, update } = useCollection(collection);
   const user = useCurrentUser();
 
   return useCallback(
-    (id: string) =>
-      update(id, doneValues[collection](), "history.completed", user),
-    [collection, update, user],
+    (id: string) => {
+      if (collection === "maintenances") {
+        const maintenance = items.find((item) => item.id === id);
+        if (!maintenance) return;
+        update(
+          id,
+          doneValues.maintenances(maintenance as Maintenance),
+          "history.completed",
+          user,
+        );
+        return;
+      }
+      update(id, doneValues[collection](), "history.completed", user);
+    },
+    [collection, items, update, user],
   );
 }
