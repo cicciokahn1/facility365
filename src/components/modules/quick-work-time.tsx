@@ -2,28 +2,72 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useCollection } from '@/lib/data/store';
+import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { defaultValuesOf } from '@/lib/module-config';
 import { useSettings } from '@/lib/settings/provider';
-import { today } from '@/lib/utils/format';
+import { formatDate, today } from '@/lib/utils/format';
+import { formatWorkTime, hasWorkTime, workedMinutes } from '@/lib/reports/work-time';
+
+const isoDate = (date: Date) => date.toISOString().slice(0, 10);
+
+const mondayOf = (value: string) => {
+  const date = new Date(`${value}T12:00:00`);
+  const offset = (date.getDay() + 6) % 7;
+  date.setDate(date.getDate() - offset);
+  return isoDate(date);
+};
+
+const addDays = (value: string, days: number) => {
+  const date = new Date(`${value}T12:00:00`);
+  date.setDate(date.getDate() + days);
+  return isoDate(date);
+};
 
 export function QuickWorkTime() {
   const t = useT();
   const router = useRouter();
   const { settings } = useSettings();
   const { create } = useCollection('reports');
+  const reports = useCollectionItems('reports');
+  const [weekStart, setWeekStart] = useState(() => mondayOf(today()));
   const [date, setDate] = useState(today());
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [breakMinutes, setBreakMinutes] = useState('0');
   const [title, setTitle] = useState('');
+  const weekEnd = addDays(weekStart, 6);
+  const entries = reports.filter((report) => {
+    const own = !settings.profileName || report.author === settings.profileName;
+    return (
+      own &&
+      !report.orderId &&
+      hasWorkTime({
+        start: report.workStart,
+        end: report.workEnd,
+        breakMinutes: report.breakMinutes,
+      }) &&
+      report.date >= weekStart &&
+      report.date <= weekEnd
+    );
+  });
+  const totalMinutes = entries.reduce(
+    (sum, report) =>
+      sum +
+      workedMinutes({
+        start: report.workStart,
+        end: report.workEnd,
+        breakMinutes: report.breakMinutes,
+      }),
+    0,
+  );
+  const totalHours = Math.round((totalMinutes / 60) * 100) / 100;
 
   const save = () => {
     const report = create({
@@ -37,7 +81,7 @@ export function QuickWorkTime() {
       workEnd: end,
       breakMinutes: Number(breakMinutes) || 0,
     });
-    router.push(`/reports/${report.id}`);
+    router.push('/work-time');
   };
 
   return (
@@ -54,6 +98,63 @@ export function QuickWorkTime() {
         <h1 className="text-2xl font-semibold tracking-tight">{t('quickWorkTime.title')}</h1>
         <p className="text-sm text-muted-foreground">{t('quickWorkTime.hint')}</p>
       </header>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between gap-3">
+          <CardTitle className="text-base">{t('quickWorkTime.week')}</CardTitle>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={t('quickWorkTime.previousWeek')}
+              onClick={() => setWeekStart((value) => addDays(value, -7))}
+            >
+              <ChevronLeft className="size-4" aria-hidden />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={t('quickWorkTime.nextWeek')}
+              onClick={() => setWeekStart((value) => addDays(value, 7))}
+            >
+              <ChevronRight className="size-4" aria-hidden />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            {formatDate(weekStart, settings.language)} – {formatDate(weekEnd, settings.language)}
+          </p>
+          <div className="rounded-xl border bg-muted/30 p-4">
+            <p className="text-3xl font-semibold">{totalHours} h</p>
+            <p className="text-sm text-muted-foreground">{t('quickWorkTime.total')}</p>
+          </div>
+          <div className="space-y-2">
+            {entries.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t('quickWorkTime.noEntries')}</p>
+            ) : (
+              entries
+                .sort((left, right) => left.date.localeCompare(right.date))
+                .map((report) => (
+                  <div key={report.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
+                    <div>
+                      <p className="font-medium">{formatDate(report.date, settings.language)}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {report.workStart} – {report.workEnd}
+                      </p>
+                    </div>
+                    <span className="font-medium">
+                      {formatWorkTime({
+                        start: report.workStart,
+                        end: report.workEnd,
+                        breakMinutes: report.breakMinutes,
+                      })} h
+                    </span>
+                  </div>
+                ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader><CardTitle className="text-base">{t('tab.workTime')}</CardTitle></CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">

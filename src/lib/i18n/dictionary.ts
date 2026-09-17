@@ -2730,6 +2730,36 @@ export const dictionary = {
     it: "Registra direttamente le ore senza scegliere prima un rapporto.",
     en: "Record work time directly without selecting a report first.",
   },
+  "quickWorkTime.week": {
+    de: "Arbeitszeit diese Woche",
+    fr: "Temps de travail cette semaine",
+    it: "Ore di lavoro questa settimana",
+    en: "Work time this week",
+  },
+  "quickWorkTime.total": {
+    de: "Total der eigenen Arbeitszeit",
+    fr: "Total de votre temps de travail",
+    it: "Totale delle proprie ore di lavoro",
+    en: "Your total work time",
+  },
+  "quickWorkTime.noEntries": {
+    de: "Noch keine Arbeitszeit in dieser Woche erfasst.",
+    fr: "Aucun temps de travail saisi cette semaine.",
+    it: "Nessuna ora di lavoro registrata questa settimana.",
+    en: "No work time recorded this week yet.",
+  },
+  "quickWorkTime.previousWeek": {
+    de: "Vorherige Woche",
+    fr: "Semaine précédente",
+    it: "Settimana precedente",
+    en: "Previous week",
+  },
+  "quickWorkTime.nextWeek": {
+    de: "Nächste Woche",
+    fr: "Semaine suivante",
+    it: "Settimana successiva",
+    en: "Next week",
+  },
   "dashboard.overdue": {
     de: "überfällig",
     fr: "en retard",
