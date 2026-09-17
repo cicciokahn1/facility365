@@ -6,11 +6,19 @@
  * Der Export schreibt genau die angezeigten Datensaetze, der Import legt neue
  * an. Bestehende Datensaetze werden dabei nie veraendert oder geloescht.
  */
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useAllCollections, useCollection } from '@/lib/data/store';
 import { fieldValue } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
@@ -20,6 +28,16 @@ import { FieldDef, FormValues, asNumber, asString, isAddressValue } from '@/lib/
 import { useSettings } from '@/lib/settings/provider';
 import { BaseEntity, CollectionKey } from '@/lib/types';
 import { newId } from '@/lib/utils/id';
+
+interface ImportPreview {
+  rows: string[][];
+  columns: { field: FieldDef; index: number }[];
+  checklistIndex: number;
+  fileName: string;
+  validRows: number;
+  duplicateRows: number;
+  emptyRows: number;
+}
 
 /** Felder, die sich als eine Spalte abbilden lassen. */
 const exportable = (field: FieldDef): boolean => field.kind !== 'address';
@@ -91,6 +109,7 @@ export function DataExchange({
   const { create } = useCollection(collection);
   const { settings } = useSettings();
   const fileInput = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<ImportPreview | null>(null);
 
   const fields = config.fields.filter(exportable);
   const checklistColumn = collection === 'cleaningplans';
@@ -114,7 +133,7 @@ export function DataExchange({
     toast.success(t('exchange.exported'));
   };
 
-  const handleImport = async (file: File) => {
+  const prepareImport = async (file: File) => {
     const rows = parseCsv(await file.text());
     const header = rows[0]?.map((cell) => cell.trim().toLowerCase()) ?? [];
     /** Spalten den Feldern zuordnen: Beschriftung oder Feldname zaehlen. */
@@ -130,19 +149,50 @@ export function DataExchange({
       return;
     }
 
-    let created = 0;
     const existingNumbers = new Set(items.map((item) => item.number.trim().toLowerCase()));
+    let duplicateRows = 0;
+    let emptyRows = 0;
+    let validRows = 0;
     rows.slice(1).forEach((row) => {
       const importedNumber = (row[0] ?? '').trim().toLowerCase();
-      if (importedNumber && existingNumbers.has(importedNumber)) return;
       const values: FormValues = {};
       columns.forEach(({ field, index }) => {
         if (index < 0) return;
         values[field.name] = valueOf(field, row[index] ?? '', t, collections);
       });
-      if (checklistColumn) {
-        const checklistIndex = header.findIndex((cell) => cell === 'checkliste');
-        const checklist = (row[checklistIndex] ?? '')
+      if (importedNumber && existingNumbers.has(importedNumber)) {
+        duplicateRows += 1;
+      } else if (Object.values(values).every((value) => value === '' || value === false)) {
+        emptyRows += 1;
+      } else {
+        validRows += 1;
+      }
+    });
+
+    setPreview({
+      rows,
+      columns,
+      checklistIndex: header.findIndex((cell) => cell === 'checkliste'),
+      fileName: file.name,
+      validRows,
+      duplicateRows,
+      emptyRows,
+    });
+  };
+
+  const handleImport = (next: ImportPreview) => {
+    let created = 0;
+    const existingNumbers = new Set(items.map((item) => item.number.trim().toLowerCase()));
+    next.rows.slice(1).forEach((row) => {
+      const importedNumber = (row[0] ?? '').trim().toLowerCase();
+      if (importedNumber && existingNumbers.has(importedNumber)) return;
+      const values: FormValues = {};
+      next.columns.forEach(({ field, index }) => {
+        if (index < 0) return;
+        values[field.name] = valueOf(field, row[index] ?? '', t, collections);
+      });
+      if (next.checklistIndex >= 0) {
+        const checklist = (row[next.checklistIndex] ?? '')
           .split('|')
           .map((text) => text.trim())
           .filter(Boolean)
@@ -154,7 +204,7 @@ export function DataExchange({
       if (importedNumber) existingNumbers.add(importedNumber);
       created += 1;
     });
-
+    setPreview(null);
     toast.success(`${t('exchange.imported')}: ${created}`);
   };
 
@@ -184,11 +234,63 @@ export function DataExchange({
             onChange={(event) => {
               const file = event.target.files?.[0];
               event.target.value = '';
-              if (file) void handleImport(file);
+              if (file) void prepareImport(file);
             }}
           />
         </>
       ) : null}
+      <Dialog open={preview !== null} onOpenChange={(open) => !open && setPreview(null)}>
+        <DialogContent className="max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('exchange.preview')}</DialogTitle>
+            <DialogDescription>
+              {preview?.fileName} · {t('exchange.previewHint')}
+            </DialogDescription>
+          </DialogHeader>
+          {preview ? (
+            <div className="flex flex-col gap-3 text-sm">
+              <div className="grid grid-cols-3 gap-2">
+                <div className="rounded-lg border bg-card p-3">
+                  <p className="text-xs text-muted-foreground">{t('exchange.validRows')}</p>
+                  <p className="text-xl font-semibold">{preview.validRows}</p>
+                </div>
+                <div className="rounded-lg border bg-card p-3">
+                  <p className="text-xs text-muted-foreground">{t('exchange.duplicateRows')}</p>
+                  <p className="text-xl font-semibold">{preview.duplicateRows}</p>
+                </div>
+                <div className="rounded-lg border bg-card p-3">
+                  <p className="text-xs text-muted-foreground">{t('exchange.emptyRows')}</p>
+                  <p className="text-xl font-semibold">{preview.emptyRows}</p>
+                </div>
+              </div>
+              <div className="overflow-x-auto rounded-lg border">
+                <table className="w-full min-w-[32rem] text-xs">
+                  <tbody>
+                    {preview.rows.slice(0, 6).map((row: string[], rowIndex: number) => (
+                      <tr key={`preview-${rowIndex}`} className="border-b last:border-0">
+                        {row.slice(0, 6).map((cell: string, cellIndex: number) => (
+                          <td key={`preview-${rowIndex}-${cellIndex}`} className="max-w-48 truncate px-3 py-2">
+                            {cell || '–'}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreview(null)}>
+              {t('action.cancel')}
+            </Button>
+            <Button onClick={() => preview && handleImport(preview)} disabled={!preview?.validRows}>
+              <Upload className="size-4" aria-hidden />
+              {t('exchange.import')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
