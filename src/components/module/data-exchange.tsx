@@ -19,6 +19,7 @@ import { configOf, titleOfEntity } from '@/lib/module-config';
 import { FieldDef, FormValues, asNumber, asString, isAddressValue } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import { BaseEntity, CollectionKey } from '@/lib/types';
+import { newId } from '@/lib/utils/id';
 
 /** Felder, die sich als eine Spalte abbilden lassen. */
 const exportable = (field: FieldDef): boolean => field.kind !== 'address';
@@ -92,12 +93,22 @@ export function DataExchange({
   const fileInput = useRef<HTMLInputElement>(null);
 
   const fields = config.fields.filter(exportable);
+  const checklistColumn = collection === 'cleaningplans';
 
   const handleExport = () => {
-    const header = [t('common.number'), ...fields.map((field) => t(field.labelKey))];
+    const header = [
+      t('common.number'),
+      ...fields.map((field) => t(field.labelKey)),
+      ...(checklistColumn ? ['Checkliste'] : []),
+    ];
     const rows = items.map((item) => [
       item.number,
       ...fields.map((field) => cellOf(field, item, t, collections)),
+      ...(checklistColumn
+        ? [[...((item as { checklist?: { text: string }[] }).checklist ?? [])]
+            .map((entry) => entry.text)
+            .join(' | ')]
+        : []),
     ]);
     downloadText(toCsv([header, ...rows]), `${collection}.csv`, 'text/csv');
     toast.success(t('exchange.exported'));
@@ -129,6 +140,15 @@ export function DataExchange({
         if (index < 0) return;
         values[field.name] = valueOf(field, row[index] ?? '', t, collections);
       });
+      if (checklistColumn) {
+        const checklistIndex = header.findIndex((cell) => cell === 'checkliste');
+        const checklist = (row[checklistIndex] ?? '')
+          .split('|')
+          .map((text) => text.trim())
+          .filter(Boolean)
+          .map((text) => ({ id: newId('chk'), text, done: false }));
+        if (checklist.length > 0) values.checklist = checklist;
+      }
       if (Object.values(values).every((value) => value === '' || value === false)) return;
       create(values as never, settings.profileName || settings.companyName);
       if (importedNumber) existingNumbers.add(importedNumber);

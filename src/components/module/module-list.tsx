@@ -75,6 +75,7 @@ export function ModuleList({
   only,
   extraFilter,
   initialStatus,
+  exchangeOpen = false,
 }: {
   collection: CollectionKey;
   only?: ListRestriction;
@@ -82,6 +83,8 @@ export function ModuleList({
   extraFilter?: (item: BaseEntity) => boolean;
   /** Vorbelegter Statusfilter; ohne Angabe die offenen Datensaetze. */
   initialStatus?: string;
+  /** Der Austausch soll bei besonders import-/exportlastigen Modulen offen starten. */
+  exchangeOpen?: boolean;
 }) {
   const t = useT();
   const router = useRouter();
@@ -305,7 +308,7 @@ export function ModuleList({
       </header>
 
       <div className="flex flex-col gap-3">
-        <details>
+        <details open={exchangeOpen}>
           <summary className="cursor-pointer list-none rounded-lg border px-4 py-3 text-center text-sm font-medium text-muted-foreground">
             Mehr
           </summary>
