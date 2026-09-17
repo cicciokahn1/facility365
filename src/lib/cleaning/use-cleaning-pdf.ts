@@ -14,6 +14,7 @@ import { useT } from '@/lib/i18n/provider';
 import { formatWorkTime, hasWorkTime } from '@/lib/reports/work-time';
 import {
   CLEANING_CHECK_RESULT_OPTIONS,
+  CLEANING_AREA_TYPE_OPTIONS,
   CLEANING_INTERVAL_OPTIONS,
   CLEANING_TASK_STATUS_OPTIONS,
   SelectOption,
@@ -85,7 +86,7 @@ export function useCleaningPdf(): CleaningPdfApi {
         propertyName: property?.name ?? '',
         buildingName: building?.name ?? '',
         roomName: room?.name ?? '',
-        areaType: area?.type ?? '',
+        areaType: area ? labelOf(CLEANING_AREA_TYPE_OPTIONS, area.type) : '',
         cleanerName: nameOf(cleaners.find((entry) => entry.id === task.cleanerId)),
         responsibleName: nameOf(
           cleaners.find((entry) => entry.id === (task.responsibleId || area?.responsibleId)),
@@ -153,6 +154,14 @@ export function useCleaningPdf(): CleaningPdfApi {
       notDone: t('cleaning.result.notDone'),
       safety: t('cleaning.safety'),
       equipment: t('cleaning.equipment'),
+      control: t('cleaning.control'),
+      fullyCleaned: t('cleaning.control.fullyCleaned'),
+      suppliesRefilled: t('cleaning.control.suppliesRefilled'),
+      noVisibleSoiling: t('cleaning.control.noVisibleSoiling'),
+      leftTidy: t('cleaning.control.leftTidy'),
+      cleanerSignature: t('cleaning.signature.cleaner'),
+      signatureDate: t('cleaning.signature.date'),
+      checkedBySignature: t('cleaning.signature.checkedBy'),
     }),
     [t],
   );
