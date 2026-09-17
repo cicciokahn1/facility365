@@ -197,6 +197,10 @@ export function CleaningOverview() {
         checkDate: t('cleaning.checkDate'),
         problem: t('cleaning.problem'),
         none: t('cleaning.nothingDue'),
+        language: settings.language,
+        ok: t('cleaning.result.ok'),
+        rework: t('cleaning.result.rework'),
+        notDone: t('cleaning.result.notDone'),
       },
       {
         companyName: settings.companyName || 'Facility365',

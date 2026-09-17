@@ -11,6 +11,8 @@ import { drawLogo } from '@/lib/branding/pdf-logo';
 export interface CleaningPdfChecklistItem {
   text: string;
   done: boolean;
+  icon?: string;
+  description?: string;
 }
 
 export interface CleaningPdfMaterial {
@@ -41,6 +43,7 @@ export interface CleaningPdfData {
   propertyName: string;
   buildingName: string;
   roomName: string;
+  areaType: string;
   cleanerName: string;
   responsibleName: string;
   interval: string;
@@ -50,6 +53,8 @@ export interface CleaningPdfData {
   workTotal: string;
   checklist: CleaningPdfChecklistItem[];
   materials: CleaningPdfMaterial[];
+  equipment: string[];
+  safetyNotes: string[];
   remarks: string;
   checks: CleaningPdfCheck[];
   photos: CleaningPdfPhoto[];
@@ -79,6 +84,11 @@ export interface CleaningPdfLabels {
   measures: string;
   photos: string;
   none: string;
+  ok: string;
+  rework: string;
+  notDone: string;
+  safety: string;
+  equipment: string;
 }
 
 export interface CleaningPdfBranding {
@@ -209,7 +219,7 @@ const drawChecklist = (
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9.5);
   data.checklist.forEach((item) => {
-    cursor = ensureSpace(doc, cursor, 6);
+    cursor = ensureSpace(doc, cursor, item.description ? 13 : 8);
     doc.setDrawColor(...LINE);
     doc.rect(MARGIN, cursor - 3, 3.4, 3.4);
     if (item.done) {
@@ -218,11 +228,47 @@ const drawChecklist = (
       doc.line(MARGIN + 1.5, cursor - 0.2, MARGIN + 3, cursor - 2.6);
     }
     doc.setTextColor(...INK);
-    const text: string = doc.splitTextToSize(item.text, CONTENT - 8)[0] ?? '';
-    doc.text(text, MARGIN + 6, cursor);
-    cursor += 5.4;
+    doc.setFont('helvetica', 'bold');
+    doc.text(item.icon || '✓', MARGIN + 6, cursor);
+    const text: string = doc.splitTextToSize(item.text, CONTENT - 22)[0] ?? '';
+    doc.text(text, MARGIN + 14, cursor);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...MUTED);
+    doc.text(`${labels.ok} □  ${labels.rework} □  ${labels.notDone} □`, WIDTH - MARGIN, cursor, {
+      align: 'right',
+    });
+    cursor += 4.2;
+    if (item.description) {
+      doc.setFontSize(7.5);
+      doc.text(doc.splitTextToSize(item.description, CONTENT - 14)[0] ?? '', MARGIN + 14, cursor);
+      cursor += 4.5;
+    }
   });
   return cursor + 4;
+};
+
+const drawSafetyAndEquipment = (
+  doc: jsPDF,
+  data: CleaningPdfData,
+  labels: CleaningPdfLabels,
+  y: number,
+): number => {
+  let cursor = ensureSpace(doc, y, 28);
+  cursor = drawSectionTitle(doc, labels.safety, cursor);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...INK);
+  data.safetyNotes.forEach((note) => {
+    cursor = ensureSpace(doc, cursor, 6);
+    doc.text(`• ${note}`, MARGIN, cursor);
+    cursor += 4.5;
+  });
+  cursor += 2;
+  cursor = drawSectionTitle(doc, labels.equipment, cursor);
+  doc.setFontSize(8.5);
+  doc.text(data.equipment.join(' · '), MARGIN, cursor);
+  return cursor + 7;
 };
 
 const drawMaterials = (
@@ -332,8 +378,9 @@ export const buildCleaningPdf = (
   data: CleaningPdfData,
   labels: CleaningPdfLabels,
   branding: CleaningPdfBranding,
+  format: 'a4' | 'a3' = 'a4',
 ): jsPDF => {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  const doc = new jsPDF({ unit: 'mm', format, orientation: 'portrait' });
   let y = drawHeader(doc, data, labels, branding);
 
   doc.setFont('helvetica', 'bold');
@@ -388,6 +435,7 @@ export const buildCleaningPdf = (
   y += 10;
 
   if (data.checklist.length > 0) y = drawChecklist(doc, data, labels, y);
+  y = drawSafetyAndEquipment(doc, data, labels, y);
   if (data.materials.length > 0) y = drawMaterials(doc, data, labels, y);
 
   if (data.remarks) {
@@ -410,16 +458,20 @@ export const downloadCleaningPdf = (
   data: CleaningPdfData,
   labels: CleaningPdfLabels,
   branding: CleaningPdfBranding,
+  format: 'a4' | 'a3' = 'a4',
 ): void => {
-  buildCleaningPdf(data, labels, branding).save(cleaningPdfFileName(data));
+  buildCleaningPdf(data, labels, branding, format).save(
+    cleaningPdfFileName(data).replace('.pdf', `-${format}.pdf`),
+  );
 };
 
 export const printCleaningPdf = (
   data: CleaningPdfData,
   labels: CleaningPdfLabels,
   branding: CleaningPdfBranding,
+  format: 'a4' | 'a3' = 'a4',
 ): void => {
-  const doc = buildCleaningPdf(data, labels, branding);
+  const doc = buildCleaningPdf(data, labels, branding, format);
   doc.autoPrint();
   window.open(doc.output('bloburl'), '_blank');
 };

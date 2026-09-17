@@ -6814,6 +6814,36 @@ export const dictionary = {
     it: "Prodotti e materiale",
     en: "Supplies and material",
   },
+  "cleaning.safety": {
+    de: "Sicherheit und Hinweise",
+    fr: "Sécurité et consignes",
+    it: "Sicurezza e indicazioni",
+    en: "Safety and instructions",
+  },
+  "cleaning.equipment": {
+    de: "Benötigte Ausrüstung",
+    fr: "Équipement nécessaire",
+    it: "Attrezzatura necessaria",
+    en: "Required equipment",
+  },
+  "cleaning.result.ok": {
+    de: "OK",
+    fr: "OK",
+    it: "OK",
+    en: "OK",
+  },
+  "cleaning.result.rework": {
+    de: "Nacharbeit",
+    fr: "Retouche",
+    it: "Rifacimento",
+    en: "Rework",
+  },
+  "cleaning.result.notDone": {
+    de: "Nicht erledigt",
+    fr: "Non effectué",
+    it: "Non eseguito",
+    en: "Not done",
+  },
   "cleaning.checklistTemplate": {
     de: "Checklisten-Vorlage",
     fr: "Modèle de liste de contrôle",

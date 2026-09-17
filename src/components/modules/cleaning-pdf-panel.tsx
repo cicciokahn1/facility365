@@ -21,20 +21,35 @@ export function CleaningPdfPanel({ task }: { task: CleaningTask }) {
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <Button
           className="h-12"
-          onClick={() => void pdf.download(task)}
+          onClick={() => void pdf.download(task, 'a4')}
           data-testid="cleaning-pdf-download"
         >
           <Download className="size-4" aria-hidden />
-          {t('action.download')}
+          {t('action.download')} A4
         </Button>
         <Button
           variant="outline"
           className="h-12"
-          onClick={() => void pdf.print(task)}
+          onClick={() => void pdf.print(task, 'a4')}
           data-testid="cleaning-pdf-print"
         >
           <Printer className="size-4" aria-hidden />
-          {t('action.print')}
+          {t('action.print')} A4
+        </Button>
+        <Button
+          className="h-12"
+          onClick={() => void pdf.download(task, 'a3')}
+        >
+          <Download className="size-4" aria-hidden />
+          {t('action.download')} A3
+        </Button>
+        <Button
+          variant="outline"
+          className="h-12"
+          onClick={() => void pdf.print(task, 'a3')}
+        >
+          <Printer className="size-4" aria-hidden />
+          {t('action.print')} A3
         </Button>
       </div>
     </section>
