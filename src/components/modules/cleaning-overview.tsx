@@ -8,10 +8,11 @@
  */
 import { useMemo } from 'react';
 import Link from 'next/link';
-import { Brush, CalendarClock, ClipboardCheck, MessageSquareWarning } from 'lucide-react';
+import { Brush, CalendarClock, ClipboardCheck, MessageSquareWarning, Printer } from 'lucide-react';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { StatusBadge } from '@/components/common/status-badge';
+import { Button } from '@/components/ui/button';
 import { useOwnTaskRestriction } from '@/components/modules/cleaning-task-list';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCollectionItems } from '@/lib/data/store';
@@ -23,6 +24,9 @@ import { formatDate } from '@/lib/utils/format';
 import { useSettings } from '@/lib/settings/provider';
 import { isDone } from '@/lib/workflow/complete';
 import { today } from '@/lib/utils/format';
+import { cleaningDates } from '@/lib/cleaning/schedule';
+import { logoOf } from '@/lib/branding/logo';
+import type { CleaningScheduleRow } from '@/lib/cleaning/cleaning-schedule-pdf';
 
 interface Tile {
   labelKey: TranslationKey;
@@ -38,8 +42,10 @@ export function CleaningOverview() {
   const areas = useCollectionItems('cleaningareas');
   const plans = useCollectionItems('cleaningplans');
   const buildings = useCollectionItems('buildings');
+  const rooms = useCollectionItems('rooms');
   const complaints = useCollectionItems('cleaningcomplaints');
   const checks = useCollectionItems('cleaningchecks');
+  const cleaners = useCollectionItems('cleaners');
   const only = useOwnTaskRestriction();
 
   const visibleTasks = useMemo(
@@ -111,6 +117,92 @@ export function CleaningOverview() {
     };
   }, [areas, buildings, plans, t]);
 
+  const scheduleRows = useMemo<CleaningScheduleRow[]>(() => {
+    const day = today();
+    const end = new Date(`${day}T00:00:00`);
+    end.setDate(end.getDate() + 6);
+    const until = end.toISOString().slice(0, 10);
+    const areaById = new Map(areas.map((area) => [area.id, area]));
+    const buildingById = new Map(buildings.map((building) => [building.id, building]));
+    const roomById = new Map(rooms.map((room) => [room.id, room]));
+    const cleanerById = new Map(cleaners.map((cleaner) => [cleaner.id, cleaner]));
+    const rows: CleaningScheduleRow[] = [];
+    const keys = new Set<string>();
+    const nameOf = (cleanerId: string): string => {
+      const cleaner = cleanerById.get(cleanerId);
+      return cleaner ? [cleaner.firstName, cleaner.name].filter(Boolean).join(' ') : '';
+    };
+    const addTask = (task: CleaningTask): void => {
+      if (!task.date || task.date < day || task.date > until || isDone('cleaningtasks', task.status)) return;
+      const area = areaById.get(task.areaId);
+      const key = `${task.planId || task.id}-${task.date}`;
+      if (keys.has(key)) return;
+      keys.add(key);
+      rows.push({
+        sortKey: `${task.date}${task.workStart}`,
+        date: formatDate(task.date, settings.language),
+        time: task.workStart,
+        title: task.title || task.number,
+        building: buildingById.get(task.buildingId || area?.buildingId || '')?.name ?? '',
+        room: roomById.get(task.roomId || area?.roomId || '')?.name ?? '',
+        area: area?.name ?? '',
+        cleaner: nameOf(task.cleanerId),
+        checklist: task.checklist.map((item) => item.text),
+      });
+    };
+    visibleTasks.forEach(addTask);
+    plans.filter((plan) => plan.status === 'active').forEach((plan) => {
+      const area = areaById.get(plan.areaId);
+      cleaningDates(plan.nextDate, plan, until).forEach((date) => {
+        const key = `${plan.id}-${date}`;
+        if (keys.has(key)) return;
+        keys.add(key);
+        rows.push({
+          sortKey: `${date}${plan.timeStart}`,
+          date: formatDate(date, settings.language),
+          time: plan.timeStart,
+          title: plan.title || area?.name || plan.number,
+          building: buildingById.get(area?.buildingId ?? '')?.name ?? '',
+          room: roomById.get(area?.roomId ?? '')?.name ?? '',
+          area: area?.name ?? '',
+          cleaner: nameOf(plan.cleanerId),
+          checklist: (plan.checklist.length > 0 ? plan.checklist : area?.checklist ?? []).map((item) => item.text),
+        });
+      });
+    });
+    return rows.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+  }, [areas, buildings, cleaners, plans, rooms, settings.language, visibleTasks]);
+
+  const printSchedule = async (mode: 'weekly' | 'roomSheets'): Promise<void> => {
+    const { downloadCleaningSchedulePdf } = await import('@/lib/cleaning/cleaning-schedule-pdf');
+    const address = settings.companyAddress;
+    downloadCleaningSchedulePdf(
+      scheduleRows,
+      {
+        weeklyPlan: t('cleaning.weeklyPlan'),
+        roomSheets: t('cleaning.roomSheets'),
+        date: t('common.date'),
+        time: t('cleaning.time'),
+        building: t('module.buildings.singular'),
+        room: t('module.rooms.singular'),
+        area: t('module.cleaningareas.singular'),
+        cleaner: t('cleaning.assignee'),
+        instructions: t('cleaning.instructions'),
+        signature: t('cleaning.signature'),
+        checkedBy: t('cleaning.checkedBy'),
+        checkDate: t('cleaning.checkDate'),
+        problem: t('cleaning.problem'),
+        none: t('cleaning.nothingDue'),
+      },
+      {
+        companyName: settings.companyName || 'Facility365',
+        companyAddress: [address.street, [address.zip, address.city].filter(Boolean).join(' ')].filter(Boolean).join(', '),
+        logo: logoOf(settings.companyLogo),
+      },
+      mode,
+    );
+  };
+
   const tiles: Tile[] = [
     { labelKey: 'cleaning.openTasks', value: openTasks.length, href: '/cleaning/tasks', icon: CalendarClock },
     { labelKey: 'module.cleaningareas', value: areas.length, href: '/cleaning/areas', icon: Brush },
@@ -131,8 +223,22 @@ export function CleaningOverview() {
   return (
     <div className="flex flex-col gap-4">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">{t('module.cleaning')}</h1>
-        <p className="text-sm text-muted-foreground">{t('cleaning.subtitle')}</p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">{t('module.cleaning')}</h1>
+            <p className="text-sm text-muted-foreground">{t('cleaning.subtitle')}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => void printSchedule('weekly')}>
+              <Printer className="size-4" aria-hidden />
+              {t('cleaning.printWeekly')}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => void printSchedule('roomSheets')}>
+              <Printer className="size-4" aria-hidden />
+              {t('cleaning.printRoomSheets')}
+            </Button>
+          </div>
+        </div>
       </header>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" data-testid="cleaning-tiles">
