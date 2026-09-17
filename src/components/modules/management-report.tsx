@@ -45,29 +45,75 @@ export function ManagementReport() {
 
   const report = useManagementReport(range);
   const assets = useCollectionItems('assets');
+  const buildings = useCollectionItems('buildings');
+  const rooms = useCollectionItems('rooms');
   const inspections = useCollectionItems('inspections');
   const maintenances = useCollectionItems('maintenances');
   const documents = useCollectionItems('documents');
   const cafm = useMemo(() => {
     const todayValue = today();
     const investments = new Map<string, { cost: number; count: number }>();
-    assets.forEach((asset) => {
-      if (!asset.plannedReplacementYear) return;
-      const row = investments.get(asset.plannedReplacementYear) ?? { cost: 0, count: 0 };
-      row.cost += asset.replacementCost ?? 0;
-      if ((asset.conditionRating ?? 0) >= 4) row.count += 1;
-      investments.set(asset.plannedReplacementYear, row);
-    });
+    const addPlan = (year: string | undefined, cost: number | undefined, critical: boolean) => {
+      if (!year) return;
+      const row = investments.get(year) ?? { cost: 0, count: 0 };
+      row.cost += cost ?? 0;
+      if (critical) row.count += 1;
+      investments.set(year, row);
+    };
+    assets.forEach((asset) =>
+      addPlan(
+        asset.plannedReplacementYear,
+        asset.replacementCost,
+        asset.conditionStatus === 'critical' ||
+          asset.conditionStatus === 'outOfService' ||
+          (asset.conditionRating ?? 0) >= 4,
+      ),
+    );
+    buildings.forEach((building) =>
+      addPlan(
+        building.plannedRenewalYear,
+        building.renewalCost,
+        building.conditionStatus === 'critical' || building.conditionStatus === 'outOfService',
+      ),
+    );
+    rooms.forEach((room) =>
+      addPlan(
+        room.plannedRenewalYear,
+        room.renewalCost,
+        room.conditionStatus === 'critical' || room.conditionStatus === 'outOfService',
+      ),
+    );
     return {
       investments: [...investments.entries()].sort(([a], [b]) => a.localeCompare(b)),
-      criticalAssets: assets.filter((asset) => (asset.conditionRating ?? 0) >= 4).length,
+      criticalAssets:
+        assets.filter(
+          (asset) =>
+            asset.conditionStatus === 'critical' ||
+            asset.conditionStatus === 'outOfService' ||
+            (asset.conditionRating ?? 0) >= 4,
+        ).length +
+        buildings.filter(
+          (building) =>
+            building.conditionStatus === 'critical' || building.conditionStatus === 'outOfService',
+        ).length +
+        rooms.filter(
+          (room) => room.conditionStatus === 'critical' || room.conditionStatus === 'outOfService',
+        ).length,
+      renewalRequired:
+        assets.filter((asset) => asset.renewalRequired).length +
+        buildings.filter((building) => building.renewalRequired).length +
+        rooms.filter((room) => room.renewalRequired).length,
+      canContinue:
+        assets.filter((asset) => asset.conditionStatus === 'new' || asset.conditionStatus === 'good').length +
+        buildings.filter((building) => building.conditionStatus === 'new' || building.conditionStatus === 'good').length +
+        rooms.filter((room) => room.conditionStatus === 'new' || room.conditionStatus === 'good').length,
       overdueInspections: inspections.filter((item) => item.nextDate && item.nextDate < todayValue).length,
       overdueMaintenance: maintenances.filter((item) => item.nextDate && item.nextDate < todayValue).length,
       expiredEvidence: documents.filter(
         (document) => document.safetyEvidence && document.validUntil && document.validUntil < todayValue,
       ).length,
     };
-  }, [assets, documents, inspections, maintenances]);
+  }, [assets, buildings, documents, inspections, maintenances, rooms]);
 
   const years = useMemo(() => {
     const current = Number(now.slice(0, 4));
@@ -135,6 +181,15 @@ export function ManagementReport() {
         tables: [
           { title: t('report.byProperty'), head, rows: tableRows(report.properties) },
           { title: t('report.byBuilding'), head, rows: tableRows(report.buildings) },
+          {
+            title: t('report.investmentPlanning'),
+            head: [t('renewal.year'), t('renewal.cost'), t('report.criticalAssets')],
+            rows: cafm.investments.map(([replacementYear, row]) => [
+              replacementYear,
+              formatMoney(row.cost),
+              String(row.count),
+            ]),
+          },
         ],
       },
       labels,
@@ -277,6 +332,16 @@ export function ManagementReport() {
         <CardContent className="p-0">
           <div className="border-b p-4 text-sm">
             {t('report.criticalAssets')}: <strong>{cafm.criticalAssets}</strong>
+          </div>
+          <div className="grid grid-cols-2 gap-4 border-b p-4 text-sm sm:grid-cols-3">
+            <div>
+              <span className="text-muted-foreground">{t('renewal.required')}</span>
+              <strong className="ml-2">{cafm.renewalRequired}</strong>
+            </div>
+            <div>
+              <span className="text-muted-foreground">{t('renewal.canContinue')}</span>
+              <strong className="ml-2">{cafm.canContinue}</strong>
+            </div>
           </div>
           <ul className="divide-y">
             {cafm.investments.map(([replacementYear, row]) => (

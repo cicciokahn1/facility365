@@ -185,6 +185,13 @@ export const emptyBuilding = (): Omit<Building, "id" | "number"> => ({
   description: "",
   floors: [],
   plans: [],
+  conditionStatus: "good",
+  renewalRequired: false,
+  renewalCost: 0,
+  plannedRenewalYear: "",
+  renewalPriority: "medium",
+  responsible: "",
+  conditionNote: "",
 });
 
 export const emptyRoom = (): Omit<Room, "id" | "number"> => ({
@@ -199,6 +206,13 @@ export const emptyRoom = (): Omit<Room, "id" | "number"> => ({
   workplaceList: [],
   status: "active",
   description: "",
+  conditionStatus: "good",
+  renewalRequired: false,
+  renewalCost: 0,
+  plannedRenewalYear: "",
+  renewalPriority: "medium",
+  responsible: "",
+  conditionNote: "",
 });
 
 export const emptyAsset = (): Omit<Asset, "id" | "number"> => ({
@@ -231,6 +245,8 @@ export const emptyAsset = (): Omit<Asset, "id" | "number"> => ({
   contractId: "",
   costCenter: "",
   criticality: "medium",
+  renewalRequired: false,
+  renewalPriority: "medium",
 });
 
 export const emptySupplier = (): Omit<Supplier, "id" | "number"> => ({
