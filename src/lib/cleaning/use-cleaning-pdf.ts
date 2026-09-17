@@ -21,6 +21,7 @@ import {
 import { useSettings } from '@/lib/settings/provider';
 import { Cleaner, CleaningTask } from '@/lib/types';
 import { formatDate } from '@/lib/utils/format';
+import { checklistFor } from '@/lib/cleaning/checklists';
 
 export interface CleaningPdfApi {
   data: (task: CleaningTask) => CleaningPdfData;
@@ -85,7 +86,10 @@ export function useCleaningPdf(): CleaningPdfApi {
         workEnd: task.workEnd,
         breakMinutes: task.breakMinutes,
         workTotal: hasWorkTime(time) ? `${formatWorkTime(time)} h` : '–',
-        checklist: task.checklist.map((item) => ({ text: item.text, done: item.done })),
+        checklist: checklistFor(task.checklist, area?.type ?? '').map((item) => ({
+          text: item.text,
+          done: item.done,
+        })),
         materials: task.materials.map((item) => ({
           name: item.name,
           quantity: item.quantity,

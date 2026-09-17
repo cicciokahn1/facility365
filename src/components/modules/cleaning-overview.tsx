@@ -27,6 +27,7 @@ import { today } from '@/lib/utils/format';
 import { cleaningDates } from '@/lib/cleaning/schedule';
 import { logoOf } from '@/lib/branding/logo';
 import type { CleaningScheduleRow } from '@/lib/cleaning/cleaning-schedule-pdf';
+import { checklistFor } from '@/lib/cleaning/checklists';
 
 interface Tile {
   labelKey: TranslationKey;
@@ -147,7 +148,7 @@ export function CleaningOverview() {
         room: roomById.get(task.roomId || area?.roomId || '')?.name ?? '',
         area: area?.name ?? '',
         cleaner: nameOf(task.cleanerId),
-        checklist: task.checklist.map((item) => item.text),
+        checklist: checklistFor(task.checklist, area?.type ?? '').map((item) => item.text),
       });
     };
     visibleTasks.forEach(addTask);
@@ -166,7 +167,10 @@ export function CleaningOverview() {
           room: roomById.get(area?.roomId ?? '')?.name ?? '',
           area: area?.name ?? '',
           cleaner: nameOf(plan.cleanerId),
-          checklist: (plan.checklist.length > 0 ? plan.checklist : area?.checklist ?? []).map((item) => item.text),
+          checklist: checklistFor(
+            plan.checklist.length > 0 ? plan.checklist : area?.checklist ?? [],
+            area?.type ?? '',
+          ).map((item) => item.text),
         });
       });
     });

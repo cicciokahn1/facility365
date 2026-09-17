@@ -14,6 +14,7 @@ import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
 import { CleaningPdfPanel } from '@/components/modules/cleaning-pdf-panel';
 import { WorkTimePanel } from '@/components/modules/work-time-panel';
+import { checklistFor } from '@/lib/cleaning/checklists';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { hourlyRateFor } from '@/lib/reports/hourly-rate';
@@ -22,6 +23,7 @@ import { useSettings } from '@/lib/settings/provider';
 export function CleaningTaskDetail({ id }: { id: string }) {
   const t = useT();
   const cleaners = useCollectionItems('cleaners');
+  const areas = useCollectionItems('cleaningareas');
   const users = useCollectionItems('users');
   const suppliers = useCollectionItems('suppliers');
   const { settings } = useSettings();
@@ -36,7 +38,10 @@ export function CleaningTaskDetail({ id }: { id: string }) {
           labelKey: 'tab.checklist',
           content: (
             <ChecklistEditor
-              items={task.checklist}
+              items={checklistFor(
+                task.checklist,
+                areas.find((area) => area.id === task.areaId)?.type ?? '',
+              )}
               onChange={(checklist) => update({ checklist })}
             />
           ),

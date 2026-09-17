@@ -89,12 +89,23 @@ export function WeatherWidget() {
       void (async () => {
         const saved = readPlace();
         if (saved) {
-          setPlace(saved);
-          await load(saved);
-          return;
+          const permission =
+            typeof navigator !== 'undefined' && navigator.permissions
+              ? await navigator.permissions.query({ name: 'geolocation' })
+              : null;
+          if (permission?.state !== 'granted') {
+            setPlace(saved);
+            await load(saved);
+            return;
+          }
         }
         const position = await devicePlace();
         if (!position) {
+          if (saved) {
+            setPlace(saved);
+            await load(saved);
+            return;
+          }
           setFailed(true);
           return;
         }

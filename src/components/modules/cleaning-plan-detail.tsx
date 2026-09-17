@@ -15,6 +15,7 @@ import { ChecklistEditor } from '@/components/module/checklist-editor';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
 import { Button } from '@/components/ui/button';
+import { checklistFor } from '@/lib/cleaning/checklists';
 import { nextCleaningDate } from '@/lib/cleaning/schedule';
 import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
@@ -43,7 +44,7 @@ export function CleaningPlanDetail({ id }: { id: string }) {
       return;
     }
     const area = areas.find((entry) => entry.id === plan.areaId);
-    const checklist = (plan.checklist.length > 0 ? plan.checklist : area?.checklist ?? []).map(
+    const checklist = checklistFor(plan.checklist.length > 0 ? plan.checklist : area?.checklist ?? [], area?.type ?? '').map(
       (item) => ({ id: newId('chk'), text: item.text, done: false }),
     );
     const task = tasks.create(
@@ -85,7 +86,12 @@ export function CleaningPlanDetail({ id }: { id: string }) {
           labelKey: 'tab.checklist',
           content: (
             <ChecklistEditor
-              items={plan.checklist}
+              items={checklistFor(
+                plan.checklist.length > 0
+                  ? plan.checklist
+                  : areas.find((entry) => entry.id === plan.areaId)?.checklist ?? [],
+                areas.find((entry) => entry.id === plan.areaId)?.type ?? '',
+              )}
               onChange={(checklist) => update({ checklist })}
             />
           ),

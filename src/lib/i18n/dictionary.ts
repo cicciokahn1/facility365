@@ -6624,6 +6624,12 @@ export const dictionary = {
     it: "Servizi igienici",
     en: "Sanitary",
   },
+  "cleaning.areaType.window": {
+    de: "Fenster",
+    fr: "Fenêtres",
+    it: "Finestre",
+    en: "Windows",
+  },
   "cleaning.areaType.corridor": {
     de: "Korridor",
     fr: "Couloir",
