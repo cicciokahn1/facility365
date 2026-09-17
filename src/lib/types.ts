@@ -318,6 +318,13 @@ export interface Building extends BaseEntity {
   description: string;
   floors: BuildingFloor[];
   plans: Plan[];
+  conditionStatus?: AssetConditionStatus;
+  renewalRequired?: boolean;
+  renewalCost?: number;
+  plannedRenewalYear?: string;
+  renewalPriority?: Priority;
+  responsible?: string;
+  conditionNote?: string;
 }
 
 /** Stockwerk eines Gebaeudes. */
@@ -370,6 +377,13 @@ export interface Room extends BaseEntity {
   occupant?: string;
   status: ActiveStatus;
   description: string;
+  conditionStatus?: AssetConditionStatus;
+  renewalRequired?: boolean;
+  renewalCost?: number;
+  plannedRenewalYear?: string;
+  renewalPriority?: Priority;
+  responsible?: string;
+  conditionNote?: string;
 }
 
 export type AssetStatus = "active" | "maintenance" | "defect" | "inactive";
@@ -425,6 +439,8 @@ export interface Asset extends BaseEntity {
   conditionNote?: string;
   replacementCost?: number;
   plannedReplacementYear?: string;
+  renewalRequired?: boolean;
+  renewalPriority?: Priority;
 }
 
 export type EnergyType =

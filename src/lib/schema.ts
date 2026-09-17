@@ -193,6 +193,14 @@ export const ASSET_CONDITION_STATUS_OPTIONS: SelectOption[] = [
   option("outOfService", "asset.conditionStatus.outOfService"),
 ];
 
+export const RENEWAL_YEAR_OPTIONS: SelectOption[] = Array.from(
+  { length: 26 },
+  (_, index) => {
+    const year = String(2020 + index);
+    return option(year, year as TranslationKey);
+  },
+);
+
 export const ASSET_LIFECYCLE_OPTIONS: SelectOption[] = [
   option("planned", "asset.lifecycle.planned"),
   option("inOperation", "asset.lifecycle.inOperation"),
