@@ -558,6 +558,24 @@ export const dictionary = {
     it: "Oggi e scaduti",
     en: "Today and overdue",
   },
+  "today.now": {
+    de: "Jetzt",
+    fr: "Maintenant",
+    it: "Adesso",
+    en: "Now",
+  },
+  "today.next": {
+    de: "Als Nächstes",
+    fr: "Ensuite",
+    it: "In seguito",
+    en: "Next",
+  },
+  "today.later": {
+    de: "Später",
+    fr: "Plus tard",
+    it: "Più tardi",
+    en: "Later",
+  },
   "today.empty": {
     de: "Für heute steht nichts an.",
     fr: "Rien de prévu aujourd’hui.",
