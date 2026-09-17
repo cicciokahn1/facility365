@@ -20,7 +20,7 @@ import { titleOfEntity } from "@/lib/module-config";
 import { moduleByCollection, moduleByKey } from "@/lib/modules";
 import { useSettings } from "@/lib/settings/provider";
 import { BaseEntity, CollectionKey } from "@/lib/types";
-import { formatDate, today } from "@/lib/utils/format";
+import { daysUntil, formatDate, today } from "@/lib/utils/format";
 import { CompletableKey, isDone } from "@/lib/workflow/complete";
 
 interface Row {
@@ -133,7 +133,35 @@ export function TodayView() {
     [assigned, day, events, t],
   );
 
-  const empty = assigned.length === 0 && due.length === 0;
+  const upcoming = useMemo(
+    () =>
+      events
+        .filter((event) => event.date > day)
+        .filter((event) => !assigned.some((row) => row.href === event.href))
+        .map((event) => ({
+          key: event.id,
+          href: event.href,
+          label: t(event.labelKey),
+          title: event.title,
+          date: event.date,
+          overdue: false,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, 12),
+    [assigned, day, events, t],
+  );
+
+  const nowRows = [...assigned, ...due].filter((row) => !row.date || row.date <= day);
+  const nextRows = [...assigned, ...upcoming].filter(
+    (row) => {
+      const days = daysUntil(row.date);
+      return days !== null && days > 0 && days <= 7;
+    },
+  );
+  const laterRows = [...assigned, ...upcoming].filter(
+    (row) => row.date > day && !nextRows.some((next) => next.key === row.key),
+  );
+  const empty = nowRows.length === 0 && nextRows.length === 0 && laterRows.length === 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -148,18 +176,9 @@ export function TodayView() {
         <EmptyState icon={moduleByKey("today").icon} titleKey="today.empty" />
       ) : (
         <>
-          <Section
-            testId="today-assigned"
-            title={t("today.assigned")}
-            rows={assigned}
-            language={settings.language}
-          />
-          <Section
-            testId="today-due"
-            title={t("today.due")}
-            rows={due}
-            language={settings.language}
-          />
+          <Section testId="today-now" title={t("today.now")} rows={nowRows} language={settings.language} />
+          <Section testId="today-next" title={t("today.next")} rows={nextRows} language={settings.language} />
+          <Section testId="today-later" title={t("today.later")} rows={laterRows} language={settings.language} />
         </>
       )}
     </div>
