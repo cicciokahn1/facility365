@@ -137,8 +137,13 @@ export function useFollowUp(): FollowUpApi {
   );
 
   const createOrder = useCallback(
-    (collection: CollectionKey, entity: BaseEntity) =>
-      orderApi.create(orderValuesFromSource(collection, entity)),
+    (collection: CollectionKey, entity: BaseEntity) => {
+      const existing = orderApi.items.find(
+        (order) =>
+          order.sourceCollection === collection && order.sourceId === entity.id,
+      );
+      return existing ?? orderApi.create(orderValuesFromSource(collection, entity));
+    },
     [orderApi],
   );
 

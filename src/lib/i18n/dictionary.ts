@@ -564,6 +564,24 @@ export const dictionary = {
     it: "Adesso",
     en: "Now",
   },
+  "today.today": {
+    de: "Heute",
+    fr: "Aujourd’hui",
+    it: "Oggi",
+    en: "Today",
+  },
+  "today.checklist": {
+    de: "{n} Checklistenpunkt(e)",
+    fr: "{n} point(s) de contrôle",
+    it: "{n} punto/i della checklist",
+    en: "{n} checklist item(s)",
+  },
+  "today.recurring": {
+    de: "Wiederkehrend",
+    fr: "Récurrent",
+    it: "Ricorrente",
+    en: "Recurring",
+  },
   "today.next": {
     de: "Als Nächstes",
     fr: "Ensuite",

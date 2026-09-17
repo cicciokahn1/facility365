@@ -14,7 +14,7 @@ import { EmptyState } from "@/components/common/empty-state";
 import { useAccess } from "@/lib/auth/scope";
 import { useRelevantEvents } from "@/lib/calendar/relevant";
 import { useCollectionItems } from "@/lib/data/store";
-import { stringField } from "@/lib/entity-values";
+import { fieldValue, stringField } from "@/lib/entity-values";
 import { useT } from "@/lib/i18n/provider";
 import { titleOfEntity } from "@/lib/module-config";
 import { moduleByCollection, moduleByKey } from "@/lib/modules";
@@ -30,6 +30,87 @@ interface Row {
   title: string;
   date: string;
   overdue: boolean;
+  context: string;
+  responsible: string;
+  checklistCount: number;
+  recurring: boolean;
+}
+
+const references = (
+  properties: BaseEntity[],
+  buildings: BaseEntity[],
+  rooms: BaseEntity[],
+  assets: BaseEntity[],
+) => ({ properties, buildings, rooms, assets });
+
+type References = ReturnType<typeof references>;
+
+function contextOf(item: BaseEntity, lookup: References): string {
+  const relation =
+    stringField(item, "assetId") && lookup.assets.find((entry) => entry.id === stringField(item, "assetId"))
+      ? lookup.assets.find((entry) => entry.id === stringField(item, "assetId"))
+      : stringField(item, "roomId") && lookup.rooms.find((entry) => entry.id === stringField(item, "roomId"))
+        ? lookup.rooms.find((entry) => entry.id === stringField(item, "roomId"))
+        : stringField(item, "buildingId") && lookup.buildings.find((entry) => entry.id === stringField(item, "buildingId"))
+          ? lookup.buildings.find((entry) => entry.id === stringField(item, "buildingId"))
+          : stringField(item, "propertyId") && lookup.properties.find((entry) => entry.id === stringField(item, "propertyId"))
+            ? lookup.properties.find((entry) => entry.id === stringField(item, "propertyId"))
+            : undefined;
+  if (!relation) return "";
+  const collection = lookup.assets.includes(relation)
+    ? "assets"
+    : lookup.rooms.includes(relation)
+      ? "rooms"
+      : lookup.buildings.includes(relation)
+        ? "buildings"
+        : "properties";
+  return titleOfEntity(collection, relation);
+}
+
+function detailsOf(item: BaseEntity, lookup: References) {
+  const checklist = fieldValue(item, "checklist");
+  return {
+    context: contextOf(item, lookup),
+    responsible:
+      stringField(item, "assignee") ||
+      stringField(item, "responsible") ||
+      stringField(item, "assigneeTeam") ||
+      stringField(item, "company") ||
+      stringField(item, "cleanerId"),
+    checklistCount: Array.isArray(checklist) ? checklist.length : 0,
+  };
+}
+
+function sourceForEvent(
+  collection: CollectionKey,
+  sourceId: string,
+  sources: {
+    orders: BaseEntity[];
+    maintenances: BaseEntity[];
+    legionella: BaseEntity[];
+    rcd: BaseEntity[];
+    inspections: BaseEntity[];
+    cleaningtasks: BaseEntity[];
+    tickets: BaseEntity[];
+  },
+): BaseEntity | undefined {
+  const items =
+    collection === "orders"
+      ? sources.orders
+      : collection === "maintenances"
+        ? sources.maintenances
+        : collection === "legionella"
+          ? sources.legionella
+          : collection === "rcd"
+            ? sources.rcd
+            : collection === "inspections"
+              ? sources.inspections
+              : collection === "cleaningtasks"
+                ? sources.cleaningtasks
+                : collection === "tickets"
+                  ? sources.tickets
+                  : [];
+  return items.find((item) => item.id === sourceId);
 }
 
 /** Sammlungen, die eine persoenliche Zuweisung kennen. */
@@ -60,6 +141,14 @@ export function TodayView() {
   const playgroundchecks = useCollectionItems("playgroundchecks");
   const rcd = useCollectionItems("rcd");
   const tickets = useCollectionItems("tickets");
+  const properties = useCollectionItems("properties");
+  const buildings = useCollectionItems("buildings");
+  const rooms = useCollectionItems("rooms");
+  const assets = useCollectionItems("assets");
+  const lookup = useMemo(
+    () => references(properties, buildings, rooms, assets),
+    [assets, buildings, properties, rooms],
+  );
 
   const assigned = useMemo(() => {
     const userId = access.user?.id ?? "";
@@ -95,6 +184,8 @@ export function TodayView() {
             title: titleOfEntity(collection, item),
             date,
             overdue: Boolean(date) && date < day,
+            ...detailsOf(item, lookup),
+            recurring: false,
           });
         });
     });
@@ -114,6 +205,7 @@ export function TodayView() {
     rcd,
     t,
     tickets,
+    lookup,
   ]);
 
   const due = useMemo(
@@ -121,16 +213,35 @@ export function TodayView() {
       events
         .filter((event) => event.date <= day)
         .filter((event) => !assigned.some((row) => row.href === event.href))
-        .map((event) => ({
-          key: event.id,
-          href: event.href,
-          label: t(event.labelKey),
-          title: event.title,
-          date: event.date,
-          overdue: event.date < day,
-        }))
+        .map((event) => {
+          const source = event.source?.collection
+            ? sourceForEvent(event.source.collection, event.sourceId, {
+                orders,
+                maintenances,
+                legionella: [],
+                rcd,
+                inspections,
+                cleaningtasks,
+                tickets,
+              })
+            : undefined;
+          return {
+            key: event.id,
+            href: event.href,
+            label: t(event.labelKey),
+            title: event.title,
+            date: event.date,
+            overdue: event.date < day,
+            ...(source ? detailsOf(source, lookup) : {
+              context: "",
+              responsible: "",
+              checklistCount: 0,
+            }),
+            recurring: event.recurring,
+          };
+        })
         .sort((a, b) => a.date.localeCompare(b.date)),
-    [assigned, day, events, t],
+    [assigned, cleaningtasks, day, events, inspections, lookup, maintenances, orders, rcd, tickets, t],
   );
 
   const upcoming = useMemo(
@@ -145,13 +256,18 @@ export function TodayView() {
           title: event.title,
           date: event.date,
           overdue: false,
+          context: "",
+          responsible: "",
+          checklistCount: 0,
+          recurring: event.recurring,
         }))
         .sort((a, b) => a.date.localeCompare(b.date))
         .slice(0, 12),
     [assigned, day, events, t],
   );
 
-  const nowRows = [...assigned, ...due].filter((row) => !row.date || row.date <= day);
+  const nowRows = [...assigned, ...due].filter((row) => !row.date || row.date < day);
+  const todayRows = [...assigned, ...due].filter((row) => row.date === day);
   const nextRows = [...assigned, ...upcoming].filter(
     (row) => {
       const days = daysUntil(row.date);
@@ -161,7 +277,7 @@ export function TodayView() {
   const laterRows = [...assigned, ...upcoming].filter(
     (row) => row.date > day && !nextRows.some((next) => next.key === row.key),
   );
-  const empty = nowRows.length === 0 && nextRows.length === 0 && laterRows.length === 0;
+  const empty = nowRows.length === 0 && todayRows.length === 0 && nextRows.length === 0 && laterRows.length === 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -177,6 +293,7 @@ export function TodayView() {
       ) : (
         <>
           <Section testId="today-now" title={t("today.now")} rows={nowRows} language={settings.language} />
+          <Section testId="today-today" title={t("today.today")} rows={todayRows} language={settings.language} />
           <Section testId="today-next" title={t("today.next")} rows={nextRows} language={settings.language} />
           <Section testId="today-later" title={t("today.later")} rows={laterRows} language={settings.language} />
         </>
@@ -213,8 +330,12 @@ function Section({
             >
               <span className="min-w-0">
                 <span className="block truncate font-medium">{row.title}</span>
-                <span className="block text-xs text-muted-foreground">
+                <span className="block truncate text-xs text-muted-foreground">
                   {row.label}
+                  {row.context ? ` · ${row.context}` : ""}
+                  {row.responsible ? ` · ${row.responsible}` : ""}
+                  {row.checklistCount > 0 ? ` · ${t("today.checklist", { n: row.checklistCount })}` : ""}
+                  {row.recurring ? ` · ${t("today.recurring")}` : ""}
                 </span>
               </span>
               <span

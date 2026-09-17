@@ -21,6 +21,7 @@ import { useT } from '@/lib/i18n/provider';
 import { useCurrentUser } from '@/lib/settings/provider';
 import { CleaningPlan } from '@/lib/types';
 import { newId } from '@/lib/utils/id';
+import { isDone } from '@/lib/workflow/complete';
 
 export function CleaningPlanDetail({ id }: { id: string }) {
   const t = useT();
@@ -31,6 +32,16 @@ export function CleaningPlanDetail({ id }: { id: string }) {
   const plans = useCollection('cleaningplans');
 
   const createTask = (plan: CleaningPlan) => {
+    const existing = tasks.items.find(
+      (task) =>
+        task.planId === plan.id &&
+        task.date === plan.nextDate &&
+        !isDone('cleaningtasks', task.status),
+    );
+    if (existing) {
+      router.push(`/cleaning/tasks/${existing.id}`);
+      return;
+    }
     const area = areas.find((entry) => entry.id === plan.areaId);
     const checklist = (plan.checklist.length > 0 ? plan.checklist : area?.checklist ?? []).map(
       (item) => ({ id: newId('chk'), text: item.text, done: false }),
