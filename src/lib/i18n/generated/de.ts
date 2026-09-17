@@ -515,6 +515,8 @@ export const table: Record<string, string> = {
   "dashboard.quick.inspection": "Kontrolle durchführen",
   "dashboard.quick.workTime": "Arbeitszeit erfassen",
   "dashboard.quick.photo": "Foto hinzufügen",
+  "quickWorkTime.title": "Arbeitszeit erfassen",
+  "quickWorkTime.hint": "Arbeitszeit direkt erfassen – ohne zuerst einen Rapport auszuwählen.",
   "dashboard.overdue": "überfällig",
   "dashboard.emptyState": "Noch keine Daten erfasst. Beginnen Sie mit einem Kunden oder einer Liegenschaft.",
   "smart.objectView": "Objektübersicht",

@@ -2718,6 +2718,18 @@ export const dictionary = {
     it: "Aggiungi foto",
     en: "Add photo",
   },
+  "quickWorkTime.title": {
+    de: "Arbeitszeit erfassen",
+    fr: "Saisir le temps de travail",
+    it: "Registrare le ore di lavoro",
+    en: "Record work time",
+  },
+  "quickWorkTime.hint": {
+    de: "Arbeitszeit direkt erfassen – ohne zuerst einen Rapport auszuwählen.",
+    fr: "Saisir directement le temps de travail sans sélectionner d’abord un rapport.",
+    it: "Registra direttamente le ore senza scegliere prima un rapporto.",
+    en: "Record work time directly without selecting a report first.",
+  },
   "dashboard.overdue": {
     de: "überfällig",
     fr: "en retard",
