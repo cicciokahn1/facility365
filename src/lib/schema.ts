@@ -20,6 +20,8 @@ export interface SelectOption {
 interface FieldBase {
   name: string;
   labelKey: TranslationKey;
+  /** Selten benoetigte Fachangabe; bleibt in der einfachen Ansicht verborgen. */
+  advanced?: boolean;
   required?: boolean;
   /** Breite im Formularraster; 2 = volle Breite. */
   span?: 1 | 2;
