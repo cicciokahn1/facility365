@@ -1,7 +1,7 @@
 'use client';
 
 /** Inhalt der globalen Suche; wird erst beim Oeffnen geladen. */
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 
 import {
   CommandDialog,
@@ -71,6 +71,7 @@ export function SearchDialog({
 }) {
   const t = useT();
   const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
   const access = useAccess();
   const customers = useCollectionItems('customers');
   const suppliers = useCollectionItems('suppliers');
@@ -195,7 +196,7 @@ export function SearchDialog({
   );
 
   const results = useMemo(() => {
-    const needle = query.trim().toLowerCase();
+    const needle = deferredQuery.trim().toLowerCase();
     if (!open || !needle) return [];
     return SEARCHABLE.filter((collection) => access.canRead(collection)).map((collection) => {
       const config = configOf(collection);
@@ -214,7 +215,7 @@ export function SearchDialog({
         }));
       return { collection, matches };
     }).filter((group) => group.matches.length > 0);
-  }, [access, collections, open, query]);
+  }, [access, collections, deferredQuery, open]);
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange} shouldFilter={false}>
