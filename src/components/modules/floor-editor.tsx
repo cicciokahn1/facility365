@@ -26,6 +26,9 @@ export function FloorEditor({
     grossArea: '',
     netArea: '',
     usableArea: '',
+    trafficArea: '',
+    functionalArea: '',
+    secondaryArea: '',
     energyReferenceArea: '',
   });
   const sorted = [...floors].sort((a, b) => b.level - a.level);
@@ -43,6 +46,13 @@ export function FloorEditor({
         grossArea: draft.grossArea ? Number(draft.grossArea.replace(',', '.')) : undefined,
         netArea: draft.netArea ? Number(draft.netArea.replace(',', '.')) : undefined,
         usableArea: draft.usableArea ? Number(draft.usableArea.replace(',', '.')) : undefined,
+        trafficArea: draft.trafficArea ? Number(draft.trafficArea.replace(',', '.')) : undefined,
+        functionalArea: draft.functionalArea
+          ? Number(draft.functionalArea.replace(',', '.'))
+          : undefined,
+        secondaryArea: draft.secondaryArea
+          ? Number(draft.secondaryArea.replace(',', '.'))
+          : undefined,
         energyReferenceArea: draft.energyReferenceArea
           ? Number(draft.energyReferenceArea.replace(',', '.'))
           : undefined,
@@ -56,6 +66,9 @@ export function FloorEditor({
       grossArea: '',
       netArea: '',
       usableArea: '',
+      trafficArea: '',
+      functionalArea: '',
+      secondaryArea: '',
       energyReferenceArea: '',
     });
   };
@@ -78,6 +91,13 @@ export function FloorEditor({
                     {floor.area} m²
                     {typeof floor.netArea === 'number' ? ` · NF ${floor.netArea} m²` : ''}
                     {typeof floor.usableArea === 'number' ? ` · HNF ${floor.usableArea} m²` : ''}
+                    {typeof floor.trafficArea === 'number' ? ` · VF ${floor.trafficArea} m²` : ''}
+                    {typeof floor.functionalArea === 'number'
+                      ? ` · FF ${floor.functionalArea} m²`
+                      : ''}
+                    {typeof floor.secondaryArea === 'number'
+                      ? ` · KF ${floor.secondaryArea} m²`
+                      : ''}
                     {typeof floor.energyReferenceArea === 'number'
                       ? ` · EBF ${floor.energyReferenceArea} m²`
                       : ''}
@@ -134,6 +154,24 @@ export function FloorEditor({
           placeholder="HNF m²"
           value={draft.usableArea}
           onChange={(event) => setDraft({ ...draft, usableArea: event.target.value })}
+        />
+        <Input
+          inputMode="decimal"
+          placeholder="VF m²"
+          value={draft.trafficArea}
+          onChange={(event) => setDraft({ ...draft, trafficArea: event.target.value })}
+        />
+        <Input
+          inputMode="decimal"
+          placeholder="FF m²"
+          value={draft.functionalArea}
+          onChange={(event) => setDraft({ ...draft, functionalArea: event.target.value })}
+        />
+        <Input
+          inputMode="decimal"
+          placeholder="KF m²"
+          value={draft.secondaryArea}
+          onChange={(event) => setDraft({ ...draft, secondaryArea: event.target.value })}
         />
         <Input
           inputMode="decimal"
