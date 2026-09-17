@@ -9,6 +9,7 @@
 import { ChecklistEditor } from '@/components/module/checklist-editor';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
+import { checklistFor } from '@/lib/cleaning/checklists';
 
 export function CleaningAreaDetail({ id }: { id: string }) {
   return (
@@ -21,7 +22,7 @@ export function CleaningAreaDetail({ id }: { id: string }) {
           labelKey: 'cleaning.checklistTemplate',
           content: (
             <ChecklistEditor
-              items={area.checklist}
+              items={checklistFor(area.checklist, area.type)}
               onChange={(checklist) => update({ checklist })}
             />
           ),

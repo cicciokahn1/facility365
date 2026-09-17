@@ -642,6 +642,7 @@ export const CLEANING_AREA_TYPE_OPTIONS: SelectOption[] = [
   option("office", "cleaning.areaType.office"),
   option("stairway", "cleaning.areaType.stairway"),
   option("sanitary", "cleaning.areaType.sanitary"),
+  option("window", "cleaning.areaType.window"),
   option("kitchen", "cleaning.areaType.kitchen"),
   option("corridor", "cleaning.areaType.corridor"),
   option("entrance", "cleaning.areaType.entrance"),

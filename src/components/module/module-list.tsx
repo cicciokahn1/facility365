@@ -45,6 +45,7 @@ import {
   useEntityIndex,
 } from "@/lib/data/store";
 import { fieldValue, stringField } from "@/lib/entity-values";
+import { checklistTemplateFor } from "@/lib/cleaning/checklists";
 import { useT } from "@/lib/i18n/provider";
 import { configOf, defaultValuesOf, titleOfEntity } from "@/lib/module-config";
 import { moduleByCollection } from "@/lib/modules";
@@ -236,10 +237,15 @@ export function ModuleList({
       bic: settings.paymentBic,
       referenceType: settings.paymentReferenceType,
     };
+    const preparedValues =
+      collection === "cleaningareas" &&
+      (!Array.isArray(values.checklist) || values.checklist.length === 0)
+        ? { ...values, checklist: checklistTemplateFor(String(values.type || "office")) }
+        : values;
     const entity = create(
       collection === "invoices"
-        ? { ...values, payment, qrReference: "" }
-        : values as never,
+        ? { ...preparedValues, payment, qrReference: "" }
+        : preparedValues as never,
       settings.profileName || settings.companyName,
     );
     if (collection === "invoices") {

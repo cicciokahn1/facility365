@@ -1231,6 +1231,7 @@ export const table: Record<string, string> = {
   "cleaning.areaSize": "Surface (m²)",
   "cleaning.areaType.office": "Bureau",
   "cleaning.areaType.sanitary": "Sanitaires",
+  "cleaning.areaType.window": "Fenêtres",
   "cleaning.areaType.corridor": "Couloir",
   "cleaning.areaType.stairway": "Cage d’escalier",
   "cleaning.areaType.entrance": "Entrée",
