@@ -32,6 +32,7 @@ export function CleaningTaskDetail({ id }: { id: string }) {
     <EntityDetail
       collection="cleaningtasks"
       id={id}
+      defaultTab="report"
       extraTabs={(task, update) => [
         {
           value: 'checklist',
