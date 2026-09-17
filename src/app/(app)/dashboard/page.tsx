@@ -84,16 +84,60 @@ export default function DashboardPage() {
   const t = useT();
   const { settings } = useSettings();
   const access = useAccess();
-  const orders = useCollectionItems('orders');
-  const maintenances = useCollectionItems('maintenances');
-  const damages = useCollectionItems('damages');
-  const legionella = useCollectionItems('legionella');
-  const rcd = useCollectionItems('rcd');
-  const inspections = useCollectionItems('inspections');
-  const documents = useCollectionItems('documents');
-  const contracts = useCollectionItems('contracts');
-  const tickets = useCollectionItems('tickets');
-  const cleaningTasks = useCollectionItems('cleaningtasks');
+  const allOrders = useCollectionItems('orders');
+  const allMaintenances = useCollectionItems('maintenances');
+  const allDamages = useCollectionItems('damages');
+  const allLegionella = useCollectionItems('legionella');
+  const allRcd = useCollectionItems('rcd');
+  const allInspections = useCollectionItems('inspections');
+  const allDocuments = useCollectionItems('documents');
+  const allContracts = useCollectionItems('contracts');
+  const allTickets = useCollectionItems('tickets');
+  const allCleaningTasks = useCollectionItems('cleaningtasks');
+
+  const orders = useMemo(
+    () => allOrders.filter((item) => access.canRead('orders') && access.visible('orders', item)),
+    [access, allOrders],
+  );
+  const maintenances = useMemo(
+    () => allMaintenances.filter((item) => access.canRead('maintenances') && access.visible('maintenances', item)),
+    [access, allMaintenances],
+  );
+  const damages = useMemo(
+    () => allDamages.filter((item) => access.canRead('damages') && access.visible('damages', item)),
+    [access, allDamages],
+  );
+  const legionella = useMemo(
+    () => allLegionella.filter((item) => access.canRead('legionella') && access.visible('legionella', item)),
+    [access, allLegionella],
+  );
+  const rcd = useMemo(
+    () => allRcd.filter((item) => access.canRead('rcd') && access.visible('rcd', item)),
+    [access, allRcd],
+  );
+  const inspections = useMemo(
+    () => allInspections.filter((item) => access.canRead('inspections') && access.visible('inspections', item)),
+    [access, allInspections],
+  );
+  const documents = useMemo(
+    () => allDocuments.filter((item) => access.canRead('documents') && access.visible('documents', item)),
+    [access, allDocuments],
+  );
+  const contracts = useMemo(
+    () => allContracts.filter((item) => access.canRead('contracts') && access.visible('contracts', item)),
+    [access, allContracts],
+  );
+  const tickets = useMemo(
+    () => allTickets.filter((item) => access.canRead('tickets') && access.visible('tickets', item)),
+    [access, allTickets],
+  );
+  const cleaningTasks = useMemo(
+    () =>
+      allCleaningTasks.filter(
+        (item) => access.canRead('cleaningtasks') && access.visible('cleaningtasks', item),
+      ),
+    [access, allCleaningTasks],
+  );
 
   const openOrders = useMemo(
     () => orders.filter((order) => !isDone('orders', order.status)),
