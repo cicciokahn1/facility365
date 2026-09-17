@@ -17,6 +17,7 @@ import {
   MapPin,
   Minus,
   Plus,
+  Printer,
   Trash2,
   X,
 } from 'lucide-react';
@@ -175,6 +176,49 @@ export function PlanViewer({
     setDraftMarker(null);
   };
 
+  const printPlan = () => {
+    const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+    if (!printWindow) return;
+    const document = printWindow.document;
+    document.title = plan.title;
+    const style = document.createElement('style');
+    style.textContent = `
+      @page { size: A4 landscape; margin: 12mm; }
+      body { font-family: system-ui, sans-serif; margin: 0; color: #111827; }
+      h1 { font-size: 18px; margin: 0 0 12px; }
+      img { display: block; max-width: 100%; max-height: 235mm; margin: 0 auto; }
+      iframe { width: 100%; height: 235mm; border: 0; }
+      ul { margin: 12px 0 0; padding-left: 20px; font-size: 11px; }
+    `;
+    document.head.appendChild(style);
+    const heading = document.createElement('h1');
+    heading.textContent = plan.title;
+    document.body.appendChild(heading);
+    if (pdf) {
+      const frame = document.createElement('iframe');
+      frame.src = version.url;
+      document.body.appendChild(frame);
+    } else {
+      const image = document.createElement('img');
+      image.src = version.url;
+      image.alt = plan.title;
+      document.body.appendChild(image);
+    }
+    if (plan.markers.length > 0) {
+      const list = document.createElement('ul');
+      plan.markers.forEach((marker) => {
+        const item = document.createElement('li');
+        item.textContent = labelOf(marker) || t('plan.marker');
+        list.appendChild(item);
+      });
+      document.body.appendChild(list);
+    }
+    printWindow.addEventListener('load', () => {
+      printWindow.focus();
+      printWindow.print();
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -300,6 +344,15 @@ export function PlanViewer({
           >
             <Download className="size-4" aria-hidden />
             {t('action.download')}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label={t('action.print')}
+            title={t('action.print')}
+            onClick={printPlan}
+          >
+            <Printer className="size-4" aria-hidden />
           </Button>
           <Button size="icon" variant="ghost" aria-label={t('action.close')} onClick={() => onOpenChange(false)}>
             <X className="size-4" />
