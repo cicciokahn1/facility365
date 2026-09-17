@@ -70,7 +70,7 @@ const QUICK_ACTIONS: {
   { href: '/inspections?new=1', module: 'inspections', labelKey: 'dashboard.quick.inspection', icon: ClipboardCheck, primary: true },
   { href: '/cleaning/tasks?new=1', module: 'cleaningtasks', labelKey: 'dashboard.quick.cleaning', icon: SprayCan, primary: true },
   { href: '/tickets?new=1', module: 'tickets', labelKey: 'module.tickets.singular', icon: Bell },
-  { href: '/reports?new=1&workTime=1', module: 'reports', labelKey: 'dashboard.quick.workTime', icon: Clock3, primary: true },
+  { href: '/reports?workTime=1', module: 'reports', labelKey: 'dashboard.quick.workTime', icon: Clock3, primary: true },
   { href: '/documents?new=1&photo=1', module: 'documents', labelKey: 'dashboard.quick.photo', icon: Camera, primary: true },
   { href: '/analytics', module: 'analytics', labelKey: 'report.openReport', icon: BarChart3 },
 ];
