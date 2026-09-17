@@ -21,12 +21,18 @@ import {
 import { useSettings } from '@/lib/settings/provider';
 import { Cleaner, CleaningTask } from '@/lib/types';
 import { formatDate } from '@/lib/utils/format';
-import { checklistFor } from '@/lib/cleaning/checklists';
+import {
+  checklistFor,
+  equipmentFor,
+  guidanceFor,
+  safetyNotesFor,
+} from '@/lib/cleaning/checklists';
+import type { Language } from '@/lib/i18n/dictionary';
 
 export interface CleaningPdfApi {
   data: (task: CleaningTask) => CleaningPdfData;
-  download: (task: CleaningTask) => Promise<void>;
-  print: (task: CleaningTask) => Promise<void>;
+  download: (task: CleaningTask, format?: 'a4' | 'a3') => Promise<void>;
+  print: (task: CleaningTask, format?: 'a4' | 'a3') => Promise<void>;
 }
 
 /** Die PDF-Erzeugung wird erst beim Klick geladen, nicht beim Oeffnen der Seite. */
@@ -66,6 +72,8 @@ export function useCleaningPdf(): CleaningPdfApi {
       );
       const room = rooms.find((entry) => entry.id === (task.roomId || area?.roomId));
       const time = { start: task.workStart, end: task.workEnd, breakMinutes: task.breakMinutes };
+      const language = settings.language as Language;
+      const effectiveChecklist = checklistFor(task.checklist, area?.type ?? '');
 
       return {
         number: task.number,
@@ -77,6 +85,7 @@ export function useCleaningPdf(): CleaningPdfApi {
         propertyName: property?.name ?? '',
         buildingName: building?.name ?? '',
         roomName: room?.name ?? '',
+        areaType: area?.type ?? '',
         cleanerName: nameOf(cleaners.find((entry) => entry.id === task.cleanerId)),
         responsibleName: nameOf(
           cleaners.find((entry) => entry.id === (task.responsibleId || area?.responsibleId)),
@@ -86,15 +95,18 @@ export function useCleaningPdf(): CleaningPdfApi {
         workEnd: task.workEnd,
         breakMinutes: task.breakMinutes,
         workTotal: hasWorkTime(time) ? `${formatWorkTime(time)} h` : '–',
-        checklist: checklistFor(task.checklist, area?.type ?? '').map((item) => ({
+        checklist: effectiveChecklist.map((item) => ({
           text: item.text,
           done: item.done,
+          ...guidanceFor(item.text, language),
         })),
         materials: task.materials.map((item) => ({
           name: item.name,
           quantity: item.quantity,
           unit: item.unit,
         })),
+        equipment: equipmentFor(area?.type ?? '', language),
+        safetyNotes: safetyNotesFor(area?.type ?? '', language),
         remarks: task.notes,
         checks: checks
           .filter((check) => check.taskId === task.id)
@@ -136,6 +148,11 @@ export function useCleaningPdf(): CleaningPdfApi {
       measures: t('cleaning.measures'),
       photos: t('tab.photos'),
       none: t('common.none'),
+      ok: t('cleaning.result.ok'),
+      rework: t('cleaning.result.rework'),
+      notDone: t('cleaning.result.notDone'),
+      safety: t('cleaning.safety'),
+      equipment: t('cleaning.equipment'),
     }),
     [t],
   );
@@ -154,13 +171,13 @@ export function useCleaningPdf(): CleaningPdfApi {
 
   return {
     data,
-    download: async (task) => {
+    download: async (task, format = 'a4') => {
       const { downloadCleaningPdf } = await pdfModule();
-      downloadCleaningPdf(data(task), labels(), branding());
+      downloadCleaningPdf(data(task), labels(), branding(), format);
     },
-    print: async (task) => {
+    print: async (task, format = 'a4') => {
       const { printCleaningPdf } = await pdfModule();
-      printCleaningPdf(data(task), labels(), branding());
+      printCleaningPdf(data(task), labels(), branding(), format);
     },
   };
 }

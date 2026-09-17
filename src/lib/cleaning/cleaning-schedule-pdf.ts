@@ -1,6 +1,8 @@
 import { jsPDF } from 'jspdf';
 
 import { drawLogo } from '@/lib/branding/pdf-logo';
+import { guidanceFor } from '@/lib/cleaning/checklists';
+import type { Language } from '@/lib/i18n/dictionary';
 
 export interface CleaningScheduleRow {
   sortKey: string;
@@ -29,6 +31,10 @@ export interface CleaningScheduleLabels {
   checkDate: string;
   problem: string;
   none: string;
+  language: Language;
+  ok: string;
+  rework: string;
+  notDone: string;
 }
 
 export interface CleaningScheduleBranding {
@@ -143,8 +149,15 @@ export const buildCleaningSchedulePdf = (
       doc.text(labels.instructions, MARGIN, y);
       y += 8;
       row.checklist.forEach((item) => {
-        checkbox(doc, MARGIN + 2, y, item);
-        y += 8;
+        const guidance = guidanceFor(item, labels.language);
+        checkbox(doc, MARGIN + 2, y, `${guidance.icon} ${item}`);
+        doc.setFontSize(7);
+        doc.setTextColor(...MUTED);
+        doc.text(guidance.description, MARGIN + 10, y + 4);
+        doc.text(`${labels.ok} □  ${labels.rework} □  ${labels.notDone} □`, WIDTH - MARGIN, y, {
+          align: 'right',
+        });
+        y += 11;
       });
       y += 5;
       doc.setFont('helvetica', 'normal');
