@@ -73,7 +73,11 @@ export function useCleaningPdf(): CleaningPdfApi {
         (entry) => entry.id === (task.buildingId || area?.buildingId),
       );
       const room = rooms.find((entry) => entry.id === (task.roomId || area?.roomId));
-      const time = { start: task.workStart, end: task.workEnd, breakMinutes: task.breakMinutes };
+      const time = {
+        start: task.workStart ?? '',
+        end: task.workEnd ?? '',
+        breakMinutes: task.breakMinutes ?? 0,
+      };
       const language = settings.language as Language;
       const effectiveChecklist = checklistFor(task.checklist, area?.type ?? '');
 
@@ -93,9 +97,9 @@ export function useCleaningPdf(): CleaningPdfApi {
           cleaners.find((entry) => entry.id === (task.responsibleId || area?.responsibleId)),
         ),
         interval: plan ? labelOf(CLEANING_INTERVAL_OPTIONS, plan.interval) : '',
-        workStart: task.workStart,
-        workEnd: task.workEnd,
-        breakMinutes: task.breakMinutes,
+        workStart: task.workStart ?? '',
+        workEnd: task.workEnd ?? '',
+        breakMinutes: task.breakMinutes ?? 0,
         workTotal: hasWorkTime(time) ? `${formatWorkTime(time)} h` : '–',
         checklist: effectiveChecklist.map((item) => ({
           text: item.text ?? '',
