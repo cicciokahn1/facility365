@@ -8,7 +8,7 @@
  */
 import { useMemo } from 'react';
 import Link from 'next/link';
-import { Brush, CalendarClock, ClipboardCheck, MessageSquareWarning, Printer } from 'lucide-react';
+import { Brush, CalendarClock, ClipboardCheck, FileSignature, MessageSquareWarning, Printer } from 'lucide-react';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { StatusBadge } from '@/components/common/status-badge';
@@ -28,6 +28,7 @@ import { cleaningDates } from '@/lib/cleaning/schedule';
 import { logoOf } from '@/lib/branding/logo';
 import type { CleaningScheduleRow } from '@/lib/cleaning/cleaning-schedule-pdf';
 import { checklistFor } from '@/lib/cleaning/checklists';
+import { downloadCleaningSignaturePdf } from '@/lib/cleaning/cleaning-signature-pdf';
 
 interface Tile {
   labelKey: TranslationKey;
@@ -39,6 +40,7 @@ interface Tile {
 export function CleaningOverview() {
   const t = useT();
   const { settings } = useSettings();
+  const address = settings.companyAddress;
   const tasks = useCollectionItems('cleaningtasks');
   const areas = useCollectionItems('cleaningareas');
   const plans = useCollectionItems('cleaningplans');
@@ -179,7 +181,6 @@ export function CleaningOverview() {
 
   const printSchedule = async (mode: 'weekly' | 'roomSheets'): Promise<void> => {
     const { downloadCleaningSchedulePdf } = await import('@/lib/cleaning/cleaning-schedule-pdf');
-    const address = settings.companyAddress;
     downloadCleaningSchedulePdf(
       scheduleRows,
       {
@@ -208,6 +209,58 @@ export function CleaningOverview() {
         logo: logoOf(settings.companyLogo),
       },
       mode,
+    );
+  };
+
+  const printSignatureSheet = (plan: CleaningPlan): void => {
+    const area = areas.find((entry) => entry.id === plan.areaId);
+    const building = buildings.find((entry) => entry.id === area?.buildingId);
+    const room = rooms.find((entry) => entry.id === area?.roomId);
+    const cleaner = cleaners.find((entry) => entry.id === plan.cleanerId);
+    const planTasks = visibleTasks.filter((task) => task.planId === plan.id);
+    const taskByDate = new Map(planTasks.map((task) => [task.date, task]));
+    const now = new Date();
+    const endOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0)
+      .toISOString()
+      .slice(0, 10);
+    const scheduledDates = plan.nextDate
+      ? cleaningDates(plan.nextDate, plan, endOfNextMonth)
+      : [];
+    const entries = [...new Set([...scheduledDates, ...planTasks.map((task) => task.date)])].map((date) => {
+      const task = taskByDate.get(date);
+      return {
+        date,
+        time: task?.workStart || plan.timeStart || '',
+        status: task?.status || '',
+      };
+    });
+    downloadCleaningSignaturePdf(
+      {
+        title: plan.title || area?.name || plan.number,
+        building: building?.name ?? '',
+        room: room?.name ?? '',
+        area: area?.name ?? '',
+        cleaner: cleaner ? [cleaner.firstName, cleaner.name].filter(Boolean).join(' ') : '',
+        entries,
+      },
+      {
+        title: t('cleaning.signatureSheet'),
+        day: t('cleaning.day'),
+        time: t('cleaning.time'),
+        visa: t('cleaning.visa'),
+        cleaner: t('cleaning.assignee'),
+        building: t('module.buildings.singular'),
+        room: t('module.rooms.singular'),
+        area: t('module.cleaningareas.singular'),
+        signature: t('cleaning.signature'),
+        checkedBy: t('cleaning.checkedBy'),
+        language: settings.language,
+      },
+      {
+        companyName: settings.companyName || 'Facility365',
+        companyAddress: [address.street, [address.zip, address.city].filter(Boolean).join(' ')].filter(Boolean).join(', '),
+        logo: logoOf(settings.companyLogo),
+      },
     );
   };
 
@@ -366,11 +419,8 @@ export function CleaningOverview() {
           ) : (
             <ul className="divide-y" data-testid="cleaning-plans">
               {plans.slice(0, 8).map((plan) => (
-                <li key={plan.id}>
-                  <Link
-                    href={`/cleaning/plans/${plan.id}`}
-                    className="flex items-center justify-between gap-3 p-3 hover:bg-muted/50"
-                  >
+                <li key={plan.id} className="flex items-center gap-3 p-3 hover:bg-muted/50">
+                  <Link href={`/cleaning/plans/${plan.id}`} className="min-w-0 flex-1">
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-medium">
                         {plan.title || plan.number}
@@ -383,6 +433,16 @@ export function CleaningOverview() {
                       {formatDate(plan.nextDate, settings.language)}
                     </span>
                   </Link>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => printSignatureSheet(plan)}
+                    aria-label={t('cleaning.printSignatureSheet')}
+                  >
+                    <FileSignature className="size-4" aria-hidden />
+                    <span className="hidden sm:inline">{t('cleaning.printSignatureSheet')}</span>
+                  </Button>
                 </li>
               ))}
             </ul>

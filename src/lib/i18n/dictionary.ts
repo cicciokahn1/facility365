@@ -594,6 +594,30 @@ export const dictionary = {
     it: "Stampa schede locali",
     en: "Print room sheets",
   },
+  "cleaning.printSignatureSheet": {
+    de: "Unterschriftenliste",
+    fr: "Liste de signatures",
+    it: "Lista firme",
+    en: "Signature sheet",
+  },
+  "cleaning.signatureSheet": {
+    de: "Kontrollblatt",
+    fr: "Fiche de contrôle",
+    it: "Foglio di controllo",
+    en: "Control sheet",
+  },
+  "cleaning.day": {
+    de: "Tag",
+    fr: "Jour",
+    it: "Giorno",
+    en: "Day",
+  },
+  "cleaning.visa": {
+    de: "Visum",
+    fr: "Visa",
+    it: "Visto",
+    en: "Initials",
+  },
   "cleaning.weeklyPlan": {
     de: "Reinigungs-Wochenplan",
     fr: "Planning hebdomadaire du nettoyage",
