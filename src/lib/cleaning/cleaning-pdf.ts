@@ -499,6 +499,12 @@ export const downloadCleaningPdf = (
 ): void => {
   const doc = buildCleaningPdf(data, labels, branding, format);
   const url = URL.createObjectURL(doc.output('blob'));
+  if (window.matchMedia('(pointer: coarse)').matches) {
+    const viewer = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!viewer) window.location.assign(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    return;
+  }
   const link = document.createElement('a');
   link.href = url;
   link.download = cleaningPdfFileName(data).replace('.pdf', `-${format}.pdf`);
