@@ -20,6 +20,7 @@ export function CleaningPdfPanel({ task }: { task: CleaningTask }) {
       </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <Button
+          type="button"
           className="h-12"
           onClick={() => void pdf.download(task, 'a4')}
           data-testid="cleaning-pdf-download"
@@ -28,6 +29,7 @@ export function CleaningPdfPanel({ task }: { task: CleaningTask }) {
           {t('action.download')} A4
         </Button>
         <Button
+          type="button"
           variant="outline"
           className="h-12"
           onClick={() => void pdf.print(task, 'a4')}
@@ -37,6 +39,7 @@ export function CleaningPdfPanel({ task }: { task: CleaningTask }) {
           {t('action.print')} A4
         </Button>
         <Button
+          type="button"
           className="h-12"
           onClick={() => void pdf.download(task, 'a3')}
         >
@@ -44,6 +47,7 @@ export function CleaningPdfPanel({ task }: { task: CleaningTask }) {
           {t('action.download')} A3
         </Button>
         <Button
+          type="button"
           variant="outline"
           className="h-12"
           onClick={() => void pdf.print(task, 'a3')}

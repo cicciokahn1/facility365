@@ -300,9 +300,11 @@ const drawMaterials = (
   doc.setTextColor(...INK);
   data.materials.forEach((item) => {
     cursor = ensureSpace(doc, cursor, 7);
-    const name: string = doc.splitTextToSize(item.name, 120)[0] ?? '';
+    const name: string = doc.splitTextToSize(item.name ?? '', 120)[0] ?? '';
     doc.text(name, MARGIN, cursor);
-    doc.text(`${item.quantity} ${item.unit}`.trim(), WIDTH - MARGIN, cursor, { align: 'right' });
+    doc.text(`${item.quantity ?? ''} ${item.unit ?? ''}`.trim(), WIDTH - MARGIN, cursor, {
+      align: 'right',
+    });
     cursor += 5.6;
   });
   return cursor + 4;
