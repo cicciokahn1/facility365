@@ -497,9 +497,16 @@ export const downloadCleaningPdf = (
   branding: CleaningPdfBranding,
   format: 'a4' | 'a3' = 'a4',
 ): void => {
-  buildCleaningPdf(data, labels, branding, format).save(
-    cleaningPdfFileName(data).replace('.pdf', `-${format}.pdf`),
-  );
+  const doc = buildCleaningPdf(data, labels, branding, format);
+  const url = URL.createObjectURL(doc.output('blob'));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = cleaningPdfFileName(data).replace('.pdf', `-${format}.pdf`);
+  link.rel = 'noopener';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 
 export const printCleaningPdf = (
