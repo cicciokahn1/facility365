@@ -156,8 +156,8 @@ export const checklistTemplateFor = (type: string): ChecklistItem[] =>
     (text) => ({ id: newId('chk'), text, done: false }),
   );
 
-export const checklistFor = (items: ChecklistItem[], type: string): ChecklistItem[] =>
-  items.length > 0 ? items : checklistTemplateFor(type);
+export const checklistFor = (items: ChecklistItem[] | undefined, type: string): ChecklistItem[] =>
+  items && items.length > 0 ? items : checklistTemplateFor(type);
 
 export interface CleaningStepGuidance {
   icon: string;
@@ -227,8 +227,8 @@ const GUIDANCE: Record<string, Record<Language, CleaningStepGuidance>> = {
   },
 };
 
-export const guidanceFor = (text: string, language: Language): CleaningStepGuidance => {
-  const key = text.trim().toLocaleLowerCase('de-CH');
+export const guidanceFor = (text: string | undefined, language: Language): CleaningStepGuidance => {
+  const key = (text ?? '').trim().toLocaleLowerCase('de-CH');
   const exact = GUIDANCE[key]?.[language];
   if (exact) return exact;
   const generic: Record<Language, CleaningStepGuidance> = {

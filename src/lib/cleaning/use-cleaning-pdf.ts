@@ -98,11 +98,11 @@ export function useCleaningPdf(): CleaningPdfApi {
         breakMinutes: task.breakMinutes,
         workTotal: hasWorkTime(time) ? `${formatWorkTime(time)} h` : '–',
         checklist: effectiveChecklist.map((item) => ({
-          text: item.text,
+          text: item.text ?? '',
           done: item.done,
           ...guidanceFor(item.text, language),
         })),
-        materials: task.materials.map((item) => ({
+        materials: (task.materials ?? []).map((item) => ({
           name: item.name,
           quantity: item.quantity,
           unit: item.unit ?? '',
@@ -119,7 +119,10 @@ export function useCleaningPdf(): CleaningPdfApi {
             result: labelOf(CLEANING_CHECK_RESULT_OPTIONS, check.result),
             measures: check.measures,
           })),
-        photos: task.photos.map((photo) => ({ url: photo.url, caption: photo.caption ?? photo.name })),
+        photos: (task.photos ?? []).map((photo) => ({
+          url: photo.url,
+          caption: photo.caption ?? photo.name,
+        })),
       };
     },
     [areas, buildings, checks, cleaners, labelOf, plans, properties, rooms, settings.language],
