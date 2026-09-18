@@ -104,7 +104,7 @@ export function useCleaningPdf(): CleaningPdfApi {
         materials: task.materials.map((item) => ({
           name: item.name,
           quantity: item.quantity,
-          unit: item.unit,
+          unit: item.unit ?? '',
         })),
         equipment: equipmentFor(area?.type ?? '', language),
         safetyNotes: safetyNotesFor(area?.type ?? '', language),
