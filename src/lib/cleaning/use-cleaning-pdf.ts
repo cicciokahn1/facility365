@@ -9,6 +9,10 @@ import type {
   CleaningPdfData,
   CleaningPdfLabels,
 } from '@/lib/cleaning/cleaning-pdf';
+import {
+  downloadCleaningPdf,
+  printCleaningPdf,
+} from '@/lib/cleaning/cleaning-pdf';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { formatWorkTime, hasWorkTime } from '@/lib/reports/work-time';
@@ -35,9 +39,6 @@ export interface CleaningPdfApi {
   download: (task: CleaningTask, format?: 'a4' | 'a3') => Promise<void>;
   print: (task: CleaningTask, format?: 'a4' | 'a3') => Promise<void>;
 }
-
-/** Die PDF-Erzeugung wird erst beim Klick geladen, nicht beim Oeffnen der Seite. */
-const pdfModule = () => import('@/lib/cleaning/cleaning-pdf');
 
 const nameOf = (cleaner?: Cleaner): string =>
   cleaner ? [cleaner.firstName, cleaner.name].filter(Boolean).join(' ') : '';
@@ -181,11 +182,9 @@ export function useCleaningPdf(): CleaningPdfApi {
   return {
     data,
     download: async (task, format = 'a4') => {
-      const { downloadCleaningPdf } = await pdfModule();
       downloadCleaningPdf(data(task), labels(), branding(), format);
     },
     print: async (task, format = 'a4') => {
-      const { printCleaningPdf } = await pdfModule();
       printCleaningPdf(data(task), labels(), branding(), format);
     },
   };
