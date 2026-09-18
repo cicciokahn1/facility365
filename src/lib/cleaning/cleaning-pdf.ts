@@ -497,11 +497,13 @@ export const downloadCleaningPdf = (
   branding: CleaningPdfBranding,
   format: 'a4' | 'a3' = 'a4',
 ): void => {
+  const mobile = window.matchMedia('(pointer: coarse)').matches;
+  const viewer = mobile ? window.open('about:blank', '_blank') : null;
   const doc = buildCleaningPdf(data, labels, branding, format);
   const url = URL.createObjectURL(doc.output('blob'));
-  if (window.matchMedia('(pointer: coarse)').matches) {
-    const viewer = window.open(url, '_blank', 'noopener,noreferrer');
-    if (!viewer) window.location.assign(url);
+  if (mobile) {
+    if (viewer) viewer.location.href = url;
+    else window.location.assign(url);
     window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
     return;
   }
