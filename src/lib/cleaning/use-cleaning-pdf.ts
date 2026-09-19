@@ -18,6 +18,8 @@ import type {
   CleaningInstructionLabels,
 } from '@/lib/cleaning/cleaning-instruction-pdf';
 import { downloadCleaningInstructionPdf } from '@/lib/cleaning/cleaning-instruction-pdf';
+import { downloadCleaningSignaturePdf } from '@/lib/cleaning/cleaning-signature-pdf';
+import { cleaningDates } from '@/lib/cleaning/schedule';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { formatWorkTime, hasWorkTime } from '@/lib/reports/work-time';
@@ -33,14 +35,19 @@ import { Cleaner, CleaningTask } from '@/lib/types';
 import { formatDate } from '@/lib/utils/format';
 import {
   PHASE_ORDER,
+  agentsFor,
   checklistFor,
   checklistTemplateFor,
+  dosageNote,
   equipmentFor,
   guidanceFor,
+  materialFor,
+  methodFor,
   phaseLabel,
   phaseOf,
   ppeFor,
   safetyNotesFor,
+  toolFor,
 } from '@/lib/cleaning/checklists';
 import type { Language } from '@/lib/i18n/dictionary';
 import type { ChecklistItem, CleaningArea, CleaningPlan } from '@/lib/types';
@@ -60,6 +67,8 @@ export interface CleaningPdfApi {
   download: (task: CleaningTask, format?: 'a4' | 'a3') => Promise<void>;
   print: (task: CleaningTask, format?: 'a4' | 'a3') => Promise<void>;
   instruction: (source: CleaningInstructionSource, format?: 'a4' | 'a3') => void;
+  /** Kontrollblatt (Monatsliste Tag/Zeit/Visum/Status) eines Reinigungsplans. */
+  controlSheet: (plan: CleaningPlan, format?: 'a4' | 'a3') => void;
 }
 
 const nameOf = (cleaner?: Cleaner): string =>
@@ -75,6 +84,7 @@ export function useCleaningPdf(): CleaningPdfApi {
   const buildings = useCollectionItems('buildings');
   const rooms = useCollectionItems('rooms');
   const checks = useCollectionItems('cleaningchecks');
+  const tasks = useCollectionItems('cleaningtasks');
 
   const labelOf = useCallback(
     (options: SelectOption[], value: string): string => {
@@ -233,6 +243,7 @@ export function useCleaningPdf(): CleaningPdfApi {
       return {
         title: labelOf(CLEANING_AREA_TYPE_OPTIONS, type),
         areaType: labelOf(CLEANING_AREA_TYPE_OPTIONS, type),
+        method: methodFor(type, language),
         propertyName: property?.name ?? '',
         buildingName: building?.name ?? '',
         location: area?.location ?? '',
@@ -246,13 +257,16 @@ export function useCleaningPdf(): CleaningPdfApi {
           : '1.0',
         ppe: ppeFor(type, language),
         safetyNotes: safetyNotesFor(type, language),
-        equipment: equipmentFor(type, language),
+        equipment: materialFor(type, language),
         materials: (task?.materials ?? [])
-          .map((item) => `${item.name ?? ''} ${item.quantity ?? ''} ${item.unit ?? ''}`.trim())
+          .map((item) => `${item.quantity ?? ''} ${item.unit ?? ''} ${item.name ?? ''}`.replace(/\s+/g, ' ').trim())
           .filter(Boolean),
+        agents: agentsFor(type, language),
+        dosageNote: dosageNote(language),
         steps: checklist.map((item) => ({
           phase: phaseOf(item.text),
           text: item.text ?? '',
+          tool: toolFor(item.text, language),
           ...guidanceFor(item.text, language),
         })),
         phases,
@@ -275,6 +289,7 @@ export function useCleaningPdf(): CleaningPdfApi {
       ppe: t('cleaning.ppe'),
       equipment: t('cleaning.equipment'),
       material: t('tab.material'),
+      agents: t('cleaning.agents'),
       control: t('cleaning.control'),
       ok: t('cleaning.result.ok'),
       rework: t('cleaning.result.rework'),
@@ -283,12 +298,89 @@ export function useCleaningPdf(): CleaningPdfApi {
       cleanerSignature: t('cleaning.signature.cleaner'),
       signatureDate: t('cleaning.signature.date'),
       checkedBySignature: t('cleaning.signature.checkedBy'),
+      page: t('cleaning.page'),
+      updated: t('cleaning.updated'),
     }),
     [t],
   );
 
+  const controlSheet = useCallback(
+    (plan: CleaningPlan, format: 'a4' | 'a3' = 'a4'): void => {
+      const area = areas.find((entry) => entry.id === plan.areaId);
+      const property = properties.find((entry) => entry.id === area?.propertyId);
+      const building = buildings.find((entry) => entry.id === area?.buildingId);
+      const room = rooms.find((entry) => entry.id === area?.roomId);
+      const cleaner = cleaners.find((entry) => entry.id === plan.cleanerId);
+      const inspector = cleaners.find(
+        (entry) => entry.id === (plan.responsibleId || area?.responsibleId),
+      );
+      const planTasks = tasks.filter((task) => task.planId === plan.id);
+      const taskByDate = new Map(planTasks.map((task) => [task.date, task]));
+      const now = new Date();
+      const endOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0)
+        .toISOString()
+        .slice(0, 10);
+      const scheduledDates = plan.nextDate ? cleaningDates(plan.nextDate, plan, endOfNextMonth) : [];
+      const entries = [...new Set([...scheduledDates, ...planTasks.map((task) => task.date)])]
+        .filter(Boolean)
+        .map((date) => {
+          const task = taskByDate.get(date);
+          return {
+            date,
+            time: task?.workStart || plan.timeStart || '',
+            status: task?.status || '',
+          };
+        });
+      const version = (plan.updatedAt || plan.createdAt || '').slice(0, 10);
+      downloadCleaningSignaturePdf(
+        {
+          title: plan.title || area?.name || plan.number,
+          property: property?.name ?? '',
+          building: building?.name ?? '',
+          room: room?.name ?? '',
+          area: area?.name ?? '',
+          areaType: area ? labelOf(CLEANING_AREA_TYPE_OPTIONS, area.type) : '',
+          interval: labelOf(CLEANING_INTERVAL_OPTIONS, plan.interval),
+          cleaner: nameOf(cleaner),
+          inspector: nameOf(inspector),
+          version: version ? formatDate(version, settings.language) : '1.0',
+          entries,
+        },
+        {
+          title: t('cleaning.controlSheet'),
+          day: t('cleaning.day'),
+          time: t('cleaning.time'),
+          visa: t('cleaning.visa'),
+          status: t('common.status'),
+          ok: t('cleaning.result.ok'),
+          rework: t('cleaning.result.rework'),
+          notDone: t('cleaning.result.notDone'),
+          cleaner: t('cleaning.assignee'),
+          inspector: t('cleaning.inspector'),
+          property: t('module.properties.singular'),
+          building: t('module.buildings.singular'),
+          room: t('module.rooms.singular'),
+          area: t('module.cleaningareas.singular'),
+          areaType: t('cleaning.areaType'),
+          interval: t('cleaning.intervalLabel'),
+          remarks: t('cleaning.remarks'),
+          signature: t('cleaning.signature'),
+          checkedBy: t('cleaning.checkedBy'),
+          date: t('common.date'),
+          version: t('cleaning.version'),
+          reworkHint: t('cleaning.reworkHint'),
+          language: settings.language as Language,
+        },
+        branding(),
+        format,
+      );
+    },
+    [areas, branding, buildings, cleaners, labelOf, properties, rooms, settings.language, t, tasks],
+  );
+
   return {
     data,
+    controlSheet,
     instruction: (source, format = 'a4') => {
       downloadCleaningInstructionPdf(instructionData(source), instructionLabels(), branding(), format);
     },

@@ -6762,6 +6762,24 @@ export const dictionary = {
     it: "Istruzione di lavoro",
     en: "Work instruction",
   },
+  "cleaning.agents": {
+    de: "Reinigungsmittel",
+    fr: "Produits de nettoyage",
+    it: "Prodotti di pulizia",
+    en: "Cleaning agents",
+  },
+  "cleaning.page": {
+    de: "Seite",
+    fr: "Page",
+    it: "Pagina",
+    en: "Page",
+  },
+  "cleaning.updated": {
+    de: "aktualisiert",
+    fr: "mis à jour",
+    it: "aggiornato",
+    en: "updated",
+  },
   "cleaning.workInstructionHint": {
     de: "Vorlage wählen und als PDF-Arbeitsanleitung mit Vorarbeit, Hauptarbeit, Schlussarbeit und Endkontrolle erzeugen.",
     fr: "Choisir un modèle et générer l’instruction PDF avec préparation, travail principal, finition et contrôle final.",
@@ -6947,10 +6965,10 @@ export const dictionary = {
     en: "Safety and instructions",
   },
   "cleaning.equipment": {
-    de: "Benötigte Ausrüstung",
-    fr: "Équipement nécessaire",
-    it: "Attrezzatura necessaria",
-    en: "Required equipment",
+    de: "Reinigungsmaterial und Geräte",
+    fr: "Matériel et appareils de nettoyage",
+    it: "Materiale e attrezzi di pulizia",
+    en: "Cleaning material and equipment",
   },
   "cleaning.control": {
     de: "Kontrolle und Unterschrift",
