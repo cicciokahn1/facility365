@@ -1,3 +1,10 @@
+/**
+ * Kontrollblatt (Unterschriftenliste) einer Reinigung als PDF, A4 oder A3 quer.
+ *
+ * Zwei Monatsbloecke mit Tag, Zeit, Visum und Status; nur die gemaess Frequenz
+ * geplanten Tage tragen eine Zeit, alle anderen Tage sind abgeschwaecht.
+ * Darunter Bemerkungen, Kontrollperson und Unterschriften.
+ */
 import { jsPDF } from 'jspdf';
 
 import { drawLogo } from '@/lib/branding/pdf-logo';
@@ -11,10 +18,15 @@ export interface CleaningSignatureEntry {
 
 export interface CleaningSignatureSheet {
   title: string;
+  property: string;
   building: string;
   room: string;
   area: string;
+  areaType: string;
+  interval: string;
   cleaner: string;
+  inspector: string;
+  version: string;
   entries: CleaningSignatureEntry[];
 }
 
@@ -23,12 +35,24 @@ export interface CleaningSignatureLabels {
   day: string;
   time: string;
   visa: string;
+  status: string;
+  ok: string;
+  rework: string;
+  notDone: string;
   cleaner: string;
+  inspector: string;
+  property: string;
   building: string;
   room: string;
   area: string;
+  areaType: string;
+  interval: string;
+  remarks: string;
   signature: string;
   checkedBy: string;
+  date: string;
+  version: string;
+  reworkHint: string;
   language: Language;
 }
 
@@ -38,17 +62,30 @@ export interface CleaningSignatureBranding {
   logo: string;
 }
 
-const WIDTH = 297;
-const HEIGHT = 210;
-const MARGIN = 12;
+export type CleaningSheetFormat = 'a4' | 'a3';
+
 const INK: [number, number, number] = [20, 33, 52];
 const MUTED: [number, number, number] = [92, 104, 124];
 const LINE: [number, number, number] = [180, 188, 198];
+const SHADE: [number, number, number] = [236, 239, 243];
+
+interface Layout {
+  width: number;
+  height: number;
+  margin: number;
+  rowHeight: number;
+  scale: number;
+}
+
+const layoutFor = (format: CleaningSheetFormat): Layout =>
+  format === 'a3'
+    ? { width: 420, height: 297, margin: 16, rowHeight: 5.8, scale: 1.35 }
+    : { width: 297, height: 210, margin: 12, rowHeight: 4.0, scale: 1 };
 
 const monthName = (date: Date, language: Language): string =>
   new Intl.DateTimeFormat(language === 'de' ? 'de-CH' : language, {
     month: 'long',
-    year: '2-digit',
+    year: 'numeric',
   }).format(date);
 
 const monthStart = (offset: number): Date => {
@@ -66,114 +103,211 @@ const dateKey = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
-const footer = (doc: jsPDF, branding: CleaningSignatureBranding): void => {
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
-  doc.setTextColor(...MUTED);
-  doc.text(branding.companyName || 'Facility365', MARGIN, HEIGHT - 6);
-  doc.text('Facility365', WIDTH - MARGIN, HEIGHT - 6, { align: 'right' });
+const weekday = (date: Date, language: Language): string =>
+  new Intl.DateTimeFormat(language === 'de' ? 'de-CH' : language, { weekday: 'short' })
+    .format(date)
+    .replace('.', '');
+
+const checkbox = (doc: jsPDF, x: number, y: number, size: number): void => {
+  doc.setDrawColor(...INK);
+  doc.setLineWidth(0.3);
+  doc.rect(x, y, size, size);
+  doc.setLineWidth(0.2);
 };
 
 const drawMonthTable = (
   doc: jsPDF,
+  l: Layout,
   x: number,
   y: number,
   width: number,
   month: Date,
   rows: Map<string, CleaningSignatureEntry>,
   labels: CleaningSignatureLabels,
-): void => {
-  const headerHeight = 7;
-  const rowHeight = 4.35;
-  const dayWidth = 15;
-  const timeWidth = 34;
-  const visaWidth = width - dayWidth - timeWidth;
+): number => {
+  const headerHeight = 7 * l.scale;
+  const columnHeader = 7 * l.scale;
+  const dayWidth = 18 * l.scale;
+  const timeWidth = 22 * l.scale;
+  const statusWidth = 34 * l.scale;
+  const visaWidth = width - dayWidth - timeWidth - statusWidth;
   const totalRows = daysInMonth(month);
+  const tableHeight = columnHeader + totalRows * l.rowHeight;
 
   doc.setFillColor(...INK);
   doc.rect(x, y, width, headerHeight, 'F');
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(11 * l.scale);
   doc.setTextColor(255, 255, 255);
-  doc.text(monthName(month, labels.language), x + width / 2, y + 6, { align: 'center' });
+  doc.text(monthName(month, labels.language), x + width / 2, y + headerHeight - 2 * l.scale, {
+    align: 'center',
+  });
 
   const tableY = y + headerHeight;
   doc.setFillColor(242, 245, 248);
-  doc.rect(x, tableY, width, 8, 'F');
-  doc.setDrawColor(...LINE);
-  doc.rect(x, tableY, width, 7 + totalRows * rowHeight);
-  doc.line(x + dayWidth, tableY, x + dayWidth, tableY + 7 + totalRows * rowHeight);
-  doc.line(x + dayWidth + timeWidth, tableY, x + dayWidth + timeWidth, tableY + 7 + totalRows * rowHeight);
+  doc.rect(x, tableY, width, columnHeader, 'F');
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(8 * l.scale);
   doc.setTextColor(...INK);
-  doc.text(labels.day, x + 2, tableY + 5);
-  doc.text(labels.time, x + dayWidth + 2, tableY + 5);
-  doc.text(labels.visa, x + dayWidth + timeWidth + 2, tableY + 5);
+  const headY = tableY + columnHeader - 2.2 * l.scale;
+  doc.text(labels.day, x + 2, headY);
+  doc.text(labels.time, x + dayWidth + 2, headY);
+  doc.text(labels.visa, x + dayWidth + timeWidth + 2, headY);
+  doc.setFontSize(6.5 * l.scale);
+  const statusX = x + dayWidth + timeWidth + visaWidth;
+  const third = statusWidth / 3;
+  [labels.ok, labels.rework, labels.notDone].forEach((label, index) => {
+    const text: string = doc.splitTextToSize(label, third - 1)[0] ?? '';
+    doc.text(text, statusX + index * third + third / 2, headY, { align: 'center' });
+  });
 
+  const box = Math.min(l.rowHeight - 1.2, 4.4);
   for (let day = 1; day <= totalRows; day += 1) {
-    const rowY = tableY + 7 + (day - 1) * rowHeight;
-    const key = dateKey(new Date(month.getFullYear(), month.getMonth(), day));
-    const entry = rows.get(key);
+    const rowY = tableY + columnHeader + (day - 1) * l.rowHeight;
+    const date = new Date(month.getFullYear(), month.getMonth(), day);
+    const entry = rows.get(dateKey(date));
+    if (!entry) {
+      doc.setFillColor(...SHADE);
+      doc.rect(x, rowY, width, l.rowHeight, 'F');
+    }
+    doc.setDrawColor(...LINE);
     doc.line(x, rowY, x + width, rowY);
+    doc.setFont('helvetica', entry ? 'bold' : 'normal');
+    doc.setFontSize(7.5 * l.scale);
+    doc.setTextColor(...(entry ? INK : MUTED));
+    const baseline = rowY + l.rowHeight - 1.1 * l.scale;
+    doc.text(`${String(day).padStart(2, '0')} ${weekday(date, labels.language)}`, x + 2, baseline);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
     doc.setTextColor(...INK);
-    doc.text(String(day), x + 2, rowY + 3.7);
-    doc.text(entry?.time || '', x + dayWidth + 2, rowY + 3.7);
+    doc.text(entry?.time || '', x + dayWidth + 2, baseline);
     if (entry?.status === 'done') {
       doc.setFont('helvetica', 'bold');
-      doc.text('✓', x + dayWidth + timeWidth + 3, rowY + 3.7);
+      doc.text(labels.ok, x + dayWidth + timeWidth + 2, baseline);
+    }
+    if (entry) {
+      for (let index = 0; index < 3; index += 1) {
+        checkbox(doc, statusX + index * third + third / 2 - box / 2, rowY + (l.rowHeight - box) / 2, box);
+      }
     }
   }
+
+  doc.setDrawColor(...LINE);
+  doc.rect(x, tableY, width, tableHeight);
+  [dayWidth, dayWidth + timeWidth, dayWidth + timeWidth + visaWidth].forEach((offset) => {
+    doc.line(x + offset, tableY, x + offset, tableY + tableHeight);
+  });
+  return tableY + tableHeight;
+};
+
+const drawHeader = (
+  doc: jsPDF,
+  l: Layout,
+  sheet: CleaningSignatureSheet,
+  labels: CleaningSignatureLabels,
+  branding: CleaningSignatureBranding,
+): number => {
+  const logoHeight = branding.logo
+    ? drawLogo(doc, branding.logo, { x: l.margin, y: l.margin - 4, width: 28 * l.scale, height: 13 * l.scale })
+    : 0;
+  const textX = l.margin + (logoHeight > 0 ? 32 * l.scale : 0);
+  doc.setTextColor(...INK);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(15 * l.scale);
+  doc.text(`${labels.title}: ${sheet.title || sheet.area || labels.area}`, textX, l.margin + 3 * l.scale);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5 * l.scale);
+  doc.setTextColor(...MUTED);
+  doc.text(
+    [branding.companyName, branding.companyAddress].filter(Boolean).join(' · '),
+    textX,
+    l.margin + 8 * l.scale,
+  );
+
+  const pairs: [string, string][] = [
+    [labels.property, sheet.property],
+    [labels.building, sheet.building],
+    [labels.room, [sheet.room, sheet.area].filter(Boolean).join(' · ')],
+    [labels.areaType, sheet.areaType],
+    [labels.interval, sheet.interval],
+    [labels.cleaner, sheet.cleaner],
+    [labels.inspector, sheet.inspector || '____________________'],
+  ];
+  const y = l.margin + 14 * l.scale;
+  const colWidth = (l.width - 2 * l.margin) / pairs.length;
+  pairs.forEach(([label, value], index) => {
+    const x = l.margin + index * colWidth;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5 * l.scale);
+    doc.setTextColor(...MUTED);
+    doc.text(label.toUpperCase(), x, y);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5 * l.scale);
+    doc.setTextColor(...INK);
+    const text: string = doc.splitTextToSize(value || '–', colWidth - 3)[0] ?? '–';
+    doc.text(text, x, y + 4 * l.scale);
+  });
+  const end = y + 6.5 * l.scale;
+  doc.setDrawColor(...LINE);
+  doc.line(l.margin, end, l.width - l.margin, end);
+  return end + 3 * l.scale;
 };
 
 export const buildCleaningSignaturePdf = (
   sheet: CleaningSignatureSheet,
   labels: CleaningSignatureLabels,
   branding: CleaningSignatureBranding,
+  format: CleaningSheetFormat = 'a4',
 ): jsPDF => {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape' });
-  const firstMonth = monthStart(0);
-  const secondMonth = monthStart(1);
+  const l = layoutFor(format);
+  const doc = new jsPDF({ unit: 'mm', format, orientation: 'landscape' });
   const entries = new Map(sheet.entries.map((entry) => [entry.date, entry]));
 
-  if (branding.logo) {
-    drawLogo(doc, branding.logo, { x: MARGIN, y: 8, width: 24, height: 13 });
-  }
-  doc.setTextColor(...INK);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(15);
-  doc.text(`${labels.title}: ${sheet.title || labels.area}`, MARGIN + 30, 15);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(...MUTED);
-  doc.text(
-    [
-      branding.companyName,
-      branding.companyAddress,
-      [labels.building, sheet.building].filter(Boolean).join(': '),
-      [labels.room, sheet.room].filter(Boolean).join(': '),
-      [labels.area, sheet.area].filter(Boolean).join(': '),
-      [labels.cleaner, sheet.cleaner].filter(Boolean).join(': '),
-    ].filter(Boolean).join(' · '),
-    MARGIN + 30,
-    21,
+  const top = drawHeader(doc, l, sheet, labels, branding);
+  const gap = 8 * l.scale;
+  const tableWidth = (l.width - l.margin * 2 - gap) / 2;
+  const leftEnd = drawMonthTable(doc, l, l.margin, top, tableWidth, monthStart(0), entries, labels);
+  const rightEnd = drawMonthTable(
+    doc,
+    l,
+    l.margin + tableWidth + gap,
+    top,
+    tableWidth,
+    monthStart(1),
+    entries,
+    labels,
   );
+  let y = Math.max(leftEnd, rightEnd) + 4 * l.scale;
 
-  const gap = 8;
-  const tableWidth = (WIDTH - MARGIN * 2 - gap) / 2;
-  drawMonthTable(doc, MARGIN, 28, tableWidth, firstMonth, entries, labels);
-  drawMonthTable(doc, MARGIN + tableWidth + gap, 28, tableWidth, secondMonth, entries, labels);
-
-  const signatureY = HEIGHT - 17;
+  const footerY = l.height - 6 * l.scale;
+  const signatureY = footerY - 8 * l.scale;
+  const remarksHeight = Math.max(signatureY - 8 * l.scale - y, 8);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
+  doc.setFontSize(7 * l.scale);
+  doc.setTextColor(...MUTED);
+  doc.text(labels.remarks.toUpperCase(), l.margin, y);
+  doc.setDrawColor(...LINE);
+  doc.rect(l.margin, y + 1.5, l.width - 2 * l.margin, remarksHeight);
+  y += remarksHeight + 1.5;
+
+  doc.setFontSize(8 * l.scale);
   doc.setTextColor(...INK);
-  doc.text(`${labels.signature}: ______________________________`, MARGIN, signatureY);
-  doc.text(`${labels.checkedBy}: ______________________________`, WIDTH / 2, signatureY);
-  footer(doc, branding);
+  const half = (l.width - 2 * l.margin - gap) / 2;
+  doc.line(l.margin, signatureY, l.margin + half, signatureY);
+  doc.line(l.margin + half + gap, signatureY, l.width - l.margin, signatureY);
+  doc.setFontSize(7 * l.scale);
+  doc.setTextColor(...MUTED);
+  doc.text(`${labels.signature} (${labels.cleaner})`, l.margin, signatureY + 3.2 * l.scale);
+  doc.text(`${labels.checkedBy} (${labels.inspector})`, l.margin + half + gap, signatureY + 3.2 * l.scale);
+
+  doc.setFontSize(6.5 * l.scale);
+  doc.text(labels.reworkHint, l.margin, footerY);
+  doc.text(
+    `${labels.date}: ${new Intl.DateTimeFormat(labels.language === 'de' ? 'de-CH' : labels.language).format(new Date())} · ${labels.version}: ${sheet.version} · 1/1`,
+    l.width - l.margin,
+    footerY,
+    { align: 'right' },
+  );
   return doc;
 };
 
@@ -181,13 +315,14 @@ export const downloadCleaningSignaturePdf = (
   sheet: CleaningSignatureSheet,
   labels: CleaningSignatureLabels,
   branding: CleaningSignatureBranding,
+  format: CleaningSheetFormat = 'a4',
 ): void => {
   const mobile = window.matchMedia('(pointer: coarse)').matches;
   const viewer = mobile ? window.open('about:blank', '_blank') : null;
-  const doc = buildCleaningSignaturePdf(sheet, labels, branding);
+  const doc = buildCleaningSignaturePdf(sheet, labels, branding, format);
   const url = URL.createObjectURL(doc.output('blob'));
-  const filename = `facility365-reinigung-unterschriftenliste-${sheet.title || 'liste'}.pdf`
-    .replace(/[^\w-]+/g, '-')
+  const filename = `facility365-reinigung-kontrollblatt-${sheet.title || 'liste'}-${format}.pdf`
+    .replace(/[^\w.-]+/g, '-')
     .toLowerCase();
 
   if (mobile) {

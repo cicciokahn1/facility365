@@ -9,6 +9,7 @@
 import { ChecklistEditor } from '@/components/module/checklist-editor';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
+import { CleaningInstructionPanel } from '@/components/modules/cleaning-instruction-panel';
 import { checklistFor } from '@/lib/cleaning/checklists';
 
 export function CleaningAreaDetail({ id }: { id: string }) {
@@ -21,10 +22,15 @@ export function CleaningAreaDetail({ id }: { id: string }) {
           value: 'checklist',
           labelKey: 'cleaning.checklistTemplate',
           content: (
-            <ChecklistEditor
-              items={checklistFor(area.checklist, area.type)}
-              onChange={(checklist) => update({ checklist })}
-            />
+            <div className="flex flex-col gap-4">
+              <ChecklistEditor
+                items={checklistFor(area.checklist, area.type)}
+                onChange={(checklist) => update({ checklist })}
+              />
+              <CleaningInstructionPanel
+                source={{ type: area.type, area, checklist: area.checklist }}
+              />
+            </div>
           ),
         },
         {

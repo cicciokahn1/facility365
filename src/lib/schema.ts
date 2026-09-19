@@ -652,6 +652,8 @@ export const CLEANING_AREA_TYPE_OPTIONS: SelectOption[] = [
   option("deep", "cleaning.areaType.deep"),
   option("disinfection", "cleaning.areaType.disinfection"),
   option("waste", "cleaning.areaType.waste"),
+  option("floor", "cleaning.areaType.floor"),
+  option("scrubber", "cleaning.areaType.scrubber"),
   option("entrance", "cleaning.areaType.entrance"),
   option("laundry", "cleaning.areaType.laundry"),
   option("garage", "cleaning.areaType.garage"),

@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { ChecklistEditor } from '@/components/module/checklist-editor';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
+import { CleaningInstructionPanel } from '@/components/modules/cleaning-instruction-panel';
 import { Button } from '@/components/ui/button';
 import { checklistFor } from '@/lib/cleaning/checklists';
 import { nextCleaningDate } from '@/lib/cleaning/schedule';
@@ -85,15 +86,28 @@ export function CleaningPlanDetail({ id }: { id: string }) {
           value: 'checklist',
           labelKey: 'tab.checklist',
           content: (
-            <ChecklistEditor
-              items={checklistFor(
-                plan.checklist.length > 0
-                  ? plan.checklist
-                  : areas.find((entry) => entry.id === plan.areaId)?.checklist ?? [],
-                areas.find((entry) => entry.id === plan.areaId)?.type ?? '',
-              )}
-              onChange={(checklist) => update({ checklist })}
-            />
+            <div className="flex flex-col gap-4">
+              <ChecklistEditor
+                items={checklistFor(
+                  plan.checklist.length > 0
+                    ? plan.checklist
+                    : areas.find((entry) => entry.id === plan.areaId)?.checklist ?? [],
+                  areas.find((entry) => entry.id === plan.areaId)?.type ?? '',
+                )}
+                onChange={(checklist) => update({ checklist })}
+              />
+              <CleaningInstructionPanel
+                source={{
+                  type: areas.find((entry) => entry.id === plan.areaId)?.type,
+                  area: areas.find((entry) => entry.id === plan.areaId),
+                  plan,
+                  checklist:
+                    plan.checklist.length > 0
+                      ? plan.checklist
+                      : areas.find((entry) => entry.id === plan.areaId)?.checklist,
+                }}
+              />
+            </div>
           ),
         },
         {
