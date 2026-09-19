@@ -18,7 +18,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCollectionItems } from '@/lib/data/store';
 import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
-import { CLEANING_TASK_STATUS_OPTIONS } from '@/lib/schema';
+import {
+  CLEANING_AREA_TYPE_OPTIONS,
+  CLEANING_INTERVAL_OPTIONS,
+  CLEANING_TASK_STATUS_OPTIONS,
+} from '@/lib/schema';
 import { Building, CleaningPlan, CleaningTask } from '@/lib/types';
 import { formatDate } from '@/lib/utils/format';
 import { useSettings } from '@/lib/settings/provider';
@@ -49,6 +53,7 @@ export function CleaningOverview() {
   const complaints = useCollectionItems('cleaningcomplaints');
   const checks = useCollectionItems('cleaningchecks');
   const cleaners = useCollectionItems('cleaners');
+  const properties = useCollectionItems('properties');
   const only = useOwnTaskRestriction();
 
   const visibleTasks = useMemo(
@@ -212,11 +217,19 @@ export function CleaningOverview() {
     );
   };
 
-  const printSignatureSheet = (plan: CleaningPlan): void => {
+  const printSignatureSheet = (plan: CleaningPlan, format: 'a4' | 'a3' = 'a4'): void => {
     const area = areas.find((entry) => entry.id === plan.areaId);
+    const property = properties.find((entry) => entry.id === area?.propertyId);
     const building = buildings.find((entry) => entry.id === area?.buildingId);
     const room = rooms.find((entry) => entry.id === area?.roomId);
     const cleaner = cleaners.find((entry) => entry.id === plan.cleanerId);
+    const inspector = cleaners.find(
+      (entry) => entry.id === (plan.responsibleId || area?.responsibleId),
+    );
+    const fullName = (person?: { firstName: string; name: string }): string =>
+      person ? [person.firstName, person.name].filter(Boolean).join(' ') : '';
+    const optionLabel = (options: { value: string; labelKey: TranslationKey }[], value: string) =>
+      options.find((entry) => entry.value === value)?.labelKey ?? '';
     const planTasks = visibleTasks.filter((task) => task.planId === plan.id);
     const taskByDate = new Map(planTasks.map((task) => [task.date, task]));
     const now = new Date();
@@ -237,23 +250,40 @@ export function CleaningOverview() {
     downloadCleaningSignaturePdf(
       {
         title: plan.title || area?.name || plan.number,
+        property: property?.name ?? '',
         building: building?.name ?? '',
         room: room?.name ?? '',
         area: area?.name ?? '',
-        cleaner: cleaner ? [cleaner.firstName, cleaner.name].filter(Boolean).join(' ') : '',
+        areaType: area ? t(optionLabel(CLEANING_AREA_TYPE_OPTIONS, area.type) as TranslationKey) : '',
+        interval: t(optionLabel(CLEANING_INTERVAL_OPTIONS, plan.interval) as TranslationKey),
+        cleaner: fullName(cleaner),
+        inspector: fullName(inspector),
+        version: formatDate((plan.updatedAt || plan.createdAt || '').slice(0, 10), settings.language) || '1.0',
         entries,
       },
       {
-        title: t('cleaning.signatureSheet'),
+        title: t('cleaning.controlSheet'),
         day: t('cleaning.day'),
         time: t('cleaning.time'),
         visa: t('cleaning.visa'),
+        status: t('common.status'),
+        ok: t('cleaning.result.ok'),
+        rework: t('cleaning.result.rework'),
+        notDone: t('cleaning.result.notDone'),
         cleaner: t('cleaning.assignee'),
+        inspector: t('cleaning.inspector'),
+        property: t('module.properties.singular'),
         building: t('module.buildings.singular'),
         room: t('module.rooms.singular'),
         area: t('module.cleaningareas.singular'),
+        areaType: t('cleaning.areaType'),
+        interval: t('cleaning.intervalLabel'),
+        remarks: t('cleaning.remarks'),
         signature: t('cleaning.signature'),
         checkedBy: t('cleaning.checkedBy'),
+        date: t('common.date'),
+        version: t('cleaning.version'),
+        reworkHint: t('cleaning.reworkHint'),
         language: settings.language,
       },
       {
@@ -261,6 +291,7 @@ export function CleaningOverview() {
         companyAddress: [address.street, [address.zip, address.city].filter(Boolean).join(' ')].filter(Boolean).join(', '),
         logo: logoOf(settings.companyLogo),
       },
+      format,
     );
   };
 
@@ -441,7 +472,16 @@ export function CleaningOverview() {
                     aria-label={t('cleaning.printSignatureSheet')}
                   >
                     <FileSignature className="size-4" aria-hidden />
-                    <span className="hidden sm:inline">{t('cleaning.printSignatureSheet')}</span>
+                    <span className="hidden sm:inline">{t('cleaning.controlSheet')} A4</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => printSignatureSheet(plan, 'a3')}
+                    aria-label={`${t('cleaning.controlSheet')} A3`}
+                  >
+                    A3
                   </Button>
                 </li>
               ))}

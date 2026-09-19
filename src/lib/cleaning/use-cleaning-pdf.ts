@@ -13,6 +13,11 @@ import {
   downloadCleaningPdf,
   printCleaningPdf,
 } from '@/lib/cleaning/cleaning-pdf';
+import type {
+  CleaningInstructionData,
+  CleaningInstructionLabels,
+} from '@/lib/cleaning/cleaning-instruction-pdf';
+import { downloadCleaningInstructionPdf } from '@/lib/cleaning/cleaning-instruction-pdf';
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { formatWorkTime, hasWorkTime } from '@/lib/reports/work-time';
@@ -27,17 +32,34 @@ import { useSettings } from '@/lib/settings/provider';
 import { Cleaner, CleaningTask } from '@/lib/types';
 import { formatDate } from '@/lib/utils/format';
 import {
+  PHASE_ORDER,
   checklistFor,
+  checklistTemplateFor,
   equipmentFor,
   guidanceFor,
+  phaseLabel,
+  phaseOf,
+  ppeFor,
   safetyNotesFor,
 } from '@/lib/cleaning/checklists';
 import type { Language } from '@/lib/i18n/dictionary';
+import type { ChecklistItem, CleaningArea, CleaningPlan } from '@/lib/types';
+
+/** Quelle einer Arbeitsanleitung: Reinigungsart plus vorhandene Objekt-/Plan-/Aufgabendaten. */
+export interface CleaningInstructionSource {
+  type: string;
+  area?: CleaningArea;
+  plan?: CleaningPlan;
+  task?: CleaningTask;
+  /** Eigene Checkliste (Bereich/Plan/Aufgabe); sonst Vorlage der Reinigungsart. */
+  checklist?: ChecklistItem[];
+}
 
 export interface CleaningPdfApi {
   data: (task: CleaningTask) => CleaningPdfData;
   download: (task: CleaningTask, format?: 'a4' | 'a3') => Promise<void>;
   print: (task: CleaningTask, format?: 'a4' | 'a3') => Promise<void>;
+  instruction: (source: CleaningInstructionSource, format?: 'a4' | 'a3') => void;
 }
 
 const nameOf = (cleaner?: Cleaner): string =>
@@ -186,8 +208,90 @@ export function useCleaningPdf(): CleaningPdfApi {
     };
   }, [settings]);
 
+  const instructionData = useCallback(
+    (source: CleaningInstructionSource): CleaningInstructionData => {
+      const language = settings.language as Language;
+      const { type, area, plan, task } = source;
+      const property = properties.find(
+        (entry) => entry.id === (task?.propertyId || area?.propertyId),
+      );
+      const building = buildings.find(
+        (entry) => entry.id === (task?.buildingId || area?.buildingId),
+      );
+      const room = rooms.find((entry) => entry.id === (task?.roomId || area?.roomId));
+      const cleaner = cleaners.find(
+        (entry) => entry.id === (task?.cleanerId || plan?.cleanerId),
+      );
+      const checklist =
+        source.checklist && source.checklist.length > 0
+          ? source.checklist
+          : checklistTemplateFor(type);
+      const versionSource = task?.updatedAt || plan?.updatedAt || area?.updatedAt || '';
+      const phases = Object.fromEntries(
+        PHASE_ORDER.map((phase) => [phase, phaseLabel(phase, language)]),
+      ) as CleaningInstructionData['phases'];
+      return {
+        title: labelOf(CLEANING_AREA_TYPE_OPTIONS, type),
+        areaType: labelOf(CLEANING_AREA_TYPE_OPTIONS, type),
+        propertyName: property?.name ?? '',
+        buildingName: building?.name ?? '',
+        location: area?.location ?? '',
+        roomName: room?.name ?? '',
+        areaName: area?.name ?? '',
+        cleanerName: nameOf(cleaner),
+        interval: plan ? labelOf(CLEANING_INTERVAL_OPTIONS, plan.interval) : '',
+        date: formatDate(new Date().toISOString().slice(0, 10), settings.language),
+        version: versionSource
+          ? formatDate(versionSource.slice(0, 10), settings.language)
+          : '1.0',
+        ppe: ppeFor(type, language),
+        safetyNotes: safetyNotesFor(type, language),
+        equipment: equipmentFor(type, language),
+        materials: (task?.materials ?? [])
+          .map((item) => `${item.name ?? ''} ${item.quantity ?? ''} ${item.unit ?? ''}`.trim())
+          .filter(Boolean),
+        steps: checklist.map((item) => ({
+          phase: phaseOf(item.text),
+          text: item.text ?? '',
+          ...guidanceFor(item.text, language),
+        })),
+        phases,
+      };
+    },
+    [buildings, cleaners, labelOf, properties, rooms, settings.language],
+  );
+
+  const instructionLabels = useCallback(
+    (): CleaningInstructionLabels => ({
+      workInstruction: t('cleaning.workInstruction'),
+      areaType: t('cleaning.areaType'),
+      place: t('cleaning.place'),
+      room: t('module.rooms.singular'),
+      area: t('module.cleaningareas.singular'),
+      cleaner: t('cleaning.assignee'),
+      interval: t('cleaning.intervalLabel'),
+      date: t('common.date'),
+      version: t('cleaning.version'),
+      ppe: t('cleaning.ppe'),
+      equipment: t('cleaning.equipment'),
+      material: t('tab.material'),
+      control: t('cleaning.control'),
+      ok: t('cleaning.result.ok'),
+      rework: t('cleaning.result.rework'),
+      notDone: t('cleaning.result.notDone'),
+      reworkHint: t('cleaning.reworkHint'),
+      cleanerSignature: t('cleaning.signature.cleaner'),
+      signatureDate: t('cleaning.signature.date'),
+      checkedBySignature: t('cleaning.signature.checkedBy'),
+    }),
+    [t],
+  );
+
   return {
     data,
+    instruction: (source, format = 'a4') => {
+      downloadCleaningInstructionPdf(instructionData(source), instructionLabels(), branding(), format);
+    },
     download: async (task, format = 'a4') => {
       downloadCleaningPdf(data(task), labels(), branding(), format);
     },

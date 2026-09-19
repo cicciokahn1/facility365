@@ -3,16 +3,23 @@
 /** Reinigungsrapport als PDF herunterladen oder drucken. */
 import { Download, Printer } from 'lucide-react';
 
+import { CleaningInstructionPanel } from '@/components/modules/cleaning-instruction-panel';
 import { Button } from '@/components/ui/button';
 import { useCleaningPdf } from '@/lib/cleaning/use-cleaning-pdf';
+import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { CleaningTask } from '@/lib/types';
 
 export function CleaningPdfPanel({ task }: { task: CleaningTask }) {
   const t = useT();
   const pdf = useCleaningPdf();
+  const areas = useCollectionItems('cleaningareas');
+  const plans = useCollectionItems('cleaningplans');
+  const area = areas.find((entry) => entry.id === task.areaId);
+  const plan = plans.find((entry) => entry.id === task.planId);
 
   return (
+    <div className="flex flex-col gap-4">
     <section className="flex flex-col gap-4 rounded-xl border bg-card p-4" data-testid="cleaning-pdf">
       <div>
         <h2 className="text-base font-semibold">{t('cleaning.report')}</h2>
@@ -57,5 +64,9 @@ export function CleaningPdfPanel({ task }: { task: CleaningTask }) {
         </Button>
       </div>
     </section>
+    <CleaningInstructionPanel
+      source={{ type: area?.type, area, plan, task, checklist: task.checklist }}
+    />
+    </div>
   );
 }
