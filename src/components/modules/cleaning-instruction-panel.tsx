@@ -5,7 +5,7 @@
  * vorhandenen Bereichs-, Plan- und Aufgabendaten als A4/A3 erzeugen.
  */
 import { useState } from 'react';
-import { FileText } from 'lucide-react';
+import { FileSignature, FileText } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -30,6 +30,7 @@ export function CleaningInstructionPanel({
   const pdf = useCleaningPdf();
   const [type, setType] = useState(source.type || 'office');
   const useOwnChecklist = type === (source.type || '');
+  const plan = source.plan;
 
   const generate = (format: 'a4' | 'a3') =>
     pdf.instruction(
@@ -68,6 +69,28 @@ export function CleaningInstructionPanel({
           {t('cleaning.workInstruction')} A3
         </Button>
       </div>
+      {plan ? (
+        <div className="grid grid-cols-1 gap-2 border-t pt-4 sm:grid-cols-2" data-testid="cleaning-control-sheet">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12"
+            onClick={() => pdf.controlSheet(plan, 'a4')}
+          >
+            <FileSignature className="size-4" aria-hidden />
+            {t('cleaning.controlSheet')} A4
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12"
+            onClick={() => pdf.controlSheet(plan, 'a3')}
+          >
+            <FileSignature className="size-4" aria-hidden />
+            {t('cleaning.controlSheet')} A3
+          </Button>
+        </div>
+      ) : null}
     </section>
   );
 }

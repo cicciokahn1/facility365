@@ -154,12 +154,19 @@ const CHECKLISTS: Record<string, string[]> = {
     'PSA anziehen',
     'Maschine und Akku kontrollieren',
     'Warnschild aufstellen',
-    'Grobe Verschmutzungen entfernen',
+    'Reinigungsfläche frei räumen',
+    'Staubwischen oder Trockensaugen',
+    'Unter den Möbeln mit dem Flachmopp reinigen',
     'Reinigungsmittel nach Herstellerangaben dosieren',
-    'Fläche in Bahnen maschinell reinigen',
+    'Mit der Maschine den Rändern entlang scheuern',
+    'Fläche in überlappenden Bahnen scheuern',
+    'Reinigungslösung einwirken lassen',
     'Randbereiche manuell nachreinigen',
+    'Fläche in überlappenden Bahnen scheuersaugen',
+    'Wasser ausschalten und Maschine in den Reinigungsraum fahren',
     'Schmutzwasser entleeren',
     'Maschine reinigen und laden',
+    'Warnschild versorgen',
     'Boden trocknen lassen',
     'Arbeitsplatz sauber verlassen',
     'Sichtkontrolle',
@@ -204,6 +211,8 @@ const FINISH_STEPS = new Set([
   'verbrauchsmaterial auffüllen',
   'schmutzwasser entleeren',
   'maschine reinigen und laden',
+  'wasser ausschalten und maschine in den reinigungsraum fahren',
+  'warnschild versorgen',
   'boden trocknen lassen',
   'raum ausreichend lüften',
   'umgebung sauber hinterlassen',
@@ -346,6 +355,60 @@ const GUIDANCE: Record<string, Record<Language, CleaningStepGuidance>> = {
     it: { icon: 'M', description: 'Procedere a strisce sovrapposte, velocità secondo lo sporco.' },
     en: { icon: 'M', description: 'Drive overlapping lanes, adapt speed to soiling.' },
   },
+  'reinigungsfläche frei räumen': {
+    de: { icon: 'F', description: 'Bewegliche Gegenstände wegräumen, Fläche zugänglich machen.' },
+    fr: { icon: 'F', description: 'Dégager les objets mobiles, rendre la surface accessible.' },
+    it: { icon: 'F', description: 'Spostare gli oggetti mobili, rendere accessibile la superficie.' },
+    en: { icon: 'F', description: 'Move loose items away, make the area accessible.' },
+  },
+  'staubwischen oder trockensaugen': {
+    de: { icon: 'B', description: 'Losen Schmutz mit Staubwischtuch oder Trockensauger aufnehmen.' },
+    fr: { icon: 'B', description: 'Ramasser la saleté avec la lingette ou l’aspirateur.' },
+    it: { icon: 'B', description: 'Raccogliere lo sporco con panno antipolvere o aspiratore.' },
+    en: { icon: 'B', description: 'Pick up loose dirt with dust wipe or dry vacuum.' },
+  },
+  'unter den möbeln mit dem flachmopp reinigen': {
+    de: { icon: 'R', description: 'Bereiche, die die Maschine nicht erreicht, mit dem Flachmopp reinigen.' },
+    fr: { icon: 'R', description: 'Nettoyer au balai plat les zones inaccessibles à la machine.' },
+    it: { icon: 'R', description: 'Pulire con il mop piatto le zone non raggiungibili dalla macchina.' },
+    en: { icon: 'R', description: 'Clean areas the machine cannot reach with the flat mop.' },
+  },
+  'mit der maschine den rändern entlang scheuern': {
+    de: { icon: 'M', description: 'Im Schritttempo den Rändern entlang fahren; der Rand muss nass sein.' },
+    fr: { icon: 'M', description: 'Longer les bords au pas; le bord doit être mouillé.' },
+    it: { icon: 'M', description: 'Percorrere i bordi a passo d’uomo; il bordo deve essere bagnato.' },
+    en: { icon: 'M', description: 'Drive along the edges at walking pace; the edge must be wet.' },
+  },
+  'fläche in überlappenden bahnen scheuern': {
+    de: { icon: 'M', description: 'Fläche in überlappenden Bahnen scheuern; die Fläche muss nass sein.' },
+    fr: { icon: 'M', description: 'Récurer en bandes qui se chevauchent; la surface doit être mouillée.' },
+    it: { icon: 'M', description: 'Strofinare a strisce sovrapposte; la superficie deve essere bagnata.' },
+    en: { icon: 'M', description: 'Scrub in overlapping lanes; the surface must be wet.' },
+  },
+  'reinigungslösung einwirken lassen': {
+    de: { icon: 'T', description: 'Einwirkzeit gemäss Herstellerangabe einhalten; Lösung nicht antrocknen lassen.' },
+    fr: { icon: 'T', description: 'Respecter le temps d’action du fabricant; ne pas laisser sécher.' },
+    it: { icon: 'T', description: 'Rispettare il tempo di azione del produttore; non far asciugare.' },
+    en: { icon: 'T', description: 'Observe the manufacturer contact time; do not let it dry.' },
+  },
+  'fläche in überlappenden bahnen scheuersaugen': {
+    de: { icon: 'M', description: 'Den Rändern entlang und die Fläche in überlappenden Bahnen scheuersaugen.' },
+    fr: { icon: 'M', description: 'Récurer-aspirer le long des bords et la surface en bandes.' },
+    it: { icon: 'M', description: 'Lavare-asciugare lungo i bordi e la superficie a strisce sovrapposte.' },
+    en: { icon: 'M', description: 'Scrub-dry along the edges and the area in overlapping lanes.' },
+  },
+  'wasser ausschalten und maschine in den reinigungsraum fahren': {
+    de: { icon: 'M', description: 'Am Ende der Fläche Wasser ausschalten und in den Reinigungsraum fahren.' },
+    fr: { icon: 'M', description: 'En fin de surface, couper l’eau et rejoindre le local de nettoyage.' },
+    it: { icon: 'M', description: 'A fine superficie chiudere l’acqua e portare la macchina nel locale pulizie.' },
+    en: { icon: 'M', description: 'At the end of the area switch off water and drive to the cleaning room.' },
+  },
+  'warnschild versorgen': {
+    de: { icon: '!', description: 'Warnschild erst nach dem Trocknen der Fläche entfernen und versorgen.' },
+    fr: { icon: '!', description: 'Retirer et ranger le panneau seulement une fois le sol sec.' },
+    it: { icon: '!', description: 'Togliere e riporre il cartello solo quando il pavimento è asciutto.' },
+    en: { icon: '!', description: 'Remove and store the sign only once the floor is dry.' },
+  },
   'randbereiche manuell nachreinigen': {
     de: { icon: 'R', description: 'Ecken, Kanten und Bereiche unter Möbeln mit Mopp nacharbeiten.' },
     fr: { icon: 'R', description: 'Reprendre coins, bords et dessous de meubles au balai-mop.' },
@@ -394,6 +457,80 @@ export const guidanceFor = (text: string | undefined, language: Language): Clean
   const key = (text ?? '').trim().toLocaleLowerCase('de-CH');
   const exact = GUIDANCE[key]?.[language];
   if (exact) return exact;
+  const rules: Array<{ match: string[]; icon: string; descriptions: Record<Language, string> }> = [
+    {
+      match: ['sitz', 'türgriffe', 'griffbereiche', 'kontaktflächen', 'armaturen', 'spiegel', 'rahmen', 'fensterbank'],
+      icon: 'S',
+      descriptions: {
+        de: 'Fläche vollständig reinigen und trocken nachwischen.',
+        fr: 'Nettoyer entièrement la surface et essuyer à sec.',
+        it: 'Pulire completamente la superficie e asciugare.',
+        en: 'Clean the surface completely and wipe dry.',
+      },
+    },
+    {
+      match: ['toilettenpapier', 'seife', 'verbrauchsmaterial', 'neue säcke'],
+      icon: 'P',
+      descriptions: {
+        de: 'Bestand prüfen und Verbrauchsmaterial vollständig auffüllen.',
+        fr: 'Vérifier le stock et remplir complètement les consommables.',
+        it: 'Controllare la scorta e rifornire completamente i consumabili.',
+        en: 'Check stock and replenish consumables completely.',
+      },
+    },
+    {
+      match: ['abfall', 'papierkorb', 'behälter', 'sortieren'],
+      icon: 'A',
+      descriptions: {
+        de: 'Abfall gemäss Vorgabe entfernen, sortieren und Behälter sauber hinterlassen.',
+        fr: 'Évacuer et trier les déchets selon les consignes; laisser les conteneurs propres.',
+        it: 'Rimuovere e separare i rifiuti secondo le disposizioni; lasciare puliti i contenitori.',
+        en: 'Remove and sort waste as instructed; leave bins clean.',
+      },
+    },
+    {
+      match: ['desinfiz', 'desinfektionsmittel'],
+      icon: 'D',
+      descriptions: {
+        de: 'Geeignetes Mittel gemäss Herstellerangabe anwenden und Einwirkzeit einhalten.',
+        fr: 'Utiliser le produit selon le fabricant et respecter le temps d’action.',
+        it: 'Usare il prodotto secondo il produttore e rispettare il tempo di azione.',
+        en: 'Use the product according to the manufacturer and observe contact time.',
+      },
+    },
+    {
+      match: ['lüften'],
+      icon: 'L',
+      descriptions: {
+        de: 'Raum angemessen lüften und danach Fenster und Türen sichern.',
+        fr: 'Aérer suffisamment la pièce, puis sécuriser fenêtres et portes.',
+        it: 'Arieggiare adeguatamente il locale, quindi mettere in sicurezza finestre e porte.',
+        en: 'Ventilate the room adequately, then secure windows and doors.',
+      },
+    },
+    {
+      match: ['boden', 'treppen', 'podeste', 'umfeld'],
+      icon: 'B',
+      descriptions: {
+        de: 'Fläche vollständig und passend zum Belag reinigen; Rutschgefahr beachten.',
+        fr: 'Nettoyer entièrement la surface selon le revêtement; tenir compte du risque de glissade.',
+        it: 'Pulire completamente la superficie in base al rivestimento; considerare il rischio di scivolamento.',
+        en: 'Clean the surface according to its covering; consider slip risk.',
+      },
+    },
+    {
+      match: ['reinigen', 'kontrollieren', 'verschmutzungen', 'spinnweben', 'wände', 'einrichtung'],
+      icon: 'S',
+      descriptions: {
+        de: 'Bereich vollständig bearbeiten und sichtbare Verschmutzungen entfernen.',
+        fr: 'Traiter entièrement la zone et enlever les salissures visibles.',
+        it: 'Trattare completamente la zona e rimuovere lo sporco visibile.',
+        en: 'Complete the area and remove visible soiling.',
+      },
+    },
+  ];
+  const rule = rules.find(({ match }) => match.some((part) => key.includes(part)));
+  if (rule) return { icon: rule.icon, description: rule.descriptions[language] };
   const generic: Record<Language, CleaningStepGuidance> = {
     de: { icon: '✓', description: 'Arbeitsschritt gemäss Arbeitsanweisung vollständig ausführen.' },
     fr: { icon: '✓', description: 'Effectuer entièrement l’étape selon l’instruction.' },
@@ -443,6 +580,185 @@ export const safetyNotesFor = (type: string, language: Language): string[] => {
     en: ['Follow manufacturer instructions and safety data sheets.', 'Never mix products and mark wet areas.'],
   })[language];
 };
+
+type Localized = Record<Language, string>;
+type LocalizedList = Record<Language, string[]>;
+
+const L = (de: string, fr: string, it: string, en: string): Localized => ({ de, fr, it, en });
+
+/** Kurzbezeichnung der Methode (Zeile «Reinigungsart» der Arbeitsanleitung). */
+const METHODS: Record<string, Localized> = {
+  sanitary: L('Unterhaltsreinigung Sanitär', 'Nettoyage d’entretien sanitaires', 'Pulizia di mantenimento sanitari', 'Routine cleaning sanitary'),
+  sanitaryDeep: L('Grundreinigung Sanitär', 'Nettoyage à fond sanitaires', 'Pulizia di fondo sanitari', 'Deep cleaning sanitary'),
+  office: L('Unterhaltsreinigung Büro', 'Nettoyage d’entretien bureaux', 'Pulizia di mantenimento uffici', 'Routine cleaning office'),
+  room: L('Unterhaltsreinigung Zimmer', 'Nettoyage d’entretien chambres', 'Pulizia di mantenimento camere', 'Routine cleaning room'),
+  careRoom: L('Unterhaltsreinigung Pflegezimmer', 'Nettoyage d’entretien chambre de soins', 'Pulizia camera di cura', 'Routine cleaning care room'),
+  bathroom: L('Unterhaltsreinigung Dusche/Bad', 'Nettoyage d’entretien douche/bain', 'Pulizia doccia/bagno', 'Routine cleaning shower/bath'),
+  stairway: L('Unterhaltsreinigung Treppenhaus', 'Nettoyage d’entretien cage d’escalier', 'Pulizia vano scale', 'Routine cleaning stairwell'),
+  corridor: L('Unterhaltsreinigung Korridor', 'Nettoyage d’entretien couloir', 'Pulizia corridoio', 'Routine cleaning corridor'),
+  kitchen: L('Unterhaltsreinigung Küche', 'Nettoyage d’entretien cuisine', 'Pulizia cucina', 'Routine cleaning kitchen'),
+  deep: L('Grundreinigung', 'Nettoyage à fond', 'Pulizia di fondo', 'Deep cleaning'),
+  disinfection: L('Desinfektionsreinigung (Wisch-Desinfektion)', 'Nettoyage désinfectant (par essuyage)', 'Pulizia disinfettante (per strofinamento)', 'Disinfection cleaning (wipe disinfection)'),
+  waste: L('Abfallentsorgung', 'Évacuation des déchets', 'Smaltimento rifiuti', 'Waste disposal'),
+  floor: L('Bodenreinigung manuell (Feuchtwischen)', 'Nettoyage des sols manuel (humide)', 'Pulizia pavimenti manuale (umido)', 'Manual floor cleaning (damp mopping)'),
+  scrubber: L('Scheuersaugmaschine – indirekte Methode', 'Autolaveuse – méthode indirecte', 'Lavasciuga – metodo indiretto', 'Scrubber dryer – indirect method'),
+  window: L('Fensterreinigung innen/aussen', 'Nettoyage des vitres intérieur/extérieur', 'Pulizia vetri interno/esterno', 'Window cleaning inside/outside'),
+};
+
+export const methodFor = (type: string, language: Language): string =>
+  (METHODS[type] ?? L('Unterhaltsreinigung', 'Nettoyage d’entretien', 'Pulizia di mantenimento', 'Routine cleaning'))[language];
+
+const BASE_MATERIAL: LocalizedList = {
+  de: ['1 Reinigungswagen oder Eimer', '2 Mikrofasertücher (farbcodiert)', '1 Abfallsack', '1 Warnschild «Rutschgefahr»'],
+  fr: ['1 chariot ou seau', '2 chiffons microfibres (codés couleur)', '1 sac à déchets', '1 panneau «sol glissant»'],
+  it: ['1 carrello o secchio', '2 panni in microfibra (codice colore)', '1 sacco rifiuti', '1 cartello «pavimento scivoloso»'],
+  en: ['1 cleaning trolley or bucket', '2 microfibre cloths (colour-coded)', '1 waste bag', '1 wet-floor sign'],
+};
+
+/** Reinigungsmaterial und Geräte mit Mengen je Reinigungsart. */
+const MATERIAL: Record<string, LocalizedList> = {
+  sanitary: {
+    de: ['3 Mikrofasertücher (rot WC, gelb Sanitär, blau Flächen)', '1 WC-Bürste', '1 Flachmopp mit Bezug', '1 Abfallsack', 'Toilettenpapier, Seife, Papierhandtücher', '1 Warnschild «Rutschgefahr»'],
+    fr: ['3 chiffons microfibres (rouge WC, jaune sanitaire, bleu surfaces)', '1 brosse WC', '1 balai plat avec housse', '1 sac à déchets', 'Papier WC, savon, essuie-mains', '1 panneau «sol glissant»'],
+    it: ['3 panni microfibra (rosso WC, giallo sanitari, blu superfici)', '1 scopino WC', '1 mop piatto con ricambio', '1 sacco rifiuti', 'Carta igienica, sapone, asciugamani di carta', '1 cartello «pavimento scivoloso»'],
+    en: ['3 microfibre cloths (red toilet, yellow sanitary, blue surfaces)', '1 toilet brush', '1 flat mop with pad', '1 waste bag', 'Toilet paper, soap, paper towels', '1 wet-floor sign'],
+  },
+  sanitaryDeep: {
+    de: ['3 Mikrofasertücher (farbcodiert)', '1 WC-Bürste', '1 Handpad / Fugenbürste', '1 Flachmopp mit Bezug', '2 Abfallsäcke', '1 Warnschild «Rutschgefahr»'],
+    fr: ['3 chiffons microfibres (codés couleur)', '1 brosse WC', '1 tampon à main / brosse à joints', '1 balai plat avec housse', '2 sacs à déchets', '1 panneau «sol glissant»'],
+    it: ['3 panni microfibra (codice colore)', '1 scopino WC', '1 pad manuale / spazzola fughe', '1 mop piatto con ricambio', '2 sacchi rifiuti', '1 cartello «pavimento scivoloso»'],
+    en: ['3 microfibre cloths (colour-coded)', '1 toilet brush', '1 hand pad / grout brush', '1 flat mop with pad', '2 waste bags', '1 wet-floor sign'],
+  },
+  office: {
+    de: ['2 Mikrofasertücher (blau Flächen)', '1 Flachmopp mit Bezug oder Staubsauger', '1 Einwegstaubwischtuch', '1 Abfallsack', '1 Warnschild «Rutschgefahr»'],
+    fr: ['2 chiffons microfibres (bleu surfaces)', '1 balai plat avec housse ou aspirateur', '1 lingette à poussière jetable', '1 sac à déchets', '1 panneau «sol glissant»'],
+    it: ['2 panni microfibra (blu superfici)', '1 mop piatto con ricambio o aspiratore', '1 panno antipolvere monouso', '1 sacco rifiuti', '1 cartello «pavimento scivoloso»'],
+    en: ['2 microfibre cloths (blue surfaces)', '1 flat mop with pad or vacuum cleaner', '1 disposable dust wipe', '1 waste bag', '1 wet-floor sign'],
+  },
+  kitchen: {
+    de: ['2 Mikrofasertücher (grün Küche)', '1 Handpad (kratzfrei)', '1 Flachmopp mit Bezug', '1 Abfallsack', '1 Warnschild «Rutschgefahr»'],
+    fr: ['2 chiffons microfibres (vert cuisine)', '1 tampon à main (non abrasif)', '1 balai plat avec housse', '1 sac à déchets', '1 panneau «sol glissant»'],
+    it: ['2 panni microfibra (verde cucina)', '1 pad manuale (non graffiante)', '1 mop piatto con ricambio', '1 sacco rifiuti', '1 cartello «pavimento scivoloso»'],
+    en: ['2 microfibre cloths (green kitchen)', '1 hand pad (non-scratch)', '1 flat mop with pad', '1 waste bag', '1 wet-floor sign'],
+  },
+  floor: {
+    de: ['1 Flachmopp mit 2 Bezügen', '1 Einwegstaubwischtuch oder Trockensauger', '1 Eimer mit Presse', '1 Warnschild «Rutschgefahr»'],
+    fr: ['1 balai plat avec 2 housses', '1 lingette à poussière jetable ou aspirateur', '1 seau avec presse', '1 panneau «sol glissant»'],
+    it: ['1 mop piatto con 2 ricambi', '1 panno antipolvere monouso o aspiratore', '1 secchio con strizzatore', '1 cartello «pavimento scivoloso»'],
+    en: ['1 flat mop with 2 pads', '1 disposable dust wipe or dry vacuum', '1 bucket with wringer', '1 wet-floor sign'],
+  },
+  scrubber: {
+    de: ['Scheuersaugmaschine (Akku geladen)', '2 Mikrofasertücher', '1 Flachmopp oder mehr je nach Bodenfläche', '1 Einwegstaubwischtuch oder Trockensauger', '1 Randreinigungs-Pad / Randreinigungsgerät', '1 Wäschesack für schmutzige Textilien', '1 Nasswischgerät gross', '1 Warnschild «Rutschgefahr»'],
+    fr: ['Autolaveuse (batterie chargée)', '2 chiffons microfibres', '1 balai plat ou plus selon la surface', '1 lingette à poussière jetable ou aspirateur', '1 pad / outil de nettoyage des bords', '1 sac à linge pour textiles sales', '1 grand balai humide', '1 panneau «sol glissant»'],
+    it: ['Lavasciuga (batteria carica)', '2 panni microfibra', '1 mop piatto o più secondo la superficie', '1 panno antipolvere monouso o aspiratore', '1 pad / attrezzo per bordi', '1 sacco per tessili sporchi', '1 attrezzo lavaggio grande', '1 cartello «pavimento scivoloso»'],
+    en: ['Scrubber dryer (battery charged)', '2 microfibre cloths', '1 flat mop or more depending on floor area', '1 disposable dust wipe or dry vacuum', '1 edge cleaning pad / edge tool', '1 laundry bag for soiled textiles', '1 large wet mop tool', '1 wet-floor sign'],
+  },
+  window: {
+    de: ['1 Einwascher mit Bezug', '1 Fensterabzieher', '2 Mikrofasertücher (Rahmen/Abtrocknen)', '1 Eimer', '1 sichere Steighilfe', '1 Abdecktuch für Fensterbank/Boden'],
+    fr: ['1 mouilleur avec housse', '1 raclette à vitres', '2 chiffons microfibres (cadres/séchage)', '1 seau', '1 escabeau sécurisé', '1 bâche pour rebord/sol'],
+    it: ['1 vello lavavetri', '1 tergivetro', '2 panni microfibra (telai/asciugatura)', '1 secchio', '1 scala sicura', '1 telo per davanzale/pavimento'],
+    en: ['1 window washer with sleeve', '1 window squeegee', '2 microfibre cloths (frames/drying)', '1 bucket', '1 safe step ladder', '1 drop cloth for sill/floor'],
+  },
+  disinfection: {
+    de: ['Einweg- oder farbcodierte Mikrofasertücher', '1 Dosierhilfe', '1 Flachmopp mit Bezug', '1 Abfallsack', '1 Warnschild «Rutschgefahr»'],
+    fr: ['Chiffons jetables ou microfibres codés couleur', '1 doseur', '1 balai plat avec housse', '1 sac à déchets', '1 panneau «sol glissant»'],
+    it: ['Panni monouso o microfibra codice colore', '1 dosatore', '1 mop piatto con ricambio', '1 sacco rifiuti', '1 cartello «pavimento scivoloso»'],
+    en: ['Disposable or colour-coded microfibre cloths', '1 dosing aid', '1 flat mop with pad', '1 waste bag', '1 wet-floor sign'],
+  },
+  waste: {
+    de: ['Abfallsäcke passend zu den Behältern', '1 Mikrofasertuch für Behälter', '1 Transportwagen', 'Rollcontainer / Sammelstelle'],
+    fr: ['Sacs adaptés aux conteneurs', '1 chiffon microfibre pour conteneurs', '1 chariot de transport', 'Conteneur roulant / point de collecte'],
+    it: ['Sacchi adatti ai contenitori', '1 panno microfibra per contenitori', '1 carrello di trasporto', 'Container / punto di raccolta'],
+    en: ['Waste bags matching the bins', '1 microfibre cloth for bins', '1 transport trolley', 'Wheeled container / collection point'],
+  },
+  stairway: {
+    de: ['2 Mikrofasertücher (Handläufe)', '1 Besen oder Staubsauger', '1 Flachmopp mit Bezug', '1 Abfallsack', '1 Warnschild «Rutschgefahr»'],
+    fr: ['2 chiffons microfibres (mains courantes)', '1 balai ou aspirateur', '1 balai plat avec housse', '1 sac à déchets', '1 panneau «sol glissant»'],
+    it: ['2 panni microfibra (corrimano)', '1 scopa o aspiratore', '1 mop piatto con ricambio', '1 sacco rifiuti', '1 cartello «pavimento scivoloso»'],
+    en: ['2 microfibre cloths (handrails)', '1 broom or vacuum cleaner', '1 flat mop with pad', '1 waste bag', '1 wet-floor sign'],
+  },
+};
+
+export const materialFor = (type: string, language: Language): string[] =>
+  (MATERIAL[type] ?? BASE_MATERIAL)[language];
+
+/** Reinigungsmittel je Reinigungsart; Anwendung/Dosierung stets gemäss Herstellerangaben. */
+const AGENTS: Record<string, LocalizedList> = {
+  sanitary: { de: ['Sanitärreiniger', 'WC-Reiniger'], fr: ['Nettoyant sanitaire', 'Nettoyant WC'], it: ['Detergente sanitari', 'Detergente WC'], en: ['Sanitary cleaner', 'Toilet cleaner'] },
+  sanitaryDeep: { de: ['Sanitär-Grundreiniger', 'WC-Reiniger', 'Desinfektionsmittel, falls vorgesehen'], fr: ['Nettoyant sanitaire à fond', 'Nettoyant WC', 'Désinfectant si prévu'], it: ['Detergente di fondo sanitari', 'Detergente WC', 'Disinfettante se previsto'], en: ['Sanitary deep cleaner', 'Toilet cleaner', 'Disinfectant if specified'] },
+  bathroom: { de: ['Sanitärreiniger', 'Kalklöser bei Bedarf'], fr: ['Nettoyant sanitaire', 'Détartrant si besoin'], it: ['Detergente sanitari', 'Anticalcare se necessario'], en: ['Sanitary cleaner', 'Descaler if needed'] },
+  kitchen: { de: ['Fettlöser / Küchenreiniger', 'Neutralreiniger'], fr: ['Dégraissant / nettoyant cuisine', 'Nettoyant neutre'], it: ['Sgrassatore / detergente cucina', 'Detergente neutro'], en: ['Degreaser / kitchen cleaner', 'Neutral cleaner'] },
+  disinfection: { de: ['Flächendesinfektionsmittel', 'Neutralreiniger für Vorreinigung'], fr: ['Désinfectant de surfaces', 'Nettoyant neutre pour prénettoyage'], it: ['Disinfettante per superfici', 'Detergente neutro per prepulizia'], en: ['Surface disinfectant', 'Neutral cleaner for pre-cleaning'] },
+  window: { de: ['Glasreiniger'], fr: ['Nettoyant vitres'], it: ['Detergente vetri'], en: ['Glass cleaner'] },
+  floor: { de: ['Bodenreiniger passend zum Belag', 'Neutralreiniger'], fr: ['Nettoyant sols adapté au revêtement', 'Nettoyant neutre'], it: ['Detergente pavimenti adatto al rivestimento', 'Detergente neutro'], en: ['Floor cleaner suitable for the covering', 'Neutral cleaner'] },
+  scrubber: { de: ['Bodenreiniger (maschinengeeignet, schaumarm)', 'Neutralreiniger'], fr: ['Nettoyant sols (machine, peu moussant)', 'Nettoyant neutre'], it: ['Detergente pavimenti (per macchina, poca schiuma)', 'Detergente neutro'], en: ['Floor cleaner (machine-suitable, low-foam)', 'Neutral cleaner'] },
+  waste: { de: ['Neutralreiniger für Behälter'], fr: ['Nettoyant neutre pour conteneurs'], it: ['Detergente neutro per contenitori'], en: ['Neutral cleaner for bins'] },
+};
+
+export const agentsFor = (type: string, language: Language): string[] =>
+  (AGENTS[type] ?? { de: ['Neutralreiniger'], fr: ['Nettoyant neutre'], it: ['Detergente neutro'], en: ['Neutral cleaner'] })[language];
+
+export const dosageNote = (language: Language): string =>
+  L(
+    'Anwendung und Dosierung gemäss Herstellerangaben (Etikett / Sicherheitsdatenblatt). Reinigungsmittel nie mischen.',
+    'Application et dosage selon les indications du fabricant (étiquette / fiche de données de sécurité). Ne jamais mélanger les produits.',
+    'Applicazione e dosaggio secondo le indicazioni del produttore (etichetta / scheda di sicurezza). Non mescolare mai i prodotti.',
+    'Use and dosage according to manufacturer instructions (label / safety data sheet). Never mix cleaning products.',
+  )[language];
+
+/** Arbeitsmittel eines Schritts (linke Spalte der Arbeitsanleitung), nur wo eindeutig. */
+const TOOLS: Record<string, Localized> = {
+  'wc reinigen': L('WC-Bürste / rotes Tuch', 'Brosse WC / chiffon rouge', 'Scopino / panno rosso', 'Toilet brush / red cloth'),
+  'wc-sitz reinigen': L('Rotes Tuch', 'Chiffon rouge', 'Panno rosso', 'Red cloth'),
+  'wc-schüssel und sitz gründlich reinigen': L('WC-Bürste / rotes Tuch', 'Brosse WC / chiffon rouge', 'Scopino / panno rosso', 'Toilet brush / red cloth'),
+  'waschbecken reinigen': L('Gelbes Tuch', 'Chiffon jaune', 'Panno giallo', 'Yellow cloth'),
+  'armaturen reinigen': L('Gelbes Tuch', 'Chiffon jaune', 'Panno giallo', 'Yellow cloth'),
+  'armaturen und spiegel reinigen': L('Gelbes Tuch', 'Chiffon jaune', 'Panno giallo', 'Yellow cloth'),
+  'spiegel reinigen': L('Mikrofasertuch', 'Chiffon microfibre', 'Panno microfibra', 'Microfibre cloth'),
+  'türgriffe reinigen': L('Blaues Tuch', 'Chiffon bleu', 'Panno blu', 'Blue cloth'),
+  'oberflächen reinigen': L('Blaues Tuch', 'Chiffon bleu', 'Panno blu', 'Blue cloth'),
+  'tische reinigen': L('Blaues Tuch', 'Chiffon bleu', 'Panno blu', 'Blue cloth'),
+  'griffbereiche reinigen': L('Blaues Tuch', 'Chiffon bleu', 'Panno blu', 'Blue cloth'),
+  'oberflächen und kontaktbereiche reinigen': L('Blaues Tuch', 'Chiffon bleu', 'Panno blu', 'Blue cloth'),
+  'kontaktflächen reinigen': L('Mikrofasertuch', 'Chiffon microfibre', 'Panno microfibra', 'Microfibre cloth'),
+  'kontaktflächen reinigen und desinfizieren': L('Einwegtuch', 'Chiffon jetable', 'Panno monouso', 'Disposable cloth'),
+  'arbeitsflächen reinigen': L('Grünes Tuch', 'Chiffon vert', 'Panno verde', 'Green cloth'),
+  'spüle und armaturen reinigen': L('Grünes Tuch', 'Chiffon vert', 'Panno verde', 'Green cloth'),
+  'handläufe reinigen': L('Mikrofasertuch', 'Chiffon microfibre', 'Panno microfibra', 'Microfibre cloth'),
+  'boden reinigen': L('Flachmopp', 'Balai plat', 'Mop piatto', 'Flat mop'),
+  'boden gründlich reinigen': L('Flachmopp / Pad', 'Balai plat / pad', 'Mop piatto / pad', 'Flat mop / pad'),
+  'boden trocken reinigen': L('Staubwischtuch / Sauger', 'Lingette / aspirateur', 'Panno antipolvere / aspiratore', 'Dust wipe / vacuum'),
+  'boden feucht wischen': L('Flachmopp', 'Balai plat', 'Mop piatto', 'Flat mop'),
+  'boden und umfeld reinigen': L('Flachmopp', 'Balai plat', 'Mop piatto', 'Flat mop'),
+  'treppen reinigen': L('Besen / Flachmopp', 'Balai / balai plat', 'Scopa / mop piatto', 'Broom / flat mop'),
+  'podeste reinigen': L('Flachmopp', 'Balai plat', 'Mop piatto', 'Flat mop'),
+  'abfall leeren': L('Abfallsack', 'Sac à déchets', 'Sacco rifiuti', 'Waste bag'),
+  'abfall entfernen': L('Abfallsack', 'Sac à déchets', 'Sacco rifiuti', 'Waste bag'),
+  'fläche in bahnen maschinell reinigen': L('Scheuersaugen', 'Autolaveuse', 'Lavasciuga', 'Scrubber dryer'),
+  'staubwischen oder trockensaugen': L('Staubwischtuch / Sauger', 'Lingette / aspirateur', 'Panno antipolvere / aspiratore', 'Dust wipe / vacuum'),
+  'unter den möbeln mit dem flachmopp reinigen': L('Flachmopp', 'Balai plat', 'Mop piatto', 'Flat mop'),
+  'mit der maschine den rändern entlang scheuern': L('Scheuern', 'Récurer', 'Strofinare', 'Scrubbing'),
+  'fläche in überlappenden bahnen scheuern': L('Scheuern', 'Récurer', 'Strofinare', 'Scrubbing'),
+  'reinigungslösung einwirken lassen': L('Einwirkzeit', 'Temps d’action', 'Tempo di azione', 'Contact time'),
+  'fläche in überlappenden bahnen scheuersaugen': L('Scheuersaugen', 'Récurer-aspirer', 'Lavare-asciugare', 'Scrub-drying'),
+  'wasser ausschalten und maschine in den reinigungsraum fahren': L('Am Ende der Fläche', 'Fin de surface', 'Fine superficie', 'End of area'),
+  'warnschild versorgen': L('Warnschild', 'Panneau', 'Cartello', 'Sign'),
+  'randbereiche manuell nachreinigen': L('Randreinigungsgerät / Mopp', 'Outil de bords / mop', 'Attrezzo bordi / mop', 'Edge tool / mop'),
+  'schmutzwasser entleeren': L('Ausguss', 'Déversoir', 'Scarico', 'Drain'),
+  'maschine reinigen und laden': L('Mikrofasertuch', 'Chiffon microfibre', 'Panno microfibra', 'Microfibre cloth'),
+  'rahmen reinigen': L('Mikrofasertuch', 'Chiffon microfibre', 'Panno microfibra', 'Microfibre cloth'),
+  'fensterbank reinigen': L('Mikrofasertuch', 'Chiffon microfibre', 'Panno microfibra', 'Microfibre cloth'),
+  'glas innen reinigen': L('Einwascher / Abzieher', 'Mouilleur / raclette', 'Vello / tergivetro', 'Washer / squeegee'),
+  'glas aussen reinigen': L('Einwascher / Abzieher', 'Mouilleur / raclette', 'Vello / tergivetro', 'Washer / squeegee'),
+  'desinfektionsmittel nach herstellerangaben dosieren': L('Dosierhilfe', 'Doseur', 'Dosatore', 'Dosing aid'),
+  'reinigungsmittel nach herstellerangaben dosieren': L('Dosierhilfe', 'Doseur', 'Dosatore', 'Dosing aid'),
+  'toilettenpapier auffüllen': L('Verbrauchsmaterial', 'Consommables', 'Materiale di consumo', 'Consumables'),
+  'seife auffüllen': L('Verbrauchsmaterial', 'Consommables', 'Materiale di consumo', 'Consumables'),
+  'verbrauchsmaterial auffüllen': L('Verbrauchsmaterial', 'Consommables', 'Materiale di consumo', 'Consumables'),
+};
+
+export const toolFor = (text: string | undefined, language: Language): string =>
+  TOOLS[(text ?? '').trim().toLocaleLowerCase('de-CH')]?.[language] ?? '';
 
 export const equipmentFor = (type: string, language: Language): string[] => {
   const base: Record<Language, string[]> = {

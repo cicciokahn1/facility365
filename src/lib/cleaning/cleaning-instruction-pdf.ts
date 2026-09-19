@@ -1,9 +1,11 @@
 /**
  * Arbeitsanleitung einer Reinigungsart als PDF (A4/A3).
  *
- * Aufbau: Kopf mit Logo und Objektdaten, PSA/Sicherheit, Material und Geraete,
- * Arbeitsschritte in Phasen (Vorarbeit, Hauptarbeit, Schlussarbeit, Endkontrolle)
- * mit Piktogramm, Beschreibung und Checkbox, Ergebnis und Unterschriften.
+ * Tabellenlayout nach Vorbild klassischer Reinigungs-Arbeitsanleitungen:
+ * linke Spalte mit Begriff/Arbeitsmittel/Piktogramm, rechts die Zeilen.
+ * Abschnitte als blaue Bänder: Reinigungsart, Reinigungsmaterial,
+ * Reinigungsmittel, PSA/Sicherheit, Vorarbeit, Hauptarbeit, Schlussarbeit,
+ * Blick zurück/Endkontrolle. Jeder Arbeitsschritt mit Checkbox.
  */
 import { jsPDF } from 'jspdf';
 
@@ -16,11 +18,15 @@ export interface CleaningInstructionStep {
   icon: string;
   text: string;
   description: string;
+  /** Arbeitsmittel des Schritts (linke Spalte), leer wenn nicht eindeutig. */
+  tool: string;
 }
 
 export interface CleaningInstructionData {
   title: string;
   areaType: string;
+  /** Methode, z. B. «Scheuersaugmaschine – indirekte Methode». */
+  method: string;
   propertyName: string;
   buildingName: string;
   location: string;
@@ -32,8 +38,13 @@ export interface CleaningInstructionData {
   version: string;
   ppe: { icon: string; label: string }[];
   safetyNotes: string[];
+  /** Reinigungsmaterial und Geräte mit Mengen. */
   equipment: string[];
+  /** Zusätzliches Material aus der Aufgabe. */
   materials: string[];
+  /** Reinigungsmittel (Anwendung/Dosierung gemäss Hersteller). */
+  agents: string[];
+  dosageNote: string;
   steps: CleaningInstructionStep[];
   phases: Record<CleaningPhase, string>;
 }
@@ -51,6 +62,7 @@ export interface CleaningInstructionLabels {
   ppe: string;
   equipment: string;
   material: string;
+  agents: string;
   control: string;
   ok: string;
   rework: string;
@@ -59,308 +71,393 @@ export interface CleaningInstructionLabels {
   cleanerSignature: string;
   signatureDate: string;
   checkedBySignature: string;
+  page: string;
+  updated: string;
 }
 
-const INK: [number, number, number] = [20, 33, 52];
-const MUTED: [number, number, number] = [92, 104, 124];
-const ACCENT: [number, number, number] = [14, 50, 85];
-const LINE: [number, number, number] = [200, 208, 220];
-const PANEL: [number, number, number] = [243, 246, 250];
+const INK: [number, number, number] = [0, 0, 0];
+const MUTED: [number, number, number] = [90, 90, 90];
+const BAND: [number, number, number] = [31, 90, 166];
+const LINE: [number, number, number] = [120, 120, 120];
+const WARN: [number, number, number] = [255, 204, 0];
+const WHITE: [number, number, number] = [255, 255, 255];
 
 interface Layout {
   width: number;
   height: number;
   margin: number;
   content: number;
+  /** Breite der linken Begriffsspalte. */
+  label: number;
+  /** Breite der Checkbox-Spalte rechts. */
+  check: number;
   scale: number;
+  top: number;
+  bottom: number;
 }
 
 const layoutFor = (format: 'a4' | 'a3'): Layout => {
-  const width = format === 'a3' ? 297 : 210;
-  const height = format === 'a3' ? 420 : 297;
-  const margin = format === 'a3' ? 20 : 16;
-  return { width, height, margin, content: width - 2 * margin, scale: format === 'a3' ? 1.3 : 1 };
+  const a3 = format === 'a3';
+  const width = a3 ? 297 : 210;
+  const height = a3 ? 420 : 297;
+  const margin = a3 ? 18 : 12;
+  const scale = a3 ? 1.35 : 1;
+  return {
+    width,
+    height,
+    margin,
+    content: width - 2 * margin,
+    label: 44 * scale,
+    check: 10 * scale,
+    scale,
+    top: margin + 8 * scale,
+    bottom: height - margin - 8 * scale,
+  };
 };
 
-const ensureSpace = (doc: jsPDF, l: Layout, y: number, needed: number): number => {
-  if (y + needed <= l.height - l.margin - 10) return y;
-  doc.addPage();
-  return l.margin;
-};
+interface Ctx {
+  doc: jsPDF;
+  l: Layout;
+  y: number;
+  title: string;
+  workInstruction: string;
+}
 
-const sectionTitle = (doc: jsPDF, l: Layout, title: string, y: number): number => {
+const pageTitle = (ctx: Ctx): void => {
+  const { doc, l } = ctx;
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10 * l.scale);
-  doc.setTextColor(...ACCENT);
-  doc.text(title.toUpperCase(), l.margin, y);
-  doc.setDrawColor(...ACCENT);
-  doc.setLineWidth(0.5);
-  doc.line(l.margin, y + 1.8, l.width - l.margin, y + 1.8);
-  doc.setLineWidth(0.2);
-  return y + 8 * l.scale;
+  doc.setFontSize(11 * l.scale);
+  doc.setTextColor(...INK);
+  doc.text(`Facility365 – ${ctx.workInstruction}`, l.width / 2, l.margin + 4 * l.scale, { align: 'center' });
 };
 
-/** Grosses Piktogramm-Kuerzel in einer Box. */
-const pictogram = (doc: jsPDF, x: number, y: number, size: number, icon: string): void => {
-  doc.setFillColor(...PANEL);
+const ensureSpace = (ctx: Ctx, needed: number): void => {
+  if (ctx.y + needed <= ctx.l.bottom) return;
+  ctx.doc.addPage();
+  pageTitle(ctx);
+  ctx.y = ctx.l.top;
+};
+
+const cell = (doc: jsPDF, x: number, y: number, w: number, h: number, fill?: [number, number, number]): void => {
   doc.setDrawColor(...LINE);
-  doc.roundedRect(x, y, size, size, 1.2, 1.2, 'FD');
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(...ACCENT);
-  doc.setFontSize(icon.length > 2 ? size * 1.5 : size * 2.1);
-  doc.text(icon, x + size / 2, y + size / 2 + size * 0.28, { align: 'center' });
+  doc.setLineWidth(0.25);
+  if (fill) {
+    doc.setFillColor(...fill);
+    doc.rect(x, y, w, h, 'FD');
+  } else {
+    doc.rect(x, y, w, h);
+  }
 };
 
 const checkbox = (doc: jsPDF, x: number, y: number, size: number): void => {
   doc.setDrawColor(...INK);
-  doc.setLineWidth(0.35);
+  doc.setLineWidth(0.4);
   doc.rect(x, y, size, size);
-  doc.setLineWidth(0.2);
+  doc.setLineWidth(0.25);
 };
 
-const drawHeader = (
-  doc: jsPDF,
-  l: Layout,
-  data: CleaningInstructionData,
-  labels: CleaningInstructionLabels,
-  branding: CleaningPdfBranding,
-): number => {
-  const logoHeight = branding.logo
-    ? drawLogo(doc, branding.logo, { x: l.margin, y: l.margin, width: 36 * l.scale, height: 16 * l.scale })
-    : 0;
-  doc.setTextColor(...INK);
-  doc.setFont('helvetica', 'bold');
-  if (logoHeight === 0) {
-    doc.setFontSize(13 * l.scale);
-    doc.text('Facility365', l.margin, l.margin + 5);
+/** Blaues Abschnittsband; optional mit Wert in der rechten Spalte. */
+const band = (ctx: Ctx, label: string, value?: string): void => {
+  const { doc, l } = ctx;
+  const h = 7.5 * l.scale;
+  ensureSpace(ctx, h + 8 * l.scale);
+  const x = l.margin;
+  if (value) {
+    cell(doc, x, ctx.y, l.label, h, BAND);
+    cell(doc, x + l.label, ctx.y, l.content - l.label, h, WHITE);
+  } else {
+    cell(doc, x, ctx.y, l.content, h, BAND);
   }
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10.5 * l.scale);
+  doc.setTextColor(...WHITE);
+  doc.text(`${label}:`, x + 2, ctx.y + h - 2.3 * l.scale);
+  if (value) {
+    doc.setTextColor(...INK);
+    const text: string = doc.splitTextToSize(value, l.content - l.label - 4)[0] ?? '';
+    doc.text(text, x + l.label + 2, ctx.y + h - 2.3 * l.scale);
+  }
+  ctx.y += h;
+};
+
+interface RowOptions {
+  label?: string;
+  bold?: boolean;
+  italic?: boolean;
+  checkbox?: boolean;
+  small?: boolean;
+  /** Zeichnet links statt Text ein Piktogramm. */
+  draw?: (x: number, y: number, h: number) => void;
+  minHeight?: number;
+}
+
+/** Tabellenzeile: linke Begriffsspalte, rechte Textspalte, optional Checkbox. */
+const row = (ctx: Ctx, text: string, options: RowOptions = {}): void => {
+  const { doc, l } = ctx;
+  const fontSize = (options.small ? 8.5 : 10) * l.scale;
+  const lineHeight = fontSize * 0.42;
+  const checkWidth = options.checkbox ? l.check : 0;
+  const textWidth = l.content - l.label - checkWidth - 4;
+  const style = options.bold && options.italic ? 'bolditalic' : options.bold ? 'bold' : options.italic ? 'italic' : 'normal';
+  doc.setFont('helvetica', style);
+  doc.setFontSize(fontSize);
+  const lines: string[] = doc.splitTextToSize(text, textWidth);
+  const h = Math.max(options.minHeight ?? 0, lines.length * lineHeight + 2.6 * l.scale, 6.2 * l.scale);
+  ensureSpace(ctx, h);
+  doc.setFont('helvetica', style);
+  doc.setFontSize(fontSize);
+  const x = l.margin;
+  cell(doc, x, ctx.y, l.label, h);
+  cell(doc, x + l.label, ctx.y, l.content - l.label - checkWidth, h);
+  if (options.checkbox) {
+    cell(doc, x + l.content - checkWidth, ctx.y, checkWidth, h);
+    const size = 4.6 * l.scale;
+    checkbox(doc, x + l.content - checkWidth / 2 - size / 2, ctx.y + h / 2 - size / 2, size);
+  }
+  doc.setTextColor(...INK);
+  doc.text(lines, x + l.label + 2, ctx.y + 1.9 * l.scale + lineHeight * 0.8);
+  if (options.draw) {
+    options.draw(x, ctx.y, h);
+  } else if (options.label) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9 * l.scale);
+    const labelLines: string[] = doc.splitTextToSize(options.label, l.label - 4);
+    doc.text(labelLines.slice(0, 2), x + 2, ctx.y + 1.9 * l.scale + lineHeight * 0.8);
+  }
+  ctx.y += h;
+};
+
+/* --- Piktogramme (Gebotszeichen blau, Warnzeichen gelb, Symbolkürzel) --- */
+
+const mandatorySign = (doc: jsPDF, cx: number, cy: number, r: number, glyph: string): void => {
+  doc.setFillColor(...BAND);
+  doc.setDrawColor(...BAND);
+  doc.circle(cx, cy, r, 'F');
+  doc.setFillColor(...WHITE);
+  doc.setDrawColor(...WHITE);
+  doc.setLineWidth(r * 0.14);
+  if (glyph === 'H') {
+    // Handschuh: Handfläche + Finger + Daumen
+    doc.roundedRect(cx - r * 0.32, cy - r * 0.15, r * 0.64, r * 0.62, r * 0.12, r * 0.12, 'F');
+    [-0.27, -0.09, 0.09, 0.27].forEach((dx, index) => {
+      const fh = index === 0 || index === 3 ? r * 0.45 : r * 0.58;
+      doc.roundedRect(cx + dx * r - r * 0.07, cy - r * 0.15 - fh, r * 0.14, fh + r * 0.1, r * 0.06, r * 0.06, 'F');
+    });
+    doc.roundedRect(cx - r * 0.58, cy - r * 0.05, r * 0.3, r * 0.14, r * 0.06, r * 0.06, 'F');
+  } else if (glyph === 'A') {
+    // Schutzbrille: zwei Gläser mit Steg und Bügeln
+    doc.circle(cx - r * 0.3, cy, r * 0.26, 'S');
+    doc.circle(cx + r * 0.3, cy, r * 0.26, 'S');
+    doc.line(cx - r * 0.04, cy, cx + r * 0.04, cy);
+    doc.line(cx - r * 0.56, cy - r * 0.05, cx - r * 0.75, cy - r * 0.2);
+    doc.line(cx + r * 0.56, cy - r * 0.05, cx + r * 0.75, cy - r * 0.2);
+  } else if (glyph === 'S') {
+    // Schuh: Schaft und Sohle
+    doc.roundedRect(cx - r * 0.45, cy - r * 0.45, r * 0.42, r * 0.7, r * 0.08, r * 0.08, 'F');
+    doc.roundedRect(cx - r * 0.5, cy + r * 0.12, r * 1.05, r * 0.3, r * 0.1, r * 0.1, 'F');
+  } else if (glyph === 'K') {
+    // Arbeitskleidung: T-Shirt
+    doc.triangle(cx - r * 0.7, cy - r * 0.35, cx - r * 0.25, cy - r * 0.6, cx - r * 0.3, cy - r * 0.05, 'F');
+    doc.triangle(cx + r * 0.7, cy - r * 0.35, cx + r * 0.25, cy - r * 0.6, cx + r * 0.3, cy - r * 0.05, 'F');
+    doc.rect(cx - r * 0.35, cy - r * 0.55, r * 0.7, r * 1.15, 'F');
+  } else {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(r * 3.2);
+    doc.setTextColor(...WHITE);
+    doc.text(glyph, cx, cy + r * 0.42, { align: 'center' });
+  }
+  doc.setLineWidth(0.25);
+};
+
+const warningSign = (doc: jsPDF, cx: number, cy: number, r: number): void => {
+  doc.setFillColor(...WARN);
+  doc.setDrawColor(...INK);
+  doc.setLineWidth(0.5);
+  doc.triangle(cx, cy - r, cx - r * 1.05, cy + r * 0.8, cx + r * 1.05, cy + r * 0.8, 'FD');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(r * 3.4);
+  doc.setTextColor(...INK);
+  doc.text('!', cx, cy + r * 0.6, { align: 'center' });
+  doc.setLineWidth(0.25);
+};
+
+/** Grosses Symbolkürzel der Reinigungsart als Piktogramm-Kachel. */
+const typePictogram = (doc: jsPDF, x: number, y: number, size: number, icon: string): void => {
+  doc.setFillColor(...WHITE);
+  doc.setDrawColor(...BAND);
+  doc.setLineWidth(0.8);
+  doc.roundedRect(x, y, size, size, size * 0.12, size * 0.12, 'FD');
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...BAND);
+  doc.setFontSize(icon.length > 2 ? size * 1.3 : size * 2);
+  doc.text(icon, x + size / 2, y + size / 2 + size * 0.27, { align: 'center' });
+  doc.setLineWidth(0.25);
+};
+
+const iconForType = (title: string, method: string): string => {
+  const key = `${title} ${method}`.toLowerCase();
+  if (key.includes('wc') || key.includes('sanit')) return 'WC';
+  if (key.includes('scheuer') || key.includes('autolav') || key.includes('lavasc') || key.includes('scrubber')) return 'M';
+  if (key.includes('fenster') || key.includes('vitre') || key.includes('vetri') || key.includes('window')) return 'F';
+  if (key.includes('boden') || key.includes('sol') || key.includes('pavim') || key.includes('floor')) return 'B';
+  if (key.includes('desinf') || key.includes('disinf')) return 'D';
+  if (key.includes('abfall') || key.includes('déchet') || key.includes('rifiut') || key.includes('waste')) return 'A';
+  if (key.includes('küche') || key.includes('cuisine') || key.includes('cucina') || key.includes('kitchen')) return 'K';
+  if (key.includes('treppe') || key.includes('escalier') || key.includes('scale') || key.includes('stair')) return 'T';
+  return 'R';
+};
+
+/* --- Abschnitte --- */
+
+const drawHeader = (ctx: Ctx, data: CleaningInstructionData, branding: CleaningPdfBranding): void => {
+  const { doc, l } = ctx;
+  pageTitle(ctx);
+  ctx.y = l.top;
+  const h = 20 * l.scale;
+  cell(doc, l.margin, ctx.y, l.label, h);
+  cell(doc, l.margin + l.label, ctx.y, l.content - l.label, h);
+  const logoHeight = branding.logo
+    ? drawLogo(doc, branding.logo, { x: l.margin + 2, y: ctx.y + 2, width: l.label - 4, height: h - 4 })
+    : 0;
+  if (logoHeight === 0) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12 * l.scale);
+    doc.setTextColor(...BAND);
+    doc.text('Facility365', l.margin + l.label / 2, ctx.y + h / 2 + 1.5, { align: 'center' });
+  }
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20 * l.scale);
+  doc.setTextColor(...INK);
+  const title: string = doc.splitTextToSize(data.title, l.content - l.label - 60 * l.scale)[0] ?? data.title;
+  doc.text(title, l.margin + l.label + 3, ctx.y + h / 2 + 2.5 * l.scale);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8 * l.scale);
   doc.setTextColor(...MUTED);
-  const brand = [branding.companyName, branding.companyAddress].filter((line) => line && line !== 'Facility365');
-  brand.forEach((line, index) =>
-    doc.text(line, l.margin, l.margin + (logoHeight || 6) + 4.5 + index * 4 * l.scale),
+  const brand = [branding.companyName, branding.companyAddress].filter(
+    (line) => line && line !== 'Facility365',
   );
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9 * l.scale);
-  doc.setTextColor(...MUTED);
-  doc.text(labels.workInstruction.toUpperCase(), l.width - l.margin, l.margin + 4, { align: 'right' });
-  doc.setFontSize(20 * l.scale);
-  doc.setTextColor(...INK);
-  const titleLines: string[] = doc.splitTextToSize(data.title, l.content * 0.6);
-  doc.text(titleLines.slice(0, 2), l.width - l.margin, l.margin + 12 * l.scale, { align: 'right' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9 * l.scale);
-  doc.setTextColor(...MUTED);
-  doc.text(
-    `${labels.date}: ${data.date}   ·   ${labels.version}: ${data.version}`,
-    l.width - l.margin,
-    l.margin + 12 * l.scale + Math.min(titleLines.length, 2) * 8 * l.scale,
-    { align: 'right' },
+  brand.slice(0, 2).forEach((line, index) =>
+    doc.text(line, l.width - l.margin - 2, ctx.y + 5 * l.scale + index * 4 * l.scale, { align: 'right' }),
   );
-
-  let y = l.margin + 30 * l.scale;
-  doc.setDrawColor(...LINE);
-  doc.line(l.margin, y, l.width - l.margin, y);
-  y += 6;
-
-  const pairs: [string, string][] = [
-    [labels.areaType, data.areaType],
-    [labels.place, [data.propertyName, data.buildingName, data.location].filter(Boolean).join(' · ')],
-    [labels.room, [data.roomName, data.areaName].filter(Boolean).join(' · ')],
-    [labels.cleaner, data.cleanerName],
-    [labels.interval, data.interval],
-  ];
-  const columns = 3;
-  const colWidth = (l.content - 6 * (columns - 1)) / columns;
-  let rowEnd = y;
-  pairs.forEach(([label, value], index) => {
-    const column = index % columns;
-    const row = Math.floor(index / columns);
-    const x = l.margin + column * (colWidth + 6);
-    const py = y + row * 12 * l.scale;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.5 * l.scale);
-    doc.setTextColor(...MUTED);
-    doc.text(label.toUpperCase(), x, py);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10 * l.scale);
-    doc.setTextColor(...INK);
-    const text: string = doc.splitTextToSize(value || '–', colWidth)[0] ?? '–';
-    doc.text(text, x, py + 4.5 * l.scale);
-    rowEnd = Math.max(rowEnd, py + 8 * l.scale);
-  });
-  y = rowEnd + 4;
-  doc.setDrawColor(...LINE);
-  doc.line(l.margin, y, l.width - l.margin, y);
-  return y + 8;
+  ctx.y += h;
 };
 
-const drawPpe = (
-  doc: jsPDF,
-  l: Layout,
-  data: CleaningInstructionData,
-  labels: CleaningInstructionLabels,
-  y: number,
-): number => {
-  let cursor = ensureSpace(doc, l, y, 40);
-  cursor = sectionTitle(doc, l, labels.ppe, cursor);
-  const size = 12 * l.scale;
-  const gap = 4;
-  const cell = (l.content - gap * (data.ppe.length - 1)) / Math.max(data.ppe.length, 1);
-  data.ppe.forEach((item, index) => {
-    const x = l.margin + index * (cell + gap);
-    pictogram(doc, x, cursor, size, item.icon);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8 * l.scale);
-    doc.setTextColor(...INK);
-    const lines: string[] = doc.splitTextToSize(item.label, cell - size - 3);
-    doc.text(lines.slice(0, 3), x + size + 2.5, cursor + 4 * l.scale);
-  });
-  cursor += size + 5;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9 * l.scale);
-  doc.setTextColor(...INK);
-  data.safetyNotes.forEach((note) => {
-    cursor = ensureSpace(doc, l, cursor, 6);
-    const lines: string[] = doc.splitTextToSize(`• ${note}`, l.content);
-    doc.text(lines, l.margin, cursor);
-    cursor += lines.length * 4.6 * l.scale;
-  });
-  return cursor + 4;
+const drawObject = (ctx: Ctx, data: CleaningInstructionData, labels: CleaningInstructionLabels): void => {
+  const place = [data.propertyName, data.buildingName, data.location].filter(Boolean).join(' · ');
+  const room = [data.roomName, data.areaName].filter(Boolean).join(' · ');
+  const who = [data.cleanerName, data.interval].filter(Boolean).join(' · ');
+  if (!place && !room && !who) return;
+  if (place) row(ctx, place, { label: labels.place });
+  if (room) row(ctx, room, { label: `${labels.room} / ${labels.area}` });
+  if (who) row(ctx, who, { label: `${labels.cleaner} / ${labels.interval}` });
 };
 
-const drawEquipment = (
-  doc: jsPDF,
-  l: Layout,
-  data: CleaningInstructionData,
-  labels: CleaningInstructionLabels,
-  y: number,
-): number => {
-  let cursor = ensureSpace(doc, l, y, 30);
-  cursor = sectionTitle(doc, l, labels.equipment, cursor);
-  const half = (l.content - 8) / 2;
-  const list = (items: string[], x: number, heading: string, start: number): number => {
-    let c = start;
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8 * l.scale);
-    doc.setTextColor(...MUTED);
-    doc.text(heading.toUpperCase(), x, c);
-    c += 5 * l.scale;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9.5 * l.scale);
-    doc.setTextColor(...INK);
-    (items.length > 0 ? items : ['–']).forEach((item) => {
-      checkbox(doc, x, c - 3.2, 3.6);
-      const text: string = doc.splitTextToSize(item, half - 8)[0] ?? '';
-      doc.text(text, x + 6, c);
-      c += 5.6 * l.scale;
-    });
-    return c;
-  };
-  const left = list(data.equipment, l.margin, labels.equipment, cursor);
-  const right = list(data.materials, l.margin + half + 8, labels.material, cursor);
-  return Math.max(left, right) + 4;
+const drawMaterial = (ctx: Ctx, data: CleaningInstructionData, labels: CleaningInstructionLabels): void => {
+  const { doc, l } = ctx;
+  band(ctx, labels.equipment);
+  const items = [...data.equipment, ...data.materials];
+  const start = ctx.y;
+  const startPage = doc.getCurrentPageInfo().pageNumber;
+  (items.length > 0 ? items : ['–']).forEach((item) => row(ctx, item));
+  if (doc.getCurrentPageInfo().pageNumber === startPage) {
+    const size = Math.min(l.label - 8, ctx.y - start - 4, 30 * l.scale);
+    if (size > 10) {
+      typePictogram(doc, l.margin + (l.label - size) / 2, start + (ctx.y - start - size) / 2, size, iconForType(data.title, data.method));
+    }
+  }
 };
 
-const drawSteps = (
-  doc: jsPDF,
-  l: Layout,
-  data: CleaningInstructionData,
-  y: number,
-): number => {
-  let cursor = y;
+const drawAgents = (ctx: Ctx, data: CleaningInstructionData, labels: CleaningInstructionLabels): void => {
+  const agents = data.agents.length > 0 ? data.agents : ['–'];
+  agents.forEach((agent, index) => row(ctx, agent, { label: index === 0 ? labels.agents : undefined }));
+  row(ctx, data.dosageNote, { italic: true, small: true });
+};
+
+const drawSafety = (ctx: Ctx, data: CleaningInstructionData, labels: CleaningInstructionLabels): void => {
+  const { doc, l } = ctx;
+  band(ctx, labels.ppe);
+  const r = 4.2 * l.scale;
+  data.ppe.forEach((item) =>
+    row(ctx, item.label, {
+      minHeight: r * 2 + 3,
+      draw: (x, y, h) => mandatorySign(doc, x + l.label / 2, y + h / 2, r, item.icon),
+    }),
+  );
+  data.safetyNotes.forEach((note, index) =>
+    row(ctx, note, {
+      bold: true,
+      italic: true,
+      minHeight: index === 0 ? r * 2 + 3 : 0,
+      draw: index === 0 ? (x, y, h) => warningSign(doc, x + l.label / 2, y + h / 2, r) : undefined,
+    }),
+  );
+};
+
+const drawSteps = (ctx: Ctx, data: CleaningInstructionData): void => {
   let number = 1;
-  const size = 10 * l.scale;
-  const box = 5 * l.scale;
   (Object.keys(data.phases) as CleaningPhase[]).forEach((phase) => {
     const steps = data.steps.filter((step) => step.phase === phase);
     if (steps.length === 0) return;
-    cursor = ensureSpace(doc, l, cursor, 8 * l.scale + size + 4);
-    cursor = sectionTitle(doc, l, data.phases[phase], cursor);
+    band(ctx, data.phases[phase]);
     steps.forEach((step) => {
-      const rowHeight = size + 4;
-      cursor = ensureSpace(doc, l, cursor, rowHeight);
-      pictogram(doc, l.margin, cursor, size, step.icon);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10.5 * l.scale);
-      doc.setTextColor(...INK);
-      const textX = l.margin + size + 4;
-      const textWidth = l.content - size - 4 - box - 6;
-      const title: string = doc.splitTextToSize(`${number}. ${step.text}`, textWidth)[0] ?? '';
-      doc.text(title, textX, cursor + 4 * l.scale);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.5 * l.scale);
-      doc.setTextColor(...MUTED);
-      const description: string = doc.splitTextToSize(step.description, textWidth)[0] ?? '';
-      doc.text(description, textX, cursor + 8.4 * l.scale);
-      checkbox(doc, l.width - l.margin - box, cursor + (size - box) / 2, box);
-      doc.setDrawColor(...LINE);
-      doc.line(l.margin, cursor + rowHeight - 1.5, l.width - l.margin, cursor + rowHeight - 1.5);
-      cursor += rowHeight;
+      const text = step.description ? `${number}. ${step.text} – ${step.description}` : `${number}. ${step.text}`;
+      row(ctx, text, { label: step.tool, checkbox: true });
       number += 1;
     });
-    cursor += 3;
   });
-  return cursor;
 };
 
-const drawResult = (
-  doc: jsPDF,
-  l: Layout,
-  labels: CleaningInstructionLabels,
-  y: number,
-): number => {
-  let cursor = ensureSpace(doc, l, y, 48 * l.scale);
-  cursor = sectionTitle(doc, l, labels.control, cursor);
-  const box = 5 * l.scale;
-  const third = l.content / 3;
+const drawResult = (ctx: Ctx, labels: CleaningInstructionLabels): void => {
+  const { doc, l } = ctx;
+  ensureSpace(ctx, 40 * l.scale);
+  const h = 9 * l.scale;
+  cell(doc, l.margin, ctx.y, l.label, h);
+  cell(doc, l.margin + l.label, ctx.y, l.content - l.label, h);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9 * l.scale);
+  doc.setTextColor(...INK);
+  doc.text(labels.control, l.margin + 2, ctx.y + h / 2 + 1.5);
+  const box = 4.6 * l.scale;
+  const third = (l.content - l.label) / 3;
   [labels.ok, labels.rework, labels.notDone].forEach((label, index) => {
-    const x = l.margin + index * third;
-    checkbox(doc, x, cursor - 3.6, box);
+    const x = l.margin + l.label + 3 + index * third;
+    checkbox(doc, x, ctx.y + h / 2 - box / 2, box);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10 * l.scale);
-    doc.setTextColor(...INK);
-    doc.text(label, x + box + 2.5, cursor);
+    doc.text(label, x + box + 2, ctx.y + h / 2 + 1.5);
   });
-  cursor += 7 * l.scale;
+  ctx.y += h;
+  row(ctx, labels.reworkHint, { small: true, italic: true });
+
+  const sh = 14 * l.scale;
+  ensureSpace(ctx, sh);
+  const half = l.content / 2;
+  cell(doc, l.margin, ctx.y, half, sh);
+  cell(doc, l.margin + half, ctx.y, half, sh);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8 * l.scale);
   doc.setTextColor(...MUTED);
-  const hint: string[] = doc.splitTextToSize(labels.reworkHint, l.content);
-  doc.text(hint, l.margin, cursor);
-  cursor += hint.length * 4 * l.scale + 8;
-
-  const half = (l.content - 8) / 2;
-  const signature = (label: string, x: number, sy: number): void => {
-    doc.setDrawColor(...INK);
-    doc.line(x, sy, x + half, sy);
-    doc.setFontSize(8 * l.scale);
-    doc.setTextColor(...MUTED);
-    doc.text(label, x, sy + 4);
-  };
-  cursor += 8;
-  signature(labels.cleanerSignature, l.margin, cursor);
-  signature(labels.signatureDate, l.margin + half + 8, cursor);
-  cursor += 16;
-  signature(labels.checkedBySignature, l.margin, cursor);
-  signature(labels.signatureDate, l.margin + half + 8, cursor);
-  return cursor + 8;
+  doc.text(`${labels.cleanerSignature} / ${labels.signatureDate}`, l.margin + 2, ctx.y + 3.5 * l.scale);
+  doc.text(`${labels.checkedBySignature} / ${labels.signatureDate}`, l.margin + half + 2, ctx.y + 3.5 * l.scale);
+  ctx.y += sh;
 };
 
-const drawFooters = (doc: jsPDF, l: Layout, data: CleaningInstructionData, labels: CleaningInstructionLabels): void => {
+const drawFooters = (ctx: Ctx, data: CleaningInstructionData, labels: CleaningInstructionLabels): void => {
+  const { doc, l } = ctx;
   const pages = doc.getNumberOfPages();
   for (let page = 1; page <= pages; page += 1) {
     doc.setPage(page);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.5 * l.scale);
     doc.setTextColor(...MUTED);
-    doc.text(`Facility365 · ${labels.workInstruction} · ${data.title}`, l.margin, l.height - 10);
+    const y = l.height - l.margin + 2;
+    const name: string =
+      doc.splitTextToSize(`Facility365_${labels.workInstruction}_${data.title}`, l.content * 0.45)[0] ?? '';
+    doc.text(name, l.margin, y);
     doc.text(
-      `${labels.date}: ${data.date} · ${labels.version}: ${data.version} · ${page}/${pages}`,
+      `${labels.updated} ${data.date} · ${labels.version} ${data.version} · ${labels.page} ${page}/${pages}`,
       l.width - l.margin,
-      l.height - 10,
+      y,
       { align: 'right' },
     );
   }
@@ -374,12 +471,16 @@ export const buildCleaningInstructionPdf = (
 ): jsPDF => {
   const doc = new jsPDF({ unit: 'mm', format, orientation: 'portrait' });
   const l = layoutFor(format);
-  let y = drawHeader(doc, l, data, labels, branding);
-  y = drawPpe(doc, l, data, labels, y);
-  y = drawEquipment(doc, l, data, labels, y);
-  y = drawSteps(doc, l, data, y);
-  drawResult(doc, l, labels, y);
-  drawFooters(doc, l, data, labels);
+  const ctx: Ctx = { doc, l, y: l.top, title: data.title, workInstruction: labels.workInstruction };
+  drawHeader(ctx, data, branding);
+  drawObject(ctx, data, labels);
+  band(ctx, labels.areaType, data.method || data.areaType);
+  drawMaterial(ctx, data, labels);
+  drawAgents(ctx, data, labels);
+  drawSafety(ctx, data, labels);
+  drawSteps(ctx, data);
+  drawResult(ctx, labels);
+  drawFooters(ctx, data, labels);
   return doc;
 };
 
