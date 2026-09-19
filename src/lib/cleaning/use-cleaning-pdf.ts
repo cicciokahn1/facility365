@@ -329,12 +329,16 @@ export function useCleaningPdf(): CleaningPdfApi {
             date,
             time: task?.workStart || plan.timeStart || '',
             status: task?.status || '',
+            planned: true,
+            executed: task?.status === 'done',
           };
         });
       const version = (plan.updatedAt || plan.createdAt || '').slice(0, 10);
       downloadCleaningSignaturePdf(
         {
           title: plan.title || area?.name || plan.number,
+          organization: settings.companyName || '',
+          location: area?.location || '',
           property: property?.name ?? '',
           building: building?.name ?? '',
           room: room?.name ?? '',
@@ -349,8 +353,11 @@ export function useCleaningPdf(): CleaningPdfApi {
         {
           title: t('cleaning.controlSheet'),
           day: t('cleaning.day'),
+          planned: t('cleaning.planned'),
+          executed: t('cleaning.executed'),
           time: t('cleaning.time'),
           visa: t('cleaning.visa'),
+          control: t('cleaning.control'),
           status: t('common.status'),
           ok: t('cleaning.result.ok'),
           rework: t('cleaning.result.rework'),
@@ -375,7 +382,19 @@ export function useCleaningPdf(): CleaningPdfApi {
         format,
       );
     },
-    [areas, branding, buildings, cleaners, labelOf, properties, rooms, settings.language, t, tasks],
+    [
+      areas,
+      branding,
+      buildings,
+      cleaners,
+      labelOf,
+      properties,
+      rooms,
+      settings.companyName,
+      settings.language,
+      t,
+      tasks,
+    ],
   );
 
   return {

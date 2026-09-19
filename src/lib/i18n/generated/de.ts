@@ -1262,6 +1262,8 @@ export const table: Record<string, string> = {
   "cleaning.template": "Vorlage",
   "cleaning.ppe": "PSA / Sicherheit",
   "cleaning.controlSheet": "Kontrollblatt",
+  "cleaning.planned": "Geplant",
+  "cleaning.executed": "Ausgeführt",
   "cleaning.version": "Version",
   "cleaning.reworkHint": "Bei Nacharbeit: Reklamation in Facility365 erfassen – daraus entsteht automatisch eine Nachbesserungsaufgabe.",
   "cleaning.role.cleaner": "Reinigungskraft",

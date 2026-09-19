@@ -1262,6 +1262,8 @@ export const table: Record<string, string> = {
   "cleaning.template": "Modèle",
   "cleaning.ppe": "EPI / Sécurité",
   "cleaning.controlSheet": "Fiche de contrôle",
+  "cleaning.planned": "Planifié",
+  "cleaning.executed": "Exécuté",
   "cleaning.version": "Version",
   "cleaning.reworkHint": "En cas de retouche: saisir une réclamation dans Facility365 – une tâche de reprise est créée automatiquement.",
   "cleaning.role.cleaner": "Agent de nettoyage",
