@@ -6810,6 +6810,18 @@ export const dictionary = {
     it: "Foglio di controllo",
     en: "Control sheet",
   },
+  "cleaning.planned": {
+    de: "Geplant",
+    fr: "Planifié",
+    it: "Pianificato",
+    en: "Planned",
+  },
+  "cleaning.executed": {
+    de: "Ausgeführt",
+    fr: "Exécuté",
+    it: "Eseguito",
+    en: "Completed",
+  },
   "cleaning.version": {
     de: "Version",
     fr: "Version",

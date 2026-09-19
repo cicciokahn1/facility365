@@ -14,10 +14,14 @@ export interface CleaningSignatureEntry {
   date: string;
   time: string;
   status: string;
+  planned: boolean;
+  executed: boolean;
 }
 
 export interface CleaningSignatureSheet {
   title: string;
+  organization: string;
+  location: string;
   property: string;
   building: string;
   room: string;
@@ -33,8 +37,11 @@ export interface CleaningSignatureSheet {
 export interface CleaningSignatureLabels {
   title: string;
   day: string;
+  planned: string;
+  executed: string;
   time: string;
   visa: string;
+  control: string;
   status: string;
   ok: string;
   rework: string;
@@ -108,10 +115,21 @@ const weekday = (date: Date, language: Language): string =>
     .format(date)
     .replace('.', '');
 
-const checkbox = (doc: jsPDF, x: number, y: number, size: number): void => {
+const checkbox = (
+  doc: jsPDF,
+  x: number,
+  y: number,
+  size: number,
+  checked = false,
+): void => {
   doc.setDrawColor(...INK);
   doc.setLineWidth(0.3);
   doc.rect(x, y, size, size);
+  if (checked) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(size * 2.2);
+    doc.text('×', x + size / 2, y + size * 0.82, { align: 'center' });
+  }
   doc.setLineWidth(0.2);
 };
 
@@ -125,12 +143,24 @@ const drawMonthTable = (
   rows: Map<string, CleaningSignatureEntry>,
   labels: CleaningSignatureLabels,
 ): number => {
-  const headerHeight = 7 * l.scale;
-  const columnHeader = 7 * l.scale;
-  const dayWidth = 18 * l.scale;
-  const timeWidth = 22 * l.scale;
-  const statusWidth = 34 * l.scale;
-  const visaWidth = width - dayWidth - timeWidth - statusWidth;
+  const headerHeight = 8 * l.scale;
+  const columnHeader = 10 * l.scale;
+  const dayWidth = 25 * l.scale;
+  const plannedWidth = 20 * l.scale;
+  const executedWidth = 22 * l.scale;
+  const timeWidth = 24 * l.scale;
+  const visaWidth = 22 * l.scale;
+  const controlWidth = 25 * l.scale;
+  const statusWidth = 40 * l.scale;
+  const remarksWidth =
+    width -
+    dayWidth -
+    plannedWidth -
+    executedWidth -
+    timeWidth -
+    visaWidth -
+    controlWidth -
+    statusWidth;
   const totalRows = daysInMonth(month);
   const tableHeight = columnHeader + totalRows * l.rowHeight;
 
@@ -151,11 +181,38 @@ const drawMonthTable = (
   doc.setFontSize(8 * l.scale);
   doc.setTextColor(...INK);
   const headY = tableY + columnHeader - 2.2 * l.scale;
-  doc.text(labels.day, x + 2, headY);
-  doc.text(labels.time, x + dayWidth + 2, headY);
-  doc.text(labels.visa, x + dayWidth + timeWidth + 2, headY);
+  const headers: Array<[string, number, number]> = [
+    [labels.day, x, dayWidth],
+    [labels.planned, x + dayWidth, plannedWidth],
+    [labels.executed, x + dayWidth + plannedWidth, executedWidth],
+    [labels.time, x + dayWidth + plannedWidth + executedWidth, timeWidth],
+    [labels.visa, x + dayWidth + plannedWidth + executedWidth + timeWidth, visaWidth],
+    [
+      labels.control,
+      x + dayWidth + plannedWidth + executedWidth + timeWidth + visaWidth,
+      controlWidth,
+    ],
+    [
+      labels.remarks,
+      x + dayWidth + plannedWidth + executedWidth + timeWidth + visaWidth + controlWidth,
+      remarksWidth,
+    ],
+  ];
+  headers.forEach(([label, cellX, cellWidth]) => {
+    doc.setFontSize(6.5 * l.scale);
+    const text: string = doc.splitTextToSize(label, cellWidth - 2)[0] ?? '';
+    doc.text(text, cellX + cellWidth / 2, headY, { align: 'center' });
+  });
   doc.setFontSize(6.5 * l.scale);
-  const statusX = x + dayWidth + timeWidth + visaWidth;
+  const statusX =
+    x +
+    dayWidth +
+    plannedWidth +
+    executedWidth +
+    timeWidth +
+    visaWidth +
+    controlWidth +
+    remarksWidth;
   const third = statusWidth / 3;
   [labels.ok, labels.rework, labels.notDone].forEach((label, index) => {
     const text: string = doc.splitTextToSize(label, third - 1)[0] ?? '';
@@ -178,13 +235,32 @@ const drawMonthTable = (
     doc.setTextColor(...(entry ? INK : MUTED));
     const baseline = rowY + l.rowHeight - 1.1 * l.scale;
     doc.text(`${String(day).padStart(2, '0')} ${weekday(date, labels.language)}`, x + 2, baseline);
+    checkbox(
+      doc,
+      x + dayWidth + plannedWidth / 2 - box / 2,
+      rowY + (l.rowHeight - box) / 2,
+      box,
+      entry?.planned ?? false,
+    );
+    checkbox(
+      doc,
+      x + dayWidth + plannedWidth + executedWidth / 2 - box / 2,
+      rowY + (l.rowHeight - box) / 2,
+      box,
+      entry?.executed ?? false,
+    );
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...INK);
-    doc.text(entry?.time || '', x + dayWidth + 2, baseline);
-    if (entry?.status === 'done') {
-      doc.setFont('helvetica', 'bold');
-      doc.text(labels.ok, x + dayWidth + timeWidth + 2, baseline);
-    }
+    doc.text(
+      entry?.time || '',
+      x + dayWidth + plannedWidth + executedWidth + 2,
+      baseline,
+    );
+    doc.text(
+      '',
+      x + dayWidth + plannedWidth + executedWidth + timeWidth + visaWidth + controlWidth + 2,
+      baseline,
+    );
     if (entry) {
       for (let index = 0; index < 3; index += 1) {
         checkbox(doc, statusX + index * third + third / 2 - box / 2, rowY + (l.rowHeight - box) / 2, box);
@@ -194,7 +270,21 @@ const drawMonthTable = (
 
   doc.setDrawColor(...LINE);
   doc.rect(x, tableY, width, tableHeight);
-  [dayWidth, dayWidth + timeWidth, dayWidth + timeWidth + visaWidth].forEach((offset) => {
+  [
+    dayWidth,
+    dayWidth + plannedWidth,
+    dayWidth + plannedWidth + executedWidth,
+    dayWidth + plannedWidth + executedWidth + timeWidth,
+    dayWidth + plannedWidth + executedWidth + timeWidth + visaWidth,
+    dayWidth + plannedWidth + executedWidth + timeWidth + visaWidth + controlWidth,
+    dayWidth +
+      plannedWidth +
+      executedWidth +
+      timeWidth +
+      visaWidth +
+      controlWidth +
+      remarksWidth,
+  ].forEach((offset) => {
     doc.line(x + offset, tableY, x + offset, tableY + tableHeight);
   });
   return tableY + tableHeight;
@@ -219,7 +309,7 @@ const drawHeader = (
   doc.setFontSize(7.5 * l.scale);
   doc.setTextColor(...MUTED);
   doc.text(
-    [branding.companyName, branding.companyAddress].filter(Boolean).join(' · '),
+    [sheet.organization, sheet.location, branding.companyAddress].filter(Boolean).join(' · '),
     textX,
     l.margin + 8 * l.scale,
   );
@@ -263,51 +353,40 @@ export const buildCleaningSignaturePdf = (
   const doc = new jsPDF({ unit: 'mm', format, orientation: 'landscape' });
   const entries = new Map(sheet.entries.map((entry) => [entry.date, entry]));
 
-  const top = drawHeader(doc, l, sheet, labels, branding);
   const gap = 8 * l.scale;
-  const tableWidth = (l.width - l.margin * 2 - gap) / 2;
-  const leftEnd = drawMonthTable(doc, l, l.margin, top, tableWidth, monthStart(0), entries, labels);
-  const rightEnd = drawMonthTable(
-    doc,
-    l,
-    l.margin + tableWidth + gap,
-    top,
-    tableWidth,
-    monthStart(1),
-    entries,
-    labels,
-  );
-  let y = Math.max(leftEnd, rightEnd) + 4 * l.scale;
-
-  const footerY = l.height - 6 * l.scale;
-  const signatureY = footerY - 8 * l.scale;
-  const remarksHeight = Math.max(signatureY - 8 * l.scale - y, 8);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7 * l.scale);
-  doc.setTextColor(...MUTED);
-  doc.text(labels.remarks.toUpperCase(), l.margin, y);
-  doc.setDrawColor(...LINE);
-  doc.rect(l.margin, y + 1.5, l.width - 2 * l.margin, remarksHeight);
-  y += remarksHeight + 1.5;
-
-  doc.setFontSize(8 * l.scale);
-  doc.setTextColor(...INK);
-  const half = (l.width - 2 * l.margin - gap) / 2;
-  doc.line(l.margin, signatureY, l.margin + half, signatureY);
-  doc.line(l.margin + half + gap, signatureY, l.width - l.margin, signatureY);
-  doc.setFontSize(7 * l.scale);
-  doc.setTextColor(...MUTED);
-  doc.text(`${labels.signature} (${labels.cleaner})`, l.margin, signatureY + 3.2 * l.scale);
-  doc.text(`${labels.checkedBy} (${labels.inspector})`, l.margin + half + gap, signatureY + 3.2 * l.scale);
-
-  doc.setFontSize(6.5 * l.scale);
-  doc.text(labels.reworkHint, l.margin, footerY);
-  doc.text(
-    `${labels.date}: ${new Intl.DateTimeFormat(labels.language === 'de' ? 'de-CH' : labels.language).format(new Date())} · ${labels.version}: ${sheet.version} · 1/1`,
-    l.width - l.margin,
-    footerY,
-    { align: 'right' },
-  );
+  const tableWidth = l.width - l.margin * 2;
+  [monthStart(0), monthStart(1)].forEach((month, index) => {
+    if (index > 0) doc.addPage();
+    const top = drawHeader(doc, l, sheet, labels, branding);
+    const tableEnd = drawMonthTable(doc, l, l.margin, top, tableWidth, month, entries, labels);
+    const footerY = l.height - 6 * l.scale;
+    const signatureY = footerY - 8 * l.scale;
+    const remarksHeight = Math.max(signatureY - 8 * l.scale - tableEnd, 8);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7 * l.scale);
+    doc.setTextColor(...MUTED);
+    doc.text(labels.remarks.toUpperCase(), l.margin, tableEnd + 4 * l.scale);
+    doc.setDrawColor(...LINE);
+    doc.rect(l.margin, tableEnd + 5.5 * l.scale, tableWidth, remarksHeight);
+    const half = (tableWidth - gap) / 2;
+    doc.line(l.margin, signatureY, l.margin + half, signatureY);
+    doc.line(l.margin + half + gap, signatureY, l.width - l.margin, signatureY);
+    doc.setFontSize(7 * l.scale);
+    doc.text(`${labels.signature} (${labels.cleaner})`, l.margin, signatureY + 3.2 * l.scale);
+    doc.text(
+      `${labels.checkedBy} (${labels.inspector})`,
+      l.margin + half + gap,
+      signatureY + 3.2 * l.scale,
+    );
+    doc.setFontSize(6.5 * l.scale);
+    doc.text(labels.reworkHint, l.margin, footerY);
+    doc.text(
+      `${labels.date}: ${new Intl.DateTimeFormat(labels.language === 'de' ? 'de-CH' : labels.language).format(new Date())} · ${labels.version}: ${sheet.version} · ${index + 1}/2`,
+      l.width - l.margin,
+      footerY,
+      { align: 'right' },
+    );
+  });
   return doc;
 };
 
