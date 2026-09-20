@@ -17,6 +17,7 @@ import { ChevronRight, Clock, FileText, ImageIcon, Wallet } from 'lucide-react';
 import { EmptyState } from '@/components/common/empty-state';
 import { StatusBadge } from '@/components/common/status-badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { DossierLevel, useDossier } from '@/lib/links/dossier';
 import { useT } from '@/lib/i18n/provider';
 import { configOf } from '@/lib/module-config';
@@ -60,11 +61,13 @@ export function ObjectDossier({
   const dossier = useDossier(level, id);
   const [showDone, setShowDone] = useState(false);
   const [only, setOnly] = useState<CollectionKey | ''>('');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
 
   const entries = dossier.entries.filter(
     (entry) =>
       (showDone || !entry.done) && (only === '' || entry.collection === only),
-  );
+  ).filter((entry) => (!from || entry.date >= from) && (!to || entry.date <= to));
 
   return (
     <div className="flex flex-col gap-4" data-testid="object-dossier">
@@ -144,6 +147,29 @@ export function ObjectDossier({
         >
           {showDone ? t('dossier.hideDone') : t('dossier.showDone')}
         </Button>
+      </div>
+      <div className="flex flex-wrap items-end gap-2 rounded-xl border bg-card p-3">
+        <label className="flex min-w-36 flex-1 flex-col gap-1 text-xs text-muted-foreground">
+          {t('dossier.from')}
+          <Input type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
+        </label>
+        <label className="flex min-w-36 flex-1 flex-col gap-1 text-xs text-muted-foreground">
+          {t('dossier.to')}
+          <Input type="date" value={to} onChange={(event) => setTo(event.target.value)} />
+        </label>
+        {from || to ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setFrom('');
+              setTo('');
+            }}
+          >
+            {t('dossier.clearFilter')}
+          </Button>
+        ) : null}
       </div>
 
       {entries.length === 0 ? (

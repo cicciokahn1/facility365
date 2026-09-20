@@ -1852,6 +1852,24 @@ export const dictionary = {
     it: "Nascondi conclusi",
     en: "Hide completed",
   },
+  "dossier.from": {
+    de: "Von",
+    fr: "Du",
+    it: "Da",
+    en: "From",
+  },
+  "dossier.to": {
+    de: "Bis",
+    fr: "Au",
+    it: "A",
+    en: "To",
+  },
+  "dossier.clearFilter": {
+    de: "Filter zurücksetzen",
+    fr: "Réinitialiser le filtre",
+    it: "Reimposta filtro",
+    en: "Clear filter",
+  },
   "tab.linked": {
     de: "Verknüpfungen",
     fr: "Liens",
