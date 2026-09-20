@@ -206,16 +206,21 @@ export function EntityDetail<K extends CollectionKey>({
   const tabs = extraTabs?.(entity, applyUpdate) ?? [];
 
   /** Objekte der Hierarchie zeigen zusaetzlich ihren modeluebergreifenden Verlauf. */
-  const dossierLevel: DossierLevel | undefined = (
+  const smartObjectLevel: "properties" | "buildings" | "rooms" | "assets" | undefined = (
     ["properties", "buildings", "rooms", "assets"] as CollectionKey[]
+  ).includes(collection)
+    ? (collection as "properties" | "buildings" | "rooms" | "assets")
+    : undefined;
+  const historyLevel: DossierLevel | undefined = (
+    ["organizations", "customers", "sites", "properties", "buildings", "rooms", "assets"] as CollectionKey[]
   ).includes(collection)
     ? (collection as DossierLevel)
     : undefined;
-  if (dossierLevel) {
+  if (historyLevel) {
     tabs.unshift({
       value: "dossier",
       labelKey: "tab.dossier",
-      content: <ObjectDossier level={dossierLevel} id={id} />,
+      content: <ObjectDossier level={historyLevel} id={id} />,
     });
   } else if (!tabs.some((tab) => tab.value === "linked")) {
     tabs.push({
@@ -342,8 +347,8 @@ export function EntityDetail<K extends CollectionKey>({
         </div>
       </div>
 
-      {dossierLevel ? (
-        <SmartObjectView collection={dossierLevel} entity={entity} />
+      {smartObjectLevel ? (
+        <SmartObjectView collection={smartObjectLevel} entity={entity} />
       ) : null}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>

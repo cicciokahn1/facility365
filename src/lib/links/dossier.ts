@@ -25,15 +25,28 @@ import { workedHours } from '@/lib/reports/work-time';
 import { BaseEntity, CollectionKey, MaterialItem } from '@/lib/types';
 
 /** Ebene, zu der ein Dossier gehoert. */
-export type DossierLevel = 'properties' | 'buildings' | 'rooms' | 'assets';
+export type DossierLevel =
+  | 'organizations'
+  | 'customers'
+  | 'sites'
+  | 'properties'
+  | 'buildings'
+  | 'rooms'
+  | 'assets';
 
 const OBJECT_FIELD_LEVEL: Record<string, DossierLevel> = {
+  organizationId: 'organizations',
+  customerId: 'customers',
+  siteId: 'sites',
   propertyId: 'properties',
   buildingId: 'buildings',
   roomId: 'rooms',
   assetId: 'assets',
 };
 const OBJECT_COLLECTIONS: CollectionKey[] = [
+  'organizations',
+  'customers',
+  'sites',
   'properties',
   'buildings',
   'rooms',
@@ -123,6 +136,17 @@ const sumOf = (value: unknown): number =>
       )
     : 0;
 
+const sumLineItems = (value: unknown): number =>
+  Array.isArray(value)
+    ? value.reduce((sum, item) => {
+        if (typeof item !== 'object' || item === null) return sum;
+        const quantity = 'quantity' in item && typeof item.quantity === 'number' ? item.quantity : 0;
+        const unitPrice =
+          'unitPrice' in item && typeof item.unitPrice === 'number' ? item.unitPrice : 0;
+        return sum + quantity * unitPrice;
+      }, 0)
+    : 0;
+
 /** Kosten eines Datensatzes aus Positionen oder aus Arbeitszeit, Material und Fremdleistungen. */
 const costOf = (entity: BaseEntity): number => {
   const total = numberField(entity, 'total');
@@ -130,7 +154,8 @@ const costOf = (entity: BaseEntity): number => {
   return (
     hoursOf(entity) * numberField(entity, 'hourlyRate') +
     sumOf(fieldValue(entity, 'materials')) +
-    sumOf(fieldValue(entity, 'externalServices'))
+    sumOf(fieldValue(entity, 'externalServices')) +
+    sumLineItems(fieldValue(entity, 'items'))
   );
 };
 
@@ -176,38 +201,48 @@ export function useDossier(level: DossierLevel, id: string): Dossier {
 
   return useMemo(() => {
     /** Zu jedem Objekt auch die untergeordneten Kennungen sammeln. */
-    const propertyIds = new Set<string>();
-    const buildingIds = new Set<string>();
-    const roomIds = new Set<string>();
-    const assetIds = new Set<string>();
     const ids: Record<DossierLevel, Set<string>> = {
-      properties: propertyIds,
-      buildings: buildingIds,
-      rooms: roomIds,
-      assets: assetIds,
+      organizations: new Set<string>(),
+      customers: new Set<string>(),
+      sites: new Set<string>(),
+      properties: new Set<string>(),
+      buildings: new Set<string>(),
+      rooms: new Set<string>(),
+      assets: new Set<string>(),
     };
     ids[level].add(id);
 
-    if (level === 'properties') {
-      buildings
-        .filter((building) => building.propertyId === id)
-        .forEach((building) => ids.buildings.add(building.id));
-    }
-    if (level === 'properties' || level === 'buildings') {
-      rooms
-        .filter((room) => ids.buildings.has(room.buildingId))
-        .forEach((room) => ids.rooms.add(room.id));
-    }
-    if (level !== 'assets') {
-      assets
-        .filter(
-          (asset) =>
-            ids.properties.has(asset.propertyId) ||
-            ids.buildings.has(asset.buildingId) ||
-            ids.rooms.has(asset.roomId),
-        )
-        .forEach((asset) => ids.assets.add(asset.id));
-    }
+    const sites = store.sites;
+    const properties = store.properties;
+
+    sites
+      .filter(
+        (site) =>
+          ids.organizations.has(stringField(site, 'organizationId')) ||
+          ids.customers.has(stringField(site, 'customerId')),
+      )
+      .forEach((site) => ids.sites.add(site.id));
+    properties
+      .filter(
+        (property) =>
+          ids.customers.has(stringField(property, 'customerId')) ||
+          ids.sites.has(stringField(property, 'siteId')),
+      )
+      .forEach((property) => ids.properties.add(property.id));
+    buildings
+      .filter((building) => ids.properties.has(building.propertyId))
+      .forEach((building) => ids.buildings.add(building.id));
+    rooms
+      .filter((room) => ids.buildings.has(room.buildingId))
+      .forEach((room) => ids.rooms.add(room.id));
+    assets
+      .filter(
+        (asset) =>
+          ids.properties.has(asset.propertyId) ||
+          ids.buildings.has(asset.buildingId) ||
+          ids.rooms.has(asset.roomId),
+      )
+      .forEach((asset) => ids.assets.add(asset.id));
 
     const objectFields = new Map(
       (Object.keys(store) as CollectionKey[]).map((collection) => [
