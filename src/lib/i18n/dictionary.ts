@@ -2910,6 +2910,12 @@ export const dictionary = {
     it: "Attività aperte",
     en: "Open tasks",
   },
+  "smart.overdue": {
+    de: "Überfällig",
+    fr: "En retard",
+    it: "In ritardo",
+    en: "Overdue",
+  },
   "smart.area": {
     de: "Fläche",
     fr: "Surface",
@@ -2933,6 +2939,36 @@ export const dictionary = {
     fr: "Photos",
     it: "Foto",
     en: "Photos",
+  },
+  "smart.costs": {
+    de: "Kosten",
+    fr: "Coûts",
+    it: "Costi",
+    en: "Costs",
+  },
+  "smart.upcomingMaintenance": {
+    de: "Kommende Wartungen",
+    fr: "Maintenances à venir",
+    it: "Manutenzioni future",
+    en: "Upcoming maintenance",
+  },
+  "smart.upcomingInspections": {
+    de: "Kommende Kontrollen",
+    fr: "Contrôles à venir",
+    it: "Controlli futuri",
+    en: "Upcoming inspections",
+  },
+  "smart.nextAppointments": {
+    de: "Nächste Termine",
+    fr: "Prochains rendez-vous",
+    it: "Prossimi appuntamenti",
+    en: "Next appointments",
+  },
+  "smart.noUpcoming": {
+    de: "Keine kommenden Einträge.",
+    fr: "Aucune entrée à venir.",
+    it: "Nessuna voce futura.",
+    en: "No upcoming items.",
   },
   "smart.directActions": {
     de: "Direktaktionen",
