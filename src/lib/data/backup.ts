@@ -128,8 +128,64 @@ interface BackupRow {
   data: Snapshot;
 }
 
-/** Ablage der letzten Sicherung, solange keine Datenbank angebunden ist. */
+/** Historischer Schluessel fuer die Migration alter Browser-Sicherungen. */
 const LOCAL_KEY = 'facility365.v2.backup';
+const BACKUP_DB = 'facility365.backup';
+const BACKUP_STORE = 'snapshots';
+const BACKUP_ID = 'latest';
+
+const openBackupDb = (): Promise<IDBDatabase> =>
+  new Promise((resolve, reject) => {
+    const request = indexedDB.open(BACKUP_DB, 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore(BACKUP_STORE);
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error ?? new Error('backup-open-failed'));
+  });
+
+const readIndexedSnapshot = async (): Promise<Snapshot | null> => {
+  if (typeof indexedDB === 'undefined') return null;
+  const db = await openBackupDb();
+  return new Promise((resolve, reject) => {
+    const request = db
+      .transaction(BACKUP_STORE, 'readonly')
+      .objectStore(BACKUP_STORE)
+      .get(BACKUP_ID);
+    request.onsuccess = () => resolve((request.result as Snapshot | undefined) ?? null);
+    request.onerror = () => reject(request.error ?? new Error('backup-read-failed'));
+  });
+};
+
+const writeIndexedSnapshot = async (snapshot: Snapshot): Promise<void> => {
+  if (typeof indexedDB === 'undefined') throw new Error('indexeddb-unavailable');
+  const db = await openBackupDb();
+  await new Promise<void>((resolve, reject) => {
+    const request = db
+      .transaction(BACKUP_STORE, 'readwrite')
+      .objectStore(BACKUP_STORE)
+      .put(snapshot, BACKUP_ID);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error ?? new Error('backup-write-failed'));
+  });
+};
+
+const migrateLegacySnapshot = async (): Promise<Snapshot | null> => {
+  if (typeof window === 'undefined') return null;
+  const raw = window.localStorage.getItem(LOCAL_KEY);
+  if (!raw) return null;
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (typeof value !== 'object' || value === null) return null;
+    const snapshot = value as Snapshot;
+    if (typeof snapshot.collections !== 'object') return null;
+    await writeIndexedSnapshot(snapshot);
+    window.localStorage.removeItem(LOCAL_KEY);
+    return snapshot;
+  } catch {
+    return null;
+  }
+};
 
 /**
  * Sicherung ablegen.
@@ -141,7 +197,8 @@ export const storeSnapshot = async (snapshot: Snapshot): Promise<boolean> => {
   const client = await supabase();
   if (!client) {
     try {
-      window.localStorage.setItem(LOCAL_KEY, JSON.stringify(snapshot));
+      await writeIndexedSnapshot(snapshot);
+      window.localStorage.removeItem(LOCAL_KEY);
       return true;
     } catch {
       return false;
@@ -156,12 +213,8 @@ export const latestSnapshot = async (): Promise<{ at: string; snapshot: Snapshot
   const client = await supabase();
   if (!client) {
     try {
-      const raw = window.localStorage.getItem(LOCAL_KEY);
-      if (!raw) return null;
-      const value: unknown = JSON.parse(raw);
-      if (typeof value !== 'object' || value === null) return null;
-      const snapshot = value as Snapshot;
-      if (typeof snapshot.collections !== 'object') return null;
+      const snapshot = (await readIndexedSnapshot()) ?? (await migrateLegacySnapshot());
+      if (!snapshot) return null;
       return { at: snapshot.createdAt, snapshot };
     } catch {
       return null;
