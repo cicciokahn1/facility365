@@ -3584,6 +3584,42 @@ export const dictionary = {
   "invoice.reference": { de: "Referenz", fr: "Référence", it: "Riferimento", en: "Reference" },
   "invoice.amount": { de: "Betrag", fr: "Montant", it: "Importo", en: "Amount" },
   "invoice.currency": { de: "Währung", fr: "Devise", it: "Valuta", en: "Currency" },
+  "invoice.markPaid": {
+    de: "Als bezahlt markieren",
+    fr: "Marquer comme payée",
+    it: "Segna come pagata",
+    en: "Mark as paid",
+  },
+  "invoice.reopenPayment": {
+    de: "Zahlung wieder öffnen",
+    fr: "Rouvrir le paiement",
+    it: "Riapri pagamento",
+    en: "Reopen payment",
+  },
+  "invoice.paidAt": {
+    de: "Bezahlt am",
+    fr: "Payée le",
+    it: "Pagata il",
+    en: "Paid on",
+  },
+  "invoice.qrSection": {
+    de: "QR-Rechnung / Zahlungsdaten",
+    fr: "QR-facture / données de paiement",
+    it: "QR-fattura / dati di pagamento",
+    en: "QR bill / payment data",
+  },
+  "invoice.qrMissingData": {
+    de: "IBAN in den Einstellungen hinterlegen, damit der Zahlteil erzeugt wird.",
+    fr: "Saisissez l’IBAN dans les réglages pour générer la section paiement.",
+    it: "Inserisci l’IBAN nelle impostazioni per generare la sezione di pagamento.",
+    en: "Enter an IBAN in settings to generate the payment part.",
+  },
+  "invoice.referenceCopied": {
+    de: "Referenz kopiert",
+    fr: "Référence copiée",
+    it: "Riferimento copiato",
+    en: "Reference copied",
+  },
 
   "analytics.title": {
     de: "Berichte",
@@ -6145,6 +6181,12 @@ export const dictionary = {
     fr: "Créer une facture",
     it: "Crea fattura",
     en: "Create invoice",
+  },
+  "report.openInvoice": {
+    de: "Rechnung öffnen",
+    fr: "Ouvrir la facture",
+    it: "Apri fattura",
+    en: "Open invoice",
   },
   "report.invoiceCreated": {
     de: "Rechnungsentwurf aus dem Rapport erstellt",
