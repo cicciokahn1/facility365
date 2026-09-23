@@ -12,7 +12,12 @@ import { useMemo } from 'react';
 import { isReminderDue, reminderDate } from '@/lib/contracts/reminder';
 import { useCollectionItems } from '@/lib/data/store';
 import type { TranslationKey } from '@/lib/i18n/dictionary';
-import type { Asset, Inspection, TechnicalCheckpointResult } from '@/lib/types';
+import type {
+  Asset,
+  Inspection,
+  TechnicalCheckpointDefinition,
+  TechnicalCheckpointResult,
+} from '@/lib/types';
 import { today } from '@/lib/utils/format';
 import { isDone } from '@/lib/workflow/complete';
 
@@ -48,23 +53,25 @@ export interface TechnicalCheckpoint {
   key: string;
   label: string;
   kind: 'status' | 'measurement' | 'note';
+  unit?: string;
+  target?: string;
 }
 
 const TECHNICAL_CHECKPOINTS: Record<string, TechnicalCheckpoint[]> = {
   wasser: [
-    { key: 'salt', label: 'Salzvorrat', kind: 'measurement' },
-    { key: 'hardness', label: 'Wasserhärte', kind: 'measurement' },
-    { key: 'pressure', label: 'Druck', kind: 'measurement' },
+    { key: 'salt', label: 'Salzvorrat', kind: 'measurement', unit: 'kg' },
+    { key: 'hardness', label: 'Wasserhärte', kind: 'measurement', unit: '°fH' },
+    { key: 'pressure', label: 'Druck', kind: 'measurement', unit: 'bar' },
     { key: 'leakage', label: 'Leckage', kind: 'status' },
     { key: 'alarm', label: 'Anzeige / Fehlermeldung', kind: 'note' },
     { key: 'regeneration', label: 'Regeneration', kind: 'status' },
     { key: 'quality', label: 'Wasserqualität', kind: 'note' },
   ],
   heizung: [
-    { key: 'flow', label: 'Vorlauf', kind: 'measurement' },
-    { key: 'return', label: 'Rücklauf', kind: 'measurement' },
-    { key: 'pressure', label: 'Druck', kind: 'measurement' },
-    { key: 'temperature', label: 'Temperatur', kind: 'measurement' },
+    { key: 'flow', label: 'Vorlauf', kind: 'measurement', unit: '°C' },
+    { key: 'return', label: 'Rücklauf', kind: 'measurement', unit: '°C' },
+    { key: 'pressure', label: 'Druck', kind: 'measurement', unit: 'bar' },
+    { key: 'temperature', label: 'Temperatur', kind: 'measurement', unit: '°C' },
     { key: 'pump', label: 'Pumpe', kind: 'status' },
     { key: 'burner', label: 'Brenner / Wärmeerzeuger', kind: 'status' },
     { key: 'alarm', label: 'Fehlermeldungen', kind: 'note' },
@@ -72,30 +79,127 @@ const TECHNICAL_CHECKPOINTS: Record<string, TechnicalCheckpoint[]> = {
   ],
   allgemein: [
     { key: 'operating', label: 'Betriebszustand', kind: 'status' },
-    { key: 'pressure', label: 'Druck', kind: 'measurement' },
-    { key: 'temperature', label: 'Temperatur', kind: 'measurement' },
+    { key: 'pressure', label: 'Druck', kind: 'measurement', unit: 'bar' },
+    { key: 'temperature', label: 'Temperatur', kind: 'measurement', unit: '°C' },
     { key: 'alarm', label: 'Anzeige / Fehlermeldung', kind: 'note' },
     { key: 'leakage', label: 'Leckage', kind: 'status' },
     { key: 'note', label: 'Bemerkung', kind: 'note' },
   ],
 };
 
+const TECHNICAL_ALIASES: Record<string, string[]> = {
+  waermepumpe: ['wärmepumpe', 'heat pump'],
+  lueftung: ['lüft', 'ventilation'],
+  kaelte: ['kälte', 'kuehl', 'cooling'],
+  elektro: ['elektro', 'strom', 'electric'],
+  pv: ['pv', 'photovolta'],
+  pumpen: ['pumpe'],
+  druckluft: ['druckluft', 'kompressor', 'compressor'],
+  lift: ['lift', 'aufzug', 'elevator'],
+  brand: ['brandmelde', 'brand alarm'],
+  sprinkler: ['sprinkler'],
+};
+
 const technicalCategoryOf = (asset: Asset): string => {
   const text = `${asset.category} ${asset.name}`.toLocaleLowerCase('de-CH');
   if (/(enthärt|wasser|sanitär|warmwasser|druckerhöhung)/.test(text)) return 'wasser';
-  if (/(heiz|wärmepumpe|brenner|kessel)/.test(text)) return 'heizung';
+  if (/(heiz|brenner|kessel)/.test(text) && !text.includes('wärmepumpe')) return 'heizung';
+  const alias = Object.entries(TECHNICAL_ALIASES).find(([, values]) =>
+    values.some((value) => text.includes(value)),
+  );
+  if (alias) return alias[0];
   return 'allgemein';
 };
 
-export const technicalCheckpointsOf = (asset: Asset): TechnicalCheckpoint[] =>
-  TECHNICAL_CHECKPOINTS[technicalCategoryOf(asset)];
+const defaultCheckpointsOf = (category: string): TechnicalCheckpoint[] => {
+  const specific: Record<string, TechnicalCheckpoint[]> = {
+    waermepumpe: [
+      { key: 'flow', label: 'Vorlauf', kind: 'measurement', unit: '°C' },
+      { key: 'return', label: 'Rücklauf', kind: 'measurement', unit: '°C' },
+      { key: 'pressure', label: 'Druck', kind: 'measurement', unit: 'bar' },
+      { key: 'compressor', label: 'Verdichter', kind: 'status' },
+      { key: 'alarm', label: 'Fehlermeldung', kind: 'note' },
+    ],
+    lueftung: [
+      { key: 'supply', label: 'Zuluft', kind: 'measurement', unit: '°C' },
+      { key: 'extract', label: 'Abluft', kind: 'measurement', unit: '°C' },
+      { key: 'filter', label: 'Filter', kind: 'status' },
+      { key: 'fan', label: 'Ventilator', kind: 'status' },
+      { key: 'alarm', label: 'Fehlermeldung', kind: 'note' },
+    ],
+    kaelte: [
+      { key: 'temperature', label: 'Temperatur', kind: 'measurement', unit: '°C' },
+      { key: 'pressure', label: 'Druck', kind: 'measurement', unit: 'bar' },
+      { key: 'compressor', label: 'Kompressor', kind: 'status' },
+      { key: 'leakage', label: 'Leckage', kind: 'status' },
+    ],
+    elektro: [
+      { key: 'voltage', label: 'Spannung', kind: 'measurement', unit: 'V' },
+      { key: 'current', label: 'Strom', kind: 'measurement', unit: 'A' },
+      { key: 'protection', label: 'Schutz / Sicherungen', kind: 'status' },
+      { key: 'alarm', label: 'Fehlermeldung', kind: 'note' },
+    ],
+    pv: [
+      { key: 'power', label: 'Leistung', kind: 'measurement', unit: 'kW' },
+      { key: 'yield', label: 'Ertrag', kind: 'measurement', unit: 'kWh' },
+      { key: 'inverter', label: 'Wechselrichter', kind: 'status' },
+      { key: 'alarm', label: 'Fehlermeldung', kind: 'note' },
+    ],
+    pumpen: [
+      { key: 'pressure', label: 'Druck', kind: 'measurement', unit: 'bar' },
+      { key: 'flow', label: 'Fördermenge', kind: 'measurement', unit: 'l/min' },
+      { key: 'pump', label: 'Pumpe', kind: 'status' },
+      { key: 'leakage', label: 'Leckage', kind: 'status' },
+    ],
+    druckluft: [
+      { key: 'pressure', label: 'Druck', kind: 'measurement', unit: 'bar' },
+      { key: 'temperature', label: 'Temperatur', kind: 'measurement', unit: '°C' },
+      { key: 'compressor', label: 'Kompressor', kind: 'status' },
+      { key: 'leakage', label: 'Leckage', kind: 'status' },
+    ],
+    lift: [
+      { key: 'operation', label: 'Betriebszustand', kind: 'status' },
+      { key: 'doors', label: 'Türen', kind: 'status' },
+      { key: 'alarm', label: 'Notruf / Fehlermeldung', kind: 'note' },
+    ],
+    brand: [
+      { key: 'operation', label: 'Betriebszustand', kind: 'status' },
+      { key: 'alarm', label: 'Alarm / Fehlermeldung', kind: 'note' },
+      { key: 'power', label: 'Spannungsversorgung', kind: 'status' },
+    ],
+    sprinkler: [
+      { key: 'pressure', label: 'Druck', kind: 'measurement', unit: 'bar' },
+      { key: 'valve', label: 'Ventile', kind: 'status' },
+      { key: 'alarm', label: 'Alarm / Fehlermeldung', kind: 'note' },
+    ],
+  };
+  return specific[category] ?? TECHNICAL_CHECKPOINTS[category] ?? TECHNICAL_CHECKPOINTS.allgemein;
+};
+
+export const technicalCategoryKeyOf = (asset: Asset): string => technicalCategoryOf(asset);
+
+export const technicalCheckpointsOf = (
+  asset: Asset,
+  templates: Record<string, TechnicalCheckpointDefinition[]> = {},
+): TechnicalCheckpoint[] => asset.technicalChecklist ?? templates[technicalCategoryOf(asset)] ?? defaultCheckpointsOf(technicalCategoryOf(asset));
+
+const TECHNICAL_CATEGORY_LABELS: Record<string, string> = {
+  wasser: 'Wasseranlage',
+  heizung: 'Heizung',
+  waermepumpe: 'Wärmepumpe',
+  lueftung: 'Lüftung',
+  kaelte: 'Kälteanlage',
+  elektro: 'Elektro',
+  pv: 'PV-Anlage',
+  pumpen: 'Pumpen',
+  druckluft: 'Druckluft',
+  lift: 'Lift',
+  brand: 'Brandmeldeanlage',
+  sprinkler: 'Sprinkleranlage',
+};
 
 export const technicalCategoryLabelOf = (asset: Asset): string =>
-  technicalCategoryOf(asset) === 'wasser'
-    ? 'Wasseranlage'
-    : technicalCategoryOf(asset) === 'heizung'
-      ? 'Heizung'
-      : asset.category || 'Technische Anlage';
+  TECHNICAL_CATEGORY_LABELS[technicalCategoryOf(asset)] ?? asset.category ?? 'Technische Anlage';
 
 export const technicalAttentionOf = (
   checkpoints: TechnicalCheckpointResult[],
