@@ -3,21 +3,33 @@
 /** Auditmodus: Standort und Zeitraum waehlen, Ampelstatus sehen, Bericht als PDF. */
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { FileDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { FileDown, Hammer, Save, Settings2, TriangleAlert } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AuditTone, countTones, useAuditSections } from '@/lib/audit/audit';
+import {
+  AuditTone,
+  countTones,
+  technicalAttentionOf,
+  technicalCategoryLabelOf,
+  technicalCheckpointsOf,
+  previousTechnicalMeasurementsOf,
+  useAuditSections,
+} from '@/lib/audit/audit';
 import type { AuditPdfLabels } from '@/lib/audit/audit-pdf';
 import { logoOf } from '@/lib/branding/logo';
-import { useCollectionItems } from '@/lib/data/store';
+import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
 import { cn } from '@/lib/utils';
 import { formatDate, today } from '@/lib/utils/format';
+import type { TechnicalCheckpointResult } from '@/lib/types';
 
 const ALL = 'all';
 
@@ -33,14 +45,26 @@ const yearStart = (): string => `${new Date().getFullYear()}-01-01`;
 
 export function AuditView() {
   const t = useT();
+  const router = useRouter();
   const { settings } = useSettings();
   const properties = useCollectionItems('properties');
   const buildings = useCollectionItems('buildings');
+  const assets = useCollectionItems('assets');
+  const inspections = useCollectionItems('inspections');
+  const inspectionStore = useCollection('inspections');
+  const damageStore = useCollection('damages');
+  const orderStore = useCollection('orders');
+  const maintenanceStore = useCollection('maintenances');
 
   const [property, setProperty] = useState(ALL);
   const [building, setBuilding] = useState(ALL);
   const [from, setFrom] = useState(yearStart());
   const [to, setTo] = useState(today());
+  const [walkthroughValues, setWalkthroughValues] = useState<
+    Record<string, Record<string, string>>
+  >({});
+  const [walkthroughNotes, setWalkthroughNotes] = useState<Record<string, string>>({});
+  const [walkthroughSaved, setWalkthroughSaved] = useState(false);
 
   const buildingChoices = useMemo(
     () => (property === ALL ? buildings : buildings.filter((item) => item.propertyId === property)),
@@ -69,6 +93,106 @@ export function AuditView() {
     .join(' · ') || t('audit.allLocations');
 
   const periodText = `${formatDate(from, settings.language)} – ${formatDate(to, settings.language)}`;
+  const technicalAssets = useMemo(
+    () =>
+      assets.filter(
+        (asset) =>
+          Boolean(filter.buildingId) &&
+          asset.buildingId === filter.buildingId &&
+          asset.status !== 'inactive',
+      ),
+    [assets, filter.buildingId],
+  );
+
+  const saveTechnicalWalkthrough = () => {
+    if (!filter.buildingId || technicalAssets.length === 0) return;
+    technicalAssets.forEach((asset) => {
+      const checkpoints = technicalCheckpointsOf(asset).map((checkpoint) => {
+        const value = walkthroughValues[asset.id]?.[checkpoint.key] ?? '';
+        return {
+          key: checkpoint.key,
+          label: checkpoint.label,
+          value,
+          status: value.toLocaleLowerCase('de-CH').includes('fehler') ||
+            value.toLocaleLowerCase('de-CH').includes('leckage')
+            ? 'attention'
+            : value
+              ? 'ok'
+              : 'notChecked',
+        } satisfies TechnicalCheckpointResult;
+      });
+      const measurements = Object.fromEntries(
+        technicalCheckpointsOf(asset)
+          .filter((checkpoint) => checkpoint.kind === 'measurement')
+          .map((checkpoint) => [checkpoint.key, walkthroughValues[asset.id]?.[checkpoint.key] ?? '']),
+      );
+      const previousMeasurements = previousTechnicalMeasurementsOf(inspections, asset.id);
+      inspectionStore.create({
+        title: `Technischer Rundgang – ${asset.name || asset.number}`,
+        type: 'custom',
+        customType: 'Technischer Rundgang',
+        propertyId: asset.propertyId,
+        buildingId: asset.buildingId,
+        roomId: asset.roomId,
+        assetId: asset.id,
+        date: today(),
+        tester: settings.profileName || settings.companyName,
+        interval: 'monthly',
+        nextDate: '',
+        result: technicalAttentionOf(checkpoints) ? 'failed' : 'passed',
+        status: 'done',
+        measures: walkthroughNotes[asset.id] ?? '',
+        technicalCategory: technicalCategoryLabelOf(asset),
+        technicalCheckpoints: checkpoints,
+        technicalMeasurements: measurements,
+        previousMeasurements,
+      });
+    });
+    setWalkthroughSaved(true);
+  };
+
+  const createFollowUp = (assetId: string, kind: 'damage' | 'order' | 'maintenance') => {
+    const asset = technicalAssets.find((entry) => entry.id === assetId);
+    if (!asset) return;
+    const description = walkthroughNotes[asset.id] || 'Abweichung aus technischem Rundgang';
+    if (kind === 'damage') {
+      const damage = damageStore.create({
+        title: `Rundgang: ${asset.name || asset.number}`,
+        description,
+        propertyId: asset.propertyId,
+        buildingId: asset.buildingId,
+        roomId: asset.roomId,
+        assetId: asset.id,
+        reportedAt: today(),
+        priority: 'high',
+      });
+      router.push(`/damages/${damage.id}`);
+    } else if (kind === 'order') {
+      const order = orderStore.create({
+        title: `Rundgang: ${asset.name || asset.number}`,
+        description,
+        propertyId: asset.propertyId,
+        buildingId: asset.buildingId,
+        roomId: asset.roomId,
+        assetId: asset.id,
+        priority: 'high',
+      });
+      router.push(`/orders/${order.id}`);
+    } else {
+      const maintenance = maintenanceStore.create({
+        title: `Rundgang: ${asset.name || asset.number}`,
+        description,
+        propertyId: asset.propertyId,
+        buildingId: asset.buildingId,
+        assetId: asset.id,
+        interval: 'monthly',
+        nextDate: today(),
+        status: 'planned',
+      });
+      router.push(`/maintenances/${maintenance.id}`);
+    }
+    toast.success('Folgevorgang erstellt');
+  };
 
   const createPdf = async () => {
     const labels: AuditPdfLabels = {
@@ -97,17 +221,46 @@ export function AuditView() {
         green: tones.green,
         amber: tones.amber,
         red: tones.red,
-        sections: sections.map((section) => ({
-          title: t(section.labelKey),
-          rows: section.rows.map((row) => ({
-            tone: row.tone,
-            number: row.number,
-            title: row.title,
-            date: formatDate(row.date, settings.language),
-            status: t(row.statusKey),
-            detail: row.detail,
+        sections: [
+          ...sections.map((section) => ({
+            title: t(section.labelKey),
+            rows: section.rows.map((row) => ({
+              tone: row.tone,
+              number: row.number,
+              title: row.title,
+              date: formatDate(row.date, settings.language),
+              status: t(row.statusKey),
+              detail: row.detail,
+            })),
           })),
-        })),
+          ...(technicalAssets.length > 0
+            ? [
+                {
+                  title: 'Technischer Rundgang',
+                  rows: technicalAssets.map((asset) => {
+                    const checkpoints = technicalCheckpointsOf(asset).map((checkpoint) => ({
+                      key: checkpoint.key,
+                      label: checkpoint.label,
+                      value: walkthroughValues[asset.id]?.[checkpoint.key] ?? '',
+                      status: 'ok' as const,
+                    }));
+                    const attention = technicalAttentionOf(checkpoints);
+                    return {
+                      tone: attention ? ('red' as const) : ('green' as const),
+                      number: asset.number,
+                      title: asset.name || asset.number,
+                      date: formatDate(today(), settings.language),
+                      status: attention ? 'Abweichung' : 'Kontrolliert',
+                      detail: checkpoints
+                        .filter((checkpoint) => checkpoint.value)
+                        .map((checkpoint) => `${checkpoint.label}: ${checkpoint.value}`)
+                        .join(' · '),
+                    };
+                  }),
+                },
+              ]
+            : []),
+        ],
       },
       labels,
       {
@@ -218,6 +371,99 @@ export function AuditView() {
               {t('audit.noData')}
             </p>
           ) : null}
+        </CardContent>
+      </Card>
+
+      <Card data-testid="technical-walkthrough">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <TriangleAlert className="size-4" aria-hidden />
+            Vernetzter technischer Rundgang
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Gebäude auswählen: Die vorhandenen Anlagen und passenden Kontrollpunkte werden automatisch übernommen.
+          </p>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          {!filter.buildingId ? (
+            <p className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
+              Bitte zuerst ein Gebäude auswählen.
+            </p>
+          ) : technicalAssets.length === 0 ? (
+            <p className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
+              In diesem Gebäude sind keine Anlagen erfasst.
+            </p>
+          ) : (
+            technicalAssets.map((asset) => {
+              const checkpoints = technicalCheckpointsOf(asset);
+              const previous = previousTechnicalMeasurementsOf(inspections, asset.id);
+              return (
+                <div key={asset.id} className="rounded-lg border p-3">
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <span className="font-medium">{asset.name || asset.number}</span>
+                    <span className="text-xs text-muted-foreground">{technicalCategoryLabelOf(asset)}</span>
+                    {Object.keys(previous).length > 0 ? (
+                      <span className="text-xs text-muted-foreground">Frühere Messwerte vorhanden</span>
+                    ) : null}
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {checkpoints.map((checkpoint) => (
+                      <div key={checkpoint.key} className="flex flex-col gap-1.5">
+                        <Label htmlFor={`walkthrough-${asset.id}-${checkpoint.key}`}>
+                          {checkpoint.label}
+                        </Label>
+                        <Input
+                          id={`walkthrough-${asset.id}-${checkpoint.key}`}
+                          placeholder={previous[checkpoint.key] ? `Vorher: ${previous[checkpoint.key]}` : 'Wert / OK / Hinweis'}
+                          value={walkthroughValues[asset.id]?.[checkpoint.key] ?? ''}
+                          onChange={(event) =>
+                            setWalkthroughValues((current) => ({
+                              ...current,
+                              [asset.id]: {
+                                ...current[asset.id],
+                                [checkpoint.key]: event.target.value,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <Textarea
+                    className="mt-3"
+                    placeholder="Bemerkung / Abweichung"
+                    value={walkthroughNotes[asset.id] ?? ''}
+                    onChange={(event) =>
+                      setWalkthroughNotes((current) => ({ ...current, [asset.id]: event.target.value }))
+                    }
+                  />
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button variant="outline" size="sm" onClick={() => createFollowUp(asset.id, 'damage')}>
+                      <TriangleAlert className="size-4" aria-hidden />
+                      Schaden
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => createFollowUp(asset.id, 'order')}>
+                      <Hammer className="size-4" aria-hidden />
+                      Auftrag
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => createFollowUp(asset.id, 'maintenance')}>
+                      <Settings2 className="size-4" aria-hidden />
+                      Wartung
+                    </Button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+          <div className="flex flex-wrap items-center gap-3">
+            <Button onClick={saveTechnicalWalkthrough} disabled={!filter.buildingId || technicalAssets.length === 0}>
+              <Save className="size-4" aria-hidden />
+              Rundgang speichern
+            </Button>
+            {walkthroughSaved ? (
+              <span className="text-sm text-success">Kontrollen und Messwerte gespeichert.</span>
+            ) : null}
+          </div>
         </CardContent>
       </Card>
 
