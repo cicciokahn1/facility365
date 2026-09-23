@@ -5925,6 +5925,12 @@ export const dictionary = {
     it: "Tempo di lavoro",
     en: "Working time",
   },
+  "tab.preparation": {
+    de: "Arbeitsvorbereitung",
+    fr: "Préparation du travail",
+    it: "Preparazione del lavoro",
+    en: "Work preparation",
+  },
   "work.start": { de: "Arbeitsbeginn", fr: "Début", it: "Inizio", en: "Start" },
   "work.end": { de: "Arbeitsende", fr: "Fin", it: "Fine", en: "End" },
   "work.break": {
