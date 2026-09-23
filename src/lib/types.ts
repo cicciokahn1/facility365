@@ -443,6 +443,8 @@ export interface Asset extends BaseEntity {
   plannedReplacementYear?: string;
   renewalRequired?: boolean;
   renewalPriority?: Priority;
+  /** Optionale anlagenspezifische Erweiterungen der technischen Checkliste. */
+  technicalChecklist?: TechnicalCheckpointDefinition[];
 }
 
 export type EnergyType =
@@ -776,7 +778,17 @@ export interface TechnicalCheckpointResult {
   key: string;
   label: string;
   value: string;
+  target?: string;
+  unit?: string;
   status: "ok" | "attention" | "notChecked";
+}
+
+export interface TechnicalCheckpointDefinition {
+  key: string;
+  label: string;
+  kind: "status" | "measurement" | "note";
+  unit?: string;
+  target?: string;
 }
 
 /** Art einer Spielplatzkontrolle. */
@@ -1496,6 +1508,8 @@ export interface AppSettings {
   cleaningCleanerId: string;
   /** Nur die eigenen Reinigungsaufgaben zeigen. */
   cleaningOwnTasksOnly: boolean;
+  /** Vom Administrator erweiterbare technische Checklisten je Anlagentyp. */
+  technicalChecklistTemplates?: Record<string, TechnicalCheckpointDefinition[]>;
   /**
    * Angemeldete Benutzerin oder Benutzer aus der Benutzerverwaltung.
    *
