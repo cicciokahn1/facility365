@@ -12,6 +12,7 @@ import { useMemo } from 'react';
 import { isReminderDue, reminderDate } from '@/lib/contracts/reminder';
 import { useCollectionItems } from '@/lib/data/store';
 import type { TranslationKey } from '@/lib/i18n/dictionary';
+import type { Asset, Inspection, TechnicalCheckpointResult } from '@/lib/types';
 import { today } from '@/lib/utils/format';
 import { isDone } from '@/lib/workflow/complete';
 
@@ -42,6 +43,76 @@ export interface AuditFilter {
   from: string;
   to: string;
 }
+
+export interface TechnicalCheckpoint {
+  key: string;
+  label: string;
+  kind: 'status' | 'measurement' | 'note';
+}
+
+const TECHNICAL_CHECKPOINTS: Record<string, TechnicalCheckpoint[]> = {
+  wasser: [
+    { key: 'salt', label: 'Salzvorrat', kind: 'measurement' },
+    { key: 'hardness', label: 'Wasserhärte', kind: 'measurement' },
+    { key: 'pressure', label: 'Druck', kind: 'measurement' },
+    { key: 'leakage', label: 'Leckage', kind: 'status' },
+    { key: 'alarm', label: 'Anzeige / Fehlermeldung', kind: 'note' },
+    { key: 'regeneration', label: 'Regeneration', kind: 'status' },
+    { key: 'quality', label: 'Wasserqualität', kind: 'note' },
+  ],
+  heizung: [
+    { key: 'flow', label: 'Vorlauf', kind: 'measurement' },
+    { key: 'return', label: 'Rücklauf', kind: 'measurement' },
+    { key: 'pressure', label: 'Druck', kind: 'measurement' },
+    { key: 'temperature', label: 'Temperatur', kind: 'measurement' },
+    { key: 'pump', label: 'Pumpe', kind: 'status' },
+    { key: 'burner', label: 'Brenner / Wärmeerzeuger', kind: 'status' },
+    { key: 'alarm', label: 'Fehlermeldungen', kind: 'note' },
+    { key: 'leakage', label: 'Leckage', kind: 'status' },
+  ],
+  allgemein: [
+    { key: 'operating', label: 'Betriebszustand', kind: 'status' },
+    { key: 'pressure', label: 'Druck', kind: 'measurement' },
+    { key: 'temperature', label: 'Temperatur', kind: 'measurement' },
+    { key: 'alarm', label: 'Anzeige / Fehlermeldung', kind: 'note' },
+    { key: 'leakage', label: 'Leckage', kind: 'status' },
+    { key: 'note', label: 'Bemerkung', kind: 'note' },
+  ],
+};
+
+const technicalCategoryOf = (asset: Asset): string => {
+  const text = `${asset.category} ${asset.name}`.toLocaleLowerCase('de-CH');
+  if (/(enthärt|wasser|sanitär|warmwasser|druckerhöhung)/.test(text)) return 'wasser';
+  if (/(heiz|wärmepumpe|brenner|kessel)/.test(text)) return 'heizung';
+  return 'allgemein';
+};
+
+export const technicalCheckpointsOf = (asset: Asset): TechnicalCheckpoint[] =>
+  TECHNICAL_CHECKPOINTS[technicalCategoryOf(asset)];
+
+export const technicalCategoryLabelOf = (asset: Asset): string =>
+  technicalCategoryOf(asset) === 'wasser'
+    ? 'Wasseranlage'
+    : technicalCategoryOf(asset) === 'heizung'
+      ? 'Heizung'
+      : asset.category || 'Technische Anlage';
+
+export const technicalAttentionOf = (
+  checkpoints: TechnicalCheckpointResult[],
+): boolean =>
+  checkpoints.some(
+    (checkpoint) => checkpoint.status === 'attention' || /fehler|leckage|störung/i.test(checkpoint.value),
+  );
+
+export const previousTechnicalMeasurementsOf = (
+  inspections: Inspection[],
+  assetId: string,
+): Record<string, string> => {
+  const previous = inspections
+    .filter((inspection) => inspection.assetId === assetId && inspection.technicalMeasurements)
+    .sort((left, right) => right.date.localeCompare(left.date))[0];
+  return previous?.technicalMeasurements ?? {};
+};
 
 /** Wahr, wenn der Datensatz zum gewaehlten Standort gehoert. */
 const atLocation = (

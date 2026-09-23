@@ -765,6 +765,18 @@ export interface Inspection extends BaseEntity {
   measures: string;
   legalBasis?: string;
   dutyCategory?: string;
+  /** Kontrollpunkte und Messwerte eines technischen Rundgangs. */
+  technicalCategory?: string;
+  technicalCheckpoints?: TechnicalCheckpointResult[];
+  technicalMeasurements?: Record<string, string>;
+  previousMeasurements?: Record<string, string>;
+}
+
+export interface TechnicalCheckpointResult {
+  key: string;
+  label: string;
+  value: string;
+  status: "ok" | "attention" | "notChecked";
 }
 
 /** Art einer Spielplatzkontrolle. */
