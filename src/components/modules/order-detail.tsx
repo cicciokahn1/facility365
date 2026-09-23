@@ -9,6 +9,7 @@ import { EntityDetail } from '@/components/module/entity-detail';
 import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
 import { WorkTimePanel } from '@/components/modules/work-time-panel';
+import { OrderPreparation } from '@/components/modules/order-preparation';
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
 import { useReportFromOrder } from '@/lib/reports/from-order';
@@ -53,6 +54,11 @@ export function OrderDetail({ id }: { id: string }) {
         );
       }}
       extraTabs={(order, update) => [
+        {
+          value: 'preparation',
+          labelKey: 'tab.preparation',
+          content: <OrderPreparation order={order} />,
+        },
         {
           value: 'workTime',
           labelKey: 'tab.workTime',

@@ -1109,6 +1109,7 @@ export const table: Record<string, string> = {
   "documents.category.manual": "Modes d'emploi",
   "documents.category.other": "Autres documents",
   "tab.workTime": "Temps de travail",
+  "tab.preparation": "Préparation du travail",
   "work.start": "Début",
   "work.end": "Fin",
   "work.break": "Pause (min)",
