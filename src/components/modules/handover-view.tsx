@@ -3,8 +3,9 @@
 /** Objektuebergabe: Liegenschaft waehlen, Bestand sehen, Uebergabebericht als PDF. */
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { FileDown } from 'lucide-react';
+import { CheckCircle2, FileDown } from 'lucide-react';
 
+import { SignaturePad } from '@/components/modules/signature-pad';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,11 +14,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { AuditPdfLabels } from '@/lib/audit/audit-pdf';
 import { logoOf } from '@/lib/branding/logo';
-import { useCollectionItems } from '@/lib/data/store';
+import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { useHandoverSections } from '@/lib/handover/handover';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
 import { formatDate, today } from '@/lib/utils/format';
+import { newId } from '@/lib/utils/id';
+import type { DocumentEntity } from '@/lib/types';
+import { toast } from 'sonner';
 
 const ALL = 'all';
 
@@ -26,6 +30,8 @@ export function HandoverView() {
   const { settings } = useSettings();
   const properties = useCollectionItems('properties');
   const buildings = useCollectionItems('buildings');
+  const customers = useCollectionItems('customers');
+  const documents = useCollection('documents');
 
   const [property, setProperty] = useState(ALL);
   const [building, setBuilding] = useState(ALL);
@@ -33,6 +39,9 @@ export function HandoverView() {
   const [to, setTo] = useState('');
   const [date, setDate] = useState(today());
   const [notes, setNotes] = useState('');
+  const [status, setStatus] = useState<'draft' | 'completed'>('draft');
+  const [fromSignature, setFromSignature] = useState('');
+  const [toSignature, setToSignature] = useState('');
 
   const buildingChoices = useMemo(
     () => (property === ALL ? buildings : buildings.filter((item) => item.propertyId === property)),
@@ -57,66 +66,113 @@ export function HandoverView() {
     ]
       .filter(Boolean)
       .join(' · ') || t('audit.allLocations');
+  const selectedProperty = properties.find((item) => item.id === filter.propertyId);
+  const customer = customers.find((item) => item.id === selectedProperty?.customerId);
+  const photoCount = sections.find((section) => section.key === 'photos')?.rows.reduce((sum, row) => {
+    const count = Number(row.detail.match(/\d+/)?.[0] || 0);
+    return sum + count;
+  }, 0) || 0;
+
+  const pdfData = () => ({
+    location: [customer?.name, locationText].filter(Boolean).join(' · '),
+    period: formatDate(date, settings.language),
+    createdAt: formatDate(today(), settings.language),
+    green: status === 'completed' ? 1 : 0,
+    amber: 0,
+    red: 0,
+    showSummary: true,
+    fileBaseName: 'Uebergabebericht',
+    infoLines: [
+      `${t('handover.from')}: ${from || '–'}`,
+      `${t('handover.to')}: ${to || '–'}`,
+      `${t('common.status')}: ${status === 'completed' ? t('status.done') : t('status.draft')}`,
+      `${t('common.photos')}: ${photoCount}`,
+    ],
+    notes: { title: t('handover.notes'), text: notes },
+    sections: sections.map((section) => ({
+      title: t(section.labelKey),
+      rows: section.rows.map((row) => ({
+        tone: 'green' as const,
+        number: row.number,
+        title: row.title,
+        date: formatDate(row.date, settings.language),
+        status: t(row.statusKey),
+        detail: row.detail,
+      })),
+    })),
+  });
+
+  const pdfLabels = (): AuditPdfLabels => ({
+    title: t('handover.reportTitle'),
+    location: t('audit.location'),
+    period: t('handover.date'),
+    createdAt: t('common.date'),
+    summary: t('audit.summary'),
+    green: t('audit.green'),
+    amber: t('audit.amber'),
+    red: t('audit.red'),
+    number: t('common.number'),
+    subject: t('common.title'),
+    date: t('common.date'),
+    status: t('common.status'),
+    empty: t('audit.sectionEmpty'),
+  });
+
+  const branding = {
+    companyName: settings.companyName || 'Facility365',
+    companyAddress: [
+      settings.companyAddress.street,
+      [settings.companyAddress.zip, settings.companyAddress.city].filter(Boolean).join(' '),
+    ].filter(Boolean).join(', '),
+    companyContact: [settings.companyPhone, settings.companyEmail].filter(Boolean).join(' · '),
+    logo: logoOf(settings.companyLogo),
+  };
 
   const createPdf = async () => {
-    const labels: AuditPdfLabels = {
-      title: t('handover.reportTitle'),
-      location: t('audit.location'),
-      period: t('handover.date'),
-      createdAt: t('common.date'),
-      summary: t('audit.summary'),
-      green: t('audit.green'),
-      amber: t('audit.amber'),
-      red: t('audit.red'),
-      number: t('common.number'),
-      subject: t('common.title'),
-      date: t('common.date'),
-      status: t('common.status'),
-      empty: t('audit.sectionEmpty'),
-    };
-
     /** Die PDF-Erzeugung wird erst beim Klick geladen, nicht beim Oeffnen der Seite. */
     const { downloadAuditPdf } = await import('@/lib/audit/audit-pdf');
-    downloadAuditPdf(
-      {
-        location: locationText,
-        period: formatDate(date, settings.language),
-        createdAt: formatDate(today(), settings.language),
-        green: 0,
-        amber: 0,
-        red: 0,
-        showSummary: false,
-        fileBaseName: 'Uebergabebericht',
-        infoLines: [
-          `${t('handover.from')}: ${from || '–'}`,
-          `${t('handover.to')}: ${to || '–'}`,
-        ],
-        notes: { title: t('handover.notes'), text: notes },
-        sections: sections.map((section) => ({
-          title: t(section.labelKey),
-          rows: section.rows.map((row) => ({
-            tone: 'green' as const,
-            number: row.number,
-            title: row.title,
-            date: formatDate(row.date, settings.language),
-            status: t(row.statusKey),
-            detail: row.detail,
-          })),
-        })),
+    downloadAuditPdf(pdfData(), pdfLabels(), branding);
+  };
+
+  const completeHandover = async () => {
+    if (!from || !to || !fromSignature || !toSignature) {
+      toast.error(t('handover.signaturesRequired'));
+      return;
+    }
+    const { buildAuditPdf, auditPdfFileName } = await import('@/lib/audit/audit-pdf');
+    const pdf = buildAuditPdf(pdfData(), pdfLabels(), branding);
+    const dataUrl = pdf.output('datauristring');
+    const now = new Date().toISOString();
+    const fileName = auditPdfFileName(pdfData());
+    const document: Partial<DocumentEntity> = {
+      title: `${t('handover.reportTitle')} – ${locationText}`,
+      category: 'handover',
+      propertyId: filter.propertyId,
+      buildingId: filter.buildingId,
+      customerId: selectedProperty?.customerId || '',
+      file: {
+        id: newId('file'),
+        name: fileName,
+        type: 'PDF',
+        mimeType: 'application/pdf',
+        url: dataUrl,
+        size: dataUrl.length,
+        uploadedAt: now,
+        uploadedBy: settings.profileName || settings.companyName || 'Facility365',
+        linkedModule: 'properties',
+        linkedId: filter.propertyId || undefined,
+        linkedLabel: locationText,
       },
-      labels,
-      {
-        companyName: settings.companyName || 'Facility365',
-        companyAddress: [
-          settings.companyAddress.street,
-          [settings.companyAddress.zip, settings.companyAddress.city].filter(Boolean).join(' '),
-        ]
-          .filter(Boolean)
-          .join(', '),
-        companyContact: [settings.companyPhone, settings.companyEmail].filter(Boolean).join(' · '),
-        logo: logoOf(settings.companyLogo),
-      },
-    );
+      notes: [
+        notes,
+        `${t('handover.from')}: ${from}`,
+        `${t('handover.to')}: ${to}`,
+        `${t('handover.status')}: ${t('status.done')}`,
+      ].filter(Boolean).join('\n'),
+    };
+    documents.create(document, settings.profileName || settings.companyName);
+    setStatus('completed');
+    toast.success(t('handover.completed'));
   };
 
   return (
@@ -209,6 +265,23 @@ export function HandoverView() {
               data-testid="handover-notes"
             />
           </div>
+          <Card className="border-primary/30 bg-primary/5">
+            <CardHeader><CardTitle className="text-base">{t('handover.summary')}</CardTitle></CardHeader>
+            <CardContent className="grid gap-2 text-sm sm:grid-cols-2">
+              <span>{t('module.customers.singular')}: {customer?.name || '–'}</span>
+              <span>{t('audit.location')}: {locationText}</span>
+              <span>{t('handover.summaryItems')}: {total}</span>
+              <span>{t('common.status')}: {status === 'completed' ? t('status.done') : t('status.draft')}</span>
+            </CardContent>
+          </Card>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card><CardHeader><CardTitle className="text-sm">{t('handover.fromSignature')}</CardTitle></CardHeader><CardContent><SignaturePad onChange={setFromSignature} /></CardContent></Card>
+            <Card><CardHeader><CardTitle className="text-sm">{t('handover.toSignature')}</CardTitle></CardHeader><CardContent><SignaturePad onChange={setToSignature} /></CardContent></Card>
+          </div>
+          <Button onClick={() => void completeHandover()} disabled={status === 'completed'} data-testid="handover-complete">
+            <CheckCircle2 className="size-4" aria-hidden />
+            {status === 'completed' ? t('handover.completed') : t('handover.complete')}
+          </Button>
           {total === 0 ? (
             <p className="text-sm text-muted-foreground" data-testid="handover-empty">
               {t('audit.noData')}

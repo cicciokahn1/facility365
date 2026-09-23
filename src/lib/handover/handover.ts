@@ -46,10 +46,14 @@ const atLocation = (filter: HandoverFilter, propertyId: string, buildingId: stri
 
 export function useHandoverSections(filter: HandoverFilter): HandoverSection[] {
   const assets = useCollectionItems('assets');
+  const buildings = useCollectionItems('buildings');
   const orders = useCollectionItems('orders');
   const damages = useCollectionItems('damages');
   const maintenances = useCollectionItems('maintenances');
   const keys = useCollectionItems('keys');
+  const rooms = useCollectionItems('rooms');
+  const inventory = useCollectionItems('inventory');
+  const energy = useCollectionItems('energy');
   const documents = useCollectionItems('documents');
   const inspections = useCollectionItems('inspections');
   const legionella = useCollectionItems('legionella');
@@ -130,6 +134,68 @@ export function useHandoverSections(filter: HandoverFilter): HandoverSection[] {
         statusKey: `keys.${key.status}` as TranslationKey,
         detail: [key.location, key.issuedTo].filter(Boolean).join(' · '),
       }));
+
+    const roomRows: HandoverRow[] = rooms
+      .filter((room) => !filter.buildingId || room.buildingId === filter.buildingId)
+      .filter((room) => !filter.propertyId || buildings.some((building) => building.id === room.buildingId && building.propertyId === filter.propertyId))
+      .map((room) => ({
+        id: room.id,
+        href: `/rooms/${room.id}`,
+        number: room.roomNumber || room.number,
+        title: room.name || room.number,
+        date: '',
+        statusKey: `status.${room.status}` as TranslationKey,
+        detail: room.type,
+      }));
+
+    const inventoryRows: HandoverRow[] = inventory
+      .filter((item) => atLocation(filter, item.propertyId, item.buildingId))
+      .map((item) => ({
+        id: item.id,
+        href: `/inventory/${item.id}`,
+        number: item.inventoryNumber || item.number,
+        title: item.title || item.number,
+        date: item.warrantyUntil,
+        statusKey: `condition.${item.condition}` as TranslationKey,
+        detail: [item.category, item.location].filter(Boolean).join(' · '),
+      }));
+
+    const energyRows: HandoverRow[] = energy
+      .filter((entry) => atLocation(filter, entry.propertyId, entry.buildingId))
+      .map((entry) => ({
+        id: entry.id,
+        href: `/energy/${entry.id}`,
+        number: entry.number,
+        title: entry.typeOther || entry.type,
+        date: `${entry.month}-01`,
+        statusKey: 'module.energy.singular' as TranslationKey,
+        detail: [entry.consumption, entry.unit].filter((value) => value !== undefined && value !== '').join(' '),
+      }));
+
+    const photoRows: HandoverRow[] = [
+      ...assets
+        .filter((asset) => asset.photos.length > 0 && atLocation(filter, asset.propertyId, asset.buildingId))
+        .map((asset) => ({
+          id: `asset-${asset.id}`,
+          href: `/assets/${asset.id}`,
+          number: asset.number,
+          title: asset.name || asset.number,
+          date: asset.photos[asset.photos.length - 1]?.takenAt || '',
+          statusKey: 'module.assets.singular' as TranslationKey,
+          detail: `${asset.photos.length} Fotos`,
+        })),
+      ...orders
+        .filter((order) => order.photos.length > 0 && atLocation(filter, order.propertyId, order.buildingId))
+        .map((order) => ({
+          id: `order-${order.id}`,
+          href: `/orders/${order.id}`,
+          number: order.number,
+          title: order.title || order.number,
+          date: order.photos[order.photos.length - 1]?.takenAt || '',
+          statusKey: 'module.orders.singular' as TranslationKey,
+          detail: `${order.photos.length} Fotos`,
+        })),
+    ];
 
     const documentRows: HandoverRow[] = documents
       .filter((document) => atLocation(filter, document.propertyId, document.buildingId))
@@ -222,20 +288,28 @@ export function useHandoverSections(filter: HandoverFilter): HandoverSection[] {
         rows: maintenanceRows,
       },
       { key: 'keys', labelKey: 'module.keys' as TranslationKey, rows: keyRows },
+      { key: 'rooms', labelKey: 'module.rooms' as TranslationKey, rows: roomRows },
+      { key: 'inventory', labelKey: 'module.inventory' as TranslationKey, rows: inventoryRows },
+      { key: 'energy', labelKey: 'module.energy' as TranslationKey, rows: energyRows },
+      { key: 'photos', labelKey: 'tab.photos' as TranslationKey, rows: photoRows },
       { key: 'documents', labelKey: 'module.documents' as TranslationKey, rows: documentRows },
       { key: 'dates', labelKey: 'handover.dates' as TranslationKey, rows: dateRows },
     ];
   }, [
     assets,
+    buildings,
     contracts,
     damages,
     documents,
+    energy,
     filter,
     inspections,
+    inventory,
     keys,
     legionella,
     maintenances,
     orders,
     rcd,
+    rooms,
   ]);
 }
