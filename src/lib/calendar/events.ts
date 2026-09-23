@@ -229,7 +229,7 @@ export function useCalendarEvents(): CalendarEvent[] {
       });
 
     rcd
-      .filter((check) => check.status !== "done" && check.nextDate)
+      .filter((check) => check.nextDate)
       .forEach((check) => {
         events.push({
           id: `rcd-${check.id}`,
@@ -250,7 +250,7 @@ export function useCalendarEvents(): CalendarEvent[] {
       });
 
     inspections
-      .filter((check) => check.status !== "done" && check.nextDate)
+      .filter((check) => check.nextDate)
       .forEach((check) => {
         events.push({
           id: `inspection-${check.id}`,
@@ -271,7 +271,7 @@ export function useCalendarEvents(): CalendarEvent[] {
       });
 
     playgroundChecks
-      .filter((check) => check.status !== "done" && check.nextDate)
+      .filter((check) => check.nextDate)
       .forEach((check) => {
         events.push({
           id: `playground-${check.id}`,
@@ -293,7 +293,7 @@ export function useCalendarEvents(): CalendarEvent[] {
 
     /** Brandschutz: naechste Kontrolle und Frist zur Behebung der Maengel. */
     fireChecks
-      .filter((check) => check.status !== "done")
+      .filter((check) => check.nextDate || check.dueDate)
       .forEach((check) => {
         const title = check.title || check.number;
         const shared = {
