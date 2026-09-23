@@ -10,10 +10,12 @@
  */
 import { useCallback } from "react";
 
+import { nextCleaningDate } from "@/lib/cleaning/schedule";
 import { useCollection } from "@/lib/data/store";
 import { useCurrentUser } from "@/lib/settings/provider";
 import {
   CleaningTask,
+  CleaningPlan,
   Damage,
   FireCheck,
   Inspection,
@@ -41,6 +43,7 @@ const doneValues = {
   orders: (): Partial<Order> => ({ status: "done", completedAt: today() }),
   maintenances: (maintenance: Maintenance): Partial<Maintenance> => ({
     status: "planned",
+    completedAt: today(),
     lastDate: today(),
     nextDate: nextMaintenanceDate(today(), maintenance.interval),
   }),
@@ -49,10 +52,26 @@ const doneValues = {
     status: "done",
     completedAt: today(),
   }),
-  inspections: (): Partial<Inspection> => ({ status: "done" }),
-  firechecks: (): Partial<FireCheck> => ({ status: "done" }),
-  playgroundchecks: (): Partial<PlaygroundCheck> => ({ status: "done" }),
-  rcd: (): Partial<RcdCheck> => ({ status: "done" }),
+  inspections: (inspection: Inspection): Partial<Inspection> => ({
+    status: "done",
+    completedAt: today(),
+    nextDate: nextControlDate(today(), inspection.interval),
+  }),
+  firechecks: (check: FireCheck): Partial<FireCheck> => ({
+    status: "done",
+    completedAt: today(),
+    nextDate: nextControlDate(today(), check.interval),
+  }),
+  playgroundchecks: (check: PlaygroundCheck): Partial<PlaygroundCheck> => ({
+    status: "done",
+    completedAt: today(),
+    nextDate: nextControlDate(today(), check.interval),
+  }),
+  rcd: (check: RcdCheck): Partial<RcdCheck> => ({
+    status: "done",
+    completedAt: today(),
+    nextDate: nextControlDate(today(), check.interval),
+  }),
   tickets: (): Partial<Ticket> => ({ status: "done", closedAt: today() }),
 };
 
@@ -74,6 +93,11 @@ function nextMaintenanceDate(
   next.setMonth(next.getMonth() + months);
   return next.toISOString().slice(0, 10);
 }
+
+const nextControlDate = (
+  date: string,
+  interval: Maintenance["interval"],
+): string => nextMaintenanceDate(date, interval);
 
 /** Erledigte Zustaende; sie zaehlen nirgends mehr als offen oder faellig. */
 const doneStatuses: Record<CompletableKey, string[]> = {
@@ -100,6 +124,7 @@ export const isDone = (collection: CompletableKey, status: string): boolean =>
 /** Setzt den Datensatz auf erledigt; der Aufrufer liefert nur die Kennung. */
 export function useMarkDone(collection: CompletableKey): (id: string) => void {
   const { items, update } = useCollection(collection);
+  const cleaningPlans = useCollection("cleaningplans");
   const user = useCurrentUser();
 
   return useCallback(
@@ -115,8 +140,54 @@ export function useMarkDone(collection: CompletableKey): (id: string) => void {
         );
         return;
       }
+      const item = items.find((entry) => entry.id === id);
+      if (!item) return;
+      if (
+        collection === "inspections" ||
+        collection === "firechecks" ||
+        collection === "playgroundchecks" ||
+        collection === "rcd"
+      ) {
+        const values =
+          collection === "inspections"
+            ? doneValues.inspections(item as Inspection)
+            : collection === "firechecks"
+              ? doneValues.firechecks(item as FireCheck)
+              : collection === "playgroundchecks"
+                ? doneValues.playgroundchecks(item as PlaygroundCheck)
+                : doneValues.rcd(item as RcdCheck);
+        update(
+          id,
+          values,
+          "history.completed",
+          user,
+        );
+        return;
+      }
       update(id, doneValues[collection](), "history.completed", user);
+      if (collection === "cleaningtasks") {
+        const task = item as CleaningTask;
+        const plan = cleaningPlans.items.find(
+          (entry) => entry.id === task.planId,
+        ) as CleaningPlan | undefined;
+        if (
+          plan &&
+          plan.nextDate &&
+          task.date &&
+          plan.nextDate <= task.date
+        ) {
+          const next = nextCleaningDate(task.date, plan);
+          if (next) {
+            cleaningPlans.update(
+              plan.id,
+              { nextDate: next },
+              "history.completed",
+              user,
+            );
+          }
+        }
+      }
     },
-    [collection, items, update, user],
+    [cleaningPlans, collection, items, update, user],
   );
 }

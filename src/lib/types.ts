@@ -133,6 +133,8 @@ export interface BaseEntity {
   number: string;
   createdAt: string;
   updatedAt: string;
+  /** Datum des letzten fachlichen Abschlusses, sofern vorhanden. */
+  completedAt?: string;
   notes: string;
   photos: Photo[];
   documents: DocumentFile[];
