@@ -26,6 +26,8 @@ export type CalendarEventKind =
   | "playground"
   | "fire"
   | "document"
+  | "assetWarranty"
+  | "inventoryWarranty"
   | "vehicle"
   | "contract"
   | "solar"
@@ -111,6 +113,8 @@ export function useCalendarEvents(): CalendarEvent[] {
   const playgroundChecks = useCollectionItems("playgroundchecks");
   const fireChecks = useCollectionItems("firechecks");
   const documents = useCollectionItems("documents");
+  const assets = useCollectionItems("assets");
+  const inventory = useCollectionItems("inventory");
   const vehicles = useCollectionItems("vehicles");
   const solarPlants = useCollectionItems("solarplants");
   const contracts = useCollectionItems("contracts");
@@ -349,6 +353,47 @@ export function useCalendarEvents(): CalendarEvent[] {
         });
       });
 
+    /** Anlagen und Inventar: Garantieablauf als bestehender Kalendertyp. */
+    assets
+      .filter((asset) => asset.warrantyUntil && asset.status !== "inactive")
+      .forEach((asset) => {
+        events.push({
+          id: `asset-warranty-${asset.id}`,
+          kind: "assetWarranty",
+          sourceId: asset.id,
+          href: `/assets/${asset.id}`,
+          labelKey: "asset.warrantyUntil",
+          title: asset.name || asset.number,
+          date: asset.warrantyUntil,
+          time: "",
+          customerId: "",
+          propertyId: asset.propertyId,
+          buildingId: asset.buildingId,
+          assetId: asset.id,
+          recurring: false,
+        });
+      });
+
+    inventory
+      .filter((item) => Boolean(item.warrantyUntil))
+      .forEach((item) => {
+        events.push({
+          id: `inventory-warranty-${item.id}`,
+          kind: "inventoryWarranty",
+          sourceId: item.id,
+          href: `/inventory/${item.id}`,
+          labelKey: "inventory.warrantyUntil",
+          title: item.title || item.number,
+          date: item.warrantyUntil,
+          time: "",
+          customerId: "",
+          propertyId: item.propertyId,
+          buildingId: item.buildingId,
+          assetId: "",
+          recurring: false,
+        });
+      });
+
     /** Fahrzeuge: Service, Reifenwechsel, amtliche Pruefung und Ablauf der Versicherung. */
     vehicles
       .filter((vehicle) => vehicle.status !== "retired")
@@ -518,12 +563,14 @@ export function useCalendarEvents(): CalendarEvent[] {
     cleaningAreas,
     cleaningPlans,
     cleaningTasks,
+    assets,
     contracts,
     inspections,
     legionella,
     maintenances,
     orders,
     documents,
+    inventory,
     playgroundChecks,
     fireChecks,
     rcd,
