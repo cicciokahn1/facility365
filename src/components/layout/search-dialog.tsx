@@ -13,10 +13,11 @@ import {
 } from '@/components/ui/command';
 import { useAccess } from '@/lib/auth/scope';
 import { useCollectionItems } from '@/lib/data/store';
+import { fieldValue } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
 import { MODULES } from '@/lib/modules';
 import { configOf, titleOfEntity } from '@/lib/module-config';
-import { CollectionKey } from '@/lib/types';
+import { BaseEntity, CollectionKey } from '@/lib/types';
 
 const SEARCHABLE = [
 
@@ -60,6 +61,69 @@ const SEARCHABLE = [
   'cleaningcomplaints',
   'users',
 ] as const satisfies readonly CollectionKey[];
+
+const SEARCH_SKIP_KEYS = new Set(['url', 'history', 'signature', 'data']);
+
+const normalizeSearchText = (value: string): string =>
+  value
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/ß/g, 'ss')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+const collectSearchValues = (
+  value: unknown,
+  values: string[],
+  key = '',
+  depth = 0,
+): void => {
+  if (depth > 3 || value === null || value === undefined) return;
+  if (typeof value === 'string' || typeof value === 'number') {
+    if (value && !SEARCH_SKIP_KEYS.has(key)) values.push(String(value));
+    return;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((entry) => collectSearchValues(entry, values, key, depth + 1));
+    return;
+  }
+  if (typeof value !== 'object') return;
+  Object.entries(value).forEach(([childKey, childValue]) => {
+    if (!SEARCH_SKIP_KEYS.has(childKey)) {
+      collectSearchValues(childValue, values, childKey, depth + 1);
+    }
+  });
+};
+
+const addressCityOf = (item: BaseEntity): string => {
+  const address = fieldValue(item, 'address');
+  if (typeof address !== 'object' || address === null) return '';
+  const city = (address as { city?: unknown }).city;
+  return typeof city === 'string' ? city : '';
+};
+
+const searchTextOf = (
+  collection: CollectionKey,
+  item: BaseEntity,
+): string => {
+  const values: string[] = [];
+  const config = configOf(collection);
+  collectSearchValues(item, values);
+  values.push((config.searchOf as (value: BaseEntity) => string)(item));
+  return normalizeSearchText(values.join(' '));
+};
+
+const matchesSearch = (text: string, query: string): boolean => {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return false;
+  const compactText = text.replaceAll(' ', '');
+  const compactQuery = normalizedQuery.replaceAll(' ', '');
+  return (
+    normalizedQuery.split(' ').every((token) => text.includes(token)) ||
+    compactText.includes(compactQuery)
+  );
+};
 
 export function SearchDialog({
   open,
@@ -203,19 +267,18 @@ export function SearchDialog({
     const needle = deferredQuery.trim().toLowerCase();
     if (!open || !needle) return [];
     return SEARCHABLE.filter((collection) => access.canRead(collection)).map((collection) => {
-      const config = configOf(collection);
       const items = collections[collection];
       const matches = items
         .filter((item) => {
           if (!access.visible(collection, item)) return false;
-          const searchOf = config.searchOf as (value: typeof item) => string;
-          return searchOf(item).toLowerCase().includes(needle);
+          return matchesSearch(searchTextOf(collection, item), needle);
         })
-        .slice(0, 5)
+        .slice(0, 8)
         .map((item) => ({
           id: item.id,
           number: item.number,
           title: titleOfEntity(collection, item),
+          detail: addressCityOf(item),
         }));
       return { collection, matches };
     }).filter((group) => group.matches.length > 0);
@@ -234,7 +297,10 @@ export function SearchDialog({
           const moduleDef = MODULES.find((entry) => entry.key === group.collection);
           if (!moduleDef) return null;
           return (
-            <CommandGroup key={group.collection} heading={t(moduleDef.labelKey)}>
+            <CommandGroup
+              key={group.collection}
+              heading={`${t(moduleDef.labelKey)} (${group.matches.length})`}
+            >
               {group.matches.map((match) => (
                 <CommandItem
                   key={match.id}
@@ -244,9 +310,12 @@ export function SearchDialog({
                     setQuery('');
                     onSelect(`${moduleDef.path}/${match.id}`);
                   }}
-                >
+                  >
                   <span className="font-mono text-xs text-muted-foreground">{match.number}</span>
                   <span className="truncate">{match.title}</span>
+                  {match.detail ? (
+                    <span className="truncate text-xs text-muted-foreground">{match.detail}</span>
+                  ) : null}
                 </CommandItem>
               ))}
             </CommandGroup>
