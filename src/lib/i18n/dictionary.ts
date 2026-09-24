@@ -302,6 +302,12 @@ export const dictionary = {
     it: "Notifiche attivate",
     en: "Notifications enabled",
   },
+  "notify.enabledLocal": {
+    de: "Mitteilungen eingeschaltet",
+    fr: "Notifications activées",
+    it: "Notifiche attivate",
+    en: "Notifications enabled",
+  },
   "notify.denied": {
     de: "Mitteilungen sind im Browser gesperrt",
     fr: "Les notifications sont bloquées dans le navigateur",

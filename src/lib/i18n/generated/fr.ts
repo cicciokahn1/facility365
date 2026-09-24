@@ -61,6 +61,7 @@ export const table: Record<string, string> = {
   "notify.enable": "Activer les notifications",
   "notify.active": "Notifications actives",
   "notify.enabled": "Notifications activées",
+  "notify.enabledLocal": "Notifications activées",
   "notify.denied": "Les notifications sont bloquées dans le navigateur",
   "notify.unsupported": "Cet appareil ne prend pas en charge les notifications",
   "notify.installTitle": "Ajouter à l’écran d’accueil",

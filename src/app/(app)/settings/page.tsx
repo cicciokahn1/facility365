@@ -33,6 +33,7 @@ import { LANGUAGES, useT } from '@/lib/i18n/provider';
 import { INTEGRATIONS } from '@/lib/integrations/registry';
 import { moduleByKey } from '@/lib/modules';
 import { usePushPermission } from '@/lib/notifications/reminders';
+import { registerPushSubscription } from '@/lib/notifications/push-subscription';
 import {
   OPTIONAL_MODULES,
   CORE_MODULES,
@@ -91,8 +92,9 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
     }
     const result = await push.request();
     if (result === 'granted') {
+      const registered = await registerPushSubscription().catch(() => false);
       set('notificationsEnabled', true);
-      toast.success(t('notify.enabled'));
+      toast.success(registered ? t('notify.enabled') : t('notify.enabledLocal'));
     } else if (result === 'denied') {
       toast.error(t('notify.denied'));
     } else {

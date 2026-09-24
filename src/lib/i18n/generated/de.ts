@@ -61,6 +61,7 @@ export const table: Record<string, string> = {
   "notify.enable": "Mitteilungen einschalten",
   "notify.active": "Mitteilungen aktiv",
   "notify.enabled": "Mitteilungen eingeschaltet",
+  "notify.enabledLocal": "Mitteilungen eingeschaltet",
   "notify.denied": "Mitteilungen sind im Browser gesperrt",
   "notify.unsupported": "Dieses Gerät unterstützt keine Mitteilungen",
   "notify.installTitle": "Zum Home-Bildschirm hinzufügen",
