@@ -34,7 +34,7 @@ export function QuickWorkTime() {
   const t = useT();
   const router = useRouter();
   const { settings } = useSettings();
-  const { create } = useCollection('reports');
+  const { create, remove, update } = useCollection('reports');
   const reports = useCollectionItems('reports');
   const [weekStart, setWeekStart] = useState(() => mondayOf(today()));
   const [date, setDate] = useState(today());
@@ -69,8 +69,6 @@ export function QuickWorkTime() {
     0,
   );
   const totalHours = Math.round((totalMinutes / 60) * 100) / 100;
-
-  const { update } = useCollection('reports');
 
   const resetForm = () => {
     setEditingId(null);
@@ -112,6 +110,12 @@ export function QuickWorkTime() {
     setBreakMinutes(String(report.breakMinutes ?? 0));
     setTitle(report.title);
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  };
+
+  const deleteEntry = (report: (typeof entries)[number]) => {
+    if (!window.confirm(t('detail.deleteText'))) return;
+    remove(report.id);
+    if (editingId === report.id) resetForm();
   };
 
   return (
@@ -188,6 +192,15 @@ export function QuickWorkTime() {
                           data-testid={`work-edit-${report.id}`}
                         >
                           {t('action.edit')}
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deleteEntry(report)}
+                          aria-label={t('action.delete')}
+                          data-testid={`work-delete-${report.id}`}
+                        >
+                          {t('action.delete')}
                         </Button>
                       </div>
                   </div>
