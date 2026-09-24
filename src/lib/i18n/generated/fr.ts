@@ -732,6 +732,7 @@ export const table: Record<string, string> = {
   "settings.vatRate": "Taux TVA (%)",
   "settings.notifications": "Notifications",
   "settings.notificationsOn": "Notifications dans l’app",
+  "settings.pushHint": "Les tâches et rendez-vous échus peuvent être affichés comme notifications push.",
   "settings.emailNotifications": "Notifications par e-mail",
   "settings.data": "Données",
   "settings.storageUsed": "Stockage utilisé",
