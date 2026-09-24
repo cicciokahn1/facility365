@@ -61,6 +61,7 @@ export const table: Record<string, string> = {
   "notify.enable": "Enable notifications",
   "notify.active": "Notifications on",
   "notify.enabled": "Notifications enabled",
+  "notify.enabledLocal": "Notifications enabled",
   "notify.denied": "Notifications are blocked in the browser",
   "notify.unsupported": "This device does not support notifications",
   "notify.installTitle": "Add to home screen",
