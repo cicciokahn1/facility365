@@ -107,11 +107,12 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
     () =>
       assets.filter(
         (asset) =>
-          Boolean(filter.buildingId) &&
-          asset.buildingId === filter.buildingId &&
+          Boolean(filter.propertyId) &&
+          asset.propertyId === filter.propertyId &&
+          (!filter.buildingId || asset.buildingId === filter.buildingId) &&
           asset.status !== 'inactive',
       ),
-    [assets, filter.buildingId],
+    [assets, filter.buildingId, filter.propertyId],
   );
 
   const saveTechnicalWalkthrough = () => {
@@ -212,7 +213,7 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
 
   const createPdf = async () => {
     const labels: AuditPdfLabels = {
-      title: t('audit.reportTitle'),
+      title: isWalkthrough ? t('walkthrough.reportTitle') : t('audit.reportTitle'),
       location: t('audit.location'),
       period: t('audit.period'),
       createdAt: t('common.date'),
@@ -238,7 +239,9 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
         amber: tones.amber,
         red: tones.red,
         sections: [
-          ...sections.map((section) => ({
+          ...(isWalkthrough
+            ? []
+            : sections.map((section) => ({
             title: t(section.labelKey),
             rows: section.rows.map((row) => ({
               tone: row.tone,
@@ -248,7 +251,7 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
               status: t(row.statusKey),
               detail: row.detail,
             })),
-          })),
+          }))),
           ...(technicalAssets.length > 0
             ? [
                 {
@@ -329,7 +332,7 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
           </CardTitle>
           <Button onClick={() => void createPdf()} data-testid="audit-pdf">
             <FileDown className="size-4" aria-hidden />
-            {t('audit.createReport')}
+            {isWalkthrough ? t('walkthrough.createReport') : t('audit.createReport')}
           </Button>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -430,9 +433,9 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
           </p>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {!filter.buildingId ? (
+          {!filter.propertyId ? (
             <p className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
-              Bitte zuerst ein Gebäude auswählen.
+              Bitte zuerst eine Liegenschaft auswählen.
             </p>
           ) : technicalAssets.length === 0 ? (
             <p className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
@@ -446,6 +449,10 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
                 <div key={asset.id} className="rounded-lg border p-3">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
                     <span className="font-medium">{asset.name || asset.number}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {buildings.find((item) => item.id === asset.buildingId)?.name ||
+                        buildings.find((item) => item.id === asset.buildingId)?.number}
+                    </span>
                     <span className="text-xs text-muted-foreground">{technicalCategoryLabelOf(asset)}</span>
                     {Object.keys(previous).length > 0 ? (
                       <span className="text-xs text-muted-foreground">Frühere Messwerte vorhanden</span>
@@ -519,7 +526,7 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
             })
           )}
           <div className="flex flex-wrap items-center gap-3">
-            <Button onClick={saveTechnicalWalkthrough} disabled={!filter.buildingId || technicalAssets.length === 0}>
+            <Button onClick={saveTechnicalWalkthrough} disabled={!filter.propertyId || technicalAssets.length === 0}>
               <Save className="size-4" aria-hidden />
               Rundgang speichern
             </Button>

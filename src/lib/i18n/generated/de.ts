@@ -990,6 +990,8 @@ export const table: Record<string, string> = {
   "dashboard.expiringContract": "Vertrag läuft bald ab",
   "module.audit": "Auditmodus",
   "module.walkthrough": "Technischer Rundgang",
+  "walkthrough.createReport": "Rundgangbericht erstellen",
+  "walkthrough.reportTitle": "Technischer Rundgangbericht",
   "audit.location": "Standort",
   "audit.period": "Zeitraum",
   "audit.from": "Von",
