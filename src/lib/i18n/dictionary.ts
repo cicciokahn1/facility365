@@ -5251,6 +5251,18 @@ export const dictionary = {
     it: "Giro tecnico",
     en: "Technical walkthrough",
   },
+  "walkthrough.createReport": {
+    de: "Rundgangbericht erstellen",
+    fr: "Créer le rapport de ronde",
+    it: "Crea rapporto giro tecnico",
+    en: "Create walkthrough report",
+  },
+  "walkthrough.reportTitle": {
+    de: "Technischer Rundgangbericht",
+    fr: "Rapport de ronde technique",
+    it: "Rapporto giro tecnico",
+    en: "Technical walkthrough report",
+  },
   "audit.location": { de: "Standort", fr: "Site", it: "Sede", en: "Location" },
   "audit.period": {
     de: "Zeitraum",
