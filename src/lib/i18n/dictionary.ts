@@ -2874,6 +2874,18 @@ export const dictionary = {
     it: "Nessuna ora di lavoro registrata questa settimana.",
     en: "No work time recorded this week yet.",
   },
+  "quickWorkTime.correct": {
+    de: "Arbeitszeit korrigieren",
+    fr: "Corriger le temps de travail",
+    it: "Correggere il tempo di lavoro",
+    en: "Correct work time",
+  },
+  "quickWorkTime.correctSave": {
+    de: "Korrektur speichern",
+    fr: "Enregistrer la correction",
+    it: "Salva correzione",
+    en: "Save correction",
+  },
   "quickWorkTime.previousWeek": {
     de: "Vorherige Woche",
     fr: "Semaine précédente",
