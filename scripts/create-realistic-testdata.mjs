@@ -362,6 +362,226 @@ const inspections = [{
   dutyCategory: "Fluchtwege",
 }];
 
+const technicalTestBase = (id, number, fields) => ({ ...base(id, number, "TESTDATEN – technische Anlagen"), ...fields });
+const testPhoto = (id, name) => ({
+  id,
+  url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+  name,
+  caption: "Testfoto technische Anlage",
+  takenAt: "2026-09-10T10:00:00.000Z",
+  size: 68,
+});
+const technicalDefinitions = {
+  heizung: [
+    ["flow", "Vorlauf", "78", "°C", "80"],
+    ["return", "Rücklauf", "56", "°C", "60"],
+    ["pressure", "Druck", "1.8", "bar", "2.0"],
+    ["pump", "Pumpe", "OK", "", ""],
+    ["operation", "Betriebszustand", "OK", "", ""],
+    ["alarm", "Fehlermeldung", "Keine", "", ""],
+    ["leakage", "Leckage", "Keine", "", ""],
+  ],
+  wasser: [
+    ["salt", "Salzvorrat", "68", "kg", "80"],
+    ["hardness", "Wasserhärte", "9", "°fH", "10"],
+    ["pressure", "Druck", "3.2", "bar", "3.5"],
+    ["operation", "Betriebszustand", "OK", "", ""],
+    ["regeneration", "Regeneration", "OK", "", ""],
+    ["alarm", "Fehlermeldung", "Keine", "", ""],
+  ],
+  lueftung: [
+    ["supply", "Zulufttemperatur", "19", "°C", "20"],
+    ["extract", "Ablufttemperatur", "23", "°C", "22"],
+    ["filter", "Filterzustand", "OK", "", ""],
+    ["operation", "Betriebszustand", "OK", "", ""],
+    ["airflow", "Luftstrom", "4200", "m³/h", "4000"],
+    ["alarm", "Störung", "Keine", "", ""],
+  ],
+  elektro: [
+    ["voltage", "Spannung", "230", "V", "230"],
+    ["current", "Strom", "18", "A", "25"],
+    ["protection", "Schutz / Sicherungen", "OK", "", ""],
+    ["alarm", "Fehlermeldung", "Keine", "", ""],
+  ],
+  pv: [
+    ["power", "Leistung", "142", "kW", "148"],
+    ["yield", "Ertrag", "18200", "kWh", "18000"],
+    ["inverter", "Wechselrichter", "OK", "", ""],
+    ["alarm", "Fehlermeldung", "Keine", "", ""],
+  ],
+  weitere: [
+    ["operation", "Betriebszustand", "OK", "", ""],
+    ["pressure", "Druck", "7.2", "bar", "8"],
+    ["temperature", "Temperatur", "21", "°C", "22"],
+    ["alarm", "Fehlermeldung", "Keine", "", ""],
+  ],
+  brand: [
+    ["operation", "Betriebszustand", "OK", "", ""],
+    ["alarm", "Alarm / Fehlermeldung", "Keine", "", ""],
+    ["power", "Spannungsversorgung", "OK", "", ""],
+  ],
+};
+const technicalBuildingSpecs = [
+  ["bld_tech_school", "GB-TECH-001", "Schulgebäude", "prop_sonnenrain", "1988", 3900],
+  ["bld_tech_admin", "GB-TECH-002", "Verwaltungsgebäude", "prop_rathaus", "2004", 7800],
+  ["bld_tech_workshop", "GB-TECH-003", "Werkstatt", "prop_helvetia", "2018", 4200],
+  ["bld_tech_multi", "GB-TECH-004", "Mehrzweckgebäude", "prop_sonnenrain", "1996", 2200],
+];
+const technicalBuildings = technicalBuildingSpecs.map(([id, number, name, propertyId, yearBuilt, area]) => ({
+  ...base(id, number, "TESTDATEN – technische Anlagen"),
+  name,
+  propertyId,
+  address: properties.find((property) => property.id === propertyId).address,
+  yearBuilt,
+  area,
+  status: "active",
+  description: "TEST-Gebäude für vernetzte technische Anlagen.",
+  floors: floorsFor(id, area),
+  plans: [],
+}));
+const technicalRoomNames = ["Heizungsraum", "Technikraum", "Elektroverteilung", "Lüftungszentrale", "Sanitärraum", "Dach", "Keller", "Pumpenraum"];
+const technicalRooms = technicalBuildings.flatMap((building, buildingIndex) =>
+  technicalRoomNames.map((name, index) => ({
+    ...base(`${building.id}_room_${index + 1}`, `RM-TECH-${String(buildingIndex * technicalRoomNames.length + index + 1).padStart(3, "0")}`),
+    name,
+    roomNumber: `T${index + 1}`,
+    buildingId: building.id,
+    floorId: `${building.id}_${index > 5 ? "og1" : "ug"}`,
+    type: name,
+    area: 18 + index * 3,
+    sia416AreaType: "NNF",
+    din277AreaType: "TF",
+    workplaces: 0,
+    workplaceList: [],
+    occupant: "",
+    status: "active",
+    description: "TEST-Raum für technische Anlagen.",
+  })),
+);
+const technicalAssetSpecs = [
+  ["Gasheizung / Wärmeerzeuger", "Heizung", "bld_tech_school", 0, "Viessmann", "Vitocrossal 300", "heizung"],
+  ["Umwälzpumpe", "Heizung", "bld_tech_school", 7, "Grundfos", "MAGNA3 32-120", "heizung"],
+  ["Heizungsverteiler", "Heizung", "bld_tech_school", 0, "Oventrop", "Regumat M3", "heizung"],
+  ["Ausdehnungsgefäss", "Heizung", "bld_tech_admin", 0, "Reflex", "N 200", "heizung"],
+  ["Warmwasserspeicher", "Warmwasser", "bld_tech_admin", 4, "Hoval", "EnerVal 500", "wasser"],
+  ["Wasserenthärtungsanlage", "Wasser", "bld_tech_school", 4, "BWT", "Perla Home", "wasser"],
+  ["Warmwasseranlage", "Warmwasser", "bld_tech_multi", 4, "Hoval", "UltraSource", "wasser"],
+  ["Zirkulationspumpe", "Wasser", "bld_tech_multi", 7, "Wilo", "Stratos PICO", "wasser"],
+  ["Druckerhöhungsanlage", "Wasser", "bld_tech_workshop", 7, "KSB", "DeltaSolo", "wasser"],
+  ["Trinkwasserverteiler", "Wasser", "bld_tech_admin", 4, "GF Piping", "JRG LegioStop", "wasser"],
+  ["Hebeanlage", "Wasser", "bld_tech_workshop", 4, "Jung", "Compli 1000", "wasser"],
+  ["Lüftungsanlage", "Lüftung", "bld_tech_admin", 3, "Zehnder", "ComfoAir XL", "lueftung"],
+  ["Zuluftgerät", "Lüftung", "bld_tech_school", 3, "Systemair", "Geniox 10", "lueftung"],
+  ["Abluftgerät", "Lüftung", "bld_tech_multi", 3, "FläktGroup", "eQ Prime", "lueftung"],
+  ["Wärmerückgewinnung", "Lüftung", "bld_tech_admin", 3, "FläktGroup", "Rotovex", "lueftung"],
+  ["Klimagerät", "Klima", "bld_tech_workshop", 1, "Mitsubishi Electric", "City Multi", "weitere"],
+  ["Hauptverteilung", "Elektro", "bld_tech_admin", 2, "Hager", "univers Z", "elektro"],
+  ["Unterverteilung", "Elektro", "bld_tech_school", 2, "ABB", "U-Serie", "elektro"],
+  ["Notstromanlage", "Elektro", "bld_tech_multi", 1, "Rittal", "UPS-Generator 80", "elektro"],
+  ["USV-Anlage", "Elektro", "bld_tech_admin", 2, "APC", "Galaxy VS", "elektro"],
+  ["Elektro-Ladestation", "Elektro", "bld_tech_workshop", 2, "ABB", "Terra AC", "elektro"],
+  ["PV-Anlage", "Photovoltaik", "bld_tech_school", 5, "Meyer Burger", "Glass 380", "pv"],
+  ["Kompressor", "Druckluft", "bld_tech_workshop", 1, "Atlas Copco", "GA 22", "weitere"],
+  ["Druckluftanlage", "Druckluft", "bld_tech_workshop", 7, "Kaeser", "SX 8", "weitere"],
+  ["Kälteanlage", "Kälte", "bld_tech_workshop", 1, "Carrier", "30XA", "weitere"],
+  ["Wärmepumpe", "Wärmepumpe", "bld_tech_multi", 0, "Ochsner", "Air Hawk 518", "heizung"],
+  ["Lift", "Lift", "bld_tech_admin", 1, "Schindler", "3300", "weitere"],
+  ["Automatische Tür", "Türanlage", "bld_tech_school", 1, "dormakaba", "ED 100", "weitere"],
+  ["Toranlage", "Tor", "bld_tech_workshop", 1, "Hörmann", " industrialLine", "weitere"],
+  ["Brandmeldeanlage", "Brandschutz", "bld_tech_admin", 1, "Siemens", "Cerberus PRO", "brand"],
+  ["Sprinkleranlage", "Brandschutz", "bld_tech_multi", 1, "Minimax", "MX 200", "brand"],
+  ["Rauchabzug", "Brandschutz", "bld_tech_school", 1, "D+H", "KA  Zoom", "brand"],
+  ["Feuerlöscher", "Brandschutz", "bld_tech_school", 1, "Gloria", "PD 6 GA", "brand"],
+];
+const technicalAssets = technicalAssetSpecs.map(([name, category, buildingId, roomIndex, manufacturer, model, checklistKey], index) => {
+  const room = technicalRooms.find((entry) => entry.buildingId === buildingId && entry.name === technicalRoomNames[roomIndex]);
+  const id = `asset_tech_${String(index + 1).padStart(3, "0")}`;
+  return technicalAsset({
+    id,
+    number: `ANL-TECH-${String(index + 1).padStart(3, "0")}`,
+    name,
+    category,
+    buildingId,
+    roomId: room.id,
+    propertyId: technicalBuildings.find((entry) => entry.id === buildingId).propertyId,
+    manufacturer,
+    model,
+    checklistKey,
+    index,
+  });
+});
+function technicalAsset({ id, number, name, category, buildingId, roomId, propertyId, manufacturer, model, checklistKey, index }) {
+  const points = technicalDefinitions[checklistKey] ?? technicalDefinitions.weitere;
+  return technicalTestBase(id, number, {
+    name,
+    category,
+    manufacturer,
+    model,
+    serialNumber: `SN-TECH-${String(index + 1).padStart(4, "0")}`,
+    propertyId,
+    buildingId,
+    roomId,
+    location: technicalRooms.find((room) => room.id === roomId).name,
+    status: index % 9 === 0 ? "maintenance" : "active",
+    manufacturedYear: String(2017 + (index % 7)),
+    installedAt: `${2019 + (index % 5)}-06-15`,
+    warrantyUntil: "2028-06-15",
+    warrantyNote: "TEST-Garantie",
+    maintenanceInterval: index % 3 === 0 ? "quarterly" : "annual",
+    controlInterval: "monthly",
+    nextMaintenance: "2026-10-15",
+    nextInspection: "2026-10-01",
+    responsible: "Martina Keller",
+    technicalData: `TEST-Datenblatt: ${model}; Nennleistung ${12 + index} kW; Betriebsart automatisch.`,
+    supplierId: "sup_hls",
+    lifecycle: "inOperation",
+    criticality: index % 4 === 0 ? "high" : "medium",
+    conditionRating: index % 5 === 0 ? 3 : 4,
+    conditionAssessedAt: "2026-09-01",
+    conditionNote: "TEST-Anlage, regelmässig kontrolliert.",
+    photos: [testPhoto(`${id}_photo`, `${name}.png`)],
+  });
+}
+const technicalFollowUps = technicalAssets.map((asset, index) => {
+  const maintenanceId = `mnt_tech_${String(index + 1).padStart(3, "0")}`;
+  const orderId = `ord_tech_${String(index + 1).padStart(3, "0")}`;
+  const damageId = `damage_tech_${String(index + 1).padStart(3, "0")}`;
+  const reportId = `rep_tech_${String(index + 1).padStart(3, "0")}`;
+  const inspectionId = `insp_tech_${String(index + 1).padStart(3, "0")}`;
+  const documentId = `doc_tech_${String(index + 1).padStart(3, "0")}`;
+  const invoiceId = `invoice_tech_${String(index + 1).padStart(3, "0")}`;
+  const points = technicalDefinitions[technicalAssetSpecs[index][6]] ?? technicalDefinitions.weitere;
+  const checkpoints = points.map(([key, label, value, unit, target]) => ({ key, label, value, unit, target, status: value === "Keine" ? "ok" : "ok" }));
+  const roomId = asset.roomId;
+  const commonFields = { propertyId: asset.propertyId, buildingId: asset.buildingId, roomId, assetId: asset.id };
+  const property = properties.find((entry) => entry.id === asset.propertyId);
+  const customerId = property.customerId;
+  const siteId = property.siteId;
+  return {
+    maintenance: technicalTestBase(maintenanceId, `WA-TECH-${String(index + 1).padStart(3, "0")}`, { title: `Wartung ${asset.name}`, description: `TEST-Wartung für ${asset.name}.`, status: index % 5 === 0 ? "due" : "planned", interval: asset.maintenanceInterval === "quarterly" ? "quarterly" : "annual", ...commonFields, company: "HLS Service Zürich AG", supplierId: "sup_hls", responsible: "Martina Keller", assigneeUserId: "user_martina", assigneeTeam: "Technik", lastDate: "2026-07-15", nextDate: asset.nextMaintenance, checklist: checkpoints.map((point) => ({ id: point.key, text: point.label, done: true })) }),
+    inspection: technicalTestBase(inspectionId, `KO-TECH-${String(index + 1).padStart(3, "0")}`, { title: `Technische Checkliste ${asset.name}`, type: "custom", customType: "Technische Anlagen-Checkliste", organizationId: "org_facility", siteId, ...commonFields, date: "2026-09-10", tester: "Martina Keller", supplierId: "sup_hls", assigneeUserId: "user_martina", assigneeTeam: "Technik", interval: "monthly", nextDate: asset.nextInspection, result: "passed", status: "done", measures: "TEST-Kontrolle ohne kritische Abweichung.", technicalCategory: technicalAssetSpecs[index][6], technicalCheckpoints: checkpoints, technicalMeasurements: Object.fromEntries(checkpoints.filter((point) => point.unit).map((point) => [point.key, point.value])), previousMeasurements: Object.fromEntries(checkpoints.filter((point) => point.unit).map((point) => [point.key, String(Number(point.value) - 1)])), photos: asset.photos }),
+    order: technicalTestBase(orderId, `AU-TECH-${String(index + 1).padStart(3, "0")}`, { title: `Auftrag ${asset.name}`, description: `TEST-Auftrag aus technischer Kontrolle für ${asset.name}.`, status: index % 4 === 0 ? "inProgress" : "planned", priority: index % 4 === 0 ? "high" : "medium", customerId, ...commonFields, quoteId: "", supplierId: "sup_hls", assignee: "Martina Keller", assigneeUserId: "user_martina", assigneeTeam: "Technik", dueDate: "2026-10-20", startedAt: "2026-09-10T08:00:00.000Z", completedAt: "", workDate: "2026-09-10", workStart: "08:00", workEnd: "10:30", breakMinutes: 15, checklist: checkpoints.map((point) => ({ id: point.key, text: point.label, done: true })), materials: [{ id: `${orderId}_mat`, name: "Prüf- und Ersatzmaterial", quantity: 1, unit: "Pauschal", price: 180 + index * 10, stockItemId: "stock_sensor", billable: true }], externalServices: [], signature: "", signedBy: "", sourceCollection: "maintenances", sourceId: maintenanceId, hourlyRate: 145, photos: asset.photos }),
+    damage: technicalTestBase(damageId, `SC-TECH-${String(index + 1).padStart(3, "0")}`, { title: `Abweichung ${asset.name}`, description: `TEST-Schaden/Abweichung aus der technischen Kontrolle von ${asset.name}.`, status: index % 4 === 0 ? "inProgress" : "fixed", priority: index % 4 === 0 ? "high" : "medium", customerId, ...commonFields, reportedBy: "Technische Kontrolle", reportedById: "user_martina", assigneeUserId: "user_martina", assigneeTeam: "Technik", reportedAt: "2026-09-10T10:30:00.000Z", fixedAt: index % 4 === 0 ? "" : "2026-09-12", insuranceCase: false, estimatedCost: 450 + index * 35, photos: asset.photos }),
+    report: technicalTestBase(reportId, `RP-TECH-${String(index + 1).padStart(3, "0")}`, { title: `Rapport ${asset.name}`, type: "inspection", status: "final", date: "2026-09-10", author: "Martina Keller", customerId, ...commonFields, orderId, summary: "TEST-Rapport der technischen Kontrolle.", workDescription: `Kontrolle, Messung und Dokumentation von ${asset.name}.`, workStart: "08:00", workEnd: "10:30", breakMinutes: 15, materials: [{ id: `${reportId}_mat`, name: "Prüf- und Ersatzmaterial", quantity: 1, unit: "Pauschal", price: 180 + index * 10 }], externalServices: [], sharedWithCustomer: false, signature: "", signedBy: "Martina Keller", signedAt: "2026-09-10T11:00:00.000Z", billable: true, hourlyRate: 145 }),
+    document: technicalTestBase(documentId, `DK-TECH-${String(index + 1).padStart(3, "0")}`, { title: `Technisches Datenblatt ${asset.name}`, category: "Technische Dokumentation", file: file(`${documentId}_file`, `${asset.name.toLowerCase().replaceAll(" ", "-")}.pdf`, "Technische Dokumentation", "documents", documentId), versions: [], organizationId: "org_facility", siteId, customerId, ...commonFields, orderId, maintenanceId, validUntil: "2028-12-31", sharedWithCustomer: false, safetyEvidence: false }),
+    invoice: technicalTestBase(invoiceId, `RE-TECH-${String(index + 1).padStart(3, "0")}`, { title: `Kosten ${asset.name}`, status: "draft", customerId, propertyId: asset.propertyId, orderId, quoteId: "", reportId, date: "2026-09-10", dueDate: "2026-10-10", paidAt: "", items: [{ id: `${invoiceId}_item`, position: 1, description: `Arbeitszeit und Material ${asset.name}`, quantity: 1, unit: "Pauschal", unitPrice: 650 + index * 25, vatRate: 8.1 }], currency: "CHF", qrReference: "", payment: { recipient: "Facility365 Testorganisation", address: address("Teststrasse 1", "8000", "Zürich"), iban: "CH5604835012345678009", qrIban: "", bank: "Testbank Schweiz", bic: "ZKBKCHZZ80A", referenceType: "SCOR" } }),
+    activity: technicalTestBase(`activity_tech_${String(index + 1).padStart(3, "0")}`, `AK-TECH-${String(index + 1).padStart(3, "0")}`, { at: "2026-09-10T11:00:00.000Z", userName: "Martina Keller", userId: "user_martina", module: "assets", entityId: asset.id, entityNumber: asset.number, entityTitle: asset.name, action: "history.updated" }),
+  };
+});
+const technicalTestData = {
+  buildings: technicalBuildings,
+  rooms: technicalRooms,
+  assets: technicalAssets,
+  maintenances: technicalFollowUps.map((entry) => entry.maintenance),
+  inspections: technicalFollowUps.map((entry) => entry.inspection),
+  orders: technicalFollowUps.map((entry) => entry.order),
+  damages: technicalFollowUps.map((entry) => entry.damage),
+  reports: technicalFollowUps.map((entry) => entry.report),
+  documents: technicalFollowUps.map((entry) => entry.document),
+  invoices: technicalFollowUps.map((entry) => entry.invoice),
+  activities: technicalFollowUps.map((entry) => entry.activity),
+};
+
 const orders = [
   { ...base("ord_alp", "AU-TEST-001"), title: "Störung Warmwasser Zimmertrakt", description: "Warmwasser in Zimmern 210–218 nur lauwarm.", status: "inProgress", priority: "high", customerId: "cus_alpenblick", propertyId: "prop_alpenblick", buildingId: "bld_alpenblick", roomId: "bld_alpenblick_og1_room_2_1", assetId: "asset_heat_alp", quoteId: "", supplierId: "sup_hls", assignee: "Daniel Frei", assigneeUserId: "", assigneeTeam: "Technik", dueDate: "2026-09-16", startedAt: "2026-09-12T08:00:00.000Z", completedAt: "", workDate: "2026-09-12", workStart: "08:00", workEnd: "11:30", breakMinutes: 15, checklist: checklist("Temperatur messen", "Zirkulationspumpe prüfen"), materials: [{ id: "mat_ord_alp", name: "Temperaturfühler PT1000", quantity: 1, unit: "Stk.", price: 85, stockItemId: "stock_sensor", billable: true }], externalServices: [], signature: "", signedBy: "", sourceCollection: "maintenances", sourceId: "mnt_heat_alp", hourlyRate: 145 },
   { ...base("ord_son", "AU-TEST-002"), title: "Defekte Beleuchtung Klassenzimmer 2.14", description: "Drei Leuchten flackern.", status: "planned", priority: "medium", customerId: "cus_schulverband", propertyId: "prop_sonnenrain", buildingId: "bld_sonnenrain", roomId: "bld_sonnenrain_og1_room_2_1", assetId: "", quoteId: "", supplierId: "", assignee: "Hausdienst Sonnenrain", assigneeUserId: "", assigneeTeam: "Hausdienst", dueDate: "2026-09-22", startedAt: "", completedAt: "", workDate: "", workStart: "", workEnd: "", breakMinutes: 0, checklist: checklist("Leuchtmittel prüfen"), materials: [], externalServices: [], signature: "", signedBy: "", sourceCollection: "tickets", sourceId: "ticket_son", hourlyRate: 90 },
@@ -444,6 +664,10 @@ const data = {
   users: [common("user_martina", "BE-TEST-001", { name: "Martina Keller", email: "martina.keller@facility365-test.example", role: "orgadmin", status: "active", phone: "079 555 00 11", hourlyRate: 120 })],
   activities: [],
 };
+
+for (const [collection, records] of Object.entries(technicalTestData)) {
+  data[collection] = [...(data[collection] ?? []), ...records];
+}
 
 const snapshot = { createdAt: now, collections: data };
 writeFileSync("testdata/Facility365-realistische-testdaten.json", `${JSON.stringify(snapshot, null, 2)}\n`);
