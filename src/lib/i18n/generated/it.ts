@@ -989,6 +989,7 @@ export const table: Record<string, string> = {
   "contracts.reminderTitle": "Contratto in scadenza",
   "dashboard.expiringContract": "Contratto in scadenza",
   "module.audit": "Modalità audit",
+  "module.walkthrough": "Giro tecnico",
   "audit.location": "Sede",
   "audit.period": "Periodo",
   "audit.from": "Dal",

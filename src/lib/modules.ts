@@ -132,6 +132,7 @@ const NAVIGATION_ORDER: ModuleKey[] = [
   "invoices",
   "analytics",
   "audit",
+  "walkthrough",
   "users",
   "activities",
   "microsoft",
@@ -551,6 +552,14 @@ export const MODULES: ModuleDefinition[] = [
     group: "analytics",
     labelKey: "module.audit",
     singularKey: "module.audit",
+  },
+  {
+    key: "walkthrough",
+    path: "/walkthrough",
+    icon: ClipboardList,
+    group: "technics",
+    labelKey: "module.walkthrough",
+    singularKey: "module.walkthrough",
   },
   {
     key: "handover",

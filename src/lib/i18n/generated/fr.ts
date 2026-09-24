@@ -989,6 +989,7 @@ export const table: Record<string, string> = {
   "contracts.reminderTitle": "Contrat bientôt échu",
   "dashboard.expiringContract": "Contrat bientôt échu",
   "module.audit": "Mode audit",
+  "module.walkthrough": "Ronde technique",
   "audit.location": "Site",
   "audit.period": "Période",
   "audit.from": "Du",

@@ -5245,6 +5245,12 @@ export const dictionary = {
     it: "Modalità audit",
     en: "Audit mode",
   },
+  "module.walkthrough": {
+    de: "Technischer Rundgang",
+    fr: "Ronde technique",
+    it: "Giro tecnico",
+    en: "Technical walkthrough",
+  },
   "audit.location": { de: "Standort", fr: "Site", it: "Sede", en: "Location" },
   "audit.period": {
     de: "Zeitraum",
