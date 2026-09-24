@@ -1,5 +1,5 @@
 import { AuditView } from '@/components/modules/audit-view';
 
 export default function AuditPage() {
-  return <AuditView />;
+  return <AuditView mode="audit" />;
 }

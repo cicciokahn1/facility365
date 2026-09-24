@@ -44,7 +44,8 @@ const TONE_CLASS: Record<AuditTone, string> = {
 /** Vorgabe: das laufende Jahr. */
 const yearStart = (): string => `${new Date().getFullYear()}-01-01`;
 
-export function AuditView() {
+export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }) {
+  const isWalkthrough = mode === 'walkthrough';
   const t = useT();
   const router = useRouter();
   const { settings, save } = useSettings();
@@ -323,7 +324,9 @@ export function AuditView() {
     <div className="flex flex-col gap-4" data-testid="audit-view">
       <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-base">{t('module.audit')}</CardTitle>
+          <CardTitle className="text-base">
+            {isWalkthrough ? t('module.walkthrough') : t('module.audit')}
+          </CardTitle>
           <Button onClick={() => void createPdf()} data-testid="audit-pdf">
             <FileDown className="size-4" aria-hidden />
             {t('audit.createReport')}
@@ -391,7 +394,7 @@ export function AuditView() {
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3" data-testid="audit-summary">
+          {!isWalkthrough ? <div className="grid gap-3 sm:grid-cols-3" data-testid="audit-summary">
             {([
               ['green', t('audit.green'), tones.green],
               ['amber', t('audit.amber'), tones.amber],
@@ -407,8 +410,8 @@ export function AuditView() {
                 <span className="text-sm text-muted-foreground">{label}</span>
               </div>
             ))}
-          </div>
-          {total === 0 ? (
+          </div> : null}
+          {!isWalkthrough && total === 0 ? (
             <p className="text-sm text-muted-foreground" data-testid="audit-empty">
               {t('audit.noData')}
             </p>
@@ -416,7 +419,7 @@ export function AuditView() {
         </CardContent>
       </Card>
 
-      <Card data-testid="technical-walkthrough">
+      {isWalkthrough ? <Card data-testid="technical-walkthrough">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <TriangleAlert className="size-4" aria-hidden />
@@ -525,9 +528,9 @@ export function AuditView() {
             ) : null}
           </div>
         </CardContent>
-      </Card>
+      </Card> : null}
 
-      {isAdmin ? (
+      {isWalkthrough && isAdmin ? (
         <Card data-testid="technical-checklist-admin">
           <CardHeader>
             <CardTitle className="text-base">Technische Checklisten verwalten</CardTitle>
@@ -549,7 +552,7 @@ export function AuditView() {
         </Card>
       ) : null}
 
-      {sections.map((section) => (
+      {!isWalkthrough ? sections.map((section) => (
         <Card key={section.key} data-testid={`audit-section-${section.key}`}>
           <CardHeader>
             <CardTitle className="text-base">
@@ -583,7 +586,7 @@ export function AuditView() {
             )}
           </CardContent>
         </Card>
-      ))}
+      )) : null}
     </div>
   );
 }

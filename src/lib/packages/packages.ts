@@ -53,6 +53,7 @@ export const OPTIONAL_MODULES: ModuleKey[] = [
   'playgroundchecks',
   'firechecks',
   'audit',
+  'walkthrough',
   'handover',
   'cleaning',
   'cleaningtasks',
@@ -95,6 +96,7 @@ const CONTROLS: ModuleKey[] = [
   'playgroundchecks',
   'firechecks',
   'audit',
+  'walkthrough',
   'handover',
 ];
 
