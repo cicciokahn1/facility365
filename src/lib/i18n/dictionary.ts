@@ -3801,10 +3801,16 @@ export const dictionary = {
     en: "Notifications",
   },
   "settings.notificationsOn": {
-    de: "Hinweise in der App",
+    de: "Push-Mitteilungen",
     fr: "Notifications dans l’app",
-    it: "Avvisi nell’app",
-    en: "In-app notifications",
+    it: "Notifiche push",
+    en: "Push notifications",
+  },
+  "settings.pushHint": {
+    de: "Fällige Aufgaben und Termine dürfen als Push-Mitteilung angezeigt werden.",
+    fr: "Les tâches et rendez-vous échus peuvent être affichés comme notifications push.",
+    it: "Le attività e gli appuntamenti imminenti possono essere mostrati come notifiche push.",
+    en: "Due tasks and appointments may be shown as push notifications.",
   },
   "settings.emailNotifications": {
     de: "E-Mail-Benachrichtigungen",

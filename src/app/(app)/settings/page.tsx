@@ -32,6 +32,7 @@ import { useClearAllData, useCollectionItems } from '@/lib/data/store';
 import { LANGUAGES, useT } from '@/lib/i18n/provider';
 import { INTEGRATIONS } from '@/lib/integrations/registry';
 import { moduleByKey } from '@/lib/modules';
+import { usePushPermission } from '@/lib/notifications/reminders';
 import {
   OPTIONAL_MODULES,
   CORE_MODULES,
@@ -64,6 +65,7 @@ export default function SettingsPage() {
 function SettingsForm({ settings }: { settings: AppSettings }) {
   const t = useT();
   const { settings: live, save } = useSettings();
+  const push = usePushPermission();
   const clearAll = useClearAllData();
   const cleaners = useCollectionItems('cleaners');
   const users = useCollectionItems('users');
@@ -81,6 +83,22 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
 
   const set = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
+
+  const enablePush = async () => {
+    if (push.install) {
+      toast.info(t('notify.installTitle'), { description: t('notify.installHint') });
+      return;
+    }
+    const result = await push.request();
+    if (result === 'granted') {
+      set('notificationsEnabled', true);
+      toast.success(t('notify.enabled'));
+    } else if (result === 'denied') {
+      toast.error(t('notify.denied'));
+    } else {
+      toast.info(t('notify.unsupported'));
+    }
+  };
 
   /**
    * Paket und Modulschalter wirken sofort und werden sofort gespeichert, damit
@@ -618,8 +636,23 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
             <Switch
               checked={draft.notificationsEnabled}
               onCheckedChange={(checked) => set('notificationsEnabled', checked)}
+              data-testid="settings-push-toggle"
             />
           </label>
+          {draft.notificationsEnabled && push.permission !== 'granted' ? (
+            <Button variant="outline" className="w-fit" onClick={() => void enablePush()} data-testid="settings-push-enable">
+              {t('notify.enable')}
+            </Button>
+          ) : null}
+          <p className="text-xs text-muted-foreground">
+            {push.permission === 'granted'
+              ? t('notify.active')
+              : push.permission === 'denied'
+                ? t('notify.denied')
+                : push.install
+                  ? t('notify.installHint')
+                  : t('settings.pushHint')}
+          </p>
           <label className="flex items-center justify-between gap-4">
             <span className="text-sm">{t('settings.emailNotifications')}</span>
             <Switch
