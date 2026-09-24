@@ -42,6 +42,7 @@ export function QuickWorkTime() {
   const [end, setEnd] = useState('');
   const [breakMinutes, setBreakMinutes] = useState('0');
   const [title, setTitle] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
   const weekEnd = addDays(weekStart, 6);
   const entries = reports.filter((report) => {
     const own = !settings.profileName || report.author === settings.profileName;
@@ -69,19 +70,48 @@ export function QuickWorkTime() {
   );
   const totalHours = Math.round((totalMinutes / 60) * 100) / 100;
 
+  const { update } = useCollection('reports');
+
+  const resetForm = () => {
+    setEditingId(null);
+    setDate(today());
+    setStart('');
+    setEnd('');
+    setBreakMinutes('0');
+    setTitle('');
+  };
+
   const save = () => {
-    const report = create({
-      ...defaultValuesOf('reports'),
+    const values = {
       title: title.trim() || t('quickWorkTime.title'),
-      type: 'daily',
-      status: 'draft',
       date,
-      author: settings.profileName || settings.companyName,
       workStart: start,
       workEnd: end,
       breakMinutes: Number(breakMinutes) || 0,
-    });
+    };
+    if (editingId) {
+      update(editingId, values, 'history.workTimeCorrected', settings.profileName || settings.companyName);
+    } else {
+      create({
+        ...defaultValuesOf('reports'),
+        ...values,
+        type: 'daily',
+        status: 'draft',
+        author: settings.profileName || settings.companyName,
+      });
+    }
+    resetForm();
     router.push('/work-time');
+  };
+
+  const edit = (report: (typeof entries)[number]) => {
+    setEditingId(report.id);
+    setDate(report.date);
+    setStart(report.workStart);
+    setEnd(report.workEnd);
+    setBreakMinutes(String(report.breakMinutes ?? 0));
+    setTitle(report.title);
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   };
 
   return (
@@ -135,20 +165,31 @@ export function QuickWorkTime() {
               entries
                 .sort((left, right) => left.date.localeCompare(right.date))
                 .map((report) => (
-                  <div key={report.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
-                    <div>
-                      <p className="font-medium">{formatDate(report.date, settings.language)}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {report.workStart} – {report.workEnd}
-                      </p>
-                    </div>
-                    <span className="font-medium">
-                      {formatWorkTime({
-                        start: report.workStart,
-                        end: report.workEnd,
-                        breakMinutes: report.breakMinutes,
-                      })} h
-                    </span>
+                    <div key={report.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
+                      <div>
+                        <p className="font-medium">{formatDate(report.date, settings.language)}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {report.workStart} – {report.workEnd}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">
+                          {formatWorkTime({
+                            start: report.workStart,
+                            end: report.workEnd,
+                            breakMinutes: report.breakMinutes,
+                          })} h
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => edit(report)}
+                          aria-label={t('action.edit')}
+                          data-testid={`work-edit-${report.id}`}
+                        >
+                          {t('action.edit')}
+                        </Button>
+                      </div>
                   </div>
                 ))
             )}
@@ -156,7 +197,11 @@ export function QuickWorkTime() {
         </CardContent>
       </Card>
       <Card>
-        <CardHeader><CardTitle className="text-base">{t('tab.workTime')}</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {editingId ? t('quickWorkTime.correct') : t('tab.workTime')}
+            </CardTitle>
+          </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="grid gap-1.5">
             <Label htmlFor="work-date">{t('common.date')}</Label>
@@ -179,8 +224,15 @@ export function QuickWorkTime() {
             <Input id="work-break" type="number" min="0" value={breakMinutes} onChange={(event) => setBreakMinutes(event.target.value)} />
           </div>
           <div className="flex flex-wrap gap-2 sm:col-span-2">
-            <Button onClick={save} disabled={!date || !start || !end}>{t('action.save')}</Button>
-            <Button variant="outline" onClick={() => router.back()}>{t('action.cancel')}</Button>
+            <Button onClick={save} disabled={!date || !start || !end}>
+              {editingId ? t('quickWorkTime.correctSave') : t('action.save')}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => (editingId ? resetForm() : router.back())}
+            >
+              {t('action.cancel')}
+            </Button>
           </div>
         </CardContent>
       </Card>

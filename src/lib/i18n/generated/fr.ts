@@ -541,6 +541,8 @@ export const table: Record<string, string> = {
   "quickWorkTime.week": "Temps de travail cette semaine",
   "quickWorkTime.total": "Total de votre temps de travail",
   "quickWorkTime.noEntries": "Aucun temps de travail saisi cette semaine.",
+  "quickWorkTime.correct": "Corriger le temps de travail",
+  "quickWorkTime.correctSave": "Enregistrer la correction",
   "quickWorkTime.previousWeek": "Semaine précédente",
   "quickWorkTime.nextWeek": "Semaine suivante",
   "dashboard.overdue": "en retard",
