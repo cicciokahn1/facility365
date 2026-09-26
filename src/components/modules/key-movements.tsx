@@ -1,12 +1,5 @@
 'use client';
 
-/**
- * Bewegungen eines Schluessels.
- *
- * Ausgabe und Ruecknahme laufen ueber dieselbe Liste: jede Bewegung haelt
- * Person, Datum und Bemerkung fest und setzt zugleich Status, Ausgabe an,
- * Ausgabedatum und Rueckgabe des Schluessels.
- */
 import { useState } from 'react';
 import { ArrowDownLeft, ArrowUpRight, Trash2 } from 'lucide-react';
 
@@ -14,21 +7,52 @@ import { EmptyState } from '@/components/common/empty-state';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
 import { Issuable, KeyMovement } from '@/lib/types';
 import { formatDate, today } from '@/lib/utils/format';
 import { newId } from '@/lib/utils/id';
 
+export type MovementLabels = {
+  issuedTo: TranslationKey;
+  movements: TranslationKey;
+  movementType: TranslationKey;
+  person: TranslationKey;
+  issue: TranslationKey;
+  takeBack: TranslationKey;
+  movementsEmpty: TranslationKey;
+  historyIssued: TranslationKey;
+  historyReturned: TranslationKey;
+};
+
+const defaultMovementLabels: MovementLabels = {
+  issuedTo: 'keys.issuedTo',
+  movements: 'keys.movements',
+  movementType: 'keys.movementType',
+  person: 'keys.person',
+  issue: 'keys.issue',
+  takeBack: 'keys.takeBack',
+  movementsEmpty: 'keys.movementsEmpty',
+  historyIssued: 'keys.historyIssued',
+  historyReturned: 'keys.historyReturned',
+};
+
 /**
- * Dieselbe Ausgabe- und Ruecknahmeliste dient Schluesseln und Werkzeugen.
+ * Bewegungen eines ausgegebenen Gegenstands.
+ *
+ * Ausgabe und Ruecknahme laufen ueber dieselbe Liste: jede Bewegung haelt
+ * Person, Datum und Bemerkung fest und setzt zugleich Status, Ausgabe an,
+ * Ausgabedatum und Rueckgabe.
  */
 export function KeyMovements<T extends Issuable>({
   entity,
   onChange,
+  labels = defaultMovementLabels,
 }: {
   entity: T;
   onChange: (values: Partial<T>, action?: string) => void;
+  labels?: MovementLabels;
 }) {
   const t = useT();
   const { settings } = useSettings();
@@ -44,23 +68,21 @@ export function KeyMovements<T extends Issuable>({
     setDate(today());
   };
 
-  /** Ausgabe: der Schluessel ist beim Empfaenger, die Rueckgabe wird zurueckgesetzt. */
   const issue = () => {
     const name = person.trim();
     if (!name) return;
     append(
       { id: newId('movement'), type: 'issue', date, person: name, note: note.trim() },
       { status: 'issued', issuedTo: name, issuedAt: date, returnedAt: '' } as Partial<T>,
-      'keys.historyIssued',
+      labels.historyIssued,
     );
   };
 
-  /** Ruecknahme: der Schluessel liegt wieder am Standort. */
   const takeBack = () => {
     append(
       { id: newId('movement'), type: 'return', date, person: entity.issuedTo, note: note.trim() },
       { status: 'available', returnedAt: date } as Partial<T>,
-      'keys.historyReturned',
+      labels.historyReturned,
     );
   };
 
@@ -70,13 +92,13 @@ export function KeyMovements<T extends Issuable>({
         {issued ? (
           <div className="sm:col-span-3">
             <p className="text-sm">
-              {t('keys.issuedTo')}: <span className="font-medium">{entity.issuedTo}</span>
+              {t(labels.issuedTo)}: <span className="font-medium">{entity.issuedTo}</span>
               {entity.issuedAt ? ` · ${formatDate(entity.issuedAt, settings.language)}` : ''}
             </p>
           </div>
         ) : (
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="movement-person">{t('keys.issuedTo')}</Label>
+            <Label htmlFor="movement-person">{t(labels.issuedTo)}</Label>
             <Input
               id="movement-person"
               value={person}
@@ -108,27 +130,27 @@ export function KeyMovements<T extends Issuable>({
           {issued ? (
             <Button onClick={takeBack} data-testid="movement-return">
               <ArrowDownLeft className="size-4" aria-hidden />
-              {t('keys.takeBack')}
+              {t(labels.takeBack)}
             </Button>
           ) : (
             <Button onClick={issue} data-testid="movement-issue">
               <ArrowUpRight className="size-4" aria-hidden />
-              {t('keys.issue')}
+              {t(labels.issue)}
             </Button>
           )}
         </div>
       </div>
 
       {entity.movements.length === 0 ? (
-        <EmptyState icon={ArrowUpRight} titleKey="keys.movementsEmpty" />
+        <EmptyState icon={ArrowUpRight} titleKey={labels.movementsEmpty} />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[520px] text-sm">
             <thead>
               <tr className="border-b text-left text-xs text-muted-foreground">
                 <th className="py-2 pr-3 font-medium">{t('common.date')}</th>
-                <th className="py-2 pr-3 font-medium">{t('keys.movementType')}</th>
-                <th className="py-2 pr-3 font-medium">{t('keys.person')}</th>
+                <th className="py-2 pr-3 font-medium">{t(labels.movementType)}</th>
+                <th className="py-2 pr-3 font-medium">{t(labels.person)}</th>
                 <th className="py-2 pr-3 font-medium">{t('common.notes')}</th>
                 <th className="py-2" />
               </tr>
@@ -138,7 +160,7 @@ export function KeyMovements<T extends Issuable>({
                 <tr key={movement.id} className="border-b last:border-0" data-testid="key-movement">
                   <td className="py-2 pr-3">{formatDate(movement.date, settings.language)}</td>
                   <td className="py-2 pr-3">
-                    {t(movement.type === 'issue' ? 'keys.issue' : 'keys.takeBack')}
+                    {t(movement.type === 'issue' ? labels.issue : labels.takeBack)}
                   </td>
                   <td className="py-2 pr-3">{movement.person}</td>
                   <td className="py-2 pr-3">{movement.note}</td>
