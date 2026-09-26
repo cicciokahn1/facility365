@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
   webpush.setVapidDetails(
     process.env.FACILITY365_VAPID_SUBJECT ?? 'mailto:admin@facility365.ch',
-    'BCkKSxerlEO2joT2TYXSDa31tKuJRl3SZpxLhQAdwQI7222BbBVHHGlVE4qyQsiqQevMvb-z5ubflTejBEjk0QU',
+    'BMFOcMBnET9KD0-_-Kl3E2OwkUc0EzvHdpQ-t7C1Mv9L_tBWtxuKv79znoqFImTUwJ_wFif-Qq4aKeoNiCuAUmA',
     privateKey,
   );
 
