@@ -1,6 +1,6 @@
 /** Öffentlicher VAPID-Schlüssel; darf im Browser verwendet werden. */
 export const VAPID_PUBLIC_KEY =
-  'BCkKSxerlEO2joT2TYXSDa31tKuJRl3SZpxLhQAdwQI7222BbBVHHGlVE4qyQsiqQevMvb-z5ubflTejBEjk0QU';
+  'BMFOcMBnET9KD0-_-Kl3E2OwkUc0EzvHdpQ-t7C1Mv9L_tBWtxuKv79znoqFImTUwJ_wFif-Qq4aKeoNiCuAUmA';
 
 export const base64ToArrayBuffer = (value: string): ArrayBuffer => {
   const padding = '='.repeat((4 - (value.length % 4)) % 4);
