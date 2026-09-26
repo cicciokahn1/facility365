@@ -17,8 +17,24 @@ export function ToolDetail({ id }: { id: string }) {
       extraTabs={(entity, update) => [
         {
           value: 'movements',
-          labelKey: 'keys.movements',
-          content: <KeyMovements entity={entity} onChange={update} />,
+          labelKey: 'tool.movements',
+          content: (
+            <KeyMovements
+              entity={entity}
+              onChange={update}
+              labels={{
+                issuedTo: 'tool.issuedTo',
+                movements: 'tool.movements',
+                movementType: 'tool.movementType',
+                person: 'tool.person',
+                issue: 'tool.issue',
+                takeBack: 'tool.takeBack',
+                movementsEmpty: 'tool.movementsEmpty',
+                historyIssued: 'tool.historyIssued',
+                historyReturned: 'tool.historyReturned',
+              }}
+            />
+          ),
         },
       ]}
     />
