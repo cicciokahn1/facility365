@@ -1784,6 +1784,18 @@ export const dictionary = {
     it: "Carica",
     en: "Upload",
   },
+  "upload.tooLarge": {
+    de: "Die Datei ist zu gross. Maximal 4 MB.",
+    fr: "Le fichier est trop volumineux. Maximum 4 Mo.",
+    it: "Il file è troppo grande. Massimo 4 MB.",
+    en: "The file is too large. Maximum 4 MB.",
+  },
+  "upload.invalidPhoto": {
+    de: "Bitte ein gültiges Bild auswählen.",
+    fr: "Sélectionnez une image valide.",
+    it: "Seleziona un'immagine valida.",
+    en: "Please select a valid image.",
+  },
   "action.replace": {
     de: "Ersetzen",
     fr: "Remplacer",

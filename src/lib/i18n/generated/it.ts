@@ -325,6 +325,8 @@ export const table: Record<string, string> = {
   "action.download": "Scarica",
   "action.print": "Stampa",
   "action.upload": "Carica",
+  "upload.tooLarge": "Il file è troppo grande. Massimo 4 MB.",
+  "upload.invalidPhoto": "Seleziona un'immagine valida.",
   "action.replace": "Sostituisci",
   "action.add": "Aggiungi",
   "action.close": "Chiudi",

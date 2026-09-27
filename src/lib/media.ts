@@ -51,6 +51,12 @@ export const extensionOf = (fileName: string): string =>
 export const isAllowedDocument = (file: File): boolean =>
   DOCUMENT_EXTENSIONS.includes(extensionOf(file.name));
 
+export const isAllowedPhoto = (file: File): boolean =>
+  file.type.startsWith('image/') &&
+  ['jpg', 'jpeg', 'png', 'webp', 'heic'].includes(extensionOf(file.name));
+
+export const isWithinUploadLimit = (file: File): boolean => file.size <= MAX_FILE_BYTES;
+
 export const isAllowedPlan = (file: File): boolean =>
   PLAN_EXTENSIONS.includes(extensionOf(file.name));
 

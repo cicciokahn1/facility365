@@ -14,7 +14,7 @@ import { EmptyState } from '@/components/common/empty-state';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useT } from '@/lib/i18n/provider';
-import { PHOTO_ACCEPT, photoFromFile } from '@/lib/media';
+import { isAllowedPhoto, isWithinUploadLimit, PHOTO_ACCEPT, photoFromFile } from '@/lib/media';
 import { Photo } from '@/lib/types';
 
 export function PhotoGallery({
@@ -33,13 +33,22 @@ export function PhotoGallery({
 
   const addFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
-    const added = await Promise.all(Array.from(files).map((file) => photoFromFile(file)));
+    const allowed = Array.from(files).filter((file) => isAllowedPhoto(file) && isWithinUploadLimit(file));
+    if (allowed.length !== files.length) {
+      toast.error(t('upload.invalidPhoto'));
+      return;
+    }
+    const added = await Promise.all(allowed.map((file) => photoFromFile(file)));
     onChange([...photos, ...added], 'history.photoAdded');
   };
 
   const replaceFile = async (files: FileList | null) => {
     const file = files?.[0];
     if (!file || !replaceId) return;
+    if (!isAllowedPhoto(file) || !isWithinUploadLimit(file)) {
+      toast.error(t('upload.invalidPhoto'));
+      return;
+    }
     const photo = await photoFromFile(file);
     onChange(
       photos.map((entry) => (entry.id === replaceId ? { ...photo, id: entry.id } : entry)),
