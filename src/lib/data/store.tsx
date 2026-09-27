@@ -23,7 +23,11 @@ import { toast } from "sonner";
 
 import { useAuth } from "@/lib/auth/provider";
 import { currentActor } from "@/lib/data/actor";
-import { ensureDailySnapshot, ensureTestData } from "@/lib/data/backup";
+import {
+  ensureDailySnapshot,
+  ensureModuleExamples,
+  ensureTestData,
+} from "@/lib/data/backup";
 import { COLLECTIONS } from "@/lib/data/collections";
 import { NUMBER_PAD, NUMBER_PREFIX, emptyEntity } from "@/lib/data/factories";
 import { describeChanges } from "@/lib/data/changes";
@@ -262,6 +266,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       };
       try {
         await ensureTestData(`${scope}:technical-assets-v1`, repository).catch(() => undefined);
+        await ensureModuleExamples(`${scope}:v1`, repository).catch(() => undefined);
         await read(CORE_COLLECTIONS);
       } catch (error) {
         if (!cancelled)

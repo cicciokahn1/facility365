@@ -94,6 +94,21 @@ export const ensureTestData = async (
   return added;
 };
 
+export const ensureModuleExamples = async (
+  scope: string,
+  repository: Repository,
+): Promise<number> => {
+  if (typeof window === 'undefined') return 0;
+  const seededKey = `facility365.module-examples.${scope}`;
+  if (window.localStorage.getItem(seededKey) === '1') return 0;
+  const { default: snapshot } = await import(
+    '../../../testdata/Facility365-module-beispiele.json'
+  );
+  const added = await mergeSnapshot(snapshot as unknown as Snapshot, repository);
+  window.localStorage.setItem(seededKey, '1');
+  return added;
+};
+
 /** Sicherung als Datei anbieten. */
 export const downloadSnapshot = (snapshot: Snapshot): void => {
   const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
