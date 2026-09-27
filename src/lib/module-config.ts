@@ -46,6 +46,7 @@ import {
   INSPECTION_TYPE_OPTIONS,
   INVENTORY_CATEGORY_OPTIONS,
   VEHICLE_STATUS_OPTIONS,
+  VEHICLE_SERVICE_OPTIONS,
   VISITOR_STATUS_OPTIONS,
   PARKING_STATUS_OPTIONS,
   WASTE_STATUS_OPTIONS,
@@ -1960,6 +1961,16 @@ const vehiclesConfig: ModuleConfig<"vehicles"> = {
       collection: "properties",
       filter: true,
     },
+    {
+      kind: "select",
+      name: "serviceType",
+      labelKey: "vehicle.serviceType",
+      options: VEHICLE_SERVICE_OPTIONS,
+      filter: true,
+    },
+    { kind: "date", name: "lastService", labelKey: "vehicle.lastService" },
+    text("serviceProvider", "vehicle.serviceProvider"),
+    { kind: "number", name: "serviceCost", labelKey: "vehicle.serviceCost" },
     { kind: "date", name: "nextService", labelKey: "vehicle.nextService" },
     { kind: "date", name: "tireChange", labelKey: "vehicle.tireChange" },
     {
@@ -1977,7 +1988,15 @@ const vehiclesConfig: ModuleConfig<"vehicles"> = {
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
   searchOf: (vehicle) =>
-    [vehicle.number, vehicle.title, vehicle.plate, vehicle.brand, vehicle.model]
+    [
+      vehicle.number,
+      vehicle.title,
+      vehicle.plate,
+      vehicle.brand,
+      vehicle.model,
+      vehicle.serviceProvider,
+      vehicle.serviceType,
+    ]
       .filter(Boolean)
       .join(" "),
 };
