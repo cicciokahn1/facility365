@@ -46,6 +46,9 @@ const SEARCHABLE = [
   'inventory',
   'vehicles',
   'tools',
+  'visitors',
+  'parking',
+  'waste',
   'stock',
   'contracts',
   'damages',
@@ -163,6 +166,9 @@ export function SearchDialog({
   const inventory = useCollectionItems('inventory');
   const vehicles = useCollectionItems('vehicles');
   const tools = useCollectionItems('tools');
+  const visitors = useCollectionItems('visitors');
+  const parking = useCollectionItems('parking');
+  const waste = useCollectionItems('waste');
   const stock = useCollectionItems('stock');
   const contracts = useCollectionItems('contracts');
   const damages = useCollectionItems('damages');
@@ -205,6 +211,9 @@ export function SearchDialog({
       inventory,
       vehicles,
       tools,
+      visitors,
+      parking,
+      waste,
       stock,
       contracts,
       damages,
@@ -260,6 +269,9 @@ export function SearchDialog({
       tools,
       users,
       vehicles,
+      visitors,
+      parking,
+      waste,
     ],
   );
 

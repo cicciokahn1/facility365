@@ -534,6 +534,26 @@ export const VEHICLE_STATUS_OPTIONS: SelectOption[] = [
   { value: "retired", labelKey: "vehicle.retired", tone: "neutral" },
 ];
 
+export const VISITOR_STATUS_OPTIONS: SelectOption[] = [
+  { value: "expected", labelKey: "visitor.expected", tone: "neutral" },
+  { value: "present", labelKey: "visitor.present", tone: "warning" },
+  { value: "completed", labelKey: "visitor.completed", tone: "success" },
+  { value: "cancelled", labelKey: "visitor.cancelled", tone: "danger" },
+];
+
+export const PARKING_STATUS_OPTIONS: SelectOption[] = [
+  { value: "available", labelKey: "parking.available", tone: "success" },
+  { value: "occupied", labelKey: "parking.occupied", tone: "warning" },
+  { value: "reserved", labelKey: "parking.reserved", tone: "neutral" },
+  { value: "blocked", labelKey: "parking.blocked", tone: "danger" },
+];
+
+export const WASTE_STATUS_OPTIONS: SelectOption[] = [
+  { value: "active", labelKey: "waste.active", tone: "success" },
+  { value: "paused", labelKey: "waste.paused", tone: "warning" },
+  { value: "completed", labelKey: "waste.completed", tone: "neutral" },
+];
+
 /** Kategorien fuer Inventar und Werkzeuge. */
 export const INVENTORY_CATEGORY_OPTIONS: SelectOption[] = [
   option("furniture", "inventory.category.furniture"),
