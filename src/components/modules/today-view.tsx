@@ -9,9 +9,11 @@
  */
 import { useMemo } from "react";
 import Link from "next/link";
+import { ClipboardList, FileText, ShieldAlert } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
+import { Button } from "@/components/ui/button";
 import { useAccess } from "@/lib/auth/scope";
 import { useRelevantEvents } from "@/lib/calendar/relevant";
 import { useCollectionItems } from "@/lib/data/store";
@@ -297,10 +299,34 @@ export function TodayView() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t("today.title")}
-        </h1>
-        <p className="text-sm text-muted-foreground">{t("today.hint")}</p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {t("today.title")}
+            </h1>
+            <p className="text-sm text-muted-foreground">{t("today.hint")}</p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 sm:flex" data-testid="today-quick-actions">
+            <Button asChild size="sm">
+              <Link href="/orders?new=1">
+                <ClipboardList className="size-4" aria-hidden />
+                <span className="hidden sm:inline">{t("dashboard.quick.order")}</span>
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/damages?new=1">
+                <ShieldAlert className="size-4" aria-hidden />
+                <span className="hidden sm:inline">{t("dashboard.quick.damage")}</span>
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/reports?new=1">
+                <FileText className="size-4" aria-hidden />
+                <span className="hidden sm:inline">{t("dashboard.quick.report")}</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
       </header>
 
       {empty ? (
