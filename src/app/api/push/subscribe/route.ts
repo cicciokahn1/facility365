@@ -26,7 +26,14 @@ export async function POST(request: Request) {
   const keys = payload?.keys as Record<string, unknown> | undefined;
   const p256dh = text(keys?.p256dh);
   const auth = text(keys?.auth);
-  if (!endpoint || !p256dh || !auth) {
+  if (
+    !endpoint ||
+    !p256dh ||
+    !auth ||
+    endpoint.length > 2048 ||
+    p256dh.length > 512 ||
+    auth.length > 512
+  ) {
     return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
   }
 
