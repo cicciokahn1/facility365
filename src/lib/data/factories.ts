@@ -49,6 +49,9 @@ import {
   Ticket,
   Tool,
   Vehicle,
+  Visitor,
+  ParkingSpace,
+  WasteEntry,
 } from "@/lib/types";
 
 export const emptyAddress = (): Address => ({
@@ -94,6 +97,9 @@ export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   inventory: "IV",
   vehicles: "FZ",
   tools: "WZ",
+  visitors: "BS",
+  parking: "PP",
+  waste: "AB",
   stock: "LA",
   contracts: "VT",
   damages: "SC",
@@ -531,6 +537,53 @@ export const emptyVehicle = (): Omit<Vehicle, "id" | "number"> => ({
   insuranceUntil: "",
 });
 
+export const emptyVisitor = (): Omit<Visitor, "id" | "number"> => ({
+  ...base(),
+  visitorName: "",
+  company: "",
+  phone: "",
+  email: "",
+  purpose: "",
+  propertyId: "",
+  buildingId: "",
+  hostUserId: "",
+  vehiclePlate: "",
+  badge: "",
+  status: "expected",
+  checkIn: "",
+  checkOut: "",
+});
+
+export const emptyParking = (): Omit<ParkingSpace, "id" | "number"> => ({
+  ...base(),
+  title: "",
+  code: "",
+  propertyId: "",
+  buildingId: "",
+  location: "",
+  type: "",
+  status: "available",
+  assignedTo: "",
+  plate: "",
+  validFrom: "",
+  validUntil: "",
+});
+
+export const emptyWaste = (): Omit<WasteEntry, "id" | "number"> => ({
+  ...base(),
+  title: "",
+  wasteType: "",
+  propertyId: "",
+  buildingId: "",
+  location: "",
+  container: "",
+  supplierId: "",
+  interval: "weekly",
+  nextPickup: "",
+  status: "active",
+  responsibleId: "",
+});
+
 export const emptyTool = (): Omit<Tool, "id" | "number"> => ({
   ...base(),
   title: "",
@@ -881,6 +934,9 @@ const FACTORIES = {
   inventory: emptyInventoryItem,
   vehicles: emptyVehicle,
   tools: emptyTool,
+  visitors: emptyVisitor,
+  parking: emptyParking,
+  waste: emptyWaste,
   stock: emptyStockItem,
   contracts: emptyContract,
   damages: emptyDamage,

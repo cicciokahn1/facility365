@@ -46,6 +46,9 @@ import {
   INSPECTION_TYPE_OPTIONS,
   INVENTORY_CATEGORY_OPTIONS,
   VEHICLE_STATUS_OPTIONS,
+  VISITOR_STATUS_OPTIONS,
+  PARKING_STATUS_OPTIONS,
+  WASTE_STATUS_OPTIONS,
   RCD_RESULT_OPTIONS,
   USER_ROLE_OPTIONS,
   USER_STATUS_OPTIONS,
@@ -2039,6 +2042,83 @@ const toolsConfig: ModuleConfig<"tools"> = {
       .join(" "),
 };
 
+const visitorsConfig: ModuleConfig<"visitors"> = {
+  collection: "visitors",
+  titleOf: (visitor) => visitor.visitorName || visitor.company || visitor.number,
+  statusField: "status",
+  statusOptions: VISITOR_STATUS_OPTIONS,
+  fields: [
+    text("visitorName", "visitor.name", { required: true, span: 2 }),
+    text("company", "visitor.company"),
+    { kind: "select", name: "status", labelKey: "common.status", options: VISITOR_STATUS_OPTIONS, filter: true },
+    { kind: "tel", name: "phone", labelKey: "common.phone" },
+    { kind: "email", name: "email", labelKey: "common.email" },
+    text("purpose", "visitor.purpose"),
+    { kind: "relation", name: "propertyId", labelKey: "module.properties.singular", collection: "properties", filter: true },
+    { kind: "relation", name: "buildingId", labelKey: "module.buildings.singular", collection: "buildings", filter: true },
+    { kind: "relation", name: "hostUserId", labelKey: "visitor.host", collection: "users" },
+    text("vehiclePlate", "visitor.vehiclePlate"),
+    text("badge", "visitor.badge"),
+    { kind: "date", name: "checkIn", labelKey: "visitor.checkIn" },
+    { kind: "date", name: "checkOut", labelKey: "visitor.checkOut" },
+    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
+  ],
+  searchOf: (visitor) =>
+    [visitor.number, visitor.visitorName, visitor.company, visitor.phone, visitor.vehiclePlate, visitor.purpose]
+      .filter(Boolean)
+      .join(" "),
+};
+
+const parkingConfig: ModuleConfig<"parking"> = {
+  collection: "parking",
+  titleOf: (space) => space.title || space.code || space.number,
+  statusField: "status",
+  statusOptions: PARKING_STATUS_OPTIONS,
+  fields: [
+    text("title", "common.title", { required: true, span: 2 }),
+    text("code", "parking.code"),
+    { kind: "select", name: "status", labelKey: "common.status", options: PARKING_STATUS_OPTIONS, filter: true },
+    { kind: "relation", name: "propertyId", labelKey: "module.properties.singular", collection: "properties", filter: true },
+    { kind: "relation", name: "buildingId", labelKey: "module.buildings.singular", collection: "buildings", filter: true },
+    text("location", "parking.location"),
+    text("type", "parking.type"),
+    text("assignedTo", "parking.assignedTo"),
+    text("plate", "parking.plate"),
+    { kind: "date", name: "validFrom", labelKey: "parking.validFrom" },
+    { kind: "date", name: "validUntil", labelKey: "parking.validUntil" },
+    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
+  ],
+  searchOf: (space) =>
+    [space.number, space.title, space.code, space.location, space.assignedTo, space.plate]
+      .filter(Boolean)
+      .join(" "),
+};
+
+const wasteConfig: ModuleConfig<"waste"> = {
+  collection: "waste",
+  titleOf: (entry) => entry.title || entry.wasteType || entry.number,
+  statusField: "status",
+  statusOptions: WASTE_STATUS_OPTIONS,
+  fields: [
+    text("title", "common.title", { required: true, span: 2 }),
+    text("wasteType", "waste.type"),
+    { kind: "select", name: "status", labelKey: "common.status", options: WASTE_STATUS_OPTIONS, filter: true },
+    { kind: "relation", name: "propertyId", labelKey: "module.properties.singular", collection: "properties", filter: true },
+    { kind: "relation", name: "buildingId", labelKey: "module.buildings.singular", collection: "buildings", filter: true },
+    text("location", "waste.location"),
+    text("container", "waste.container"),
+    { kind: "relation", name: "supplierId", labelKey: "module.suppliers.singular", collection: "suppliers" },
+    text("interval", "waste.interval"),
+    { kind: "date", name: "nextPickup", labelKey: "waste.nextPickup" },
+    { kind: "relation", name: "responsibleId", labelKey: "user.assignee", collection: "users" },
+    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
+  ],
+  searchOf: (entry) =>
+    [entry.number, entry.title, entry.wasteType, entry.location, entry.container]
+      .filter(Boolean)
+      .join(" "),
+};
+
 const stockConfig: ModuleConfig<"stock"> = {
   collection: "stock",
   titleOf: (item) => item.title || item.articleNumber || item.number,
@@ -3041,6 +3121,9 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   inventory: inventoryConfig,
   vehicles: vehiclesConfig,
   tools: toolsConfig,
+  visitors: visitorsConfig,
+  parking: parkingConfig,
+  waste: wasteConfig,
   stock: stockConfig,
   contracts: contractsConfig,
   damages: damagesConfig,

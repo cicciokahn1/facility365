@@ -35,6 +35,9 @@ export type ModuleKey =
   | "inventory"
   | "vehicles"
   | "tools"
+  | "visitors"
+  | "parking"
+  | "waste"
   | "stock"
   | "contracts"
   | "damages"
@@ -998,6 +1001,59 @@ export interface Vehicle extends BaseEntity {
   insuranceUntil: string;
 }
 
+export type VisitorStatus = "expected" | "present" | "completed" | "cancelled";
+
+/** Besuch oder Zutritt mit Objektbezug und Ein-/Austrittszeit. */
+export interface Visitor extends BaseEntity {
+  visitorName: string;
+  company: string;
+  phone: string;
+  email: string;
+  purpose: string;
+  propertyId: string;
+  buildingId: string;
+  hostUserId: string;
+  vehiclePlate: string;
+  badge: string;
+  status: VisitorStatus;
+  checkIn: string;
+  checkOut: string;
+}
+
+export type ParkingStatus = "available" | "occupied" | "reserved" | "blocked";
+
+/** Parkplatz mit Standort, Zuordnung und Gültigkeit. */
+export interface ParkingSpace extends BaseEntity {
+  title: string;
+  code: string;
+  propertyId: string;
+  buildingId: string;
+  location: string;
+  type: string;
+  status: ParkingStatus;
+  assignedTo: string;
+  plate: string;
+  validFrom: string;
+  validUntil: string;
+}
+
+export type WasteStatus = "active" | "paused" | "completed";
+
+/** Abfallstelle mit Abholrhythmus und verantwortlicher Person/Firma. */
+export interface WasteEntry extends BaseEntity {
+  title: string;
+  wasteType: string;
+  propertyId: string;
+  buildingId: string;
+  location: string;
+  container: string;
+  supplierId: string;
+  interval: string;
+  nextPickup: string;
+  status: WasteStatus;
+  responsibleId: string;
+}
+
 /** Werkzeug oder Geraet, das ausgegeben und zurueckgenommen wird. */
 export interface Tool extends BaseEntity, Issuable {
   title: string;
@@ -1632,6 +1688,9 @@ export interface CollectionMap {
   inventory: InventoryItem;
   vehicles: Vehicle;
   tools: Tool;
+  visitors: Visitor;
+  parking: ParkingSpace;
+  waste: WasteEntry;
   stock: StockItem;
   contracts: ContractEntity;
   damages: Damage;
