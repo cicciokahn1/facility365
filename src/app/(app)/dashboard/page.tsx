@@ -27,6 +27,7 @@ import {
 
 import { EmptyState } from '@/components/common/empty-state';
 import { WeatherWidget } from '@/components/modules/weather-widget';
+import { OnboardingChecklist } from '@/components/modules/onboarding-checklist';
 import { StatusBadge } from '@/components/common/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BRAND_LOGO_SRC, isBrandLogo } from '@/lib/branding/logo';
@@ -383,6 +384,8 @@ export default function DashboardPage() {
         </span>
         <ArrowRight className="size-5 shrink-0 text-primary" aria-hidden />
       </Link>
+
+      <OnboardingChecklist />
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
