@@ -3700,6 +3700,30 @@ export const dictionary = {
     it: "Manutenzioni imminenti",
     en: "Upcoming maintenance",
   },
+  "analytics.deadlineMonitor": {
+    de: "Auftragsfristen und Eskalationen",
+    fr: "Délais et escalades des mandats",
+    it: "Scadenze ed escalation degli ordini",
+    en: "Order deadlines and escalations",
+  },
+  "analytics.overdueOrders": {
+    de: "Überfällig",
+    fr: "En retard",
+    it: "In ritardo",
+    en: "Overdue",
+  },
+  "analytics.dueSoonOrders": {
+    de: "In den nächsten 7 Tagen",
+    fr: "Dans les 7 prochains jours",
+    it: "Nei prossimi 7 giorni",
+    en: "Due in the next 7 days",
+  },
+  "analytics.noDeadlineOrders": {
+    de: "Keine offenen Auftragsfristen",
+    fr: "Aucun délai de mandat ouvert",
+    it: "Nessuna scadenza d'ordine aperta",
+    en: "No open order deadlines",
+  },
   "analytics.empty": {
     de: "Sobald Daten erfasst sind, erscheinen hier Auswertungen.",
     fr: "Les analyses apparaîtront dès que des données seront saisies.",
