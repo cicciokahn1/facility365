@@ -3,6 +3,8 @@
 export const table: Record<string, string> = {
   "app.name": "Facility365",
   "app.tagline": "Facility management",
+  "app.errorTitle": "Questa sezione non può essere caricata",
+  "app.errorText": "I dati sono conservati. Riprova o torna alla pagina iniziale.",
   "nav.overview": "Panoramica",
   "nav.objects": "Oggetti",
   "nav.work": "Ordini e rapporti",
@@ -359,6 +361,7 @@ export const table: Record<string, string> = {
   "common.none": "Nessuno",
   "common.yes": "Sì",
   "common.no": "No",
+  "common.retry": "Riprova",
   "common.optional": "Opzionale",
   "common.notSet": "Non impostato",
   "common.select": "Seleziona",
@@ -1700,4 +1703,8 @@ export const table: Record<string, string> = {
   "list.field": "Campo",
   "list.value": "Valore",
   "floor.floors": "Piani",
+  "onboarding.title": "Configurazione",
+  "onboarding.hint": "I passaggi essenziali per iniziare bene.",
+  "onboarding.complete": "Completato",
+  "onboarding.open": "Aprire",
 };

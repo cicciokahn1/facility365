@@ -3,6 +3,8 @@
 export const table: Record<string, string> = {
   "app.name": "Facility365",
   "app.tagline": "Facility management",
+  "app.errorTitle": "This section could not be loaded",
+  "app.errorText": "Your data is safe. Try again or return to the start page.",
   "nav.overview": "Overview",
   "nav.objects": "Objects",
   "nav.work": "Orders & reports",
@@ -359,6 +361,7 @@ export const table: Record<string, string> = {
   "common.none": "None",
   "common.yes": "Yes",
   "common.no": "No",
+  "common.retry": "Try again",
   "common.optional": "Optional",
   "common.notSet": "Not set",
   "common.select": "Select",
@@ -1700,4 +1703,8 @@ export const table: Record<string, string> = {
   "list.field": "Field",
   "list.value": "Value",
   "floor.floors": "Floors",
+  "onboarding.title": "Setup",
+  "onboarding.hint": "The essential steps for a good start.",
+  "onboarding.complete": "Complete",
+  "onboarding.open": "Open",
 };

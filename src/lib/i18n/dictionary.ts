@@ -27,6 +27,18 @@ export const dictionary = {
     it: "Facility management",
     en: "Facility management",
   },
+  "app.errorTitle": {
+    de: "Dieser Bereich konnte nicht geladen werden",
+    fr: "Cette section n’a pas pu être chargée",
+    it: "Questa sezione non può essere caricata",
+    en: "This section could not be loaded",
+  },
+  "app.errorText": {
+    de: "Die Daten bleiben erhalten. Versuche es erneut oder kehre zur Startseite zurück.",
+    fr: "Les données sont conservées. Réessayez ou revenez à l’accueil.",
+    it: "I dati sono conservati. Riprova o torna alla pagina iniziale.",
+    en: "Your data is safe. Try again or return to the start page.",
+  },
 
   "nav.overview": {
     de: "Übersicht",
@@ -1934,6 +1946,7 @@ export const dictionary = {
   "common.none": { de: "Keine", fr: "Aucun", it: "Nessuno", en: "None" },
   "common.yes": { de: "Ja", fr: "Oui", it: "Sì", en: "Yes" },
   "common.no": { de: "Nein", fr: "Non", it: "No", en: "No" },
+  "common.retry": { de: "Erneut versuchen", fr: "Réessayer", it: "Riprova", en: "Try again" },
   "common.optional": {
     de: "Optional",
     fr: "Facultatif",
@@ -8776,6 +8789,15 @@ export const dictionary = {
   "list.field": { de: "Feld", fr: "Champ", it: "Campo", en: "Field" },
   "list.value": { de: "Wert", fr: "Valeur", it: "Valore", en: "Value" },
   "floor.floors": { de: "Stockwerke", fr: "Étages", it: "Piani", en: "Floors" },
+  "onboarding.title": { de: "Einrichtung", fr: "Mise en place", it: "Configurazione", en: "Setup" },
+  "onboarding.hint": {
+    de: "Die wichtigsten Schritte für einen guten Start.",
+    fr: "Les étapes essentielles pour bien démarrer.",
+    it: "I passaggi essenziali per iniziare bene.",
+    en: "The essential steps for a good start.",
+  },
+  "onboarding.complete": { de: "Erledigt", fr: "Terminé", it: "Completato", en: "Complete" },
+  "onboarding.open": { de: "Öffnen", fr: "Ouvrir", it: "Aprire", en: "Open" },
 } as const satisfies Record<string, Entry>;
 
 export type TranslationKey = keyof typeof dictionary;
