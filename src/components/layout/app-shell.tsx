@@ -7,6 +7,7 @@
  * Navigation am unteren Rand. Der Inhalt bleibt in allen Faellen gleich.
  */
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Menu } from "lucide-react";
 
@@ -84,7 +85,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </SheetContent>
             </Sheet>
 
-            <span className="flex min-w-0 items-center gap-1.5 lg:hidden">
+            <Link
+              href="/dashboard"
+              aria-label={t("app.name")}
+              className="flex min-w-0 items-center gap-1.5 rounded-md px-1 py-0.5 lg:hidden"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element -- Data-URL aus den Einstellungen */}
               <img
                 src={
@@ -98,7 +103,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <span className="truncate text-sm font-semibold">
                 {settings.companyName || t("app.name")}
               </span>
-            </span>
+            </Link>
 
             <div className="ml-auto flex flex-1 items-center justify-end gap-2 lg:ml-0 lg:justify-start">
               <GlobalSearch />
