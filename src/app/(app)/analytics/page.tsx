@@ -7,9 +7,11 @@
  * Hochrechnungen und keine Beispielzahlen.
  */
 import Link from 'next/link';
+import { AlertTriangle, Clock3 } from 'lucide-react';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { ManagementReport } from '@/components/modules/management-report';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useCollectionItems } from '@/lib/data/store';
@@ -17,7 +19,7 @@ import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { DAMAGE_STATUS_OPTIONS, ORDER_STATUS_OPTIONS, PRIORITY_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
-import { formatDate } from '@/lib/utils/format';
+import { formatDate, today } from '@/lib/utils/format';
 import { isDone } from '@/lib/workflow/complete';
 
 export default function AnalyticsPage() {
@@ -31,6 +33,7 @@ export default function AnalyticsPage() {
   const buildings = useCollectionItems('buildings');
   const rooms = useCollectionItems('rooms');
   const assets = useCollectionItems('assets');
+  const todayValue = today();
 
   const upcoming = maintenances
     .filter((maintenance) => maintenance.nextDate && !isDone('maintenances', maintenance.status))
@@ -38,6 +41,18 @@ export default function AnalyticsPage() {
     .slice(0, 8);
 
   const empty = orders.length + damages.length + maintenances.length + properties.length === 0;
+  const openOrders = orders.filter((order) => !isDone('orders', order.status));
+  const overdueOrders = openOrders
+    .filter((order) => order.dueDate && order.dueDate < todayValue)
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  const dueSoonOrders = openOrders
+    .filter(
+      (order) =>
+        order.dueDate &&
+        order.dueDate >= todayValue &&
+        order.dueDate <= addDays(todayValue, 7),
+    )
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 
   return (
     <div className="flex flex-col gap-4">
@@ -67,6 +82,50 @@ export default function AnalyticsPage() {
           </Card>
 
           <div className="grid gap-4 lg:grid-cols-2">
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Clock3 className="size-4" aria-hidden />
+                  {t('analytics.deadlineMonitor')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-4 sm:max-w-md">
+                  <Metric
+                    labelKey="analytics.overdueOrders"
+                    value={overdueOrders.length}
+                    tone={overdueOrders.length > 0 ? 'danger' : undefined}
+                  />
+                  <Metric labelKey="analytics.dueSoonOrders" value={dueSoonOrders.length} />
+                </div>
+                {overdueOrders.length + dueSoonOrders.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">{t('analytics.noDeadlineOrders')}</p>
+                ) : (
+                  <ul className="divide-y">
+                    {[...overdueOrders, ...dueSoonOrders].slice(0, 8).map((order) => {
+                      const overdue = order.dueDate < todayValue;
+                      return (
+                        <li key={order.id}>
+                          <Link href={`/orders/${order.id}`} className="flex items-center gap-3 py-3">
+                            {overdue ? (
+                              <AlertTriangle className="size-4 shrink-0 text-destructive" aria-hidden />
+                            ) : (
+                              <Clock3 className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                            )}
+                            <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                              {order.title || order.number}
+                            </span>
+                            <Badge variant={overdue ? 'destructive' : 'secondary'}>
+                              {formatDate(order.dueDate, settings.language)}
+                            </Badge>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
             <Distribution
               titleKey="analytics.ordersByStatus"
               options={ORDER_STATUS_OPTIONS}
@@ -118,14 +177,30 @@ export default function AnalyticsPage() {
   );
 }
 
-function Metric({ labelKey, value }: { labelKey: TranslationKey; value: number }) {
+function Metric({
+  labelKey,
+  value,
+  tone,
+}: {
+  labelKey: TranslationKey;
+  value: number;
+  tone?: 'danger';
+}) {
   const t = useT();
   return (
     <div>
       <p className="truncate text-xs text-muted-foreground">{t(labelKey)}</p>
-      <p className="text-2xl font-semibold tabular-nums">{value}</p>
+      <p className={`text-2xl font-semibold tabular-nums ${tone === 'danger' ? 'text-destructive' : ''}`}>
+        {value}
+      </p>
     </div>
   );
+}
+
+function addDays(value: string, amount: number): string {
+  const date = new Date(`${value}T12:00:00`);
+  date.setDate(date.getDate() + amount);
+  return date.toISOString().slice(0, 10);
 }
 
 function Distribution({
