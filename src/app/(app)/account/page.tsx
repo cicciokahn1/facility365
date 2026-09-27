@@ -30,6 +30,7 @@ import {
 import { useCompleteStore, useReloadData, useRepository } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
+import { USER_ROLE_OPTIONS } from '@/lib/schema';
 import { formatDateTime } from '@/lib/utils/format';
 
 export default function AccountPage() {
@@ -137,7 +138,14 @@ export default function AccountPage() {
                 {t('account.organization')}: {auth.membership?.tenantId || '—'}
               </p>
               <p className="text-sm" data-testid="account-role">
-                {t('account.role')}: {auth.membership?.role || '—'} · {t('account.status')}:{' '}
+                {t('account.role')}:{' '}
+                {auth.membership?.role
+                  ? t(
+                      USER_ROLE_OPTIONS.find((option) => option.value === auth.membership?.role)?.labelKey ??
+                        'common.notSet',
+                    )
+                  : '—'}{' '}
+                · {t('account.status')}:{' '}
                 {auth.membership?.status || '—'}
               </p>
               <Button
