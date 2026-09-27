@@ -185,6 +185,9 @@ export function PropertyTemplateDialog() {
   const inventory = useCollection('inventory');
   const vehicles = useCollection('vehicles');
   const tools = useCollection('tools');
+  const visitors = useCollection('visitors');
+  const parking = useCollection('parking');
+  const waste = useCollection('waste');
   const stock = useCollection('stock');
   const contracts = useCollection('contracts');
   const damages = useCollection('damages');
@@ -227,6 +230,9 @@ export function PropertyTemplateDialog() {
     inventory: inventory.create,
     vehicles: vehicles.create,
     tools: tools.create,
+    visitors: visitors.create,
+    parking: parking.create,
+    waste: waste.create,
     stock: stock.create,
     contracts: contracts.create,
     damages: damages.create,
@@ -305,6 +311,9 @@ export function PropertyTemplateDialog() {
         inventory: inventory.update,
         vehicles: vehicles.update,
         tools: tools.update,
+        visitors: visitors.update,
+        parking: parking.update,
+        waste: waste.update,
         stock: stock.update,
         contracts: contracts.update,
         damages: damages.update,
