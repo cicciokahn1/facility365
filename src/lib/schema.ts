@@ -534,6 +534,13 @@ export const VEHICLE_STATUS_OPTIONS: SelectOption[] = [
   { value: "retired", labelKey: "vehicle.retired", tone: "neutral" },
 ];
 
+export const VEHICLE_SERVICE_OPTIONS: SelectOption[] = [
+  { value: "maintenance", labelKey: "vehicle.service.maintenance", tone: "neutral" },
+  { value: "tireChange", labelKey: "vehicle.service.tireChange", tone: "warning" },
+  { value: "inspection", labelKey: "vehicle.service.inspection", tone: "neutral" },
+  { value: "repair", labelKey: "vehicle.service.repair", tone: "danger" },
+];
+
 export const VISITOR_STATUS_OPTIONS: SelectOption[] = [
   { value: "expected", labelKey: "visitor.expected", tone: "neutral" },
   { value: "present", labelKey: "visitor.present", tone: "warning" },

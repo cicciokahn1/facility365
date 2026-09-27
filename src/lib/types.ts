@@ -974,6 +974,11 @@ export interface InventoryItem extends BaseEntity {
 
 /** Stand eines Fahrzeugs. */
 export type VehicleStatus = "active" | "service" | "retired";
+export type VehicleServiceType =
+  | "maintenance"
+  | "tireChange"
+  | "inspection"
+  | "repair";
 
 /** Firmenfahrzeug mit Service-, Reifen- und Pruefterminen. */
 export interface Vehicle extends BaseEntity {
@@ -992,6 +997,14 @@ export interface Vehicle extends BaseEntity {
   siteId: string;
   propertyId: string;
   nextService: string;
+  /** Art des zuletzt erfassten Fahrzeugservices. */
+  serviceType: VehicleServiceType;
+  /** Datum des zuletzt erfassten Fahrzeugservices. */
+  lastService: string;
+  /** Ausfuehrende Garage oder Servicefirma. */
+  serviceProvider: string;
+  /** Kosten des zuletzt erfassten Fahrzeugservices. */
+  serviceCost?: number;
   /** Naechster Reifenwechsel. */
   tireChange: string;
   /** Naechste amtliche Pruefung (MFK). */
