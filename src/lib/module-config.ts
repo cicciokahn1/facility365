@@ -1103,6 +1103,12 @@ const ordersConfig: ModuleConfig<"orders"> = {
     },
     {
       kind: "relation",
+      name: "vehicleId",
+      labelKey: "module.vehicles.singular",
+      collection: "vehicles",
+    },
+    {
+      kind: "relation",
       name: "quoteId",
       labelKey: "module.quotes.singular",
       collection: "quotes",
@@ -1179,6 +1185,12 @@ const maintenancesConfig: ModuleConfig<"maintenances"> = {
       name: "assetId",
       labelKey: "module.assets.singular",
       collection: "assets",
+    },
+    {
+      kind: "relation",
+      name: "vehicleId",
+      labelKey: "module.vehicles.singular",
+      collection: "vehicles",
     },
     {
       kind: "relation",
@@ -2282,6 +2294,12 @@ const damagesConfig: ModuleConfig<"damages"> = {
       labelKey: "module.assets.singular",
       collection: "assets",
     },
+    {
+      kind: "relation",
+      name: "vehicleId",
+      labelKey: "module.vehicles.singular",
+      collection: "vehicles",
+    },
     text("reportedBy", "common.author"),
     {
       kind: "relation",
@@ -2500,6 +2518,12 @@ const reportsConfig: ModuleConfig<"reports"> = {
       name: "assetId",
       labelKey: "module.assets.singular",
       collection: "assets",
+    },
+    {
+      kind: "relation",
+      name: "vehicleId",
+      labelKey: "module.vehicles.singular",
+      collection: "vehicles",
     },
     {
       kind: "relation",

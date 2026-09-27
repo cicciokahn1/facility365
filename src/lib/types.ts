@@ -606,6 +606,7 @@ export interface Order extends BaseEntity {
   buildingId: string;
   roomId: string;
   assetId: string;
+  vehicleId?: string;
   /** Offerte, aus der der Auftrag entstanden ist; leer bei freier Erfassung. */
   quoteId: string;
   /** Beauftragter Lieferant oder Dienstleister. */
@@ -656,6 +657,7 @@ export interface Maintenance extends BaseEntity {
   propertyId: string;
   buildingId: string;
   assetId: string;
+  vehicleId?: string;
   company: string;
   supplierId: string;
   responsible: string;
@@ -1096,6 +1098,7 @@ export interface Damage extends BaseEntity {
   buildingId: string;
   roomId: string;
   assetId: string;
+  vehicleId?: string;
   reportedBy: string;
   /** Melderin oder Melder aus der Benutzerverwaltung. */
   reportedById: string;
@@ -1168,6 +1171,7 @@ export interface Report extends BaseEntity {
   buildingId: string;
   roomId: string;
   assetId: string;
+  vehicleId?: string;
   orderId: string;
   summary: string;
   workDescription: string;
