@@ -9,7 +9,13 @@ import { EntityDetail } from '@/components/module/entity-detail';
 import { DocumentVersions } from '@/components/modules/document-versions';
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
-import { DOCUMENT_ACCEPT, documentFromFile, downloadDataUrl, isAllowedDocument } from '@/lib/media';
+import {
+  DOCUMENT_ACCEPT,
+  documentFromFile,
+  downloadDataUrl,
+  isAllowedDocument,
+  isWithinUploadLimit,
+} from '@/lib/media';
 import { useSettings } from '@/lib/settings/provider';
 import { DocumentFile } from '@/lib/types';
 import { formatBytes, formatDate } from '@/lib/utils/format';
@@ -54,6 +60,10 @@ function MainFile({
     if (!selected) return;
     if (!isAllowedDocument(selected)) {
       toast.error(t('documents.wrongType'));
+      return;
+    }
+    if (!isWithinUploadLimit(selected)) {
+      toast.error(t('upload.tooLarge'));
       return;
     }
     onChange(await documentFromFile(selected, settings.profileName || settings.companyName));

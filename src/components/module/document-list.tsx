@@ -8,7 +8,13 @@ import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/empty-state';
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
-import { DOCUMENT_ACCEPT, documentFromFile, downloadDataUrl, isAllowedDocument } from '@/lib/media';
+import {
+  DOCUMENT_ACCEPT,
+  documentFromFile,
+  downloadDataUrl,
+  isAllowedDocument,
+  isWithinUploadLimit,
+} from '@/lib/media';
 import { useSettings } from '@/lib/settings/provider';
 import { DocumentFile } from '@/lib/types';
 import { formatBytes, formatDate } from '@/lib/utils/format';
@@ -29,8 +35,13 @@ export function DocumentList({
 
   const addFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
-    const allowed = Array.from(files).filter(isAllowedDocument);
-    if (allowed.length !== files.length) toast.error(t('documents.wrongType'));
+    const selected = Array.from(files);
+    const allowed = selected.filter((file) => isAllowedDocument(file) && isWithinUploadLimit(file));
+    if (selected.some((file) => isAllowedDocument(file) && !isWithinUploadLimit(file))) {
+      toast.error(t('upload.tooLarge'));
+    } else if (allowed.length !== selected.length) {
+      toast.error(t('documents.wrongType'));
+    }
     if (allowed.length === 0) return;
     const uploaded = await Promise.all(
       allowed.map((file) => documentFromFile(file, settings.profileName || settings.companyName)),
