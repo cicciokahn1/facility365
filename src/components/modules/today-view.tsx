@@ -11,6 +11,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 
 import { EmptyState } from "@/components/common/empty-state";
+import { DoneButton } from "@/components/module/done-button";
 import { useAccess } from "@/lib/auth/scope";
 import { useRelevantEvents } from "@/lib/calendar/relevant";
 import { useCollectionItems } from "@/lib/data/store";
@@ -21,11 +22,13 @@ import { moduleByCollection, moduleByKey } from "@/lib/modules";
 import { useSettings } from "@/lib/settings/provider";
 import { BaseEntity, CollectionKey } from "@/lib/types";
 import { daysUntil, formatDate, today } from "@/lib/utils/format";
-import { CompletableKey, isDone } from "@/lib/workflow/complete";
+import { CompletableKey, isCompletable, isDone } from "@/lib/workflow/complete";
 
 interface Row {
   key: string;
   href: string;
+  id: string;
+  collection?: CompletableKey;
   label: string;
   title: string;
   date: string;
@@ -180,6 +183,8 @@ export function TodayView() {
           rows.push({
             key: `${collection}-${item.id}`,
             href: `${moduleByCollection(collection).path}/${item.id}`,
+            id: item.id,
+            collection,
             label: t(moduleByCollection(collection).singularKey),
             title: titleOfEntity(collection, item),
             date,
@@ -228,6 +233,11 @@ export function TodayView() {
           return {
             key: event.id,
             href: event.href,
+            id: event.sourceId,
+            collection:
+              event.source?.collection && isCompletable(event.source.collection)
+                ? event.source.collection
+                : undefined,
             label: t(event.labelKey),
             title: event.title,
             date: event.date,
@@ -252,6 +262,11 @@ export function TodayView() {
         .map((event) => ({
           key: event.id,
           href: event.href,
+          id: event.sourceId,
+          collection:
+            event.source?.collection && isCompletable(event.source.collection)
+              ? event.source.collection
+              : undefined,
           label: t(event.labelKey),
           title: event.title,
           date: event.date,
@@ -323,32 +338,37 @@ function Section({
       <ul className="flex flex-col gap-2">
         {rows.map((row) => (
           <li key={row.key}>
-            <Link
-              href={row.href}
-              aria-label={`${row.title} · ${row.label}`}
-              className="flex min-h-16 flex-wrap items-center justify-between gap-2 rounded-lg border bg-card px-4 py-3 text-base hover:border-primary/40"
-            >
-              <span className="min-w-0">
-                <span className="block truncate font-medium">{row.title}</span>
-                <span className="block truncate text-xs text-muted-foreground">
-                  {row.label}
-                  {row.context ? ` · ${row.context}` : ""}
-                  {row.responsible ? ` · ${row.responsible}` : ""}
-                  {row.checklistCount > 0 ? ` · ${t("today.checklist", { n: row.checklistCount })}` : ""}
-                  {row.recurring ? ` · ${t("today.recurring")}` : ""}
-                </span>
-              </span>
-              <span
-                className={
-                  row.overdue
-                    ? "text-xs text-destructive"
-                    : "text-xs text-muted-foreground"
-                }
+            <div className="flex min-h-16 flex-wrap items-center gap-2 rounded-lg border bg-card px-3 py-2 text-base hover:border-primary/40">
+              <Link
+                href={row.href}
+                aria-label={`${row.title} · ${row.label}`}
+                className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2 px-1 py-1"
               >
-                {row.date ? formatDate(row.date, language) : ""}
-                {row.overdue ? ` · ${t("notify.overdue")}` : ""}
-              </span>
-            </Link>
+                <span className="min-w-0">
+                  <span className="block truncate font-medium">{row.title}</span>
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {row.label}
+                    {row.context ? ` · ${row.context}` : ""}
+                    {row.responsible ? ` · ${row.responsible}` : ""}
+                    {row.checklistCount > 0 ? ` · ${t("today.checklist", { n: row.checklistCount })}` : ""}
+                    {row.recurring ? ` · ${t("today.recurring")}` : ""}
+                  </span>
+                </span>
+                <span
+                  className={
+                    row.overdue
+                      ? "text-xs text-destructive"
+                      : "text-xs text-muted-foreground"
+                  }
+                >
+                  {row.date ? formatDate(row.date, language) : ""}
+                  {row.overdue ? ` · ${t("notify.overdue")}` : ""}
+                </span>
+              </Link>
+              {row.collection ? (
+                <DoneButton collection={row.collection} id={row.id} status="" compact />
+              ) : null}
+            </div>
           </li>
         ))}
       </ul>
