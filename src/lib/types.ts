@@ -18,6 +18,7 @@ export type ModuleKey =
   | "sites"
   | "properties"
   | "buildings"
+  | "plans"
   | "rooms"
   | "assets"
   | "documents"
@@ -71,6 +72,7 @@ export type CollectionKey = Exclude<
   ModuleKey,
   | "dashboard"
   | "calendar"
+  | "plans"
   | "cleaning"
   | "analytics"
   | "audit"
