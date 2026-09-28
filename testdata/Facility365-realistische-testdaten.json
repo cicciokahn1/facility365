@@ -579,7 +579,207 @@
             "note": "Regelgeschoss"
           }
         ],
-        "plans": []
+        "plans": [
+          {
+            "id": "bld_alpenblick_bld_alpenblick_ug_plan",
+            "title": "Grundriss Untergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_alpenblick_ug",
+            "versions": [
+              {
+                "id": "bld_alpenblick_bld_alpenblick_ug_plan_v1",
+                "version": 1,
+                "fileName": "Hauptgebäude-Pflege-Untergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5IYXVwdGdlYsOkdWRlIFBmbGVnZTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPlVudGVyZ2VzY2hvc3MgwrcgVEVTVC1HcnVuZHJpc3M8L3RleHQ+PGxpbmUgeDE9IjYwIiB5MT0iMTMwIiB4Mj0iMTE0MCIgeTI9IjEzMCIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjIiLz48Zz48cmVjdCB4PSI4MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI5NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPlUwMTwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkVtcGZhbmcgVW50ZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjE0IG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iMzUwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjM2NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPlUwMjwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5Cw7xybyBIYXVzZGllbnN0IFVudGVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MTggbcKyPC90ZXh0PjwvZz48dGV4dCB4PSI5MzAiIHk9Ijc1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjQ3NDhiIj5TY2hlbWF0aXNjaGUgQmVpc3BpZWxkYXJzdGVsbHVuZyDCtyBGYWNpbGl0eTM2NTwvdGV4dD48L3N2Zz4=",
+                "size": 1926,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_alpenblick_bld_alpenblick_ug_plan_v1",
+            "markers": [
+              {
+                "id": "bld_alpenblick_bld_alpenblick_ug_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_alpenblick_room_1_1",
+                "label": "Empfang Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_alpenblick_bld_alpenblick_ug_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_alpenblick_room_1_2",
+                "label": "Büro Hausdienst Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_alpenblick_bld_alpenblick_eg_plan",
+            "title": "Grundriss Erdgeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_alpenblick_eg",
+            "versions": [
+              {
+                "id": "bld_alpenblick_bld_alpenblick_eg_plan_v1",
+                "version": 1,
+                "fileName": "Hauptgebäude-Pflege-Erdgeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5IYXVwdGdlYsOkdWRlIFBmbGVnZTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPkVyZGdlc2Nob3NzIMK3IFRFU1QtR3J1bmRyaXNzPC90ZXh0PjxsaW5lIHgxPSI2MCIgeTE9IjEzMCIgeDI9IjExNDAiIHkyPSIxMzAiIHN0cm9rZT0iI2NiZDVlMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGc+PHJlY3QgeD0iODAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iOTYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5FMDE8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5UZWNobmlremVudHJhbGUgRXJkZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4yMCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjM1MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSIzNjYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5FMDI8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+U2FuaXTDpHJhbmxhZ2UgRXJkZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjQgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSI2MjAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iNjM2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+RTAzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPktvcnJpZG9yIEVyZGdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjI4IG3CsjwvdGV4dD48L2c+PHRleHQgeD0iOTMwIiB5PSI3NTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzY0NzQ4YiI+U2NoZW1hdGlzY2hlIEJlaXNwaWVsZGFyc3RlbGx1bmcgwrcgRmFjaWxpdHkzNjU8L3RleHQ+PC9zdmc+",
+                "size": 2466,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_alpenblick_bld_alpenblick_eg_plan_v1",
+            "markers": [
+              {
+                "id": "bld_alpenblick_bld_alpenblick_eg_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_alpenblick_room_2_1",
+                "label": "Technikzentrale Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_alpenblick_bld_alpenblick_eg_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_alpenblick_room_2_2",
+                "label": "Sanitäranlage Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_alpenblick_bld_alpenblick_eg_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_alpenblick_room_2_3",
+                "label": "Korridor Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_alpenblick_bld_alpenblick_og1_plan",
+            "title": "Grundriss 1. Obergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_alpenblick_og1",
+            "versions": [
+              {
+                "id": "bld_alpenblick_bld_alpenblick_og1_plan_v1",
+                "version": 1,
+                "fileName": "Hauptgebäude-Pflege-1.-Obergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5IYXVwdGdlYsOkdWRlIFBmbGVnZTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPjEuIE9iZXJnZXNjaG9zcyDCtyBURVNULUdydW5kcmlzczwvdGV4dD48bGluZSB4MT0iNjAiIHkxPSIxMzAiIHgyPSIxMTQwIiB5Mj0iMTMwIiBzdHJva2U9IiNjYmQ1ZTEiIHN0cm9rZS13aWR0aD0iMiIvPjxnPjxyZWN0IHg9IjgwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9Ijk2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+MTAxPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+S29ycmlkb3IgMS4gT2Jlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjYgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSIzNTAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iMzY2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+MTAyPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkxhZ2VyIDEuIE9iZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4zMCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjYyMCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI2MzYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj4xMDM8L3RleHQ+PHRleHQgeD0iNjM2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+RW1wZmFuZyAxLiBPYmVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iNjM2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MzQgbcKyPC90ZXh0PjwvZz48dGV4dCB4PSI5MzAiIHk9Ijc1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjQ3NDhiIj5TY2hlbWF0aXNjaGUgQmVpc3BpZWxkYXJzdGVsbHVuZyDCtyBGYWNpbGl0eTM2NTwvdGV4dD48L3N2Zz4=",
+                "size": 2466,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_alpenblick_bld_alpenblick_og1_plan_v1",
+            "markers": [
+              {
+                "id": "bld_alpenblick_bld_alpenblick_og1_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_alpenblick_room_3_1",
+                "label": "Korridor 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_alpenblick_bld_alpenblick_og1_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_alpenblick_room_3_2",
+                "label": "Lager 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_alpenblick_bld_alpenblick_og1_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_alpenblick_room_3_3",
+                "label": "Empfang 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          }
+        ]
       },
       {
         "id": "bld_sonnenrain",
@@ -646,7 +846,207 @@
             "note": "Regelgeschoss"
           }
         ],
-        "plans": []
+        "plans": [
+          {
+            "id": "bld_sonnenrain_bld_sonnenrain_ug_plan",
+            "title": "Grundriss Untergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_sonnenrain_ug",
+            "versions": [
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_ug_plan_v1",
+                "version": 1,
+                "fileName": "Schulhaus-A-Untergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5TY2h1bGhhdXMgQTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPlVudGVyZ2VzY2hvc3MgwrcgVEVTVC1HcnVuZHJpc3M8L3RleHQ+PGxpbmUgeDE9IjYwIiB5MT0iMTMwIiB4Mj0iMTE0MCIgeTI9IjEzMCIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjIiLz48Zz48cmVjdCB4PSI4MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI5NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPlUwMTwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkVtcGZhbmcgVW50ZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjE0IG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iMzUwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjM2NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPlUwMjwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5Cw7xybyBIYXVzZGllbnN0IFVudGVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MTggbcKyPC90ZXh0PjwvZz48dGV4dCB4PSI5MzAiIHk9Ijc1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjQ3NDhiIj5TY2hlbWF0aXNjaGUgQmVpc3BpZWxkYXJzdGVsbHVuZyDCtyBGYWNpbGl0eTM2NTwvdGV4dD48L3N2Zz4=",
+                "size": 1914,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_sonnenrain_bld_sonnenrain_ug_plan_v1",
+            "markers": [
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_ug_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_room_1_1",
+                "label": "Empfang Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_ug_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_room_1_2",
+                "label": "Büro Hausdienst Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_sonnenrain_bld_sonnenrain_eg_plan",
+            "title": "Grundriss Erdgeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_sonnenrain_eg",
+            "versions": [
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_eg_plan_v1",
+                "version": 1,
+                "fileName": "Schulhaus-A-Erdgeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5TY2h1bGhhdXMgQTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPkVyZGdlc2Nob3NzIMK3IFRFU1QtR3J1bmRyaXNzPC90ZXh0PjxsaW5lIHgxPSI2MCIgeTE9IjEzMCIgeDI9IjExNDAiIHkyPSIxMzAiIHN0cm9rZT0iI2NiZDVlMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGc+PHJlY3QgeD0iODAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iOTYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5FMDE8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5UZWNobmlremVudHJhbGUgRXJkZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4yMCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjM1MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSIzNjYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5FMDI8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+U2FuaXTDpHJhbmxhZ2UgRXJkZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjQgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSI2MjAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iNjM2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+RTAzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPktvcnJpZG9yIEVyZGdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjI4IG3CsjwvdGV4dD48L2c+PHRleHQgeD0iOTMwIiB5PSI3NTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzY0NzQ4YiI+U2NoZW1hdGlzY2hlIEJlaXNwaWVsZGFyc3RlbGx1bmcgwrcgRmFjaWxpdHkzNjU8L3RleHQ+PC9zdmc+",
+                "size": 2454,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_sonnenrain_bld_sonnenrain_eg_plan_v1",
+            "markers": [
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_eg_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_room_2_1",
+                "label": "Technikzentrale Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_eg_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_room_2_2",
+                "label": "Sanitäranlage Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_eg_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_room_2_3",
+                "label": "Korridor Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_sonnenrain_bld_sonnenrain_og1_plan",
+            "title": "Grundriss 1. Obergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_sonnenrain_og1",
+            "versions": [
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_og1_plan_v1",
+                "version": 1,
+                "fileName": "Schulhaus-A-1.-Obergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5TY2h1bGhhdXMgQTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPjEuIE9iZXJnZXNjaG9zcyDCtyBURVNULUdydW5kcmlzczwvdGV4dD48bGluZSB4MT0iNjAiIHkxPSIxMzAiIHgyPSIxMTQwIiB5Mj0iMTMwIiBzdHJva2U9IiNjYmQ1ZTEiIHN0cm9rZS13aWR0aD0iMiIvPjxnPjxyZWN0IHg9IjgwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9Ijk2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+MTAxPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+S29ycmlkb3IgMS4gT2Jlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjYgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSIzNTAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iMzY2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+MTAyPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkxhZ2VyIDEuIE9iZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4zMCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjYyMCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI2MzYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj4xMDM8L3RleHQ+PHRleHQgeD0iNjM2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+RW1wZmFuZyAxLiBPYmVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iNjM2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MzQgbcKyPC90ZXh0PjwvZz48dGV4dCB4PSI5MzAiIHk9Ijc1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjQ3NDhiIj5TY2hlbWF0aXNjaGUgQmVpc3BpZWxkYXJzdGVsbHVuZyDCtyBGYWNpbGl0eTM2NTwvdGV4dD48L3N2Zz4=",
+                "size": 2454,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_sonnenrain_bld_sonnenrain_og1_plan_v1",
+            "markers": [
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_og1_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_room_3_1",
+                "label": "Korridor 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_og1_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_room_3_2",
+                "label": "Lager 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_bld_sonnenrain_og1_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_room_3_3",
+                "label": "Empfang 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          }
+        ]
       },
       {
         "id": "bld_sonnenrain_turn",
@@ -713,7 +1113,207 @@
             "note": "Regelgeschoss"
           }
         ],
-        "plans": []
+        "plans": [
+          {
+            "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_ug_plan",
+            "title": "Grundriss Untergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_sonnenrain_turn_ug",
+            "versions": [
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_ug_plan_v1",
+                "version": 1,
+                "fileName": "Turnhalle-und-Aula-Untergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5UdXJuaGFsbGUgdW5kIEF1bGE8L3RleHQ+PHRleHQgeD0iNjAiIHk9IjEwNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjNDc1NTY5Ij5VbnRlcmdlc2Nob3NzIMK3IFRFU1QtR3J1bmRyaXNzPC90ZXh0PjxsaW5lIHgxPSI2MCIgeTE9IjEzMCIgeDI9IjExNDAiIHkyPSIxMzAiIHN0cm9rZT0iI2NiZDVlMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGc+PHJlY3QgeD0iODAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iOTYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5VMDE8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5FbXBmYW5nIFVudGVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4xNCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjM1MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSIzNjYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5VMDI8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+QsO8cm8gSGF1c2RpZW5zdCBVbnRlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjE4IG3CsjwvdGV4dD48L2c+PHRleHQgeD0iOTMwIiB5PSI3NTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzY0NzQ4YiI+U2NoZW1hdGlzY2hlIEJlaXNwaWVsZGFyc3RlbGx1bmcgwrcgRmFjaWxpdHkzNjU8L3RleHQ+PC9zdmc+",
+                "size": 1922,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_sonnenrain_turn_bld_sonnenrain_turn_ug_plan_v1",
+            "markers": [
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_ug_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_turn_room_1_1",
+                "label": "Empfang Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_ug_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_turn_room_1_2",
+                "label": "Büro Hausdienst Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_eg_plan",
+            "title": "Grundriss Erdgeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_sonnenrain_turn_eg",
+            "versions": [
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_eg_plan_v1",
+                "version": 1,
+                "fileName": "Turnhalle-und-Aula-Erdgeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5UdXJuaGFsbGUgdW5kIEF1bGE8L3RleHQ+PHRleHQgeD0iNjAiIHk9IjEwNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjNDc1NTY5Ij5FcmRnZXNjaG9zcyDCtyBURVNULUdydW5kcmlzczwvdGV4dD48bGluZSB4MT0iNjAiIHkxPSIxMzAiIHgyPSIxMTQwIiB5Mj0iMTMwIiBzdHJva2U9IiNjYmQ1ZTEiIHN0cm9rZS13aWR0aD0iMiIvPjxnPjxyZWN0IHg9IjgwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9Ijk2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+RTAxPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+VGVjaG5pa3plbnRyYWxlIEVyZGdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjAgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSIzNTAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iMzY2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+RTAyPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPlNhbml0w6RyYW5sYWdlIEVyZGdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjI0IG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iNjIwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjYzNiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPkUwMzwvdGV4dD48dGV4dCB4PSI2MzYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5Lb3JyaWRvciBFcmRnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI2MzYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4yOCBtwrI8L3RleHQ+PC9nPjx0ZXh0IHg9IjkzMCIgeT0iNzUwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM2NDc0OGIiPlNjaGVtYXRpc2NoZSBCZWlzcGllbGRhcnN0ZWxsdW5nIMK3IEZhY2lsaXR5MzY1PC90ZXh0Pjwvc3ZnPg==",
+                "size": 2466,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_sonnenrain_turn_bld_sonnenrain_turn_eg_plan_v1",
+            "markers": [
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_eg_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_turn_room_2_1",
+                "label": "Technikzentrale Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_eg_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_turn_room_2_2",
+                "label": "Sanitäranlage Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_eg_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_turn_room_2_3",
+                "label": "Korridor Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_og1_plan",
+            "title": "Grundriss 1. Obergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_sonnenrain_turn_og1",
+            "versions": [
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_og1_plan_v1",
+                "version": 1,
+                "fileName": "Turnhalle-und-Aula-1.-Obergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5UdXJuaGFsbGUgdW5kIEF1bGE8L3RleHQ+PHRleHQgeD0iNjAiIHk9IjEwNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjNDc1NTY5Ij4xLiBPYmVyZ2VzY2hvc3MgwrcgVEVTVC1HcnVuZHJpc3M8L3RleHQ+PGxpbmUgeDE9IjYwIiB5MT0iMTMwIiB4Mj0iMTE0MCIgeTI9IjEzMCIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjIiLz48Zz48cmVjdCB4PSI4MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI5NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPjEwMTwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPktvcnJpZG9yIDEuIE9iZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjI2IG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iMzUwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjM2NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPjEwMjwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5MYWdlciAxLiBPYmVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MzAgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSI2MjAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iNjM2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+MTAzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkVtcGZhbmcgMS4gT2Jlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjM0IG3CsjwvdGV4dD48L2c+PHRleHQgeD0iOTMwIiB5PSI3NTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzY0NzQ4YiI+U2NoZW1hdGlzY2hlIEJlaXNwaWVsZGFyc3RlbGx1bmcgwrcgRmFjaWxpdHkzNjU8L3RleHQ+PC9zdmc+",
+                "size": 2462,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_sonnenrain_turn_bld_sonnenrain_turn_og1_plan_v1",
+            "markers": [
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_og1_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_turn_room_3_1",
+                "label": "Korridor 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_og1_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_turn_room_3_2",
+                "label": "Lager 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_sonnenrain_turn_bld_sonnenrain_turn_og1_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_sonnenrain_turn_room_3_3",
+                "label": "Empfang 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          }
+        ]
       },
       {
         "id": "bld_rathaus",
@@ -780,7 +1380,207 @@
             "note": "Regelgeschoss"
           }
         ],
-        "plans": []
+        "plans": [
+          {
+            "id": "bld_rathaus_bld_rathaus_ug_plan",
+            "title": "Grundriss Untergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_rathaus_ug",
+            "versions": [
+              {
+                "id": "bld_rathaus_bld_rathaus_ug_plan_v1",
+                "version": 1,
+                "fileName": "Verwaltungshochhaus-Untergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5WZXJ3YWx0dW5nc2hvY2hoYXVzPC90ZXh0Pjx0ZXh0IHg9IjYwIiB5PSIxMDYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzQ3NTU2OSI+VW50ZXJnZXNjaG9zcyDCtyBURVNULUdydW5kcmlzczwvdGV4dD48bGluZSB4MT0iNjAiIHkxPSIxMzAiIHgyPSIxMTQwIiB5Mj0iMTMwIiBzdHJva2U9IiNjYmQ1ZTEiIHN0cm9rZS13aWR0aD0iMiIvPjxnPjxyZWN0IHg9IjgwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9Ijk2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+VTAxPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+RW1wZmFuZyBVbnRlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MTQgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSIzNTAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iMzY2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+VTAyPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkLDvHJvIEhhdXNkaWVuc3QgVW50ZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4xOCBtwrI8L3RleHQ+PC9nPjx0ZXh0IHg9IjkzMCIgeT0iNzUwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM2NDc0OGIiPlNjaGVtYXRpc2NoZSBCZWlzcGllbGRhcnN0ZWxsdW5nIMK3IEZhY2lsaXR5MzY1PC90ZXh0Pjwvc3ZnPg==",
+                "size": 1926,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_rathaus_bld_rathaus_ug_plan_v1",
+            "markers": [
+              {
+                "id": "bld_rathaus_bld_rathaus_ug_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_rathaus_room_1_1",
+                "label": "Empfang Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_rathaus_bld_rathaus_ug_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_rathaus_room_1_2",
+                "label": "Büro Hausdienst Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_rathaus_bld_rathaus_eg_plan",
+            "title": "Grundriss Erdgeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_rathaus_eg",
+            "versions": [
+              {
+                "id": "bld_rathaus_bld_rathaus_eg_plan_v1",
+                "version": 1,
+                "fileName": "Verwaltungshochhaus-Erdgeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5WZXJ3YWx0dW5nc2hvY2hoYXVzPC90ZXh0Pjx0ZXh0IHg9IjYwIiB5PSIxMDYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzQ3NTU2OSI+RXJkZ2VzY2hvc3MgwrcgVEVTVC1HcnVuZHJpc3M8L3RleHQ+PGxpbmUgeDE9IjYwIiB5MT0iMTMwIiB4Mj0iMTE0MCIgeTI9IjEzMCIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjIiLz48Zz48cmVjdCB4PSI4MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI5NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPkUwMTwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPlRlY2huaWt6ZW50cmFsZSBFcmRnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjIwIG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iMzUwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjM2NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPkUwMjwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5TYW5pdMOkcmFubGFnZSBFcmRnZXNjaG9zczwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4yNCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjYyMCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI2MzYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5FMDM8L3RleHQ+PHRleHQgeD0iNjM2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+S29ycmlkb3IgRXJkZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iNjM2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjggbcKyPC90ZXh0PjwvZz48dGV4dCB4PSI5MzAiIHk9Ijc1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjQ3NDhiIj5TY2hlbWF0aXNjaGUgQmVpc3BpZWxkYXJzdGVsbHVuZyDCtyBGYWNpbGl0eTM2NTwvdGV4dD48L3N2Zz4=",
+                "size": 2466,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_rathaus_bld_rathaus_eg_plan_v1",
+            "markers": [
+              {
+                "id": "bld_rathaus_bld_rathaus_eg_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_rathaus_room_2_1",
+                "label": "Technikzentrale Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_rathaus_bld_rathaus_eg_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_rathaus_room_2_2",
+                "label": "Sanitäranlage Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_rathaus_bld_rathaus_eg_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_rathaus_room_2_3",
+                "label": "Korridor Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_rathaus_bld_rathaus_og1_plan",
+            "title": "Grundriss 1. Obergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_rathaus_og1",
+            "versions": [
+              {
+                "id": "bld_rathaus_bld_rathaus_og1_plan_v1",
+                "version": 1,
+                "fileName": "Verwaltungshochhaus-1.-Obergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5WZXJ3YWx0dW5nc2hvY2hoYXVzPC90ZXh0Pjx0ZXh0IHg9IjYwIiB5PSIxMDYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzQ3NTU2OSI+MS4gT2Jlcmdlc2Nob3NzIMK3IFRFU1QtR3J1bmRyaXNzPC90ZXh0PjxsaW5lIHgxPSI2MCIgeTE9IjEzMCIgeDI9IjExNDAiIHkyPSIxMzAiIHN0cm9rZT0iI2NiZDVlMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGc+PHJlY3QgeD0iODAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iOTYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj4xMDE8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5Lb3JyaWRvciAxLiBPYmVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4yNiBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjM1MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSIzNjYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj4xMDI8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+TGFnZXIgMS4gT2Jlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjMwIG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iNjIwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjYzNiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPjEwMzwvdGV4dD48dGV4dCB4PSI2MzYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5FbXBmYW5nIDEuIE9iZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI2MzYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4zNCBtwrI8L3RleHQ+PC9nPjx0ZXh0IHg9IjkzMCIgeT0iNzUwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM2NDc0OGIiPlNjaGVtYXRpc2NoZSBCZWlzcGllbGRhcnN0ZWxsdW5nIMK3IEZhY2lsaXR5MzY1PC90ZXh0Pjwvc3ZnPg==",
+                "size": 2466,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_rathaus_bld_rathaus_og1_plan_v1",
+            "markers": [
+              {
+                "id": "bld_rathaus_bld_rathaus_og1_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_rathaus_room_3_1",
+                "label": "Korridor 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_rathaus_bld_rathaus_og1_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_rathaus_room_3_2",
+                "label": "Lager 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_rathaus_bld_rathaus_og1_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_rathaus_room_3_3",
+                "label": "Empfang 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          }
+        ]
       },
       {
         "id": "bld_limmat",
@@ -847,7 +1647,207 @@
             "note": "Regelgeschoss"
           }
         ],
-        "plans": []
+        "plans": [
+          {
+            "id": "bld_limmat_bld_limmat_ug_plan",
+            "title": "Grundriss Untergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_limmat_ug",
+            "versions": [
+              {
+                "id": "bld_limmat_bld_limmat_ug_plan_v1",
+                "version": 1,
+                "fileName": "Wohnhaus-Limmatgarten-1-Untergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5Xb2huaGF1cyBMaW1tYXRnYXJ0ZW4gMTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPlVudGVyZ2VzY2hvc3MgwrcgVEVTVC1HcnVuZHJpc3M8L3RleHQ+PGxpbmUgeDE9IjYwIiB5MT0iMTMwIiB4Mj0iMTE0MCIgeTI9IjEzMCIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjIiLz48Zz48cmVjdCB4PSI4MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI5NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPlUwMTwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkVtcGZhbmcgVW50ZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjE0IG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iMzUwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjM2NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPlUwMjwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5Cw7xybyBIYXVzZGllbnN0IFVudGVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MTggbcKyPC90ZXh0PjwvZz48dGV4dCB4PSI5MzAiIHk9Ijc1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjQ3NDhiIj5TY2hlbWF0aXNjaGUgQmVpc3BpZWxkYXJzdGVsbHVuZyDCtyBGYWNpbGl0eTM2NTwvdGV4dD48L3N2Zz4=",
+                "size": 1930,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_limmat_bld_limmat_ug_plan_v1",
+            "markers": [
+              {
+                "id": "bld_limmat_bld_limmat_ug_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_limmat_room_1_1",
+                "label": "Empfang Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_limmat_bld_limmat_ug_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_limmat_room_1_2",
+                "label": "Büro Hausdienst Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_limmat_bld_limmat_eg_plan",
+            "title": "Grundriss Erdgeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_limmat_eg",
+            "versions": [
+              {
+                "id": "bld_limmat_bld_limmat_eg_plan_v1",
+                "version": 1,
+                "fileName": "Wohnhaus-Limmatgarten-1-Erdgeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5Xb2huaGF1cyBMaW1tYXRnYXJ0ZW4gMTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPkVyZGdlc2Nob3NzIMK3IFRFU1QtR3J1bmRyaXNzPC90ZXh0PjxsaW5lIHgxPSI2MCIgeTE9IjEzMCIgeDI9IjExNDAiIHkyPSIxMzAiIHN0cm9rZT0iI2NiZDVlMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGc+PHJlY3QgeD0iODAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iOTYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5FMDE8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5UZWNobmlremVudHJhbGUgRXJkZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4yMCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjM1MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSIzNjYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5FMDI8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+U2FuaXTDpHJhbmxhZ2UgRXJkZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjQgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSI2MjAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iNjM2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+RTAzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPktvcnJpZG9yIEVyZGdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjI4IG3CsjwvdGV4dD48L2c+PHRleHQgeD0iOTMwIiB5PSI3NTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzY0NzQ4YiI+U2NoZW1hdGlzY2hlIEJlaXNwaWVsZGFyc3RlbGx1bmcgwrcgRmFjaWxpdHkzNjU8L3RleHQ+PC9zdmc+",
+                "size": 2470,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_limmat_bld_limmat_eg_plan_v1",
+            "markers": [
+              {
+                "id": "bld_limmat_bld_limmat_eg_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_limmat_room_2_1",
+                "label": "Technikzentrale Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_limmat_bld_limmat_eg_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_limmat_room_2_2",
+                "label": "Sanitäranlage Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_limmat_bld_limmat_eg_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_limmat_room_2_3",
+                "label": "Korridor Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_limmat_bld_limmat_og1_plan",
+            "title": "Grundriss 1. Obergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_limmat_og1",
+            "versions": [
+              {
+                "id": "bld_limmat_bld_limmat_og1_plan_v1",
+                "version": 1,
+                "fileName": "Wohnhaus-Limmatgarten-1-1.-Obergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5Xb2huaGF1cyBMaW1tYXRnYXJ0ZW4gMTwvdGV4dD48dGV4dCB4PSI2MCIgeT0iMTA2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM0NzU1NjkiPjEuIE9iZXJnZXNjaG9zcyDCtyBURVNULUdydW5kcmlzczwvdGV4dD48bGluZSB4MT0iNjAiIHkxPSIxMzAiIHgyPSIxMTQwIiB5Mj0iMTMwIiBzdHJva2U9IiNjYmQ1ZTEiIHN0cm9rZS13aWR0aD0iMiIvPjxnPjxyZWN0IHg9IjgwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9Ijk2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+MTAxPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+S29ycmlkb3IgMS4gT2Jlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjYgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSIzNTAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iMzY2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+MTAyPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkxhZ2VyIDEuIE9iZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4zMCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjYyMCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI2MzYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj4xMDM8L3RleHQ+PHRleHQgeD0iNjM2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+RW1wZmFuZyAxLiBPYmVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iNjM2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MzQgbcKyPC90ZXh0PjwvZz48dGV4dCB4PSI5MzAiIHk9Ijc1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjQ3NDhiIj5TY2hlbWF0aXNjaGUgQmVpc3BpZWxkYXJzdGVsbHVuZyDCtyBGYWNpbGl0eTM2NTwvdGV4dD48L3N2Zz4=",
+                "size": 2470,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_limmat_bld_limmat_og1_plan_v1",
+            "markers": [
+              {
+                "id": "bld_limmat_bld_limmat_og1_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_limmat_room_3_1",
+                "label": "Korridor 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_limmat_bld_limmat_og1_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_limmat_room_3_2",
+                "label": "Lager 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_limmat_bld_limmat_og1_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_limmat_room_3_3",
+                "label": "Empfang 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          }
+        ]
       },
       {
         "id": "bld_helvetia",
@@ -914,7 +1914,207 @@
             "note": "Regelgeschoss"
           }
         ],
-        "plans": []
+        "plans": [
+          {
+            "id": "bld_helvetia_bld_helvetia_ug_plan",
+            "title": "Grundriss Untergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_helvetia_ug",
+            "versions": [
+              {
+                "id": "bld_helvetia_bld_helvetia_ug_plan_v1",
+                "version": 1,
+                "fileName": "Produktions--und-Logistikhalle-Untergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5Qcm9kdWt0aW9ucy0gdW5kIExvZ2lzdGlraGFsbGU8L3RleHQ+PHRleHQgeD0iNjAiIHk9IjEwNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjNDc1NTY5Ij5VbnRlcmdlc2Nob3NzIMK3IFRFU1QtR3J1bmRyaXNzPC90ZXh0PjxsaW5lIHgxPSI2MCIgeTE9IjEzMCIgeDI9IjExNDAiIHkyPSIxMzAiIHN0cm9rZT0iI2NiZDVlMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGc+PHJlY3QgeD0iODAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iOTYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5VMDE8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5FbXBmYW5nIFVudGVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iOTYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4xNCBtwrI8L3RleHQ+PC9nPjxnPjxyZWN0IHg9IjM1MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSIzNjYiIHk9IjIxMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMGYxNzJhIj5VMDI8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+QsO8cm8gSGF1c2RpZW5zdCBVbnRlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjE4IG3CsjwvdGV4dD48L2c+PHRleHQgeD0iOTMwIiB5PSI3NTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzY0NzQ4YiI+U2NoZW1hdGlzY2hlIEJlaXNwaWVsZGFyc3RlbGx1bmcgwrcgRmFjaWxpdHkzNjU8L3RleHQ+PC9zdmc+",
+                "size": 1938,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_helvetia_bld_helvetia_ug_plan_v1",
+            "markers": [
+              {
+                "id": "bld_helvetia_bld_helvetia_ug_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_helvetia_room_1_1",
+                "label": "Empfang Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_helvetia_bld_helvetia_ug_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_helvetia_room_1_2",
+                "label": "Büro Hausdienst Untergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_helvetia_bld_helvetia_eg_plan",
+            "title": "Grundriss Erdgeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_helvetia_eg",
+            "versions": [
+              {
+                "id": "bld_helvetia_bld_helvetia_eg_plan_v1",
+                "version": 1,
+                "fileName": "Produktions--und-Logistikhalle-Erdgeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5Qcm9kdWt0aW9ucy0gdW5kIExvZ2lzdGlraGFsbGU8L3RleHQ+PHRleHQgeD0iNjAiIHk9IjEwNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjNDc1NTY5Ij5FcmRnZXNjaG9zcyDCtyBURVNULUdydW5kcmlzczwvdGV4dD48bGluZSB4MT0iNjAiIHkxPSIxMzAiIHgyPSIxMTQwIiB5Mj0iMTMwIiBzdHJva2U9IiNjYmQ1ZTEiIHN0cm9rZS13aWR0aD0iMiIvPjxnPjxyZWN0IHg9IjgwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9Ijk2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+RTAxPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ3NTU2OSI+VGVjaG5pa3plbnRyYWxlIEVyZGdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MjAgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSIzNTAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iMzY2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+RTAyPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPlNhbml0w6RyYW5sYWdlIEVyZGdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjM2NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjI0IG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iNjIwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjYzNiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPkUwMzwvdGV4dD48dGV4dCB4PSI2MzYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5Lb3JyaWRvciBFcmRnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI2MzYiIHk9IjI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIj4yOCBtwrI8L3RleHQ+PC9nPjx0ZXh0IHg9IjkzMCIgeT0iNzUwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM2NDc0OGIiPlNjaGVtYXRpc2NoZSBCZWlzcGllbGRhcnN0ZWxsdW5nIMK3IEZhY2lsaXR5MzY1PC90ZXh0Pjwvc3ZnPg==",
+                "size": 2482,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_helvetia_bld_helvetia_eg_plan_v1",
+            "markers": [
+              {
+                "id": "bld_helvetia_bld_helvetia_eg_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_helvetia_room_2_1",
+                "label": "Technikzentrale Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_helvetia_bld_helvetia_eg_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_helvetia_room_2_2",
+                "label": "Sanitäranlage Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_helvetia_bld_helvetia_eg_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_helvetia_room_2_3",
+                "label": "Korridor Erdgeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          },
+          {
+            "id": "bld_helvetia_bld_helvetia_og1_plan",
+            "title": "Grundriss 1. Obergeschoss",
+            "type": "floorPlan",
+            "floorId": "bld_helvetia_og1",
+            "versions": [
+              {
+                "id": "bld_helvetia_bld_helvetia_og1_plan_v1",
+                "version": 1,
+                "fileName": "Produktions--und-Logistikhalle-1.-Obergeschoss.svg",
+                "mimeType": "image/svg+xml",
+                "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjgwMCIgdmlld0JveD0iMCAwIDEyMDAgODAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjYwIiB5PSI2MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGYxNzJhIj5Qcm9kdWt0aW9ucy0gdW5kIExvZ2lzdGlraGFsbGU8L3RleHQ+PHRleHQgeD0iNjAiIHk9IjEwNiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmaWxsPSIjNDc1NTY5Ij4xLiBPYmVyZ2VzY2hvc3MgwrcgVEVTVC1HcnVuZHJpc3M8L3RleHQ+PGxpbmUgeDE9IjYwIiB5MT0iMTMwIiB4Mj0iMTE0MCIgeTI9IjEzMCIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjIiLz48Zz48cmVjdCB4PSI4MCIgeT0iMTcwIiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI5NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPjEwMTwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPktvcnJpZG9yIDEuIE9iZXJnZXNjaG9zczwvdGV4dD48dGV4dCB4PSI5NiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjI2IG3CsjwvdGV4dD48L2c+PGc+PHJlY3QgeD0iMzUwIiB5PSIxNzAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjM2NiIgeT0iMjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiMwZjE3MmEiPjEwMjwvdGV4dD48dGV4dCB4PSIzNjYiIHk9IjI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDc1NTY5Ij5MYWdlciAxLiBPYmVyZ2VzY2hvc3M8L3RleHQ+PHRleHQgeD0iMzY2IiB5PSIyODIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY0NzQ4YiI+MzAgbcKyPC90ZXh0PjwvZz48Zz48cmVjdCB4PSI2MjAiIHk9IjE3MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iNjM2IiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzBmMTcyYSI+MTAzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM0NzU1NjkiPkVtcGZhbmcgMS4gT2Jlcmdlc2Nob3NzPC90ZXh0Pjx0ZXh0IHg9IjYzNiIgeT0iMjgyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPjM0IG3CsjwvdGV4dD48L2c+PHRleHQgeD0iOTMwIiB5PSI3NTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzY0NzQ4YiI+U2NoZW1hdGlzY2hlIEJlaXNwaWVsZGFyc3RlbGx1bmcgwrcgRmFjaWxpdHkzNjU8L3RleHQ+PC9zdmc+",
+                "size": 2478,
+                "uploadedAt": "2026-09-13T12:00:00.000Z",
+                "uploadedBy": "Facility365 Testdaten",
+                "note": "Schematischer TEST-Grundriss mit Raumzuordnung."
+              }
+            ],
+            "currentVersionId": "bld_helvetia_bld_helvetia_og1_plan_v1",
+            "markers": [
+              {
+                "id": "bld_helvetia_bld_helvetia_og1_marker_1",
+                "x": 18,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_helvetia_room_3_1",
+                "label": "Korridor 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_helvetia_bld_helvetia_og1_marker_2",
+                "x": 39,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_helvetia_room_3_2",
+                "label": "Lager 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              },
+              {
+                "id": "bld_helvetia_bld_helvetia_og1_marker_3",
+                "x": 60,
+                "y": 34,
+                "kind": "room",
+                "assetId": "",
+                "roomId": "bld_helvetia_room_3_3",
+                "label": "Empfang 1. Obergeschoss",
+                "note": "TEST-Raum auf dem Gebäudeplan.",
+                "layerId": "standard"
+              }
+            ],
+            "scale": {
+              "fromX": 7,
+              "fromY": 94,
+              "toX": 25,
+              "toY": 94,
+              "meters": 10
+            },
+            "layers": [
+              {
+                "id": "standard",
+                "name": "Standard",
+                "visible": true
+              }
+            ],
+            "createdAt": "2026-09-13T12:00:00.000Z"
+          }
+        ]
       },
       {
         "id": "bld_tech_school",

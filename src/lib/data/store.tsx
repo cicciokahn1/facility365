@@ -265,7 +265,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         );
       };
       try {
-        await ensureTestData(`${scope}:technical-assets-v2`, repository).catch(() => undefined);
+        await ensureTestData(`${scope}:technical-assets-v3`, repository).catch(() => undefined);
         await ensureModuleExamples(`${scope}:v2`, repository).catch(() => undefined);
         await read(CORE_COLLECTIONS);
       } catch (error) {
