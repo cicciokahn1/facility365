@@ -307,22 +307,36 @@ export function TodayView() {
             <p className="text-sm text-muted-foreground">{t("today.hint")}</p>
           </div>
           <div className="grid grid-cols-3 gap-2 sm:flex" data-testid="today-quick-actions">
-            <Button asChild size="sm">
+            <Button
+              asChild
+              size="sm"
+              className="h-auto min-h-10 flex-col gap-0.5 px-2 py-1.5 sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
+            >
               <Link href="/orders?new=1">
                 <ClipboardList className="size-4" aria-hidden />
-                <span className="hidden sm:inline">{t("dashboard.quick.order")}</span>
+                <span className="text-[11px] leading-tight sm:text-sm">{t("dashboard.quick.order")}</span>
               </Link>
             </Button>
-            <Button asChild size="sm" variant="outline">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="h-auto min-h-10 flex-col gap-0.5 px-2 py-1.5 sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
+            >
               <Link href="/damages?new=1">
                 <ShieldAlert className="size-4" aria-hidden />
-                <span className="hidden sm:inline">{t("dashboard.quick.damage")}</span>
+                <span className="text-[11px] leading-tight sm:text-sm">{t("dashboard.quick.damage")}</span>
               </Link>
             </Button>
-            <Button asChild size="sm" variant="outline">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="h-auto min-h-10 flex-col gap-0.5 px-2 py-1.5 sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
+            >
               <Link href="/reports?new=1">
                 <FileText className="size-4" aria-hidden />
-                <span className="hidden sm:inline">{t("dashboard.quick.report")}</span>
+                <span className="text-[11px] leading-tight sm:text-sm">{t("dashboard.quick.report")}</span>
               </Link>
             </Button>
           </div>
