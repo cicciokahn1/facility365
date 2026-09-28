@@ -8,14 +8,16 @@ import type { TranslationKey } from "@/lib/i18n/dictionary";
 import { Vehicle } from "@/lib/types";
 import { formatDate, formatMoney } from "@/lib/utils/format";
 import { useSettings } from "@/lib/settings/provider";
+import { calculatedNextService, serviceHoursDue } from "@/lib/fleet/maintenance";
 
 export function VehicleServiceSummary({ vehicle }: { vehicle: Vehicle }) {
   const t = useT();
   const { settings } = useSettings();
   const serviceKey = `vehicle.service.${vehicle.serviceType}` as TranslationKey;
+  const nextService = calculatedNextService(vehicle);
   const dates = [
     ["vehicle.lastService", vehicle.lastService],
-    ["vehicle.nextService", vehicle.nextService],
+    ["vehicle.nextService", nextService],
     ["vehicle.tireChange", vehicle.tireChange],
     ["vehicle.nextInspection", vehicle.nextInspection],
   ] as const;
@@ -41,6 +43,14 @@ export function VehicleServiceSummary({ vehicle }: { vehicle: Vehicle }) {
             label={t("vehicle.mileage")}
             value={vehicle.mileage ? `${vehicle.mileage.toLocaleString(settings.language)} km` : "–"}
             icon={<Gauge className="size-4" aria-hidden />}
+          />
+          <InfoRow
+            label={t("vehicle.operatingHours")}
+            value={vehicle.operatingHours ? `${vehicle.operatingHours} h` : "–"}
+          />
+          <InfoRow
+            label={t("fleet.serviceHoursDue")}
+            value={serviceHoursDue(vehicle) ? t("fleet.due") : t("fleet.notDue")}
           />
         </CardContent>
       </Card>

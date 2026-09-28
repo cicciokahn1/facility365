@@ -1,6 +1,7 @@
 import { EntityDetail } from '@/components/module/entity-detail';
 import { VehicleHistory } from '@/components/modules/vehicle-history';
 import { VehicleServiceSummary } from '@/components/modules/vehicle-service-summary';
+import { FleetControlPanel } from '@/components/modules/fleet-control-panel';
 
 export default async function VehicleDetailPage({
   params,
@@ -22,6 +23,11 @@ export default async function VehicleDetailPage({
           value: 'history',
           labelKey: 'tab.history',
           content: <VehicleHistory vehicleId={vehicle.id} />,
+        },
+        {
+          value: 'controls',
+          labelKey: 'fleet.controls',
+          content: <FleetControlPanel entity={vehicle} onChange={update} />,
         },
       ]}
     />
