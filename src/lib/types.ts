@@ -609,6 +609,7 @@ export interface Order extends BaseEntity {
   roomId: string;
   assetId: string;
   vehicleId?: string;
+  toolId?: string;
   /** Offerte, aus der der Auftrag entstanden ist; leer bei freier Erfassung. */
   quoteId: string;
   /** Beauftragter Lieferant oder Dienstleister. */
@@ -660,6 +661,7 @@ export interface Maintenance extends BaseEntity {
   buildingId: string;
   assetId: string;
   vehicleId?: string;
+  toolId?: string;
   company: string;
   supplierId: string;
   responsible: string;
@@ -984,6 +986,25 @@ export type VehicleServiceType =
   | "inspection"
   | "repair";
 
+export interface VehicleInspection {
+  id: string;
+  date: string;
+  inspector: string;
+  result: "ok" | "defect" | "pending";
+  checklist: ChecklistItem[];
+  note: string;
+}
+
+export interface VehicleHandover {
+  id: string;
+  date: string;
+  type: "handover" | "return";
+  person: string;
+  mileage?: number;
+  operatingHours?: number;
+  note: string;
+}
+
 /** Firmenfahrzeug mit Service-, Reifen- und Pruefterminen. */
 export interface Vehicle extends BaseEntity {
   title: string;
@@ -996,6 +1017,19 @@ export interface Vehicle extends BaseEntity {
   status: VehicleStatus;
   /** Kilometerstand. */
   mileage?: number;
+  /** Betriebsstunden, sofern das Fahrzeug zusaetzlich als Arbeitsmaschine dient. */
+  operatingHours?: number;
+  fuelType?: string;
+  fuelConsumption?: number;
+  fuelUnit?: string;
+  serviceIntervalMonths?: number;
+  serviceIntervalKm?: number;
+  serviceIntervalHours?: number;
+  lastServiceHours?: number;
+  licenseRequirements?: string;
+  inspectionChecklist?: ChecklistItem[];
+  inspections?: VehicleInspection[];
+  handovers?: VehicleHandover[];
   driver: string;
   assigneeUserId: string;
   siteId: string;
@@ -1085,6 +1119,20 @@ export interface Tool extends BaseEntity, Issuable {
   /** Aufbewahrungsort, z. B. Werkstatt. */
   location: string;
   nextCheck: string;
+  /** Betriebsstunden fuer Maschinen und motorisierte Geraete. */
+  operatingHours?: number;
+  fuelType?: string;
+  fuelConsumption?: number;
+  fuelUnit?: string;
+  lastService?: string;
+  nextService?: string;
+  serviceCost?: number;
+  serviceProvider?: string;
+  serviceIntervalHours?: number;
+  licenseRequirements?: string;
+  inspectionChecklist?: ChecklistItem[];
+  inspections?: VehicleInspection[];
+  handovers?: VehicleHandover[];
 }
 
 export type DamageStatus =
@@ -1101,6 +1149,7 @@ export interface Damage extends BaseEntity {
   roomId: string;
   assetId: string;
   vehicleId?: string;
+  toolId?: string;
   reportedBy: string;
   /** Melderin oder Melder aus der Benutzerverwaltung. */
   reportedById: string;
@@ -1174,6 +1223,7 @@ export interface Report extends BaseEntity {
   roomId: string;
   assetId: string;
   vehicleId?: string;
+  toolId?: string;
   orderId: string;
   summary: string;
   workDescription: string;

@@ -1109,6 +1109,12 @@ const ordersConfig: ModuleConfig<"orders"> = {
     },
     {
       kind: "relation",
+      name: "toolId",
+      labelKey: "module.tools.singular",
+      collection: "tools",
+    },
+    {
+      kind: "relation",
       name: "quoteId",
       labelKey: "module.quotes.singular",
       collection: "quotes",
@@ -1191,6 +1197,12 @@ const maintenancesConfig: ModuleConfig<"maintenances"> = {
       name: "vehicleId",
       labelKey: "module.vehicles.singular",
       collection: "vehicles",
+    },
+    {
+      kind: "relation",
+      name: "toolId",
+      labelKey: "module.tools.singular",
+      collection: "tools",
     },
     {
       kind: "relation",
@@ -1959,7 +1971,12 @@ const vehiclesConfig: ModuleConfig<"vehicles"> = {
     text("year", "asset.year"),
     text("vin", "vehicle.vin"),
     { kind: "number", name: "mileage", labelKey: "vehicle.mileage" },
+    { kind: "number", name: "operatingHours", labelKey: "vehicle.operatingHours" },
+    text("fuelType", "vehicle.fuelType"),
+    { kind: "number", name: "fuelConsumption", labelKey: "vehicle.fuelConsumption" },
+    text("fuelUnit", "vehicle.fuelUnit"),
     text("driver", "vehicle.driver"),
+    text("licenseRequirements", "vehicle.licenseRequirements", { span: 2 }),
     {
       kind: "relation",
       name: "assigneeUserId",
@@ -1984,6 +2001,9 @@ const vehiclesConfig: ModuleConfig<"vehicles"> = {
     text("serviceProvider", "vehicle.serviceProvider"),
     { kind: "number", name: "serviceCost", labelKey: "vehicle.serviceCost" },
     { kind: "date", name: "nextService", labelKey: "vehicle.nextService" },
+    { kind: "number", name: "serviceIntervalMonths", labelKey: "vehicle.serviceIntervalMonths" },
+    { kind: "number", name: "serviceIntervalKm", labelKey: "vehicle.serviceIntervalKm" },
+    { kind: "number", name: "serviceIntervalHours", labelKey: "vehicle.serviceIntervalHours" },
     { kind: "date", name: "tireChange", labelKey: "vehicle.tireChange" },
     {
       kind: "date",
@@ -2008,6 +2028,8 @@ const vehiclesConfig: ModuleConfig<"vehicles"> = {
       vehicle.model,
       vehicle.serviceProvider,
       vehicle.serviceType,
+      vehicle.fuelType,
+      vehicle.licenseRequirements,
     ]
       .filter(Boolean)
       .join(" "),
@@ -2062,13 +2084,31 @@ const toolsConfig: ModuleConfig<"tools"> = {
     },
     text("location", "keys.location"),
     { kind: "date", name: "nextCheck", labelKey: "tool.nextCheck" },
+    { kind: "number", name: "operatingHours", labelKey: "vehicle.operatingHours" },
+    text("fuelType", "vehicle.fuelType"),
+    { kind: "number", name: "fuelConsumption", labelKey: "vehicle.fuelConsumption" },
+    text("fuelUnit", "vehicle.fuelUnit"),
+    text("licenseRequirements", "vehicle.licenseRequirements", { span: 2 }),
+    { kind: "date", name: "lastService", labelKey: "vehicle.lastService" },
+    { kind: "date", name: "nextService", labelKey: "vehicle.nextService" },
+    { kind: "number", name: "serviceIntervalHours", labelKey: "vehicle.serviceIntervalHours" },
+    { kind: "number", name: "serviceCost", labelKey: "vehicle.serviceCost" },
+    text("serviceProvider", "vehicle.serviceProvider"),
     text("issuedTo", "keys.issuedTo"),
     { kind: "date", name: "issuedAt", labelKey: "keys.issuedAt" },
     { kind: "date", name: "returnedAt", labelKey: "keys.returnedAt" },
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
   searchOf: (tool) =>
-    [tool.number, tool.title, tool.toolNumber, tool.serial, tool.issuedTo]
+    [
+      tool.number,
+      tool.title,
+      tool.toolNumber,
+      tool.serial,
+      tool.issuedTo,
+      tool.fuelType,
+      tool.licenseRequirements,
+    ]
       .filter(Boolean)
       .join(" "),
 };
@@ -2300,6 +2340,12 @@ const damagesConfig: ModuleConfig<"damages"> = {
       labelKey: "module.vehicles.singular",
       collection: "vehicles",
     },
+    {
+      kind: "relation",
+      name: "toolId",
+      labelKey: "module.tools.singular",
+      collection: "tools",
+    },
     text("reportedBy", "common.author"),
     {
       kind: "relation",
@@ -2524,6 +2570,12 @@ const reportsConfig: ModuleConfig<"reports"> = {
       name: "vehicleId",
       labelKey: "module.vehicles.singular",
       collection: "vehicles",
+    },
+    {
+      kind: "relation",
+      name: "toolId",
+      labelKey: "module.tools.singular",
+      collection: "tools",
     },
     {
       kind: "relation",

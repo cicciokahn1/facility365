@@ -8,6 +8,8 @@
  */
 import { EntityDetail } from '@/components/module/entity-detail';
 import { KeyMovements } from '@/components/modules/key-movements';
+import { FleetControlPanel } from '@/components/modules/fleet-control-panel';
+import { ToolHistory } from '@/components/modules/tool-history';
 
 export function ToolDetail({ id }: { id: string }) {
   return (
@@ -35,6 +37,16 @@ export function ToolDetail({ id }: { id: string }) {
               }}
             />
           ),
+        },
+        {
+          value: 'controls',
+          labelKey: 'fleet.controls',
+          content: <FleetControlPanel entity={entity} onChange={update} />,
+        },
+        {
+          value: 'history',
+          labelKey: 'tab.history',
+          content: <ToolHistory toolId={entity.id} />,
         },
       ]}
     />
