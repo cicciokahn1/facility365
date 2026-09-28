@@ -800,6 +800,12 @@ export const dictionary = {
     it: "Edifici",
     en: "Buildings",
   },
+  "module.plans": {
+    de: "Pläne",
+    fr: "Plans",
+    it: "Piani",
+    en: "Plans",
+  },
   "module.rooms": { de: "Räume", fr: "Locaux", it: "Locali", en: "Rooms" },
   "module.assets": {
     de: "Anlagen",
@@ -1681,6 +1687,54 @@ export const dictionary = {
     fr: "Bâtiment",
     it: "Edificio",
     en: "Building",
+  },
+  "module.plans.singular": {
+    de: "Plan",
+    fr: "Plan",
+    it: "Pianta",
+    en: "Plan",
+  },
+  "plan.overviewSubtitle": {
+    de: "Gebäude-, Geschoss- und Liegenschaftspläne zentral verwalten.",
+    fr: "Gérer au même endroit les plans des bâtiments, des étages et des biens.",
+    it: "Gestisci centralmente i piani di edifici, piani e immobili.",
+    en: "Manage building, floor and property plans in one place.",
+  },
+  "plan.total": {
+    de: "Pläne insgesamt",
+    fr: "Plans au total",
+    it: "Piani totali",
+    en: "Total plans",
+  },
+  "plan.buildingsWithPlans": {
+    de: "Gebäude mit Plänen",
+    fr: "Bâtiments avec plans",
+    it: "Edifici con piani",
+    en: "Buildings with plans",
+  },
+  "plan.selectOwner": {
+    de: "Planbestand auswählen",
+    fr: "Sélectionner les plans",
+    it: "Seleziona i piani",
+    en: "Select plan collection",
+  },
+  "plan.building": {
+    de: "Gebäude",
+    fr: "Bâtiment",
+    it: "Edificio",
+    en: "Building",
+  },
+  "plan.property": {
+    de: "Liegenschaft",
+    fr: "Bien immobilier",
+    it: "Immobile",
+    en: "Property",
+  },
+  "plan.openMaster": {
+    de: "Stammdaten öffnen",
+    fr: "Ouvrir les données de base",
+    it: "Apri dati principali",
+    en: "Open master data",
   },
   "module.rooms.singular": {
     de: "Raum",
