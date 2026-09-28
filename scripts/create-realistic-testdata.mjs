@@ -28,6 +28,62 @@ const file = (id, name, category, linkedModule, linkedId) => ({
   linkedId,
 });
 
+const svgPlan = (buildingName, floor, roomsForFloor) => {
+  const width = 1200;
+  const height = 800;
+  const roomWidth = 250;
+  const roomHeight = 150;
+  const startX = 80;
+  const startY = 170;
+  const columns = 4;
+  const roomsSvg = roomsForFloor
+    .map((room, index) => {
+      const x = startX + (index % columns) * (roomWidth + 20);
+      const y = startY + Math.floor(index / columns) * (roomHeight + 20);
+      return `<g><rect x="${x}" y="${y}" width="${roomWidth}" height="${roomHeight}" fill="#f8fafc" stroke="#334155" stroke-width="3"/><text x="${x + 16}" y="${y + 42}" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">${room.roomNumber}</text><text x="${x + 16}" y="${y + 78}" font-family="Arial, sans-serif" font-size="16" fill="#475569">${room.name}</text><text x="${x + 16}" y="${y + 112}" font-family="Arial, sans-serif" font-size="14" fill="#64748b">${room.area} m²</text></g>`;
+    })
+    .join("");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="white"/><text x="60" y="62" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#0f172a">${buildingName}</text><text x="60" y="106" font-family="Arial, sans-serif" font-size="22" fill="#475569">${floor.name} · TEST-Grundriss</text><line x1="60" y1="130" x2="1140" y2="130" stroke="#cbd5e1" stroke-width="2"/>${roomsSvg}<text x="930" y="750" font-family="Arial, sans-serif" font-size="16" fill="#64748b">Schematische Beispieldarstellung · Facility365</text></svg>`;
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+};
+
+const planFor = (building, floor, floorRooms) => {
+  const versionId = `${building.id}_${floor.id}_plan_v1`;
+  const url = svgPlan(building.name, floor, floorRooms);
+  return {
+    id: `${building.id}_${floor.id}_plan`,
+    title: `Grundriss ${floor.name}`,
+    type: "floorPlan",
+    floorId: floor.id,
+    versions: [{
+      id: versionId,
+      version: 1,
+      fileName: `${building.name.replaceAll(" ", "-")}-${floor.name.replaceAll(" ", "-")}.svg`,
+      mimeType: "image/svg+xml",
+      url,
+      size: Buffer.byteLength(url),
+      uploadedAt: now,
+      uploadedBy: "Facility365 Testdaten",
+      note: "Schematischer TEST-Grundriss mit Raumzuordnung.",
+    }],
+    currentVersionId: versionId,
+    markers: floorRooms.map((room, index) => ({
+      id: `${building.id}_${floor.id}_marker_${index + 1}`,
+      x: 18 + (index % 4) * 21,
+      y: 34 + Math.floor(index / 4) * 23,
+      kind: "room",
+      assetId: "",
+      roomId: room.id,
+      label: room.name,
+      note: "TEST-Raum auf dem Gebäudeplan.",
+      layerId: "standard",
+    })),
+    scale: { fromX: 7, fromY: 94, toX: 25, toY: 94, meters: 10 },
+    layers: [{ id: "standard", name: "Standard", visible: true }],
+    createdAt: now,
+  };
+};
+
 const customers = [
   {
     ...base("cus_alpenblick", "KD-TEST-001"),
@@ -227,6 +283,16 @@ for (const building of buildings) {
       });
     }
   }
+}
+
+for (const building of buildings) {
+  building.plans = building.floors.map((floor) =>
+    planFor(
+      building,
+      floor,
+      rooms.filter((room) => room.buildingId === building.id && room.floorId === floor.id),
+    ),
+  );
 }
 
 const suppliers = [
