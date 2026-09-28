@@ -18,6 +18,7 @@ import {
   CloudSun,
   MapPin,
   Sun,
+  Wind,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -159,6 +160,13 @@ export function WeatherWidget() {
             <span className="font-semibold tabular-nums">{Math.round(weather.temperature)}°C</span>
             <span className="hidden text-muted-foreground sm:inline">
               {t(weatherTextKey(weather.code))}
+            </span>
+            <span
+              className="hidden items-center gap-1 text-xs text-muted-foreground md:flex"
+              aria-label={`${t('weather.wind')}: ${Math.round(weather.wind)} km/h`}
+            >
+              <Wind className="size-3.5" aria-hidden />
+              {Math.round(weather.wind)} km/h
             </span>
           </>
         ) : (

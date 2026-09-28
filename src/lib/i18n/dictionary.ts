@@ -8397,6 +8397,12 @@ export const dictionary = {
     it: "Temporale",
     en: "Thunderstorm",
   },
+  "weather.wind": {
+    de: "Wind",
+    fr: "Vent",
+    it: "Vento",
+    en: "Wind",
+  },
   "weather.loading": {
     de: "Wetter wird geladen",
     fr: "Chargement de la météo",

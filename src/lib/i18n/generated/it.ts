@@ -1563,6 +1563,7 @@ export const table: Record<string, string> = {
   "weather.showers": "Rovesci",
   "weather.snowShowers": "Rovesci di neve",
   "weather.thunder": "Temporale",
+  "weather.wind": "Vento",
   "weather.loading": "Caricamento meteo",
   "weather.unavailable": "Meteo non disponibile",
   "weather.choosePlace": "Scegli luogo",
