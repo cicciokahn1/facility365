@@ -131,6 +131,7 @@ const NAVIGATION_ORDER: ModuleKey[] = [
   "parking",
   "waste",
   "stock",
+  "hazards",
   "vehicles",
   "portal",
   "documents",
@@ -407,6 +408,15 @@ export const MODULES: ModuleDefinition[] = [
     group: "operations",
     labelKey: "module.stock",
     singularKey: "module.stock.singular",
+  },
+  {
+    key: "hazards",
+    collection: "hazards",
+    path: "/hazards",
+    icon: ShieldAlert,
+    group: "operations",
+    labelKey: "module.hazards",
+    singularKey: "module.hazards.singular",
   },
   {
     key: "contracts",

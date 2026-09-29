@@ -40,6 +40,7 @@ export type ModuleKey =
   | "parking"
   | "waste"
   | "stock"
+  | "hazards"
   | "contracts"
   | "damages"
   | "tickets"
@@ -569,6 +570,37 @@ export interface StockItem extends BaseEntity {
   location: string;
   supplierId: string;
   price?: number;
+}
+
+export type HazardStatus = "active" | "expired" | "disposed";
+
+export interface HazardousSubstance extends BaseEntity {
+  name: string;
+  productName: string;
+  category: string;
+  manufacturer: string;
+  casNumber: string;
+  unNumber: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  assetId: string;
+  stockItemId: string;
+  storageLocation: string;
+  responsibleId: string;
+  hazardPictograms: string;
+  hazardStatements: string;
+  precautionaryStatements: string;
+  protectiveMeasures: string;
+  firstAid: string;
+  storageInstructions: string;
+  disposalInstructions: string;
+  safetyDataSheetId: string;
+  expiryDate: string;
+  inspectionDueDate: string;
+  status: HazardStatus;
+  quantity?: number;
+  unit: string;
 }
 
 /** Stand eines Vertrags. */
@@ -1782,6 +1814,7 @@ export interface CollectionMap {
   parking: ParkingSpace;
   waste: WasteEntry;
   stock: StockItem;
+  hazards: HazardousSubstance;
   contracts: ContractEntity;
   damages: Damage;
   tickets: Ticket;

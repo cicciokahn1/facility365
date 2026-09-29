@@ -73,6 +73,7 @@ import {
   TICKET_STATUS_OPTIONS,
   SOURCE_RATING_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
+  HAZARD_STATUS_OPTIONS,
   asString,
 } from "@/lib/schema";
 import { INTERVAL_MONTHS, nextControlDate } from "@/lib/legionella/evaluate";
@@ -2216,6 +2217,62 @@ const stockConfig: ModuleConfig<"stock"> = {
       .join(" "),
 };
 
+const hazardsConfig: ModuleConfig<"hazards"> = {
+  collection: "hazards",
+  titleOf: (hazard) => hazard.name || hazard.productName || hazard.number,
+  statusField: "status",
+  statusOptions: HAZARD_STATUS_OPTIONS,
+  fields: [
+    text("name", "hazard.name", { required: true, span: 2 }),
+    text("productName", "hazard.productName"),
+    text("category", "hazard.category"),
+    text("manufacturer", "hazard.manufacturer"),
+    text("casNumber", "hazard.casNumber"),
+    text("unNumber", "hazard.unNumber"),
+    {
+      kind: "select",
+      name: "status",
+      labelKey: "common.status",
+      options: HAZARD_STATUS_OPTIONS,
+      filter: true,
+    },
+    { kind: "number", name: "quantity", labelKey: "hazard.quantity" },
+    text("unit", "hazard.unit"),
+    { kind: "relation", name: "propertyId", labelKey: "module.properties.singular", collection: "properties", filter: true },
+    { kind: "relation", name: "buildingId", labelKey: "module.buildings.singular", collection: "buildings", parentValueField: "propertyId", parentKey: "propertyId", filter: true },
+    { kind: "relation", name: "roomId", labelKey: "module.rooms.singular", collection: "rooms", parentValueField: "buildingId", parentKey: "buildingId", filter: true },
+    { kind: "relation", name: "assetId", labelKey: "module.assets.singular", collection: "assets", filter: true },
+    { kind: "relation", name: "stockItemId", labelKey: "module.stock.singular", collection: "stock", filter: true },
+    text("storageLocation", "hazard.storageLocation"),
+    { kind: "relation", name: "responsibleId", labelKey: "hazard.responsible", collection: "users", filter: true },
+    { kind: "relation", name: "safetyDataSheetId", labelKey: "hazard.safetyDataSheet", collection: "documents", filter: true },
+    { kind: "date", name: "expiryDate", labelKey: "hazard.expiryDate" },
+    { kind: "date", name: "inspectionDueDate", labelKey: "hazard.inspectionDueDate" },
+    text("hazardPictograms", "hazard.pictograms", { span: 2 }),
+    { kind: "textarea", name: "hazardStatements", labelKey: "hazard.statements", span: 2 },
+    { kind: "textarea", name: "precautionaryStatements", labelKey: "hazard.precautions", span: 2 },
+    { kind: "textarea", name: "protectiveMeasures", labelKey: "hazard.protectiveMeasures", span: 2 },
+    { kind: "textarea", name: "firstAid", labelKey: "hazard.firstAid", span: 2 },
+    { kind: "textarea", name: "storageInstructions", labelKey: "hazard.storageInstructions", span: 2 },
+    { kind: "textarea", name: "disposalInstructions", labelKey: "hazard.disposalInstructions", span: 2 },
+    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
+  ],
+  searchOf: (hazard) =>
+    [
+      hazard.number,
+      hazard.name,
+      hazard.productName,
+      hazard.category,
+      hazard.manufacturer,
+      hazard.casNumber,
+      hazard.unNumber,
+      hazard.storageLocation,
+      hazard.responsibleId,
+    ]
+      .filter(Boolean)
+      .join(" "),
+};
+
 const contractsConfig: ModuleConfig<"contracts"> = {
   collection: "contracts",
   titleOf: (contract) => contract.title || contract.partner || contract.number,
@@ -3234,6 +3291,7 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   parking: parkingConfig,
   waste: wasteConfig,
   stock: stockConfig,
+  hazards: hazardsConfig,
   contracts: contractsConfig,
   damages: damagesConfig,
   tickets: ticketsConfig,

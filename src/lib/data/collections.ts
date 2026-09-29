@@ -36,6 +36,7 @@ export const COLLECTIONS: CollectionKey[] = [
   "parking",
   "waste",
   "stock",
+  "hazards",
   "contracts",
   "damages",
   "tickets",
