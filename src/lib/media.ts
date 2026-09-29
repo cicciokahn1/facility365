@@ -9,13 +9,13 @@ import { newId } from '@/lib/utils/id';
 
 export const PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic';
 export const DOCUMENT_ACCEPT =
-  '.pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt,.odt,.ods,' +
+  '.pdf,.jpg,.jpeg,.png,.webp,.heic,.svg,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt,.json,.zip,.odt,.ods,' +
   'application/pdf,image/jpeg,image/png,' +
   'application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,' +
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document,' +
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
   'application/vnd.openxmlformats-officedocument.presentationml.presentation,' +
-  'text/csv,text/plain,application/vnd.oasis.opendocument.text,' +
+  'text/csv,text/plain,application/json,application/zip,application/vnd.oasis.opendocument.text,' +
   'application/vnd.oasis.opendocument.spreadsheet';
 export const PLAN_ACCEPT = '.pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png';
 /** Dokumente an Objekten: PDF, JPG und PNG. */
@@ -34,6 +34,11 @@ const DOCUMENT_EXTENSIONS = [
   'pptx',
   'csv',
   'txt',
+  'json',
+  'zip',
+  'svg',
+  'webp',
+  'heic',
   'odt',
   'ods',
 ];

@@ -956,6 +956,7 @@ export const emptyPrivateFile = (): Omit<PrivateFile, "id" | "number"> => ({
   ...base(),
   name: "",
   folder: "",
+  parentFolder: "",
   isFolder: false,
   mimeType: "",
   url: "",
