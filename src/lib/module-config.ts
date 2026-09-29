@@ -3190,6 +3190,20 @@ const activitiesConfig: ModuleConfig<"activities"> = {
       .join(" "),
 };
 
+const privateNotesConfig: ModuleConfig<"privateNotes"> = {
+  collection: "privateNotes",
+  titleOf: (note) => note.title || note.number,
+  fields: [],
+  searchOf: (note) => [note.title, note.content, note.folder].join(" "),
+};
+
+const privateFilesConfig: ModuleConfig<"privateFiles"> = {
+  collection: "privateFiles",
+  titleOf: (file) => file.name || file.number,
+  fields: [],
+  searchOf: (file) => [file.name, file.folder, file.mimeType].join(" "),
+};
+
 export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   customers: customersConfig,
   suppliers: suppliersConfig,
@@ -3234,6 +3248,8 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   cleaningcomplaints: cleaningComplaintsConfig,
   users: usersConfig,
   activities: activitiesConfig,
+  privateNotes: privateNotesConfig,
+  privateFiles: privateFilesConfig,
 };
 
 export const configOf = <K extends CollectionKey>(

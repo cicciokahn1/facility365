@@ -65,13 +65,17 @@ export type ModuleKey =
   | "activities"
   | "trash"
   | "help"
-  | "settings";
+  | "settings"
+  | "myArea"
+  | "privateNotes"
+  | "privateFiles";
 
 /** Sammlungen, die Datensaetze fuehren. */
 export type CollectionKey = Exclude<
   ModuleKey,
   | "dashboard"
   | "calendar"
+  | "myArea"
   | "plans"
   | "cleaning"
   | "analytics"
@@ -113,6 +117,22 @@ export interface DocumentFile {
   linkedId?: string;
   linkedLabel?: string;
   category?: string;
+}
+
+export interface PrivateNote extends BaseEntity {
+  title: string;
+  content: string;
+  folder: string;
+}
+
+export interface PrivateFile extends BaseEntity {
+  name: string;
+  folder: string;
+  isFolder?: boolean;
+  mimeType: string;
+  url: string;
+  size: number;
+  uploadedAt: string;
 }
 
 /** Einzelne Feldaenderung: Bezeichnung des Feldes, alter und neuer Wert. */
@@ -1775,6 +1795,8 @@ export interface CollectionMap {
   cleaningcomplaints: CleaningComplaint;
   users: AppUser;
   activities: Activity;
+  privateNotes: PrivateNote;
+  privateFiles: PrivateFile;
 }
 
 export type EntityOf<K extends CollectionKey> = CollectionMap[K];
