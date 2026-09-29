@@ -248,7 +248,7 @@ export default function MyAreaPage() {
               <Search className="pointer-events-none absolute left-3 top-2.5 size-4 text-muted-foreground" aria-hidden />
               <Input
                 className="pl-9"
-                value={query}
+                value={noteQuery}
                 onChange={(event) => setNoteQuery(event.target.value)}
                 placeholder={t('myArea.searchNotes')}
                 aria-label={t('myArea.searchNotes')}
