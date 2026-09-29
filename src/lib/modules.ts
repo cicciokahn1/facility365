@@ -31,6 +31,7 @@ import {
   MailPlus,
   MapPin,
   MessageSquareWarning,
+  NotebookPen,
   Network,
   PackageSearch,
   Receipt,
@@ -91,6 +92,7 @@ export interface ModuleDefinition {
  * Reihenfolge betrifft ausschliesslich die Darstellung in der Navigation.
  */
 const NAVIGATION_ORDER: ModuleKey[] = [
+  "myArea",
   "customers",
   "organizations",
   "sites",
@@ -167,6 +169,14 @@ export const MODULES: ModuleDefinition[] = [
     group: "overview",
     labelKey: "module.dashboard",
     singularKey: "module.dashboard",
+  },
+  {
+    key: "myArea",
+    path: "/me",
+    icon: NotebookPen,
+    group: "overview",
+    labelKey: "module.myArea",
+    singularKey: "module.myArea",
   },
   {
     key: "calendar",
@@ -722,4 +732,7 @@ export const moduleByKey = (key: ModuleKey): ModuleDefinition => {
 
 export const moduleByCollection = (
   collection: CollectionKey,
-): ModuleDefinition => moduleByKey(collection);
+): ModuleDefinition =>
+  collection === "privateNotes" || collection === "privateFiles"
+    ? moduleByKey("myArea")
+    : moduleByKey(collection);

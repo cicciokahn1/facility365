@@ -51,6 +51,8 @@ import {
   Vehicle,
   Visitor,
   ParkingSpace,
+  PrivateFile,
+  PrivateNote,
   WasteEntry,
 } from "@/lib/types";
 
@@ -115,6 +117,8 @@ export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   cleaningcomplaints: "RKL",
   users: "BE",
   activities: "AK",
+  privateNotes: "NO",
+  privateFiles: "PF",
 };
 
 /**
@@ -941,6 +945,24 @@ export const emptyActivity = (): Omit<Activity, "id" | "number"> => ({
   action: "",
 });
 
+export const emptyPrivateNote = (): Omit<PrivateNote, "id" | "number"> => ({
+  ...base(),
+  title: "",
+  content: "",
+  folder: "",
+});
+
+export const emptyPrivateFile = (): Omit<PrivateFile, "id" | "number"> => ({
+  ...base(),
+  name: "",
+  folder: "",
+  isFolder: false,
+  mimeType: "",
+  url: "",
+  size: 0,
+  uploadedAt: new Date().toISOString(),
+});
+
 const FACTORIES = {
   customers: emptyCustomer,
   suppliers: emptySupplier,
@@ -985,6 +1007,8 @@ const FACTORIES = {
   cleaningcomplaints: emptyCleaningComplaint,
   users: emptyUser,
   activities: emptyActivity,
+  privateNotes: emptyPrivateNote,
+  privateFiles: emptyPrivateFile,
 } as const;
 
 /** Leerer Datensatz einer Sammlung, noch ohne Kennung und Nummer. */

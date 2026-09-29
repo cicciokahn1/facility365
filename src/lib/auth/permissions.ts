@@ -31,6 +31,7 @@ interface RoleAccess {
 /** Module, die jede angemeldete Person sieht. */
 const COMMON: Partial<Record<ModuleKey, Access>> = {
   dashboard: "read",
+  myArea: "write",
   today: "read",
   /** Die eigene Merkliste gehoert jedem Benutzer. */
   favorites: "read",

@@ -63,7 +63,7 @@ import { newId, nextNumber } from "@/lib/utils/id";
  * geaendert. Die Historie selbst fuehrt keine Historie.
  */
 const TRACKED: CollectionKey[] = COLLECTIONS.filter(
-  (key) => key !== "activities",
+  (key) => key !== "activities" && key !== "privateNotes" && key !== "privateFiles",
 );
 
 /** Häufig benötigte Stammdaten und Arbeitsvorgänge zuerst laden. */

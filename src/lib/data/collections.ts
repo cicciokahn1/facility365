@@ -50,4 +50,6 @@ export const COLLECTIONS: CollectionKey[] = [
   "cleaningcomplaints",
   "users",
   "activities",
+  "privateNotes",
+  "privateFiles",
 ];
