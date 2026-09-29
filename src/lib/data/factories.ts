@@ -202,7 +202,7 @@ export const emptyBuilding = (): Omit<Building, "id" | "number"> => ({
   renewalCost: 0,
   plannedRenewalYear: "",
   renewalPriority: "medium",
-  responsibleId: "",
+  responsible: "",
   conditionNote: "",
 });
 
@@ -661,7 +661,7 @@ export const emptyHazardousSubstance = (): Omit<HazardousSubstance, "id" | "numb
   assetId: "",
   stockItemId: "",
   storageLocation: "",
-  responsible: "",
+  responsibleId: "",
   hazardPictograms: "",
   hazardStatements: "",
   precautionaryStatements: "",
