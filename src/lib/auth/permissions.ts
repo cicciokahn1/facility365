@@ -91,6 +91,7 @@ const ROLES: Record<UserRole, RoleAccess> = {
       tools: "write",
       stock: "write",
       hazards: "write",
+      outdoorAreas: "write",
       sources: "write",
       appointments: "write",
       solarplants: "write",

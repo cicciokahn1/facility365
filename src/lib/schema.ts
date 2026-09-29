@@ -156,6 +156,24 @@ export const HAZARD_STATUS_OPTIONS: SelectOption[] = [
   { value: "disposed", labelKey: "hazard.status.disposed", tone: "neutral" },
 ];
 
+export const OUTDOOR_AREA_TYPE_OPTIONS: SelectOption[] = [
+  { value: "greenArea", labelKey: "outdoor.type.greenArea" },
+  { value: "lawn", labelKey: "outdoor.type.lawn" },
+  { value: "tree", labelKey: "outdoor.type.tree" },
+  { value: "hedge", labelKey: "outdoor.type.hedge" },
+  { value: "planting", labelKey: "outdoor.type.planting" },
+  { value: "irrigation", labelKey: "outdoor.type.irrigation" },
+  { value: "playground", labelKey: "outdoor.type.playground" },
+  { value: "path", labelKey: "outdoor.type.path" },
+  { value: "other", labelKey: "outdoor.type.other" },
+];
+
+export const OUTDOOR_AREA_STATUS_OPTIONS: SelectOption[] = [
+  { value: "active", labelKey: "outdoor.status.active", tone: "success" },
+  { value: "planned", labelKey: "outdoor.status.planned", tone: "brand" },
+  { value: "inactive", labelKey: "outdoor.status.inactive", tone: "neutral" },
+];
+
 const option = (value: string, labelKey: TranslationKey): SelectOption => ({
   value,
   labelKey,

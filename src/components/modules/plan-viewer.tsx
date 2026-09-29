@@ -47,6 +47,8 @@ const targetOf = (marker: PlanMarker): string =>
     ? `/rooms/${marker.roomId}`
     : marker.assetId
       ? `/assets/${marker.assetId}`
+      : marker.outdoorAreaId
+        ? `/outdoor-areas/${marker.outdoorAreaId}`
       : '';
 
 export function PlanViewer({
@@ -149,6 +151,7 @@ export function PlanViewer({
       y,
       assetId: '',
       roomId: '',
+      outdoorAreaId: '',
       layerId: activeLayerId === 'all' ? layers[0].id : activeLayerId,
       label: '',
       note: '',
@@ -393,7 +396,7 @@ export function PlanViewer({
                   onClick={(event) => {
                     event.stopPropagation();
                     if (markerMode || movingId) return;
-                    setDraftMarker({ roomId: '', ...marker });
+                    setDraftMarker({ roomId: '', outdoorAreaId: '', ...marker });
                   }}
                 >
                   <MapPin
@@ -504,6 +507,14 @@ export function PlanViewer({
                     collection="assets"
                     value={draftMarker.assetId ?? ''}
                     onChange={(value) => setDraftMarker({ ...draftMarker, assetId: value })}
+                  />
+                </div> : null}
+                {draftMarker.kind !== 'note' ? <div className="flex flex-col gap-1">
+                  <Label>{t('module.outdoorAreas.singular')}</Label>
+                  <RelationSelect
+                    collection="outdoorAreas"
+                    value={draftMarker.outdoorAreaId ?? ''}
+                    onChange={(value) => setDraftMarker({ ...draftMarker, outdoorAreaId: value })}
                   />
                 </div> : null}
                 <div className="flex gap-2">
