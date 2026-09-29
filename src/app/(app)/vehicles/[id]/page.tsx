@@ -13,7 +13,7 @@ export default async function VehicleDetailPage({
     <EntityDetail
       collection="vehicles"
       id={id}
-      extraTabs={(vehicle) => [
+      extraTabs={(vehicle, update) => [
         {
           value: 'service',
           labelKey: 'tab.service',
