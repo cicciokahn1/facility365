@@ -2297,7 +2297,6 @@ const outdoorAreasConfig: ModuleConfig<"outdoorAreas"> = {
     { kind: "number", name: "quantity", labelKey: "outdoor.quantity" },
     text("plantSpecies", "outdoor.plantSpecies", { span: 2 }),
     { kind: "relation", name: "irrigationAssetId", labelKey: "outdoor.irrigation", collection: "assets" },
-    { kind: "relation", name: "cleaningAreaId", labelKey: "module.cleaningareas.singular", collection: "cleaningareas" },
     { kind: "relation", name: "responsibleId", labelKey: "outdoor.responsible", collection: "users", filter: true },
     text("careInterval", "outdoor.careInterval"),
     { kind: "date", name: "lastCareDate", labelKey: "outdoor.lastCareDate" },

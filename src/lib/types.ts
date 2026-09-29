@@ -1619,7 +1619,6 @@ export interface OutdoorArea extends BaseEntity {
   quantity?: number;
   plantSpecies: string;
   irrigationAssetId: string;
-  cleaningAreaId: string;
   responsibleId: string;
   careInterval: string;
   lastCareDate: string;

@@ -691,7 +691,6 @@ export const emptyOutdoorArea = (): Omit<OutdoorArea, "id" | "number"> => ({
   quantity: undefined,
   plantSpecies: "",
   irrigationAssetId: "",
-  cleaningAreaId: "",
   responsibleId: "",
   careInterval: "",
   lastCareDate: "",
