@@ -150,6 +150,12 @@ export const STATUS_TONES: Record<string, Tone> = {
   critical: "danger",
 };
 
+export const HAZARD_STATUS_OPTIONS: SelectOption[] = [
+  { value: "active", labelKey: "hazard.status.active", tone: "success" },
+  { value: "expired", labelKey: "hazard.status.expired", tone: "danger" },
+  { value: "disposed", labelKey: "hazard.status.disposed", tone: "neutral" },
+];
+
 const option = (value: string, labelKey: TranslationKey): SelectOption => ({
   value,
   labelKey,
