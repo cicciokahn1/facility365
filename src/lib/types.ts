@@ -128,6 +128,7 @@ export interface PrivateNote extends BaseEntity {
 export interface PrivateFile extends BaseEntity {
   name: string;
   folder: string;
+  parentFolder?: string;
   isFolder?: boolean;
   mimeType: string;
   url: string;
