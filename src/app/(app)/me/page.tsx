@@ -147,7 +147,8 @@ export default function MyAreaPage() {
     setCurrentFolder(path);
   };
 
-  const uploadFiles = async (selected: FileList | File[]) => {
+  const uploadFiles = async (selected: FileList | File[] | null) => {
+    if (!selected) return;
     const candidates = Array.from(selected);
     const accepted = candidates.filter(
       (file) => isAllowedDocument(file) && isWithinUploadLimit(file),
