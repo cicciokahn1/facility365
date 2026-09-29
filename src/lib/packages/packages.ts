@@ -24,6 +24,7 @@ export const CORE_MODULES: ModuleKey[] = [
   'plans',
   'rooms',
   'assets',
+  'outdoorAreas',
   'documents',
   'orders',
   'maintenances',
