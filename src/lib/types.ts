@@ -41,6 +41,7 @@ export type ModuleKey =
   | "waste"
   | "stock"
   | "hazards"
+  | "outdoorAreas"
   | "contracts"
   | "damages"
   | "tickets"
@@ -661,6 +662,7 @@ export interface Order extends BaseEntity {
   buildingId: string;
   roomId: string;
   assetId: string;
+  outdoorAreaId: string;
   vehicleId?: string;
   toolId?: string;
   /** Offerte, aus der der Auftrag entstanden ist; leer bei freier Erfassung. */
@@ -1201,6 +1203,7 @@ export interface Damage extends BaseEntity {
   buildingId: string;
   roomId: string;
   assetId: string;
+  outdoorAreaId: string;
   vehicleId?: string;
   toolId?: string;
   reportedBy: string;
@@ -1582,6 +1585,7 @@ export interface PlanMarker {
   y: number;
   kind?: "asset" | "room" | "note";
   assetId?: string;
+  outdoorAreaId?: string;
   /** Raum, den der Marker auf dem Plan bezeichnet. */
   roomId?: string;
   label: string;
@@ -1589,6 +1593,39 @@ export interface PlanMarker {
   layerId?: string;
   /** Seite eines mehrseitigen PDF-Plans. */
   page?: number;
+}
+
+export type OutdoorAreaType =
+  | "greenArea"
+  | "lawn"
+  | "tree"
+  | "hedge"
+  | "planting"
+  | "irrigation"
+  | "playground"
+  | "path"
+  | "other";
+
+export type OutdoorAreaStatus = "active" | "planned" | "inactive";
+
+export interface OutdoorArea extends BaseEntity {
+  name: string;
+  type: OutdoorAreaType;
+  status: OutdoorAreaStatus;
+  propertyId: string;
+  buildingId: string;
+  location: string;
+  area?: number;
+  quantity?: number;
+  plantSpecies: string;
+  irrigationAssetId: string;
+  cleaningAreaId: string;
+  responsibleId: string;
+  careInterval: string;
+  lastCareDate: string;
+  nextCareDate: string;
+  seasonalTasks: string;
+  description: string;
 }
 
 export interface PlanLayer {
@@ -1815,6 +1852,7 @@ export interface CollectionMap {
   waste: WasteEntry;
   stock: StockItem;
   hazards: HazardousSubstance;
+  outdoorAreas: OutdoorArea;
   contracts: ContractEntity;
   damages: Damage;
   tickets: Ticket;

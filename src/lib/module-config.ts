@@ -74,6 +74,8 @@ import {
   SOURCE_RATING_OPTIONS,
   SUPPLIER_CATEGORY_OPTIONS,
   HAZARD_STATUS_OPTIONS,
+  OUTDOOR_AREA_STATUS_OPTIONS,
+  OUTDOOR_AREA_TYPE_OPTIONS,
   asString,
 } from "@/lib/schema";
 import { INTERVAL_MONTHS, nextControlDate } from "@/lib/legionella/evaluate";
@@ -1101,6 +1103,12 @@ const ordersConfig: ModuleConfig<"orders"> = {
       name: "assetId",
       labelKey: "module.assets.singular",
       collection: "assets",
+    },
+    {
+      kind: "relation",
+      name: "outdoorAreaId",
+      labelKey: "module.outdoorAreas.singular",
+      collection: "outdoorAreas",
     },
     {
       kind: "relation",
@@ -2273,6 +2281,37 @@ const hazardsConfig: ModuleConfig<"hazards"> = {
       .join(" "),
 };
 
+const outdoorAreasConfig: ModuleConfig<"outdoorAreas"> = {
+  collection: "outdoorAreas",
+  titleOf: (area) => area.name || area.location || area.number,
+  statusField: "status",
+  statusOptions: OUTDOOR_AREA_STATUS_OPTIONS,
+  fields: [
+    text("name", "outdoor.name", { required: true, span: 2 }),
+    { kind: "select", name: "type", labelKey: "outdoor.typeLabel", options: OUTDOOR_AREA_TYPE_OPTIONS, filter: true },
+    { kind: "select", name: "status", labelKey: "common.status", options: OUTDOOR_AREA_STATUS_OPTIONS, filter: true },
+    { kind: "relation", name: "propertyId", labelKey: "module.properties.singular", collection: "properties", filter: true },
+    { kind: "relation", name: "buildingId", labelKey: "module.buildings.singular", collection: "buildings", parentValueField: "propertyId", parentKey: "propertyId", filter: true },
+    text("location", "outdoor.location"),
+    { kind: "number", name: "area", labelKey: "outdoor.area" },
+    { kind: "number", name: "quantity", labelKey: "outdoor.quantity" },
+    text("plantSpecies", "outdoor.plantSpecies", { span: 2 }),
+    { kind: "relation", name: "irrigationAssetId", labelKey: "outdoor.irrigation", collection: "assets" },
+    { kind: "relation", name: "cleaningAreaId", labelKey: "module.cleaningareas.singular", collection: "cleaningareas" },
+    { kind: "relation", name: "responsibleId", labelKey: "outdoor.responsible", collection: "users", filter: true },
+    text("careInterval", "outdoor.careInterval"),
+    { kind: "date", name: "lastCareDate", labelKey: "outdoor.lastCareDate" },
+    { kind: "date", name: "nextCareDate", labelKey: "outdoor.nextCareDate" },
+    { kind: "textarea", name: "seasonalTasks", labelKey: "outdoor.seasonalTasks", span: 2 },
+    { kind: "textarea", name: "description", labelKey: "common.description", span: 2 },
+    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
+  ],
+  searchOf: (area) =>
+    [area.number, area.name, area.type, area.location, area.plantSpecies, area.seasonalTasks]
+      .filter(Boolean)
+      .join(" "),
+};
+
 const contractsConfig: ModuleConfig<"contracts"> = {
   collection: "contracts",
   titleOf: (contract) => contract.title || contract.partner || contract.number,
@@ -2390,6 +2429,12 @@ const damagesConfig: ModuleConfig<"damages"> = {
       name: "assetId",
       labelKey: "module.assets.singular",
       collection: "assets",
+    },
+    {
+      kind: "relation",
+      name: "outdoorAreaId",
+      labelKey: "module.outdoorAreas.singular",
+      collection: "outdoorAreas",
     },
     {
       kind: "relation",
@@ -3292,6 +3337,7 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   waste: wasteConfig,
   stock: stockConfig,
   hazards: hazardsConfig,
+  outdoorAreas: outdoorAreasConfig,
   contracts: contractsConfig,
   damages: damagesConfig,
   tickets: ticketsConfig,

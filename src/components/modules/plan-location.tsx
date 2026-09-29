@@ -28,9 +28,11 @@ interface Hit {
 export function PlanLocation({
   assetId = '',
   roomId = '',
+  outdoorAreaId = '',
 }: {
   assetId?: string;
   roomId?: string;
+  outdoorAreaId?: string;
 }) {
   const t = useT();
   const buildings = useCollection('buildings');
@@ -42,7 +44,8 @@ export function PlanLocation({
       plan.markers.some(
         (marker) =>
           (assetId && marker.assetId === assetId) ||
-          (roomId && marker.roomId === roomId),
+          (roomId && marker.roomId === roomId) ||
+          (outdoorAreaId && marker.outdoorAreaId === outdoorAreaId),
       );
     const found: Hit[] = [];
     buildings.items.forEach((building) =>
@@ -66,7 +69,7 @@ export function PlanLocation({
       ),
     );
     return found;
-  }, [assetId, buildings.items, properties.items, roomId]);
+  }, [assetId, buildings.items, outdoorAreaId, properties.items, roomId]);
 
   if (hits.length === 0) return <EmptyState icon={Map} titleKey="plan.empty" />;
 
