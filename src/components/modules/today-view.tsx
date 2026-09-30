@@ -9,7 +9,7 @@
  */
 import { useMemo } from "react";
 import Link from "next/link";
-import { ClipboardList, FileText, ShieldAlert } from "lucide-react";
+import { ClipboardCheck, ClipboardList, FileText, ShieldAlert } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
@@ -306,7 +306,7 @@ export function TodayView() {
             </h1>
             <p className="text-sm text-muted-foreground">{t("today.hint")}</p>
           </div>
-          <div className="grid grid-cols-3 gap-2 sm:flex" data-testid="today-quick-actions">
+          <div className="grid grid-cols-2 gap-2 sm:flex" data-testid="today-quick-actions">
             <Button
               asChild
               size="sm"
@@ -337,6 +337,17 @@ export function TodayView() {
               <Link href="/reports?new=1">
                 <FileText className="size-4" aria-hidden />
                 <span className="text-[11px] leading-tight sm:text-sm">{t("dashboard.quick.report")}</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="h-auto min-h-10 flex-col gap-0.5 px-2 py-1.5 sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
+            >
+              <Link href="/walkthrough">
+                <ClipboardCheck className="size-4" aria-hidden />
+                <span className="text-[11px] leading-tight sm:text-sm">{t("module.walkthrough")}</span>
               </Link>
             </Button>
           </div>
