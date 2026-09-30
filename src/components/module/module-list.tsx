@@ -262,7 +262,8 @@ export function ModuleList({
     <div className="flex flex-col gap-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+            <moduleDef.icon className="size-6 shrink-0 text-primary sm:size-7" aria-hidden />
             {t(moduleDef.labelKey)}
           </h1>
           <p className="text-sm text-muted-foreground">
