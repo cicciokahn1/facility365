@@ -129,6 +129,7 @@ export function RoomDetail({ id }: { id: string }) {
     <EntityDetail
       collection="rooms"
       id={id}
+      defaultTab="dossier"
       extraTabs={(room, update) => [
         {
           value: 'assets',

@@ -10,6 +10,7 @@ export function PropertyDetail({ id }: { id: string }) {
     <EntityDetail
       collection="properties"
       id={id}
+      defaultTab="dossier"
       extraTabs={(property, update) => [
         {
           value: 'buildings',
