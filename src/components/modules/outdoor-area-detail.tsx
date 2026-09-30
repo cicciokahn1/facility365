@@ -16,6 +16,11 @@ export function OutdoorAreaDetail({ id }: { id: string }) {
           content: <PlanLocation outdoorAreaId={area.id} />,
         },
         {
+          value: 'calendar',
+          labelKey: 'module.appointments',
+          content: <RelatedList collection="appointments" field="outdoorAreaId" value={area.id} />,
+        },
+        {
           value: 'orders',
           labelKey: 'module.orders',
           content: <RelatedList collection="orders" field="outdoorAreaId" value={area.id} />,

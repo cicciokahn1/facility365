@@ -294,6 +294,7 @@ export const emptyAppointment = (): Omit<Appointment, "id" | "number"> => ({
   buildingId: "",
   roomId: "",
   assetId: "",
+  outdoorAreaId: "",
   description: "",
 });
 
