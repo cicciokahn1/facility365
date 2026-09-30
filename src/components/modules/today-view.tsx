@@ -13,6 +13,10 @@ import { ClipboardCheck, ClipboardList, FileText, ShieldAlert } from "lucide-rea
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
+import {
+  InProgressButton,
+  isProgressable,
+} from "@/components/module/in-progress-button";
 import { Button } from "@/components/ui/button";
 import { useAccess } from "@/lib/auth/scope";
 import { useRelevantEvents } from "@/lib/calendar/relevant";
@@ -31,6 +35,7 @@ interface Row {
   href: string;
   id: string;
   collection?: CompletableKey;
+  status: string;
   label: string;
   title: string;
   date: string;
@@ -189,6 +194,7 @@ export function TodayView() {
             collection,
             label: t(moduleByCollection(collection).singularKey),
             title: titleOfEntity(collection, item),
+            status: stringField(item, "status"),
             date,
             overdue: Boolean(date) && date < day,
             ...detailsOf(item, lookup),
@@ -240,6 +246,7 @@ export function TodayView() {
               event.source?.collection && isCompletable(event.source.collection)
                 ? event.source.collection
                 : undefined,
+            status: source ? stringField(source, "status") : "",
             label: t(event.labelKey),
             title: event.title,
             date: event.date,
@@ -269,6 +276,7 @@ export function TodayView() {
             event.source?.collection && isCompletable(event.source.collection)
               ? event.source.collection
               : undefined,
+          status: "",
           label: t(event.labelKey),
           title: event.title,
           date: event.date,
@@ -416,6 +424,14 @@ function Section({
                   {row.overdue ? ` · ${t("notify.overdue")}` : ""}
                 </span>
               </Link>
+              {row.collection && isProgressable(row.collection) ? (
+                <InProgressButton
+                  collection={row.collection}
+                  id={row.id}
+                  status={row.status}
+                  compact
+                />
+              ) : null}
               {row.collection ? (
                 <DoneButton collection={row.collection} id={row.id} status="" compact />
               ) : null}
