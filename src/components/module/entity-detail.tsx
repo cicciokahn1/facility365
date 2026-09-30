@@ -17,6 +17,10 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { DocumentList } from "@/components/module/document-list";
 import { EntityForm } from "@/components/module/entity-form";
 import { DoneButton } from "@/components/module/done-button";
+import {
+  InProgressButton,
+  isProgressable,
+} from "@/components/module/in-progress-button";
 import { HistoryTimeline } from "@/components/module/history-timeline";
 import {
   LinkedDocuments,
@@ -264,6 +268,15 @@ export function EntityDetail<K extends CollectionKey>({
                 value={stringField(entity, config.statusField)}
                 options={config.statusOptions}
               />
+            ) : null}
+            {mayWrite && config.statusField && isCompletable(collection) ? (
+              isProgressable(collection) ? (
+                <InProgressButton
+                  collection={collection}
+                  id={id}
+                  status={stringField(entity, config.statusField)}
+                />
+              ) : null
             ) : null}
             {mayWrite && config.statusField && isCompletable(collection) ? (
               <DoneButton
