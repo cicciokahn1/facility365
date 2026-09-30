@@ -254,7 +254,8 @@ export function EntityDetail<K extends CollectionKey>({
           <p className="font-mono text-xs text-muted-foreground">
             {entity.number}
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
+            <moduleDef.icon className="size-6 shrink-0 text-primary" aria-hidden />
             {titleOfEntity(collection, entity)}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-2">
