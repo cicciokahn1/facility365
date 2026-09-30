@@ -264,6 +264,7 @@ export interface Appointment extends BaseEntity {
   buildingId: string;
   roomId: string;
   assetId: string;
+  outdoorAreaId: string;
   description: string;
 }
 

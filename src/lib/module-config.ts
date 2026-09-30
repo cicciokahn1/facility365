@@ -1021,6 +1021,12 @@ const appointmentsConfig: ModuleConfig<"appointments"> = {
       labelKey: "module.assets.singular",
       collection: "assets",
     },
+    {
+      kind: "relation",
+      name: "outdoorAreaId",
+      labelKey: "module.outdoorAreas.singular",
+      collection: "outdoorAreas",
+    },
     text("assignee", "common.assignee"),
     {
       kind: "relation",
