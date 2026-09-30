@@ -78,6 +78,7 @@ export function BuildingDetail({ id }: { id: string }) {
     <EntityDetail
       collection="buildings"
       id={id}
+      defaultTab="dossier"
       extraTabs={(building, update) => [
         {
           value: 'ifc',

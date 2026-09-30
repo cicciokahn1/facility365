@@ -37,7 +37,7 @@ export function AssetDetail({ id }: { id: string }) {
     <EntityDetail
       collection="assets"
       id={resolved}
-      defaultTab="passport"
+      defaultTab="dossier"
       extraTabs={(asset, update) => [
         {
           value: 'passport',
