@@ -8,7 +8,7 @@
  */
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Github } from "lucide-react";
+import { LogIn } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -211,7 +211,7 @@ function LoginForm() {
             onClick={signInWithGitHub}
             data-testid="auth-github"
           >
-            <Github className="size-4" aria-hidden />
+            <LogIn className="size-4" aria-hidden />
             {t("auth.github")}
           </Button>
         ) : null}
