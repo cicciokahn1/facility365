@@ -302,7 +302,7 @@ export function EntityDetail<K extends CollectionKey>({
                 data-testid="add-photo"
               >
                 <Camera className="size-4" aria-hidden />
-                <span className="hidden sm:inline">{t("tab.photos")}</span>
+                {t("tab.photos")}
               </Button>
             ) : null}
             {mayWrite ? (
