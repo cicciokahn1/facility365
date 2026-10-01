@@ -47,6 +47,7 @@ export interface AuthApi {
   /** Die Mitgliedschaft konnte nicht gelesen werden (Datenbank/Regeln). */
   membershipError: boolean;
   signIn: (email: string, password: string) => Promise<AuthMessage | null>;
+  signInWithGitHub: (redirectTo: string) => Promise<AuthMessage | null>;
   signUp: (email: string, password: string) => Promise<AuthMessage | null>;
   signOut: () => Promise<void>;
   /** Verschickt den Link zum Zuruecksetzen des Kennworts. */
@@ -192,6 +193,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return error ? authMessage(error) : null;
   }, []);
 
+  const signInWithGitHub = useCallback(async (redirectTo: string) => {
+    const client = await supabase();
+    if (!client) return 'auth.errorGeneric' as AuthMessage;
+    const { error } = await client.auth.signInWithOAuth({
+      provider: 'github',
+      options: { redirectTo },
+    });
+    return error ? authMessage(error) : null;
+  }, []);
+
   const signUp = useCallback(async (email: string, password: string) => {
     const client = await supabase();
     if (!client) return 'auth.errorGeneric' as AuthMessage;
@@ -248,6 +259,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       membershipReady,
       membershipError,
       signIn,
+      signInWithGitHub,
       signUp,
       signOut,
       requestReset,
@@ -262,6 +274,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       membershipReady,
       membershipError,
       signIn,
+      signInWithGitHub,
       signUp,
       signOut,
       requestReset,

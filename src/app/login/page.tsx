@@ -8,6 +8,7 @@
  */
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Github } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -66,6 +67,18 @@ function LoginForm() {
     }
     if (mode === "signUp") setHint(t("auth.checkMail"));
     if (mode === "reset") setHint(t("auth.resetSent"));
+  };
+
+  const signInWithGitHub = async () => {
+    setBusy(true);
+    setError("");
+    const message = await auth.signInWithGitHub(
+      `${window.location.origin}/login?next=${encodeURIComponent(target)}`,
+    );
+    if (message) {
+      setBusy(false);
+      setError(t(message));
+    }
   };
 
   if (!auth.enabled) {
@@ -188,6 +201,20 @@ function LoginForm() {
                 : t("auth.resetTitle")}
           </Button>
         </form>
+
+        {mode === "signIn" ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3 h-11 w-full"
+            disabled={busy}
+            onClick={signInWithGitHub}
+            data-testid="auth-github"
+          >
+            <Github className="size-4" aria-hidden />
+            {t("auth.github")}
+          </Button>
+        ) : null}
 
         <Button
           variant="link"

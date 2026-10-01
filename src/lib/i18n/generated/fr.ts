@@ -1373,6 +1373,7 @@ export const table: Record<string, string> = {
   "report.hourlyRate": "Tarif horaire",
   "report.workPosition": "Temps de travail",
   "auth.signIn": "Se connecter",
+  "auth.github": "Se connecter avec GitHub",
   "auth.signUp": "Créer un compte",
   "auth.signOut": "Se déconnecter",
   "auth.email": "E-mail",
