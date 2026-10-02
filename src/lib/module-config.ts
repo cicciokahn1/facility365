@@ -1186,6 +1186,8 @@ const maintenancesConfig: ModuleConfig<"maintenances"> = {
       options: INTERVAL_OPTIONS,
       filter: true,
     },
+    { kind: "date", name: "lastDate", labelKey: "common.date" },
+    { kind: "date", name: "nextDate", labelKey: "common.dueDate" },
     {
       kind: "relation",
       name: "propertyId",
@@ -1236,8 +1238,6 @@ const maintenancesConfig: ModuleConfig<"maintenances"> = {
       filter: true,
     },
     text("assigneeTeam", "user.team"),
-    { kind: "date", name: "lastDate", labelKey: "common.date" },
-    { kind: "date", name: "nextDate", labelKey: "common.dueDate" },
     text("legalBasis", "operator.legalBasis"),
     text("dutyCategory", "operator.dutyCategory"),
     {
@@ -2406,6 +2406,7 @@ const damagesConfig: ModuleConfig<"damages"> = {
       options: PRIORITY_OPTIONS,
       filter: true,
     },
+    { kind: "date", name: "reportedAt", labelKey: "common.date" },
     {
       kind: "relation",
       name: "propertyId",
@@ -2468,7 +2469,6 @@ const damagesConfig: ModuleConfig<"damages"> = {
       filter: true,
     },
     text("assigneeTeam", "user.team"),
-    { kind: "date", name: "reportedAt", labelKey: "common.date" },
     { kind: "money", name: "estimatedCost", labelKey: "common.amount" },
     { kind: "switch", name: "insuranceCase", labelKey: "common.type" },
     {
