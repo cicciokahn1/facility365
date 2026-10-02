@@ -114,7 +114,7 @@ export function BottomNav() {
                       )}
                       {/* Kacheln entstehen erst beim Oeffnen des Ordners. */}
                       {!expanded ? null : (
-                        <ul className="grid grid-cols-3 gap-2">
+                        <ul className="grid grid-cols-2 gap-3">
                           {group.key === 'work' && access.canRead('reports') ? (
                             <li>
                               <Link
@@ -144,7 +144,7 @@ export function BottomNav() {
                                   onClick={() => setOpen(false)}
                                   data-active={active}
                                   className={cn(
-                                    'flex h-20 flex-col items-center justify-center gap-1.5 rounded-xl border bg-card px-1 py-2 text-center text-[11px] font-medium leading-tight',
+                                    'flex min-h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-card px-2 py-3 text-center text-sm font-medium leading-tight',
                                     active && 'border-primary/40 bg-brand-soft',
                                   )}
                                 >
