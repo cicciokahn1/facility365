@@ -3,11 +3,11 @@
  *
  * Die Anleitung ist bewusst einfach geschrieben und richtet sich an neue
  * Mitarbeitende ohne Vorkenntnisse. Sie beschreibt nur bestehende Funktionen
- * und veraendert nichts an der Anwendung.
+ * und verändert nichts an der Anwendung.
  */
 
 export interface HelpStep {
-  /** Kurzer Titel des Schritts, z. B. «Oeffnen». */
+  /** Kurzer Titel des Schritts, z. B. «Öffnen». */
   title: string;
   text: string;
 }
@@ -16,7 +16,7 @@ export interface HelpArticle {
   id: string;
   title: string;
   summary: string;
-  /** Erklaerender Text in kurzen Abschnitten. */
+  /** Erklärender Text in kurzen Abschnitten. */
   paragraphs: string[];
   /** «So funktioniert es» - Schritt für Schritt. */
   steps?: HelpStep[];
@@ -34,7 +34,7 @@ export interface HelpCategory {
 }
 
 const OPEN = (where: string): HelpStep => ({
-  title: "1. Oeffnen",
+  title: "1. Öffnen",
   text: `Links in der Navigation ${where} wählen. Auf dem Telefon zuerst auf «Mehr» tippen.`,
 });
 
@@ -45,7 +45,7 @@ const CREATE: HelpStep = {
 
 const EDIT: HelpStep = {
   title: "3. Bearbeiten",
-  text: "Pflichtfelder ausfüllen und die Zuordnung (Liegenschaft, Gebäude, Raum, Anlage) setzen. Fotos und Dokumente können direkt angehaengt werden.",
+  text: "Pflichtfelder ausfüllen und die Zuordnung (Liegenschaft, Gebäude, Raum, Anlage) setzen. Fotos und Dokumente können direkt angehängt werden.",
 };
 
 const SAVE: HelpStep = {
@@ -55,7 +55,7 @@ const SAVE: HelpStep = {
 
 const CLOSE = (status: string): HelpStep => ({
   title: "5. Abschliessen",
-  text: `Ist die Arbeit erledigt, den Status auf «${status}» setzen oder die Schaltfläche «Erledigt» verwenden. Der Eintrag bleibt erhalten und ist ueber den Filter jederzeit wieder sichtbar.`,
+  text: `Ist die Arbeit erledigt, den Status auf «${status}» setzen oder die Schaltfläche «Erledigt» verwenden. Der Eintrag bleibt erhalten und ist über den Filter jederzeit wieder sichtbar.`,
 });
 
 export const HELP_CATEGORIES: HelpCategory[] = [
@@ -71,9 +71,9 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         paragraphs: [
           "Facility365 ist die zentrale Arbeitsumgebung für Hauswartung, Technik, Reinigung und Verwaltung. Alle Objekte, Aufträge, Kontrollen, Dokumente und Kosten liegen an einem Ort statt in Listen, Mappen und Mails.",
           "Jede Person sieht nur, was zu ihrer Rolle und ihren Standorten gehört. Nichts geht verloren: gelöschte Einträge wandern in den Papierkorb, jede Änderung steht in der Historie.",
-          "Die App laeuft auf Computer, Tablet und Telefon. Auf dem Telefon kann sie wie eine App zum Startbildschirm hinzugefuegt werden.",
+          "Die App läuft auf Computer, Tablet und Telefon. Auf dem Telefon kann sie wie eine App zum Startbildschirm hinzugefügt werden.",
         ],
-        keywords: ["einstieg", "ueberblick", "was ist"],
+        keywords: ["einstieg", "überblick", "was ist"],
       },
       {
         id: "structure",
@@ -82,7 +82,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         paragraphs: [
           "Zuoberst stehen Dashboard, Kalender und Heute. Darunter liegen die Hauptordner: Objekte, Technik & Instandhaltung, Aufträge & Rapporte, Reinigung, Energie, Betrieb, Dokumente & Verträge, Auswertungen, Benutzer und Administration. Ein Ordner klappt erst auf, wenn er angetippt wird.",
           "Jedes Modul zeigt eine Liste mit Suche, Filtern und Sortierung. Erledigte Einträge sind standardmässig ausgeblendet; mit dem Filter «Alle» oder dem jeweiligen Status werden sie wieder angezeigt.",
-          "Ein Klick auf einen Eintrag öffnet die Detailansicht mit Reitern für Angaben, Fotos, Dokumente und Historie. Oben stehen die Aktionen wie Bearbeiten, Duplizieren, PDF oder Loeschen.",
+          "Ein Klick auf einen Eintrag öffnet die Detailansicht mit Reitern für Angaben, Fotos, Dokumente und Historie. Oben stehen die Aktionen wie Bearbeiten, Duplizieren, PDF oder Löschen.",
           "Die Lupe oben rechts (oder Strg + K) durchsucht alle Module gleichzeitig.",
         ],
         keywords: ["navigation", "menu", "suche", "aufbau"],
@@ -94,7 +94,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         summary: "Die Struktur, auf der alles aufbaut.",
         paragraphs: [
           "Die Organisation ist das Unternehmen oder die Verwaltung. Ein Standort fasst mehrere Liegenschaften zusammen (optional, z. B. eine Region oder ein Areal).",
-          "Eine Liegenschaft ist die Adresse bzw. das Grundstück. Dazu gehoeren ein oder mehrere Gebäude, im Gebäude liegen die Räume, und im Raum stehen die Anlagen (Heizung, Lift, Lüftung, Beleuchtung usw.).",
+          "Eine Liegenschaft ist die Adresse bzw. das Grundstück. Dazu gehören ein oder mehrere Gebäude, im Gebäude liegen die Räume, und im Raum stehen die Anlagen (Heizung, Lift, Lüftung, Beleuchtung usw.).",
           "Jeder Auftrag, Schaden, jede Kontrolle und Wartung wird dieser Struktur zugeordnet. Dadurch stimmen Auswertungen, Rechte und Kosten automatisch.",
         ],
         steps: [
@@ -128,7 +128,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Gebäudepläne, Flächen und Arbeitsplätze",
         summary: "Pläne nutzen, Räume und Anlagen darauf setzen.",
         paragraphs: [
-          "Zu jedem Gebäude und jeder Liegenschaft lassen sich Pläne hinterlegen (Bild oder PDF), je Stockwerk und mit Fassungen - eine neue Fassung ersetzt die alte nicht, sondern legt sich darueber.",
+          "Zu jedem Gebäude und jeder Liegenschaft lassen sich Pläne hinterlegen (Bild oder PDF), je Stockwerk und mit Fassungen - eine neue Fassung ersetzt die alte nicht, sondern legt sich darüber.",
           "Auf Bildplänen können Räume und Anlagen als Markierung gesetzt, verschoben, bearbeitet und wieder entfernt werden. Ein Klick auf die Markierung führt direkt zum Raum oder zur Anlage; umgekehrt zeigt der Reiter «Pläne» beim Raum und bei der Anlage, auf welchem Plan sie stehen.",
           "Flächen werden beim Gebäude, beim Stockwerk und beim Raum erfasst; beim Raum zusätzlich die Anzahl Arbeitsplätze und die Nutzung bzw. Abteilung. Der Reiter «Flächen» beim Gebäude und bei der Liegenschaft wertet das aus: Gesamtfläche, Fläche je Stockwerk und je Raumart, Anzahl Arbeitsplätze und die Räume, bei denen die Fläche noch fehlt.",
         ],
@@ -140,7 +140,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           },
           {
             title: "3. Bearbeiten",
-            text: "Plan oeffnen, Markierung setzen, auf die Stelle klicken und Raum oder Anlage zuordnen.",
+            text: "Plan öffnen, Markierung setzen, auf die Stelle klicken und Raum oder Anlage zuordnen.",
           },
           SAVE,
           {
@@ -163,7 +163,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   {
     id: "work",
     title: "Aufträge, Schäden und Rapporte",
-    description: "Die taegliche Arbeit erfassen und abschliessen.",
+    description: "Die tägliche Arbeit erfassen und abschliessen.",
     articles: [
       {
         id: "orders",
@@ -191,7 +191,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Helpdesk: Meldungen und Tickets",
         summary: "Meldungen zentral annehmen, zuweisen und abschliessen.",
         paragraphs: [
-          "Im Helpdesk laufen alle Meldungen zusammen. Jedes Ticket erhaelt automatisch eine Nummer und traegt Kategorie, Priorität, Zuordnung (Kunde, Standort, Liegenschaft, Gebäude, Raum, Anlage), Beschreibung, Fotos und eine zuständige Person.",
+          "Im Helpdesk laufen alle Meldungen zusammen. Jedes Ticket erhält automatisch eine Nummer und trägt Kategorie, Priorität, Zuordnung (Kunde, Standort, Liegenschaft, Gebäude, Raum, Anlage), Beschreibung, Fotos und eine zuständige Person.",
           "Der Status führt durch die Bearbeitung: Neu, In Bearbeitung, Wartet, Erledigt, Geschlossen. Mit einer Frist erinnert die App rechtzeitig; überfällige Tickets stehen in einer eigenen Sicht. Erledigte und geschlossene Tickets sind standardmässig ausgeblendet.",
           "Ein Ticket lässt sich mit einem Klick in einen Auftrag umwandeln; Titel, Ort, Anlage, Zuständiger, Frist und Fotos werden übernommen und beide bleiben verknüpft. Zusätzlich können Schaden, Anlage, Wartung und Rapport verknüpft werden. Kommentare und Verlauf halten fest, wer wann was getan hat.",
         ],
@@ -200,7 +200,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           CREATE,
           {
             title: "3. Bearbeiten",
-            text: "Kategorie und Priorität wählen, Ort und Anlage zuordnen, Beschreibung und Fotos ergaenzen, zuständige Person und Frist setzen.",
+            text: "Kategorie und Priorität wählen, Ort und Anlage zuordnen, Beschreibung und Fotos ergänzen, zuständige Person und Frist setzen.",
           },
           SAVE,
           CLOSE("Erledigt"),
@@ -213,7 +213,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Schäden erfassen und weiterbearbeiten",
         summary: "Melden, beurteilen, beheben.",
         paragraphs: [
-          "Ein Schaden haelt fest, was defekt ist, wo er sich befindet und wer ihn gemeldet hat. Aus einem Schaden kann mit einem Klick ein Auftrag entstehen; beide bleiben verknüpft.",
+          "Ein Schaden hält fest, was defekt ist, wo er sich befindet und wer ihn gemeldet hat. Aus einem Schaden kann mit einem Klick ein Auftrag entstehen; beide bleiben verknüpft.",
           "Am schnellsten geht es unterwegs: QR-Code der Anlage scannen, «Schaden melden» wählen - Liegenschaft, Gebäude, Raum und Anlage werden automatisch übernommen. Es fehlen nur noch Beschreibung, Foto und Priorität.",
         ],
         steps: [
@@ -221,7 +221,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           CREATE,
           {
             title: "3. Bearbeiten",
-            text: "Ort und Anlage wählen, Schaden beschreiben, Fotos anhaengen und die Priorität setzen.",
+            text: "Ort und Anlage wählen, Schaden beschreiben, Fotos anhängen und die Priorität setzen.",
           },
           SAVE,
           CLOSE("Behoben"),
@@ -242,7 +242,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           CREATE,
           {
             title: "3. Bearbeiten",
-            text: "Kunde, Liegenschaft, Datum, Arbeitszeit und ausgeführte Arbeiten erfassen, Material ergaenzen.",
+            text: "Kunde, Liegenschaft, Datum, Arbeitszeit und ausgeführte Arbeiten erfassen, Material ergänzen.",
           },
           SAVE,
           {
@@ -255,13 +255,13 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       },
       {
         id: "handover",
-        title: "Objektuebergabe",
-        summary: "Uebergabe an eine andere Person dokumentieren.",
+        title: "Objektübergabe",
+        summary: "Übergabe an eine andere Person dokumentieren.",
         paragraphs: [
-          "Die Objektuebergabe fasst Anlagen, Schlüssel, offene Arbeiten und Kontrollen einer Liegenschaft zusammen und erzeugt daraus einen Uebergabebericht als PDF.",
+          "Die Objektübergabe fasst Anlagen, Schlüssel, offene Arbeiten und Kontrollen einer Liegenschaft zusammen und erzeugt daraus einen Übergabebericht als PDF.",
         ],
         path: "/handover",
-        keywords: ["uebergabe", "stellvertretung"],
+        keywords: ["übergabe", "stellvertretung"],
       },
     ],
   },
@@ -276,7 +276,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         summary: "Jede Anlage mit Pass und Code.",
         paragraphs: [
           "Eine Anlage gehört zu einem Raum oder Gebäude und führt Typ, Hersteller, Baujahr, Seriennummer, Garantie, Wartungen, Dokumente und Fotos.",
-          "Zu jeder Anlage gehört ein QR-Code. Aufgeklebt am Geraet führt er beim Scannen direkt zum Anlagenpass - mit Angaben, Historie und den Schaltflächen «Schaden melden» und «Auftrag erstellen».",
+          "Zu jeder Anlage gehört ein QR-Code. Aufgeklebt am Gerät führt er beim Scannen direkt zum Anlagenpass - mit Angaben, Historie und den Schaltflächen «Schaden melden» und «Auftrag erstellen».",
         ],
         steps: [
           OPEN("«Technik & Instandhaltung» → «Anlagen»"),
@@ -292,15 +292,15 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           },
         ],
         path: "/assets",
-        keywords: ["anlage", "geraet", "qr", "anlagenpass", "scannen"],
+        keywords: ["anlage", "gerät", "qr", "anlagenpass", "scannen"],
       },
       {
         id: "maintenances",
         title: "Wartungen verwalten",
         summary: "Wiederkehrende Arbeiten planen.",
         paragraphs: [
-          "Eine Wartung gehört zu einer Anlage und hat ein Intervall (z. B. jaehrlich). Nach dem Abschluss wird der nächste Termin automatisch berechnet und im Kalender angezeigt.",
-          "Faellige Wartungen erscheinen im Dashboard, unter «Heute» und in den Hinweisen.",
+          "Eine Wartung gehört zu einer Anlage und hat ein Intervall (z. B. jährlich). Nach dem Abschluss wird der nächste Termin automatisch berechnet und im Kalender angezeigt.",
+          "Fällige Wartungen erscheinen im Dashboard, unter «Heute» und in den Hinweisen.",
         ],
         steps: [
           OPEN("«Technik & Instandhaltung» → «Wartungen»"),
@@ -313,15 +313,15 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           CLOSE("Erledigt"),
         ],
         path: "/maintenances",
-        keywords: ["wartung", "service", "intervall", "faellig"],
+        keywords: ["wartung", "service", "intervall", "fällig"],
       },
       {
         id: "inspections",
         title: "Kontrollen durchführen",
         summary: "Sicht-, Funktions- und periodische Kontrollen.",
         paragraphs: [
-          "Kontrollen halten Zustand, Mängel und Massnahmen fest. Es gibt allgemeine Kontrollen sowie eigene Module für Brandschutz, Spielplaetze, Legionellen und FI-Kontrollen.",
-          "Mängel lassen sich mit einer Schaltfläche als Schaden oder Auftrag uebernehmen - die Kontrolle bleibt erhalten und wird verknüpft. Der Kontrollbericht kann als PDF erzeugt werden.",
+          "Kontrollen halten Zustand, Mängel und Maßnahmen fest. Es gibt allgemeine Kontrollen sowie eigene Module für Brandschutz, Spielplätze, Legionellen und FI-Kontrollen.",
+          "Mängel lassen sich mit einer Schaltfläche als Schaden oder Auftrag übernehmen - die Kontrolle bleibt erhalten und wird verknüpft. Der Kontrollbericht kann als PDF erzeugt werden.",
           "Mit «Serie erfassen» wird eine Kontrolle für viele Räume, Gebäude oder Anlagen gleichzeitig angelegt: Liegenschaft wählen, «Alle auswählen», Daten einmal ausfüllen.",
         ],
         steps: [
@@ -332,12 +332,12 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           },
           {
             title: "3. Bearbeiten",
-            text: "Kontrollart, Datum, Kontrolleur und Zustand erfassen, Mängel und Massnahmen beschreiben, Fotos anhaengen.",
+            text: "Kontrollart, Datum, Kontrolleur und Zustand erfassen, Mängel und Maßnahmen beschreiben, Fotos anhängen.",
           },
           SAVE,
           {
             title: "5. Abschliessen",
-            text: "Status auf «Erledigt» setzen, bei Bedarf Mängel als Schaden/Auftrag uebernehmen und den Kontrollbericht als PDF erstellen.",
+            text: "Status auf «Erledigt» setzen, bei Bedarf Mängel als Schaden/Auftrag übernehmen und den Kontrollbericht als PDF erstellen.",
           },
         ],
         path: "/inspections",
@@ -346,13 +346,13 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: "firesafety",
         title: "Brandschutz und Feuerungskontrolle",
-        summary: "Feuerloescher, Fluchtwege, Kaminfeger.",
+        summary: "Feuerlöscher, Fluchtwege, Kaminfeger.",
         paragraphs: [
-          "Das Brandschutzmodul kennt Feuerloescher, Brandmeldeanlage, Fluchtwege, Notausgaenge, Brandschutztueren, Rauchabzuege, Loeschwasser, Beschilderung, individuelle Prüfungen und die Feuerungskontrolle des Kaminfegers (mit Brennstoff und Messwerten).",
+          "Das Brandschutzmodul kennt Feuerlöscher, Brandmeldeanlage, Fluchtwege, Notausgänge, Brandschutztüren, Rauchabzüge, Löschwasser, Beschilderung, individuelle Prüfungen und die Feuerungskontrolle des Kaminfegers (mit Brennstoff und Messwerten).",
           "Je Kontrollart ist ein Intervall vorbelegt; die nächste Kontrolle und die Frist erscheinen im Kalender und in den Hinweisen. Der Kontrollbericht steht als PDF bereit.",
         ],
         path: "/firesafety",
-        keywords: ["brandschutz", "feuerloescher", "kaminfeger", "feuerung"],
+        keywords: ["brandschutz", "feuerlöscher", "kaminfeger", "feuerung"],
       },
       {
         id: "playgrounds",
@@ -369,7 +369,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   {
     id: "cleaning",
     title: "Reinigung",
-    description: "Pläne, Aufgaben, Personal und Qualitaet.",
+    description: "Pläne, Aufgaben, Personal und Qualität.",
     articles: [
       {
         id: "cleaning",
@@ -377,7 +377,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         summary: "Von der Fläche bis zur Kontrolle.",
         paragraphs: [
           "Zuerst werden Reinigungsbereiche (Flächen mit Quadratmetern und Bodenbelag) erfasst, dann Reinigungspläne mit Intervall und zuständiger Person. Daraus entstehen die Reinigungsaufgaben.",
-          "Das Reinigungspersonal wird unter «Personal» gepflegt; jede Person sieht ihre eigenen Aufgaben. Mit Reinigungskontrollen wird die Qualitaet beurteilt, Reklamationen halten Beanstandungen fest.",
+          "Das Reinigungspersonal wird unter «Personal» gepflegt; jede Person sieht ihre eigenen Aufgaben. Mit Reinigungskontrollen wird die Qualität beurteilt, Reklamationen halten Beanstandungen fest.",
         ],
         steps: [
           OPEN("den Ordner «Reinigung»"),
@@ -400,24 +400,24 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   {
     id: "energy",
     title: "Energie und Solar",
-    description: "Verbrauch, Photovoltaik und Ertraege.",
+    description: "Verbrauch, Photovoltaik und Erträge.",
     articles: [
       {
         id: "energy",
         title: "Energie erfassen",
-        summary: "Zaehlerstaende und Verbrauch.",
+        summary: "Zählerstände und Verbrauch.",
         paragraphs: [
-          "Unter «Energie» werden Verbrauchswerte je Liegenschaft und Gebäude erfasst (Strom, Waerme, Wasser). Die Uebersicht zeigt Entwicklung und Vergleich ueber die Monate.",
+          "Unter «Energie» werden Verbrauchswerte je Liegenschaft und Gebäude erfasst (Strom, Wärme, Wasser). Die Übersicht zeigt Entwicklung und Vergleich über die Monate.",
         ],
         path: "/energy",
-        keywords: ["energie", "strom", "wasser", "verbrauch", "zaehler"],
+        keywords: ["energie", "strom", "wasser", "verbrauch", "zähler"],
       },
       {
         id: "solar",
         title: "Photovoltaik und Solarerträge",
         summary: "Anlage, Produktion, Eigenverbrauch, CO₂.",
         paragraphs: [
-          "Unter «Photovoltaik» wird die Anlage erfasst: kWp, Inbetriebnahme, Wechselrichter, Speicher, Einspeiseverguetung, Strompreis und CO₂-Faktor. Unter «Solarerträge» kommen die Monatswerte dazu: Produktion, Eigenverbrauch, Einspeisung, Erloese und Kosten.",
+          "Unter «Photovoltaik» wird die Anlage erfasst: kWp, Inbetriebnahme, Wechselrichter, Speicher, Einspeisevergütung, Strompreis und CO₂-Faktor. Unter «Solarerträge» kommen die Monatswerte dazu: Produktion, Eigenverbrauch, Einspeisung, Erlöse und Kosten.",
           "Die Auswertung zeigt spezifischen Ertrag, Eigenverbrauchsquote, CO₂-Einsparung, Diagramme je Monat und den Vergleich mit dem Stromverbrauch derselben Liegenschaft.",
         ],
         steps: [
@@ -448,9 +448,9 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Inventar, Werkzeuge, Fahrzeuge, Schlüssel und Lager",
         summary: "Alles, was zum Betrieb gehört.",
         paragraphs: [
-          "Im Inventar stehen Gegenstaende mit Standort, Anschaffung und Wert; jede Position kann mit einem Lieferanten und einer Bezugsquelle verknüpft werden.",
-          "Werkzeuge werden ausgeliehen und zurueckgegeben, Fahrzeuge führen Service, Prüfung und Kilometerstand, Schlüssel werden mit Uebergaben und Rueckgaben protokolliert, das Lager führt Bestaende mit Mindestmenge.",
-          "Unter «Bezugsquellen» werden bewaehrte Anbieter mit Kategorie, Website, Kontakt, Bewertung und Notizen gesammelt.",
+          "Im Inventar stehen Gegenstände mit Standort, Anschaffung und Wert; jede Position kann mit einem Lieferanten und einer Bezugsquelle verknüpft werden.",
+          "Werkzeuge werden ausgeliehen und zurückgegeben, Fahrzeuge führen Service, Prüfung und Kilometerstand, Schlüssel werden mit Übergaben und Rückgaben protokolliert, das Lager führt Bestände mit Mindestmenge.",
+          "Unter «Bezugsquellen» werden bewährte Anbieter mit Kategorie, Website, Kontakt, Bewertung und Notizen gesammelt.",
         ],
         path: "/inventory",
         keywords: [
@@ -475,15 +475,15 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         summary: "Ablage mit Ablaufwarnung.",
         paragraphs: [
           "Dokumente werden hochgeladen und einer Liegenschaft, einem Gebäude oder einer Anlage zugeordnet. Mit einem Ablaufdatum erinnert Facility365 rechtzeitig.",
-          "Verträge führen Laufzeit, Kuendigungsfrist, Kosten und Vertragspartner. Vor Ablauf oder Kuendigungstermin erscheint ein Hinweis im Dashboard und im Kalender.",
-          "Garantien werden bei der Anlage erfasst; die Anlage zeigt, ob die Garantie noch laeuft.",
+          "Verträge führen Laufzeit, Kündigungsfrist, Kosten und Vertragspartner. Vor Ablauf oder Kündigungstermin erscheint ein Hinweis im Dashboard und im Kalender.",
+          "Garantien werden bei der Anlage erfasst; die Anlage zeigt, ob die Garantie noch läuft.",
         ],
         steps: [
           OPEN("«Dokumente & Verträge»"),
           CREATE,
           {
             title: "3. Bearbeiten",
-            text: "Datei hochladen, Titel und Zuordnung setzen, Ablauf- oder Kuendigungsdatum eintragen.",
+            text: "Datei hochladen, Titel und Zuordnung setzen, Ablauf- oder Kündigungsdatum eintragen.",
           },
           SAVE,
           {
@@ -492,7 +492,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           },
         ],
         path: "/documents",
-        keywords: ["dokument", "vertrag", "garantie", "ablauf", "kuendigung"],
+        keywords: ["dokument", "vertrag", "garantie", "ablauf", "kündigung"],
       },
     ],
   },
@@ -507,8 +507,8 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         summary: "Alle Termine an einem Ort.",
         paragraphs: [
           "Der Kalender zeigt Aufträge, Wartungen, Kontrollen, Reinigung, Verträge, Dokumente und Fahrzeugtermine zusammen. Zusätzlich können eigene Termine direkt erstellt, bearbeitet und gelöscht werden.",
-          "Mit «Auswählen» lassen sich mehrere Termine markieren und gemeinsam aendern (Datum, Verschiebung um Tage, Zeiten, Ort, Verantwortlicher, Status).",
-          "«Heute» zeigt jeder Person ihre faelligen und zugewiesenen Arbeiten für den Tag.",
+          "Mit «Auswählen» lassen sich mehrere Termine markieren und gemeinsam ändern (Datum, Verschiebung um Tage, Zeiten, Ort, Verantwortlicher, Status).",
+          "«Heute» zeigt jeder Person ihre fälligen und zugewiesenen Arbeiten für den Tag.",
         ],
         steps: [
           OPEN("«Kalender»"),
@@ -518,12 +518,12 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           },
           {
             title: "3. Bearbeiten",
-            text: "Termin antippen und aendern; mit «Auswählen» mehrere Termine gemeinsam bearbeiten.",
+            text: "Termin antippen und ändern; mit «Auswählen» mehrere Termine gemeinsam bearbeiten.",
           },
           SAVE,
           {
             title: "5. Abschliessen",
-            text: "Erledigte Termine auf «Erledigt» setzen; sie bleiben erhalten und sind ueber den Filter sichtbar.",
+            text: "Erledigte Termine auf «Erledigt» setzen; sie bleiben erhalten und sind über den Filter sichtbar.",
           },
         ],
         path: "/calendar",
@@ -552,8 +552,8 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Offerten, Rechnungen und Kosten",
         summary: "Vom Angebot bis zur Zahlung.",
         paragraphs: [
-          "Eine Offerte enthaelt Positionen mit Menge und Preis und kann als PDF verschickt werden. Wird sie angenommen, entsteht daraus eine Rechnung.",
-          "Rechnungen führen Faelligkeit und Zahlungsstatus; bezahlte Rechnungen sind standardmässig ausgeblendet und ueber den Filter jederzeit sichtbar.",
+          "Eine Offerte enthält Positionen mit Menge und Preis und kann als PDF verschickt werden. Wird sie angenommen, entsteht daraus eine Rechnung.",
+          "Rechnungen führen Fälligkeit und Zahlungsstatus; bezahlte Rechnungen sind standardmässig ausgeblendet und über den Filter jederzeit sichtbar.",
         ],
         steps: [
           OPEN("«Dokumente & Verträge» → «Offerten»"),
@@ -576,7 +576,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Berichte und Auswertungen",
         summary: "Zahlen für Kunden und Leitung.",
         paragraphs: [
-          "Die Auswertungen zeigen Aufträge, Schäden, Kontrollen, Kosten und Reinigung je Zeitraum und Liegenschaft. Der Auditbericht weist die erfuellten Betreiberpflichten nach und lässt sich als PDF erstellen.",
+          "Die Auswertungen zeigen Aufträge, Schäden, Kontrollen, Kosten und Reinigung je Zeitraum und Liegenschaft. Der Auditbericht weist die erfüllten Betreiberpflichten nach und lässt sich als PDF erstellen.",
         ],
         path: "/analytics",
         keywords: ["bericht", "auswertung", "statistik", "audit", "kennzahlen"],
@@ -593,7 +593,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Benutzer, Rollen und Rechte",
         summary: "Wer sieht und darf was.",
         paragraphs: [
-          "Jede Person erhaelt eine Rolle: Superadmin und Organisationsadmin sehen alles, der Standortleiter seine Standorte, der Hauswart seine Arbeiten, die Reinigungskraft ihre Aufgaben, der Melder nur das Melden.",
+          "Jede Person erhält eine Rolle: Superadmin und Organisationsadmin sehen alles, der Standortleiter seine Standorte, der Hauswart seine Arbeiten, die Reinigungskraft ihre Aufgaben, der Melder nur das Melden.",
           "Zusätzlich zur Rolle bestimmt der Benutzerdatensatz den Umfang: Organisation, zugewiesene Standorte und ob nur eigene Zuweisungen sichtbar sind. Die Prüfung erfolgt nicht nur in der Navigation, sondern auch beim Zugriff auf die Daten.",
         ],
         steps: [
@@ -606,7 +606,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
           SAVE,
           {
             title: "5. Abschliessen",
-            text: "Nicht mehr taetige Personen deaktivieren statt loeschen - so bleiben ihre Einträge nachvollziehbar.",
+            text: "Nicht mehr tätige Personen deaktivieren statt löschen - so bleiben ihre Einträge nachvollziehbar.",
           },
         ],
         path: "/users",
@@ -617,8 +617,8 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Einstellungen und Benachrichtigungen",
         summary: "Firma, Sprache, Branche, Hinweise.",
         paragraphs: [
-          "In den Einstellungen werden Firmenname, Logo, Sprache, Waehrung, Mehrwertsteuer und das Branchenpaket gepflegt. Ein Paket blendet nicht benoetigte Module aus - die Daten bleiben vollstaendig erhalten und kehren beim Einschalten zurueck.",
-          "Erinnerungen zu faelligen Wartungen, Kontrollen, Verträgen und Dokumenten erscheinen im Dashboard und als Hinweis. Sicherung und Wiederherstellung der Daten stehen ebenfalls in den Einstellungen.",
+          "In den Einstellungen werden Firmenname, Logo, Sprache, Währung, Mehrwertsteuer und das Branchenpaket gepflegt. Ein Paket blendet nicht benötigte Module aus - die Daten bleiben vollständig erhalten und kehren beim Einschalten zurück.",
+          "Erinnerungen zu fälligen Wartungen, Kontrollen, Verträgen und Dokumenten erscheinen im Dashboard und als Hinweis. Sicherung und Wiederherstellung der Daten stehen ebenfalls in den Einstellungen.",
         ],
         path: "/settings",
         keywords: [
@@ -635,9 +635,9 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Schnittstellen: API und Webhooks",
         summary: "Daten und Ereignisse an andere Systeme.",
         paragraphs: [
-          "Fremdsysteme können Daten lesen ueber «GET /api/v1/<modul>?tenant=<organisation>» mit der Kopfzeile «x-api-key». Der Schlüssel wird serverseitig hinterlegt (FACILITY365_API_KEY), der Datenbankzugriff ebenfalls (SUPABASE_SERVICE_ROLE_KEY). Die Organisation ist Pflicht: es werden nie Daten mehrerer Mandanten zusammen geliefert.",
-          "Ereignisse werden als Webhook gemeldet: Erstellen, Aendern, Abschliessen, Loeschen und Wiederherstellen (record.created, record.updated, record.completed, record.deleted, record.restored) mit Modul, Datensatz, Person, Zeitpunkt und geaenderten Feldern. Die Empfaengeradressen stehen in FACILITY365_WEBHOOK_URLS, das Geheimnis für die Signatur in FACILITY365_WEBHOOK_SECRET; jede Meldung traegt die Kopfzeile «x-facility365-signature» (HMAC SHA-256).",
-          "Ohne hinterlegte Adressen bleibt alles unveraendert - es werden keine Daten nach aussen gegeben.",
+          "Fremdsysteme können Daten lesen über «GET /api/v1/<modul>?tenant=<organisation>» mit der Kopfzeile «x-api-key». Der Schlüssel wird serverseitig hinterlegt (FACILITY365_API_KEY), der Datenbankzugriff ebenfalls (SUPABASE_SERVICE_ROLE_KEY). Die Organisation ist Pflicht: es werden nie Daten mehrerer Mandanten zusammen geliefert.",
+          "Ereignisse werden als Webhook gemeldet: Erstellen, Ändern, Abschliessen, Löschen und Wiederherstellen (record.created, record.updated, record.completed, record.deleted, record.restored) mit Modul, Datensatz, Person, Zeitpunkt und geänderten Feldern. Die Empfängeradressen stehen in FACILITY365_WEBHOOK_URLS, das Geheimnis für die Signatur in FACILITY365_WEBHOOK_SECRET; jede Meldung trägt die Kopfzeile «x-facility365-signature» (HMAC SHA-256).",
+          "Ohne hinterlegte Adressen bleibt alles unverändert - es werden keine Daten nach aussen gegeben.",
         ],
         path: "/settings",
         keywords: [
@@ -653,7 +653,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Papierkorb und Historie",
         summary: "Nichts geht verloren.",
         paragraphs: [
-          "Gelöschte Einträge wandern in den Papierkorb und können dort wiederhergestellt werden. Endgueltig entfernen darf nur, wer im Modul das Loeschrecht hat.",
+          "Gelöschte Einträge wandern in den Papierkorb und können dort wiederhergestellt werden. Endgültig entfernen darf nur, wer im Modul das Löschrecht hat.",
           "Jede Änderung steht im Reiter «Historie» des Datensatzes und in der Änderungshistorie unter Administration.",
         ],
         path: "/trash",
@@ -758,7 +758,7 @@ export const HELP_ARTICLES: (HelpArticle & {
   })),
 );
 
-/** Einfache Volltextsuche ueber Titel, Text, Schritte und Stichworte. */
+/** Einfache Volltextsuche über Titel, Text, Schritte und Stichworte. */
 export function searchHelp(query: string): typeof HELP_ARTICLES {
   const needle = query.trim().toLowerCase();
   if (!needle) return HELP_ARTICLES;
