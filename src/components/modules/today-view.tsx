@@ -7,7 +7,7 @@
  * faellig oder ueberfaellig ist - Auftraege, Wartungen, Reinigungen,
  * Kontrollen und Termine aus dem Kalender.
  */
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ClipboardCheck, ClipboardList, FileText, ShieldAlert } from "lucide-react";
 
@@ -138,6 +138,7 @@ const ASSIGNABLE: CompletableKey[] = [
 
 export function TodayView() {
   const t = useT();
+  const [filter, setFilter] = useState<"all" | "overdue" | "today">("all");
   const access = useAccess();
   const { settings } = useSettings();
   const day = today();
@@ -303,6 +304,15 @@ export function TodayView() {
     (row) => row.date > day && !nextRows.some((next) => next.key === row.key),
   );
   const empty = nowRows.length === 0 && todayRows.length === 0 && nextRows.length === 0 && laterRows.length === 0;
+  const showNow = filter !== "today";
+  const showToday = filter !== "overdue";
+  const showFuture = filter === "all";
+  const filteredEmpty =
+    filter === "overdue"
+      ? nowRows.length === 0
+      : filter === "today"
+        ? todayRows.length === 0
+        : empty;
 
   return (
     <div className="flex flex-col gap-6">
@@ -360,16 +370,42 @@ export function TodayView() {
             </Button>
           </div>
         </div>
+        <div className="mt-3 flex flex-wrap gap-2" aria-label={t("today.title")}>
+          {([
+            ["all", t("common.all")],
+            ["overdue", t("notify.overdue")],
+            ["today", t("today.today")],
+          ] as const).map(([value, label]) => (
+            <Button
+              key={value}
+              type="button"
+              size="sm"
+              variant={filter === value ? "default" : "outline"}
+              aria-pressed={filter === value}
+              onClick={() => setFilter(value)}
+            >
+              {label}
+            </Button>
+          ))}
+        </div>
       </header>
 
-      {empty ? (
+      {filteredEmpty ? (
         <EmptyState icon={moduleByKey("today").icon} titleKey="today.empty" />
       ) : (
         <>
-          <Section testId="today-now" title={t("today.now")} rows={nowRows} language={settings.language} />
-          <Section testId="today-today" title={t("today.today")} rows={todayRows} language={settings.language} />
-          <Section testId="today-next" title={t("today.next")} rows={nextRows} language={settings.language} />
-          <Section testId="today-later" title={t("today.later")} rows={laterRows} language={settings.language} />
+          {showNow ? (
+            <Section testId="today-now" title={t("today.now")} rows={nowRows} language={settings.language} />
+          ) : null}
+          {showToday ? (
+            <Section testId="today-today" title={t("today.today")} rows={todayRows} language={settings.language} />
+          ) : null}
+          {showFuture ? (
+            <>
+              <Section testId="today-next" title={t("today.next")} rows={nextRows} language={settings.language} />
+              <Section testId="today-later" title={t("today.later")} rows={laterRows} language={settings.language} />
+            </>
+          ) : null}
         </>
       )}
     </div>
