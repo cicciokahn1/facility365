@@ -1187,6 +1187,8 @@ export const table: Record<string, string> = {
   "dashboard.expiringContract": "Contract expiring soon",
   "module.audit": "Audit mode",
   "module.walkthrough": "Technical walkthrough",
+  "walkthrough.folderTitle": "Caretaker inspection folder",
+  "walkthrough.folderHint": "Direct access to existing inspection areas without duplicate entry.",
   "walkthrough.createReport": "Create walkthrough report",
   "walkthrough.reportTitle": "Technical walkthrough report",
   "audit.location": "Location",

@@ -1187,6 +1187,8 @@ export const table: Record<string, string> = {
   "dashboard.expiringContract": "Contrat bientôt échu",
   "module.audit": "Mode audit",
   "module.walkthrough": "Ronde technique",
+  "walkthrough.folderTitle": "Classeur de contrôle du concierge",
+  "walkthrough.folderHint": "Accès direct aux contrôles existants, sans double saisie.",
   "walkthrough.createReport": "Créer le rapport de ronde",
   "walkthrough.reportTitle": "Rapport de ronde technique",
   "audit.location": "Site",
