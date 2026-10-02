@@ -126,7 +126,7 @@ export function QuickDamageDialog({
 
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
-      <DialogContent className="max-w-lg" data-testid="quick-report">
+      <DialogContent className="max-h-[90vh] w-[calc(100%-1rem)] max-w-lg overflow-y-auto" data-testid="quick-report">
         <DialogTitle>
           {emergency ? 'Notfall melden' : standalone ? 'Schaden oder Störung melden' : t('quickReport.title')}
         </DialogTitle>
@@ -233,10 +233,11 @@ export function QuickDamageDialog({
           </Select>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Button
             variant="outline"
             onClick={() => cameraRef.current?.click()}
+            className="w-full sm:w-auto"
             data-testid="quick-report-camera"
           >
             <Camera className="size-4" aria-hidden />
@@ -245,6 +246,7 @@ export function QuickDamageDialog({
           <Button
             variant="outline"
             onClick={() => galleryRef.current?.click()}
+            className="w-full sm:w-auto"
             data-testid="quick-report-gallery"
           >
             <ImagePlus className="size-4" aria-hidden />
@@ -294,16 +296,16 @@ export function QuickDamageDialog({
           </ul>
         ) : null}
 
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={createDamage} data-testid="quick-report-damage">
+        <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center">
+          <Button onClick={createDamage} className="w-full sm:w-auto" data-testid="quick-report-damage">
             <TriangleAlert className="size-4" aria-hidden />
             {t('quickReport.createDamage')}
           </Button>
-          <Button variant="outline" onClick={createOrder} data-testid="quick-report-order">
+          <Button variant="outline" onClick={createOrder} className="w-full sm:w-auto" data-testid="quick-report-order">
             <Hammer className="size-4" aria-hidden />
             {t('quickReport.createOrder')}
           </Button>
-          <Button variant="ghost" onClick={() => changeOpen(false)}>
+          <Button variant="ghost" onClick={() => changeOpen(false)} className="w-full sm:w-auto sm:ml-auto">
             {t('action.cancel')}
           </Button>
         </div>
