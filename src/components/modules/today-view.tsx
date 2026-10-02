@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ClipboardCheck, ClipboardList, FileText, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, ShieldAlert } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
@@ -140,6 +140,7 @@ const ASSIGNABLE: CompletableKey[] = [
 export function TodayView() {
   const t = useT();
   const [quickReportOpen, setQuickReportOpen] = useState(false);
+  const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "overdue" | "today">("all");
   const access = useAccess();
   const { settings } = useSettings();
@@ -328,6 +329,15 @@ export function TodayView() {
           </div>
           <div className="grid grid-cols-2 gap-2 sm:flex" data-testid="today-quick-actions">
             <Button
+              size="sm"
+              onClick={() => setEmergencyOpen(true)}
+              variant="destructive"
+              className="h-auto min-h-14 flex-col gap-1 px-2 py-2 text-xs sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
+            >
+              <AlertTriangle className="size-4" aria-hidden />
+              <span className="leading-tight">Notfall</span>
+            </Button>
+            <Button
               asChild
               size="sm"
               className="h-auto min-h-14 flex-col gap-1 px-2 py-2 text-xs sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
@@ -396,6 +406,13 @@ export function TodayView() {
         onOpenChange={setQuickReportOpen}
         target={null}
         standalone
+      />
+      <QuickDamageDialog
+        open={emergencyOpen}
+        onOpenChange={setEmergencyOpen}
+        target={null}
+        standalone
+        emergency
       />
 
       {filteredEmpty ? (
