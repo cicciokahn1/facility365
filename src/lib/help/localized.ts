@@ -5,6 +5,7 @@ type CategoryCopy = { title: string; description: string };
 
 const CATEGORY_COPY: Record<Exclude<Language, 'de'>, Record<string, CategoryCopy>> = {
   fr: {
+    'new-tools': { title: 'Nouveaux outils', description: 'Les nouveaux accès simples pour les concierges.' },
     start: { title: 'Premiers pas', description: 'Découvrir Facility365 et son organisation.' },
     work: { title: 'Mandats, dommages et rapports', description: 'Saisir et terminer le travail quotidien.' },
     technics: { title: 'Technique, entretien et contrôles', description: 'Gérer les installations et prouver les obligations.' },
@@ -17,6 +18,7 @@ const CATEGORY_COPY: Record<Exclude<Language, 'de'>, Record<string, CategoryCopy
     admin: { title: 'Utilisateurs et administration', description: 'Rôles, droits, paramètres et corbeille.' },
   },
   it: {
+    'new-tools': { title: 'Nuovi strumenti', description: 'I nuovi percorsi semplici per i custodi.' },
     start: { title: 'Primi passi', description: 'Scoprire Facility365 e la sua struttura.' },
     work: { title: 'Ordini, danni e rapporti', description: 'Registrare e completare il lavoro quotidiano.' },
     technics: { title: 'Tecnica, manutenzione e controlli', description: 'Gestire gli impianti e dimostrare gli obblighi.' },
@@ -29,6 +31,7 @@ const CATEGORY_COPY: Record<Exclude<Language, 'de'>, Record<string, CategoryCopy
     admin: { title: 'Utenti e amministrazione', description: 'Ruoli, diritti, impostazioni e cestino.' },
   },
   en: {
+    'new-tools': { title: 'New tools', description: 'The latest simple workflows for caretakers.' },
     start: { title: 'Getting started', description: 'Learn what Facility365 is and how it is organised.' },
     work: { title: 'Orders, damage and reports', description: 'Record and complete daily work.' },
     technics: { title: 'Technical, maintenance and inspections', description: 'Manage assets and prove operator duties.' },
@@ -44,6 +47,13 @@ const CATEGORY_COPY: Record<Exclude<Language, 'de'>, Record<string, CategoryCopy
 
 const ARTICLE_TITLES: Record<Exclude<Language, 'de'>, Record<string, string>> = {
   fr: {
+    'today-filters': 'Aujourd’hui : tout, en retard et aujourd’hui',
+    'inspection-folder': 'Classeur de contrôle du concierge',
+    'outdoor-areas': 'Gérer les aménagements extérieurs',
+    hazards: 'Registre des produits dangereux',
+    fleet: 'Véhicules et machines',
+    'private-area': 'Mon espace',
+    'github-login': 'Se connecter avec GitHub',
     what: 'Qu’est-ce que Facility365 ?', structure: 'Comment l’application est-elle organisée ?', hierarchy: 'Organisation → site → immeuble → bâtiment → pièce → installation',
     plans: 'Plans de bâtiment, surfaces et postes de travail', orders: 'Créer et traiter des mandats', tickets: 'Helpdesk : annonces et tickets',
     damages: 'Saisir et traiter les dommages', reports: 'Rapports et temps de travail', handover: 'Remise de l’objet',
@@ -55,6 +65,13 @@ const ARTICLE_TITLES: Record<Exclude<Language, 'de'>, Record<string, string>> = 
     settings: 'Paramètres et notifications', api: 'Interfaces : API et webhooks', trash: 'Corbeille et historique',
   },
   it: {
+    'today-filters': 'Oggi: tutto, in ritardo e oggi',
+    'inspection-folder': 'Raccoglitore controlli custode',
+    'outdoor-areas': 'Gestire le aree esterne',
+    hazards: 'Registro delle sostanze pericolose',
+    fleet: 'Veicoli e macchine',
+    'private-area': 'La mia area',
+    'github-login': 'Accedi con GitHub',
     what: 'Che cos’è Facility365?', structure: 'Come è organizzata l’app?', hierarchy: 'Organizzazione → sito → immobile → edificio → locale → impianto',
     plans: 'Piani degli edifici, superfici e postazioni', orders: 'Creare e gestire ordini', tickets: 'Helpdesk: segnalazioni e ticket',
     damages: 'Registrare e gestire i danni', reports: 'Rapporti e tempi di lavoro', handover: 'Consegna dell’immobile',
@@ -66,6 +83,13 @@ const ARTICLE_TITLES: Record<Exclude<Language, 'de'>, Record<string, string>> = 
     settings: 'Impostazioni e notifiche', api: 'Interfacce: API e webhook', trash: 'Cestino e cronologia',
   },
   en: {
+    'today-filters': 'Today: all, overdue and today',
+    'inspection-folder': 'Caretaker inspection folder',
+    'outdoor-areas': 'Manage outdoor areas',
+    hazards: 'Hazardous substances register',
+    fleet: 'Vehicles and machines',
+    'private-area': 'My area',
+    'github-login': 'Sign in with GitHub',
     what: 'What is Facility365?', structure: 'How is the app organised?', hierarchy: 'Organisation → site → property → building → room → asset',
     plans: 'Building plans, areas and workstations', orders: 'Create and manage orders', tickets: 'Helpdesk: requests and tickets',
     damages: 'Record and process damage', reports: 'Reports and working time', handover: 'Property handover',

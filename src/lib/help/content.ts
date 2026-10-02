@@ -667,6 +667,98 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       },
     ],
   },
+  {
+    id: "new-tools",
+    title: "Neue Werkzeuge",
+    description: "Die neuesten einfachen Wege für Hauswarte.",
+    articles: [
+      {
+        id: "today-filters",
+        title: "Heute: Alle, Überfällig und Heute",
+        summary: "Aufgaben schneller finden.",
+        paragraphs: [
+          "Die Heute-Seite zeigt die persönliche Arbeit, fällige Aufgaben und kommende Termine. Mit den Filtern «Alle», «Überfällig» und «Heute» wird die Liste sofort kleiner.",
+        ],
+        steps: [
+          OPEN("«Heute»"),
+          { title: "2. Filter wählen", text: "«Überfällig» für dringende Aufgaben oder «Heute» für den aktuellen Arbeitstag antippen." },
+          { title: "3. Direkt arbeiten", text: "Auftrag öffnen, «In Arbeit» setzen, Foto hinzufügen oder «Erledigt» verwenden." },
+        ],
+        path: "/today",
+        keywords: ["heute", "überfällig", "filter", "aufgaben", "hauswart"],
+      },
+      {
+        id: "inspection-folder",
+        title: "Hauswart-Prüfmappe",
+        summary: "Prüfbereiche ohne Umwege öffnen.",
+        paragraphs: [
+          "Im Rundgang bündelt die Prüfmappe die bestehenden Bereiche für Anlagen, Brandschutz, Kontrollen und Aussenanlagen. Die Erfassung bleibt in den jeweiligen Modulen und wird nicht doppelt angelegt.",
+        ],
+        steps: [
+          OPEN("«Rundgang»"),
+          { title: "2. Bereich wählen", text: "In der Prüfmappe Anlagen, Brandschutz, Kontrollen oder Aussenanlagen öffnen." },
+          { title: "3. Mangel weiterführen", text: "Bei einer Abweichung Foto und Bemerkung erfassen und direkt einen Schaden, Auftrag oder eine Wartung erstellen." },
+        ],
+        path: "/walkthrough",
+        keywords: ["prüfmappe", "rundgang", "brandschutz", "kontrolle", "aussenanlagen"],
+      },
+      {
+        id: "outdoor-areas",
+        title: "Aussenanlagen verwalten",
+        summary: "Grünflächen, Wege und Pflegearbeiten dokumentieren.",
+        paragraphs: [
+          "Aussenanlagen enthalten Grünflächen, Bäume, Hecken, Spielplätze, Wege und Bewässerung. Pflegeintervalle, Fotos, Schäden und Folgeaufträge bleiben mit der Anlage verknüpft.",
+        ],
+        path: "/outdoor-areas",
+        keywords: ["aussenanlagen", "grünfläche", "rasen", "winterdienst", "bewässerung"],
+      },
+      {
+        id: "hazards",
+        title: "Gefahrstoffkataster",
+        summary: "Gefahrstoffe und Sicherheitsdatenblätter schnell finden.",
+        paragraphs: [
+          "Gefahrstoffe werden Gebäude, Raum, Lagerort und verantwortlicher Person zugeordnet. Sicherheitsdatenblätter, Piktogramme, Schutzmassnahmen, Termine und QR-Zugriff bleiben am Eintrag.",
+        ],
+        path: "/hazards",
+        keywords: ["gefahrstoff", "sicherheitsdatenblatt", "chemikalien", "qr"],
+      },
+      {
+        id: "fleet",
+        title: "Fahrzeuge und Maschinen",
+        summary: "Service, Kontrolle und Übergabe an einem Ort.",
+        paragraphs: [
+          "Fahrzeuge und Maschinen führen Kilometerstand oder Betriebsstunden, Wartungen, Reifen, Reparaturen, Treibstoff, Schäden, Berechtigungen und Übergaben.",
+        ],
+        path: "/vehicles",
+        keywords: ["fahrzeug", "maschine", "service", "reifen", "übergabe"],
+      },
+      {
+        id: "private-area",
+        title: "Mein Bereich",
+        summary: "Privates Notizbuch und persönliche Dateien.",
+        paragraphs: [
+          "Im persönlichen Bereich können eigene Notizen sowie private Ordner und Dateien verwaltet werden. Der Zugriff ist auf das eigene Konto beschränkt.",
+        ],
+        path: "/me",
+        keywords: ["mein bereich", "notizbuch", "dateien", "ordner", "privat"],
+      },
+      {
+        id: "github-login",
+        title: "Mit GitHub anmelden",
+        summary: "Zusätzlicher Login über GitHub.",
+        paragraphs: [
+          "Auf der Login-Seite kann neben E-Mail und Passwort auch «Mit GitHub anmelden» verwendet werden. Danach führt GitHub zurück zu Facility365 und die bestehende Benutzer- und Rechteverwaltung bleibt aktiv.",
+        ],
+        steps: [
+          OPEN("die Login-Seite"),
+          { title: "2. GitHub wählen", text: "Unter dem normalen Anmeldebutton «Mit GitHub anmelden» antippen." },
+          { title: "3. Bestätigen", text: "GitHub-Konto auswählen und die Rückleitung zu Facility365 abwarten." },
+        ],
+        path: "/login",
+        keywords: ["github", "login", "anmelden", "oauth"],
+      },
+    ],
+  },
 ];
 
 /** Alle Artikel als flache Liste - für Suche und Verlinkung. */
