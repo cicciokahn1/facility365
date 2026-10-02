@@ -55,6 +55,40 @@ export default function PricingPage() {
             );
           })}
         </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Preisübersicht</CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <table className="w-full min-w-[34rem] text-left text-sm">
+              <thead className="border-b text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-3 font-medium">Paket</th>
+                  <th className="px-3 py-3 font-medium">Pro Jahr</th>
+                  <th className="px-3 py-3 font-medium">Umgerechnet pro Monat</th>
+                  <th className="px-3 py-3 font-medium">Einrichtung</th>
+                </tr>
+              </thead>
+              <tbody>
+                {packages.map((key) => {
+                  const price = packagePrice(key);
+                  return (
+                    <tr key={key} className="border-b last:border-0">
+                      <td className="px-3 py-3 font-medium">{packageLabels[key]}</td>
+                      <td className="px-3 py-3">
+                        {price?.yearly ? formatMoney(price.yearly) : 'Auf Anfrage'}
+                      </td>
+                      <td className="px-3 py-3">
+                        {price?.yearly ? formatMoney(price.yearly / 12) : 'Auf Anfrage'}
+                      </td>
+                      <td className="px-3 py-3 text-muted-foreground">Nach Bedarf</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
         <div className="flex justify-center">
           <Button asChild variant="outline">
             <Link href="/login">Zur Anmeldung</Link>
