@@ -17,10 +17,12 @@ import { ChevronRight, Clock, FileText, ImageIcon, Wallet } from 'lucide-react';
 import { EmptyState } from '@/components/common/empty-state';
 import { StatusBadge } from '@/components/common/status-badge';
 import { Button } from '@/components/ui/button';
+import { useCollectionItems } from '@/lib/data/store';
+import { stringField } from '@/lib/entity-values';
 import { Input } from '@/components/ui/input';
 import { DossierLevel, useDossier } from '@/lib/links/dossier';
 import { useT } from '@/lib/i18n/provider';
-import { configOf } from '@/lib/module-config';
+import { configOf, titleOfEntity } from '@/lib/module-config';
 import { moduleByCollection } from '@/lib/modules';
 import { useSettings } from '@/lib/settings/provider';
 import { CollectionKey } from '@/lib/types';
@@ -59,6 +61,8 @@ export function ObjectDossier({
   const t = useT();
   const { settings } = useSettings();
   const dossier = useDossier(level, id);
+  const properties = useCollectionItems('properties');
+  const sites = useCollectionItems('sites');
   const [showDone, setShowDone] = useState(false);
   const [only, setOnly] = useState<CollectionKey | ''>('');
   const [from, setFrom] = useState('');
@@ -68,9 +72,22 @@ export function ObjectDossier({
     (entry) =>
       (showDone || !entry.done) && (only === '' || entry.collection === only),
   ).filter((entry) => (!from || entry.date >= from) && (!to || entry.date <= to));
+  const property =
+    level === 'properties' ? properties.find((item) => item.id === id) : undefined;
+  const site = property
+    ? sites.find((item) => item.id === stringField(property, 'siteId'))
+    : undefined;
 
   return (
     <div className="flex flex-col gap-4" data-testid="object-dossier">
+      {site ? (
+        <div className="rounded-xl border bg-card p-3">
+          <div className="text-xs text-muted-foreground">
+            {t('module.sites.singular')}
+          </div>
+          <div className="text-sm font-medium">{titleOfEntity('sites', site)}</div>
+        </div>
+      ) : null}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Metric
           icon={ChevronRight}
