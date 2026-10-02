@@ -294,7 +294,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
                 type="number"
                 min="0"
                 step="100"
-                value={subscription.setupFee}
+                value={subscription.setupFee || ''}
                 onChange={(event) =>
                   set('subscription', { ...subscription, setupFee: Number(event.target.value) || 0 })
                 }
