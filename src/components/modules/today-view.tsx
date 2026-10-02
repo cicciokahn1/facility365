@@ -332,7 +332,7 @@ export function TodayView() {
               size="sm"
               onClick={() => setEmergencyOpen(true)}
               variant="destructive"
-              className="h-auto min-h-14 flex-col gap-1 px-2 py-2 text-xs sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
+              className="h-auto min-h-16 flex-col gap-1 px-2 py-2 text-sm sm:h-11 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
             >
               <AlertTriangle className="size-4" aria-hidden />
               <span className="leading-tight">Notfall</span>
@@ -340,44 +340,44 @@ export function TodayView() {
             <Button
               asChild
               size="sm"
-              className="h-auto min-h-14 flex-col gap-1 px-2 py-2 text-xs sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
+              className="h-auto min-h-16 flex-col gap-1 px-2 py-2 text-sm sm:h-11 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
             >
               <Link href="/orders?new=1">
                 <ClipboardList className="size-4" aria-hidden />
-                <span className="leading-tight">{t("dashboard.quick.order")}</span>
+                <span className="leading-tight">Auftrag</span>
               </Link>
             </Button>
             <Button
               size="sm"
               onClick={() => setQuickReportOpen(true)}
               variant="outline"
-              className="h-auto min-h-14 flex-col gap-1 px-2 py-2 text-xs sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
+              className="h-auto min-h-16 flex-col gap-1 px-2 py-2 text-sm sm:h-11 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
             >
               <>
                 <ShieldAlert className="size-4" aria-hidden />
-                <span className="leading-tight">Störung melden</span>
+                <span className="leading-tight">Schaden</span>
               </>
             </Button>
             <Button
               asChild
               size="sm"
               variant="outline"
-              className="h-auto min-h-14 flex-col gap-1 px-2 py-2 text-xs sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
+              className="h-auto min-h-16 flex-col gap-1 px-2 py-2 text-sm sm:h-11 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
             >
               <Link href="/reports?new=1">
                 <FileText className="size-4" aria-hidden />
-                <span className="leading-tight">{t("dashboard.quick.report")}</span>
+                <span className="leading-tight">Rapport</span>
               </Link>
             </Button>
             <Button
               asChild
               size="sm"
               variant="outline"
-              className="h-auto min-h-14 flex-col gap-1 px-2 py-2 text-xs sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
+              className="h-auto min-h-16 flex-col gap-1 px-2 py-2 text-sm sm:h-11 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
             >
               <Link href="/walkthrough">
                 <ClipboardCheck className="size-4" aria-hidden />
-                <span className="leading-tight">{t("module.walkthrough")}</span>
+                <span className="leading-tight">Rundgang</span>
               </Link>
             </Button>
           </div>
