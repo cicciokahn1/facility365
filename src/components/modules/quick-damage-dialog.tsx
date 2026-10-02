@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { RelationSelect } from '@/components/module/relation-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useActiveUser } from '@/lib/auth/scope';
@@ -41,10 +42,12 @@ export function QuickDamageDialog({
   open,
   onOpenChange,
   target,
+  standalone = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   target: QuickDamageTarget | null;
+  standalone?: boolean;
 }) {
   const t = useT();
   const router = useRouter();
@@ -56,6 +59,9 @@ export function QuickDamageDialog({
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [propertyId, setPropertyId] = useState('');
+  const [buildingId, setBuildingId] = useState('');
+  const [roomId, setRoomId] = useState('');
 
   /** Beim Schliessen leeren, damit nichts aus einem frueheren Scan mitkommt. */
   const changeOpen = (next: boolean) => {
@@ -63,11 +69,14 @@ export function QuickDamageDialog({
       setDescription('');
       setPriority('medium');
       setPhotos([]);
+      setPropertyId('');
+      setBuildingId('');
+      setRoomId('');
     }
     onOpenChange(next);
   };
 
-  if (!target) return null;
+  if (!target && !standalone) return null;
 
   const addFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -76,13 +85,13 @@ export function QuickDamageDialog({
   };
 
   const shared = {
-    title: target.title,
+    title: target?.title ?? 'Schnellmeldung',
     description,
     priority,
-    propertyId: target.propertyId,
-    buildingId: target.buildingId,
-    roomId: target.roomId,
-    assetId: target.assetId,
+    propertyId: target?.propertyId ?? propertyId,
+    buildingId: target?.buildingId ?? buildingId,
+    roomId: target?.roomId ?? roomId,
+    assetId: target?.assetId ?? '',
     photos,
   };
 
@@ -116,13 +125,58 @@ export function QuickDamageDialog({
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent className="max-w-lg" data-testid="quick-report">
-        <DialogTitle>{t('quickReport.title')}</DialogTitle>
-        <DialogDescription>{t('quickReport.hint')}</DialogDescription>
+        <DialogTitle>{standalone ? 'Schaden oder Störung melden' : t('quickReport.title')}</DialogTitle>
+        <DialogDescription>
+          {standalone ? 'Kurz erfassen, Foto hinzufügen und direkt als Schaden oder Auftrag speichern.' : t('quickReport.hint')}
+        </DialogDescription>
 
         <div className="rounded-lg border bg-muted/40 p-3" data-testid="quick-report-target">
-          <p className="text-sm font-medium">{target.title}</p>
-          <p className="text-xs text-muted-foreground">{target.location || '–'}</p>
+          <p className="text-sm font-medium">{target?.title ?? 'Neue Meldung'}</p>
+          <p className="text-xs text-muted-foreground">{target?.location || 'Standort noch auswählen'}</p>
         </div>
+
+        {standalone ? (
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor="quick-property">Liegenschaft</Label>
+              <RelationSelect
+                id="quick-property"
+                collection="properties"
+                value={propertyId}
+                onChange={(value) => {
+                  setPropertyId(String(value));
+                  setBuildingId('');
+                  setRoomId('');
+                }}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="quick-building">Gebäude</Label>
+              <RelationSelect
+                id="quick-building"
+                collection="buildings"
+                value={buildingId}
+                onChange={(value) => {
+                  setBuildingId(String(value));
+                  setRoomId('');
+                }}
+                parentKey="propertyId"
+                parentValue={propertyId}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="quick-room">Raum</Label>
+              <RelationSelect
+                id="quick-room"
+                collection="rooms"
+                value={roomId}
+                onChange={(value) => setRoomId(String(value))}
+                parentKey="buildingId"
+                parentValue={buildingId}
+              />
+            </div>
+          </div>
+        ) : null}
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="quick-description">{t('common.description')}</Label>
