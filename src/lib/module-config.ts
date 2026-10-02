@@ -1075,6 +1075,7 @@ const ordersConfig: ModuleConfig<"orders"> = {
       options: PRIORITY_OPTIONS,
       filter: true,
     },
+    { kind: "date", name: "dueDate", labelKey: "common.dueDate" },
     {
       kind: "relation",
       name: "customerId",
@@ -1151,7 +1152,6 @@ const ordersConfig: ModuleConfig<"orders"> = {
     },
     text("assigneeTeam", "user.team"),
     { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
-    { kind: "date", name: "dueDate", labelKey: "common.dueDate" },
     {
       kind: "textarea",
       name: "description",
