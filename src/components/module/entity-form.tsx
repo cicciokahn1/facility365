@@ -167,7 +167,7 @@ function FormBody({
           );
         })}
       </div>
-      {availableFields.length > visibleFields.length ? (
+      {!showAllFields && availableFields.length > visibleFields.length ? (
         <Button
           type="button"
           variant="outline"
