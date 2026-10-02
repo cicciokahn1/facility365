@@ -22,7 +22,10 @@ export function FleetControlPanel<T extends FleetEntity>({
 }) {
   const t = useT();
   const { settings } = useSettings();
-  const checklist = entity.inspectionChecklist ?? [];
+  const checklist = useMemo(
+    () => entity.inspectionChecklist ?? [],
+    [entity.inspectionChecklist],
+  );
   const nextService = calculatedNextService(entity);
   const inspections = entity.inspections ?? [];
   const handovers = entity.handovers ?? [];
