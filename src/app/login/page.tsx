@@ -23,6 +23,7 @@ import { passwordProblem } from "@/lib/auth/errors";
 import { BRAND_LOGO_SRC } from "@/lib/branding/logo";
 import { useT } from "@/lib/i18n/provider";
 import { useTrial } from "@/lib/trial/provider";
+import Link from "next/link";
 
 type Mode = "signIn" | "signUp" | "reset";
 
@@ -117,6 +118,11 @@ function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <div className="mb-4 text-center text-sm">
+          <Link className="text-primary underline-offset-4 hover:underline" href="/pricing">
+            Preise und Angebot ansehen
+          </Link>
+        </div>
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-2">
             <Label htmlFor="auth-email">{t("auth.email")}</Label>
