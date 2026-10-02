@@ -148,6 +148,27 @@ const LOCAL_KEY = 'facility365.v2.backup';
 const BACKUP_DB = 'facility365.backup';
 const BACKUP_STORE = 'snapshots';
 const BACKUP_ID = 'latest';
+const REMOTE_BACKUP_DISABLED_KEY = 'facility365.remote-backup-disabled';
+
+const remoteBackupDisabled = (): boolean =>
+  typeof window !== 'undefined' &&
+  window.sessionStorage.getItem(REMOTE_BACKUP_DISABLED_KEY) === '1';
+
+const disableRemoteBackup = (): void => {
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.setItem(REMOTE_BACKUP_DISABLED_KEY, '1');
+  }
+};
+
+const storeDeviceSnapshot = async (snapshot: Snapshot): Promise<boolean> => {
+  try {
+    await writeIndexedSnapshot(snapshot);
+    window.localStorage.removeItem(LOCAL_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 const openBackupDb = (): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
@@ -210,23 +231,17 @@ const migrateLegacySnapshot = async (): Promise<Snapshot | null> => {
  */
 export const storeSnapshot = async (snapshot: Snapshot): Promise<boolean> => {
   const client = await supabase();
-  if (!client) {
-    try {
-      await writeIndexedSnapshot(snapshot);
-      window.localStorage.removeItem(LOCAL_KEY);
-      return true;
-    } catch {
-      return false;
-    }
-  }
+  if (!client || remoteBackupDisabled()) return storeDeviceSnapshot(snapshot);
   const { error } = await client.from('backups').insert({ data: snapshot });
-  return !error;
+  if (!error) return true;
+  disableRemoteBackup();
+  return storeDeviceSnapshot(snapshot);
 };
 
 /** Jüngste Sicherung der Organisation beziehungsweise des Geraets. */
 export const latestSnapshot = async (): Promise<{ at: string; snapshot: Snapshot } | null> => {
   const client = await supabase();
-  if (!client) {
+  if (!client || remoteBackupDisabled()) {
     try {
       const snapshot = (await readIndexedSnapshot()) ?? (await migrateLegacySnapshot());
       if (!snapshot) return null;
@@ -240,7 +255,12 @@ export const latestSnapshot = async (): Promise<{ at: string; snapshot: Snapshot
     .select('id, created_at, data')
     .order('created_at', { ascending: false })
     .limit(1);
-  if (error || !data || data.length === 0) return null;
+  if (error) {
+    disableRemoteBackup();
+    const snapshot = (await readIndexedSnapshot()) ?? (await migrateLegacySnapshot());
+    return snapshot ? { at: snapshot.createdAt, snapshot } : null;
+  }
+  if (!data || data.length === 0) return null;
   const row = data[0] as BackupRow;
   return { at: row.created_at, snapshot: row.data };
 };
