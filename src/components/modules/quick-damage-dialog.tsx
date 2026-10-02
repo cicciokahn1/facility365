@@ -43,11 +43,13 @@ export function QuickDamageDialog({
   onOpenChange,
   target,
   standalone = false,
+  emergency = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   target: QuickDamageTarget | null;
   standalone?: boolean;
+  emergency?: boolean;
 }) {
   const t = useT();
   const router = useRouter();
@@ -57,7 +59,7 @@ export function QuickDamageDialog({
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<Priority>('medium');
+  const [priority, setPriority] = useState<Priority>(emergency ? 'critical' : 'medium');
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [propertyId, setPropertyId] = useState('');
   const [buildingId, setBuildingId] = useState('');
@@ -67,7 +69,7 @@ export function QuickDamageDialog({
   const changeOpen = (next: boolean) => {
     if (!next) {
       setDescription('');
-      setPriority('medium');
+      setPriority(emergency ? 'critical' : 'medium');
       setPhotos([]);
       setPropertyId('');
       setBuildingId('');
@@ -125,9 +127,15 @@ export function QuickDamageDialog({
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent className="max-w-lg" data-testid="quick-report">
-        <DialogTitle>{standalone ? 'Schaden oder Störung melden' : t('quickReport.title')}</DialogTitle>
+        <DialogTitle>
+          {emergency ? 'Notfall melden' : standalone ? 'Schaden oder Störung melden' : t('quickReport.title')}
+        </DialogTitle>
         <DialogDescription>
-          {standalone ? 'Kurz erfassen, Foto hinzufügen und direkt als Schaden oder Auftrag speichern.' : t('quickReport.hint')}
+          {emergency
+            ? 'Kategorie antippen, Ort und Beschreibung ergänzen und direkt als dringenden Schaden oder Auftrag speichern.'
+            : standalone
+              ? 'Kurz erfassen, Foto hinzufügen und direkt als Schaden oder Auftrag speichern.'
+              : t('quickReport.hint')}
         </DialogDescription>
 
         <div className="rounded-lg border bg-muted/40 p-3" data-testid="quick-report-target">
@@ -175,6 +183,26 @@ export function QuickDamageDialog({
                 parentValue={buildingId}
               />
             </div>
+          </div>
+        ) : null}
+
+        {emergency ? (
+          <div className="grid grid-cols-2 gap-2" aria-label="Notfallkategorie">
+            {(['Wasser', 'Strom', 'Heizung', 'Brand / Gefahr'] as const).map((category) => (
+              <Button
+                key={category}
+                type="button"
+                variant="outline"
+                className="h-auto min-h-11 justify-start"
+                onClick={() =>
+                  setDescription((current) =>
+                    current.startsWith(`${category}:`) ? current : `${category}: ${current}`.trim(),
+                  )
+                }
+              >
+                {category}
+              </Button>
+            ))}
           </div>
         ) : null}
 
