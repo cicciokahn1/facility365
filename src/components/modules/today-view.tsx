@@ -13,6 +13,7 @@ import { ClipboardCheck, ClipboardList, FileText, ShieldAlert } from "lucide-rea
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
+import { QuickDamageDialog } from "@/components/modules/quick-damage-dialog";
 import {
   InProgressButton,
   isProgressable,
@@ -138,6 +139,7 @@ const ASSIGNABLE: CompletableKey[] = [
 
 export function TodayView() {
   const t = useT();
+  const [quickReportOpen, setQuickReportOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "overdue" | "today">("all");
   const access = useAccess();
   const { settings } = useSettings();
@@ -336,15 +338,15 @@ export function TodayView() {
               </Link>
             </Button>
             <Button
-              asChild
               size="sm"
+              onClick={() => setQuickReportOpen(true)}
               variant="outline"
               className="h-auto min-h-14 flex-col gap-1 px-2 py-2 text-xs sm:h-9 sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
             >
-              <Link href="/damages?new=1">
+              <>
                 <ShieldAlert className="size-4" aria-hidden />
-                <span className="leading-tight">{t("dashboard.quick.damage")}</span>
-              </Link>
+                <span className="leading-tight">Störung melden</span>
+              </>
             </Button>
             <Button
               asChild
@@ -389,6 +391,12 @@ export function TodayView() {
           ))}
         </div>
       </header>
+      <QuickDamageDialog
+        open={quickReportOpen}
+        onOpenChange={setQuickReportOpen}
+        target={null}
+        standalone
+      />
 
       {filteredEmpty ? (
         <EmptyState icon={moduleByKey("today").icon} titleKey="today.empty" />
