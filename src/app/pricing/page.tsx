@@ -1,11 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { SUPPORT_EMAIL } from '@/lib/branding/support';
 import {
   disabledByPackage,
@@ -26,6 +29,8 @@ export default function PricingPage() {
   const [selectedModules, setSelectedModules] = useState<ModuleKey[]>(
     OPTIONAL_MODULES.filter((module) => !disabledByPackage('professional').includes(module)),
   );
+  const [contact, setContact] = useState({ name: '', company: '', email: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
   const selectedModuleLabels = useMemo(
     () => selectedModules.map((module) => t(moduleByKey(module).labelKey)),
     [selectedModules, t],
@@ -47,6 +52,28 @@ export default function PricingPage() {
     setSelectedModules((current) =>
       checked ? [...current, module] : current.filter((item) => item !== module),
     );
+  };
+
+  const submitOffer = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const body = [
+      `Name: ${contact.name}`,
+      `Firma: ${contact.company}`,
+      `E-Mail: ${contact.email}`,
+      '',
+      `Paket: ${t(packageLabelKey(selectedPackage))}`,
+      '',
+      'Gewünschte Module:',
+      ...selectedModuleLabels,
+      '',
+      contact.message ? `Nachricht:\n${contact.message}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
+      `Facility365 Angebotsanfrage – ${contact.company || contact.name}`,
+    )}&body=${encodeURIComponent(body)}`;
+    setSubmitted(true);
   };
 
   return (
@@ -103,6 +130,61 @@ export default function PricingPage() {
                 <span className="text-sm">{t(moduleByKey(module).labelKey)}</span>
               </label>
             ))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>3. Angebot anfordern</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="grid gap-4 sm:grid-cols-2" onSubmit={submitOffer}>
+              <div className="grid gap-2">
+                <Label htmlFor="offer-name">Name</Label>
+                <Input
+                  id="offer-name"
+                  required
+                  value={contact.name}
+                  onChange={(event) => setContact({ ...contact, name: event.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="offer-company">Firma</Label>
+                <Input
+                  id="offer-company"
+                  required
+                  value={contact.company}
+                  onChange={(event) => setContact({ ...contact, company: event.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="offer-email">E-Mail</Label>
+                <Input
+                  id="offer-email"
+                  type="email"
+                  required
+                  value={contact.email}
+                  onChange={(event) => setContact({ ...contact, email: event.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="offer-message">Nachricht (optional)</Label>
+                <Textarea
+                  id="offer-message"
+                  value={contact.message}
+                  onChange={(event) => setContact({ ...contact, message: event.target.value })}
+                />
+              </div>
+              <div className="flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:items-center">
+                <Button type="submit" size="lg">
+                  Auswahl als Angebot anfordern
+                </Button>
+                {submitted && (
+                  <p className="text-sm text-muted-foreground">
+                    Die Angebotsanfrage wurde vorbereitet. Bitte im Mailprogramm noch absenden.
+                  </p>
+                )}
+              </div>
+            </form>
           </CardContent>
         </Card>
         <div className="grid gap-4 md:grid-cols-3">
