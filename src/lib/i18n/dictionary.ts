@@ -6867,12 +6867,6 @@ export const dictionary = {
     it: "Accedi",
     en: "Sign in",
   },
-  "auth.github": {
-    de: "Mit GitHub anmelden",
-    fr: "Se connecter avec GitHub",
-    it: "Accedi con GitHub",
-    en: "Sign in with GitHub",
-  },
   "auth.signUp": {
     de: "Konto erstellen",
     fr: "Créer un compte",
