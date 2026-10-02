@@ -32,11 +32,13 @@ export function InProgressButton({
   id,
   status,
   compact = false,
+  className,
 }: {
   collection: ProgressableKey;
   id: string;
   status: string;
   compact?: boolean;
+  className?: string;
 }) {
   const t = useT();
   const user = useCurrentUser();
@@ -48,6 +50,7 @@ export function InProgressButton({
     <Button
       size={compact ? "sm" : "lg"}
       variant="outline"
+      className={className}
       onClick={() => {
         const values: Partial<EntityOf<ProgressableKey>> = {
           status: "inProgress",
