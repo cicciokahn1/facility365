@@ -3,7 +3,7 @@
 /**
  * Hilfe-Center.
  *
- * Kategorien links, Artikel rechts, Suche ueber alles. Die Inhalte stehen in
+ * Kategorien links, Artikel rechts, Suche über alles. Die Inhalte stehen in
  * `@/lib/help/content` und beschreiben nur bestehende Funktionen.
  */
 import { useMemo, useState } from 'react';
