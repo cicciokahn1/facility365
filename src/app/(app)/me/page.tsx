@@ -1,6 +1,7 @@
 'use client';
 
 import { DragEvent, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import {
   ArrowDownAZ,
   ArrowUpAZ,
@@ -415,7 +416,22 @@ export default function MyAreaPage() {
               <Button variant="outline" onClick={() => setPreview(null)}>{t('nav.close')}</Button>
             </div>
             <div className="min-h-64 overflow-auto rounded-lg bg-muted p-2">
-              {preview.mimeType.startsWith('image/') ? <img src={preview.url} alt={preview.name} className="mx-auto max-h-[70vh] object-contain" /> : <iframe title={preview.name} src={dataUrlToBlobUrl(preview.url, preview.mimeType) ?? preview.url} className="h-[70vh] w-full rounded-md bg-white" />}
+              {preview.mimeType.startsWith('image/') ? (
+                <Image
+                  src={preview.url}
+                  alt={preview.name}
+                  width={1600}
+                  height={1200}
+                  unoptimized
+                  className="mx-auto max-h-[70vh] w-auto object-contain"
+                />
+              ) : (
+                <iframe
+                  title={preview.name}
+                  src={dataUrlToBlobUrl(preview.url, preview.mimeType) ?? preview.url}
+                  className="h-[70vh] w-full rounded-md bg-white"
+                />
+              )}
             </div>
           </div>
         </div>
