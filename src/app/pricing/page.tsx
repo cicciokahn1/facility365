@@ -223,7 +223,6 @@ export default function PricingPage() {
                   <th className="px-3 py-3 font-medium">Paket</th>
                   <th className="px-3 py-3 font-medium">Pro Jahr</th>
                   <th className="px-3 py-3 font-medium">Umgerechnet pro Monat</th>
-                  <th className="px-3 py-3 font-medium">Einrichtung</th>
                 </tr>
               </thead>
               <tbody>
@@ -238,7 +237,6 @@ export default function PricingPage() {
                       <td className="px-3 py-3">
                         {price?.yearly ? formatMoney(price.yearly / 12) : 'Auf Anfrage'}
                       </td>
-                      <td className="px-3 py-3 text-muted-foreground">Nach Bedarf</td>
                     </tr>
                   );
                 })}
