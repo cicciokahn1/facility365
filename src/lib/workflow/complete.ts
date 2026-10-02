@@ -42,7 +42,7 @@ export type CompletableKey =
 const doneValues = {
   orders: (): Partial<Order> => ({ status: "done", completedAt: today() }),
   maintenances: (maintenance: Maintenance): Partial<Maintenance> => ({
-    status: "planned",
+    status: "done",
     completedAt: today(),
     lastDate: today(),
     nextDate: nextMaintenanceDate(today(), maintenance.interval),
