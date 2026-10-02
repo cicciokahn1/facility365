@@ -13,11 +13,13 @@ export function DoneButton({
   id,
   status,
   compact = false,
+  className,
 }: {
   collection: CompletableKey;
   id: string;
   status: string;
   compact?: boolean;
+  className?: string;
 }) {
   const t = useT();
   const markDone = useMarkDone(collection);
@@ -28,6 +30,7 @@ export function DoneButton({
   return (
     <Button
       size={compact ? "sm" : "lg"}
+      className={className}
       onClick={() => {
         markDone(id);
         toast.success(t('action.markedDone'), { description: t('action.doneHint') });

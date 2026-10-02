@@ -458,11 +458,11 @@ function Section({
       <ul className="flex flex-col gap-2">
         {rows.map((row) => (
           <li key={row.key}>
-            <div className="flex min-h-16 flex-wrap items-center gap-2 rounded-lg border bg-card px-3 py-2 text-base hover:border-primary/40">
+            <div className="flex min-h-16 flex-col gap-3 rounded-lg border bg-card px-3 py-3 text-base hover:border-primary/40 sm:flex-row sm:items-center sm:gap-2 sm:py-2">
               <Link
                 href={row.href}
                 aria-label={`${row.title} · ${row.label}`}
-                className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2 px-1 py-1"
+                className="flex min-w-0 flex-1 items-start justify-between gap-2 px-1 py-1 sm:flex-row sm:items-center"
               >
                 <span className="min-w-0">
                   <span className="block truncate font-medium">{row.title}</span>
@@ -485,16 +485,25 @@ function Section({
                   {row.overdue ? ` · ${t("notify.overdue")}` : ""}
                 </span>
               </Link>
-              {row.collection && isProgressable(row.collection) ? (
-                <InProgressButton
-                  collection={row.collection}
-                  id={row.id}
-                  status={row.status}
-                  compact
-                />
-              ) : null}
               {row.collection ? (
-                <DoneButton collection={row.collection} id={row.id} status="" compact />
+                <div className="flex w-full gap-2 sm:w-auto sm:shrink-0">
+                  {isProgressable(row.collection) ? (
+                    <InProgressButton
+                      collection={row.collection}
+                      id={row.id}
+                      status={row.status}
+                      compact
+                      className="flex-1 sm:flex-none"
+                    />
+                  ) : null}
+                  <DoneButton
+                    collection={row.collection}
+                    id={row.id}
+                    status={row.status}
+                    compact
+                    className="flex-1 sm:flex-none"
+                  />
+                </div>
               ) : null}
             </div>
           </li>
