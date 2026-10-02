@@ -1,23 +1,53 @@
+'use client';
+
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { packagePrice, PACKAGE_KEYS } from '@/lib/packages/packages';
+import { Checkbox } from '@/components/ui/checkbox';
 import { SUPPORT_EMAIL } from '@/lib/branding/support';
+import {
+  disabledByPackage,
+  OPTIONAL_MODULES,
+  packageLabelKey,
+  packagePrice,
+  PACKAGE_KEYS,
+} from '@/lib/packages/packages';
+import { moduleByKey } from '@/lib/modules';
+import { useT } from '@/lib/i18n/provider';
+import type { IndustryPackage, ModuleKey } from '@/lib/types';
 import { formatMoney } from '@/lib/utils/format';
 
-const packageLabels: Record<string, string> = {
-  professional: 'Hauswart und Facility Management',
-  property: 'Immobilienverwaltung',
-  care: 'Pflege und Betreuung',
-  institution: 'Institutionen',
-  industry: 'Industrie',
-  public: 'Gemeinden und öffentliche Verwaltung',
-  enterprise: 'Enterprise',
-};
-
 export default function PricingPage() {
+  const t = useT();
   const packages = PACKAGE_KEYS.filter((key) => key && key !== 'custom');
+  const [selectedPackage, setSelectedPackage] = useState<IndustryPackage>('professional');
+  const [selectedModules, setSelectedModules] = useState<ModuleKey[]>(
+    OPTIONAL_MODULES.filter((module) => !disabledByPackage('professional').includes(module)),
+  );
+  const selectedModuleLabels = useMemo(
+    () => selectedModules.map((module) => t(moduleByKey(module).labelKey)),
+    [selectedModules, t],
+  );
+  const offerHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
+    `Facility365 Angebot – ${t(packageLabelKey(selectedPackage))}`,
+  )}&body=${encodeURIComponent(
+    `Paket: ${t(packageLabelKey(selectedPackage))}\n\nGewünschte Module:\n${selectedModuleLabels.join('\n')}`,
+  )}`;
+
+  const choosePackage = (key: IndustryPackage) => {
+    setSelectedPackage(key);
+    setSelectedModules(
+      OPTIONAL_MODULES.filter((module) => !disabledByPackage(key).includes(module)),
+    );
+  };
+
+  const toggleModule = (module: ModuleKey, checked: boolean) => {
+    setSelectedModules((current) =>
+      checked ? [...current, module] : current.filter((item) => item !== module),
+    );
+  };
 
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
@@ -26,17 +56,62 @@ export default function PricingPage() {
           <p className="text-sm font-medium text-primary">Facility365</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">Preise und Angebot</h1>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Wählen Sie die passende Fachrichtung. Die benötigten Module können später individuell
-            angepasst werden.
+            Paket auswählen, benötigte Module anklicken und direkt ein persönliches Angebot anfordern.
           </p>
         </header>
+        <Card>
+          <CardHeader>
+            <CardTitle>1. Paket auswählen</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {packages.map((key) => {
+              const price = packagePrice(key);
+              const selected = key === selectedPackage;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-pressed={selected}
+                  className={`rounded-lg border p-4 text-left transition ${
+                    selected ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'hover:bg-muted'
+                  }`}
+                  onClick={() => choosePackage(key)}
+                >
+                  <p className="font-medium">{t(packageLabelKey(key))}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {price?.yearly ? `${formatMoney(price.yearly)} / Jahr` : 'Individuelles Angebot'}
+                  </p>
+                </button>
+              );
+            })}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>2. Module auswählen</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {OPTIONAL_MODULES.map((module) => (
+              <label
+                key={module}
+                className="flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-3 hover:bg-muted"
+              >
+                <Checkbox
+                  checked={selectedModules.includes(module)}
+                  onCheckedChange={(checked) => toggleModule(module, checked === true)}
+                />
+                <span className="text-sm">{t(moduleByKey(module).labelKey)}</span>
+              </label>
+            ))}
+          </CardContent>
+        </Card>
         <div className="grid gap-4 md:grid-cols-3">
           {packages.map((key) => {
             const price = packagePrice(key);
             return (
               <Card key={key}>
                 <CardHeader>
-                  <CardTitle>{packageLabels[key]}</CardTitle>
+                  <CardTitle>{t(packageLabelKey(key))}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex min-h-40 flex-col gap-4">
                   <p className="text-2xl font-semibold">
@@ -46,7 +121,7 @@ export default function PricingPage() {
                     Module nach Bedarf auswählen und ein persönliches Angebot erhalten.
                   </p>
                   <Button asChild className="mt-auto">
-                    <a href={`mailto:${SUPPORT_EMAIL}?subject=Facility365%20Angebot`}>
+                    <a href={key === selectedPackage ? offerHref : `mailto:${SUPPORT_EMAIL}`}>
                       Angebot anfordern
                     </a>
                   </Button>
@@ -74,7 +149,7 @@ export default function PricingPage() {
                   const price = packagePrice(key);
                   return (
                     <tr key={key} className="border-b last:border-0">
-                      <td className="px-3 py-3 font-medium">{packageLabels[key]}</td>
+                      <td className="px-3 py-3 font-medium">{t(packageLabelKey(key))}</td>
                       <td className="px-3 py-3">
                         {price?.yearly ? formatMoney(price.yearly) : 'Auf Anfrage'}
                       </td>
@@ -89,6 +164,11 @@ export default function PricingPage() {
             </table>
           </CardContent>
         </Card>
+        <div className="flex justify-center">
+          <Button asChild size="lg">
+            <a href={offerHref}>Auswahl als Angebot anfordern</a>
+          </Button>
+        </div>
         <div className="flex justify-center">
           <Button asChild variant="outline">
             <Link href="/login">Zur Anmeldung</Link>
