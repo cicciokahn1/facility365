@@ -1187,6 +1187,8 @@ export const table: Record<string, string> = {
   "dashboard.expiringContract": "Vertrag läuft bald ab",
   "module.audit": "Auditmodus",
   "module.walkthrough": "Technischer Rundgang",
+  "walkthrough.folderTitle": "Hauswart-Prüfmappe",
+  "walkthrough.folderHint": "Direkte Wege zu den bestehenden Prüfbereichen – ohne doppelte Erfassung.",
   "walkthrough.createReport": "Rundgangbericht erstellen",
   "walkthrough.reportTitle": "Technischer Rundgangbericht",
   "audit.location": "Standort",

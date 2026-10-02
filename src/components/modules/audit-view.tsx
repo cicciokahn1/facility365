@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FileDown, Hammer, Save, Settings2, TriangleAlert } from 'lucide-react';
+import { ClipboardCheck, FileDown, Hammer, Save, Settings2, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -421,6 +421,43 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
           ) : null}
         </CardContent>
       </Card>
+
+      {isWalkthrough ? (
+        <Card data-testid="housewart-pruefmappe">
+          <CardHeader>
+            <CardTitle className="text-base">{t('walkthrough.folderTitle')}</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {t('walkthrough.folderHint')}
+            </p>
+          </CardHeader>
+          <CardContent className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/assets">
+                <Settings2 className="size-4" aria-hidden />
+                {t('module.assets')}
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/firesafety">
+                <TriangleAlert className="size-4" aria-hidden />
+                {t('module.firechecks')}
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/inspections">
+                <ClipboardCheck className="size-4" aria-hidden />
+                {t('module.inspections')}
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/outdoor-areas">
+                <Hammer className="size-4" aria-hidden />
+                {t('module.outdoorAreas')}
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {isWalkthrough ? <Card data-testid="technical-walkthrough">
         <CardHeader>

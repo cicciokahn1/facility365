@@ -5803,6 +5803,18 @@ export const dictionary = {
     it: "Giro tecnico",
     en: "Technical walkthrough",
   },
+  "walkthrough.folderTitle": {
+    de: "Hauswart-Prüfmappe",
+    fr: "Classeur de contrôle du concierge",
+    it: "Raccoglitore controlli custode",
+    en: "Caretaker inspection folder",
+  },
+  "walkthrough.folderHint": {
+    de: "Direkte Wege zu den bestehenden Prüfbereichen – ohne doppelte Erfassung.",
+    fr: "Accès direct aux contrôles existants, sans double saisie.",
+    it: "Accesso diretto ai controlli esistenti, senza doppia registrazione.",
+    en: "Direct access to existing inspection areas without duplicate entry.",
+  },
   "walkthrough.createReport": {
     de: "Rundgangbericht erstellen",
     fr: "Créer le rapport de ronde",
