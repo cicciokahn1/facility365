@@ -742,21 +742,6 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         path: "/me",
         keywords: ["mein bereich", "notizbuch", "dateien", "ordner", "privat"],
       },
-      {
-        id: "github-login",
-        title: "Mit GitHub anmelden",
-        summary: "Zusätzlicher Login über GitHub.",
-        paragraphs: [
-          "Auf der Login-Seite kann neben E-Mail und Passwort auch «Mit GitHub anmelden» verwendet werden. Danach führt GitHub zurück zu Facility365 und die bestehende Benutzer- und Rechteverwaltung bleibt aktiv.",
-        ],
-        steps: [
-          OPEN("die Login-Seite"),
-          { title: "2. GitHub wählen", text: "Unter dem normalen Anmeldebutton «Mit GitHub anmelden» antippen." },
-          { title: "3. Bestätigen", text: "GitHub-Konto auswählen und die Rückleitung zu Facility365 abwarten." },
-        ],
-        path: "/login",
-        keywords: ["github", "login", "anmelden", "oauth"],
-      },
     ],
   },
 ];

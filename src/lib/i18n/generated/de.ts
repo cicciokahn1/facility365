@@ -1375,7 +1375,6 @@ export const table: Record<string, string> = {
   "report.hourlyRate": "Stundensatz",
   "report.workPosition": "Arbeitszeit",
   "auth.signIn": "Anmelden",
-  "auth.github": "Mit GitHub anmelden",
   "auth.signUp": "Konto erstellen",
   "auth.signOut": "Abmelden",
   "auth.email": "E-Mail",
