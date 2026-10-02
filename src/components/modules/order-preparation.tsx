@@ -83,6 +83,7 @@ export function OrderPreparation({ order }: OrderPreparationProps) {
   const suppliers = useCollectionItems('suppliers');
   const users = useCollectionItems('users');
   const documents = useCollectionItems('documents');
+  const reports = useCollectionItems('reports');
   const damages = useCollectionItems('damages');
   const maintenances = useCollectionItems('maintenances');
   const inspections = useCollectionItems('inspections');
@@ -151,6 +152,7 @@ export function OrderPreparation({ order }: OrderPreparationProps) {
     ...material,
     stockItem: stock.find((item) => item.id === material.stockItemId),
   }));
+  const linkedReport = reports.find((report) => report.orderId === order.id);
   const missing = [
     ...objectEntries.filter((entry) => !entry.value).map((entry) => entry.label),
     ...(!order.assigneeUserId && !order.assigneeTeam && !order.assignee ? ['Zuständigkeit'] : []),
@@ -165,6 +167,32 @@ export function OrderPreparation({ order }: OrderPreparationProps) {
 
   return (
     <div className="grid gap-4">
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <CheckCircle2 className="size-4 text-primary" aria-hidden />
+            Auftrag schnell erledigen
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-2 sm:grid-cols-4">
+          {[
+            ['1', 'Starten', order.status === 'inProgress' || Boolean(order.workStart)],
+            ['2', 'Zeit erfassen', Boolean(order.workStart && order.workEnd)],
+            ['3', 'Material / Foto', order.materials.length > 0 || order.photos.length > 0],
+            ['4', 'Rapport', Boolean(linkedReport)],
+          ].map(([number, label, complete]) => (
+            <div
+              key={String(number)}
+              className="flex items-center gap-2 rounded-lg border bg-background/70 px-3 py-2 text-sm"
+            >
+              <span className={complete ? 'font-semibold text-primary' : 'font-semibold text-muted-foreground'}>
+                {number}
+              </span>
+              <span className={complete ? 'font-medium' : 'text-muted-foreground'}>{label}</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
       {missing.length > 0 ? (
         <Card className="border-amber-300 bg-amber-50/50 dark:bg-amber-950/20">
           <CardHeader className="pb-3">

@@ -29,6 +29,7 @@ export function OrderDetail({ id }: { id: string }) {
     <EntityDetail
       collection="orders"
       id={id}
+      defaultTab="preparation"
       headerExtra={(order) => {
         const existing = reports.existing(order.id);
         return (
