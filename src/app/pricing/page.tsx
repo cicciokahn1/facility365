@@ -54,8 +54,24 @@ export default function PricingPage() {
     );
   };
 
-  const submitOffer = (event: FormEvent<HTMLFormElement>) => {
+  const submitOffer = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const response = await fetch('/api/offer-request', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name: contact.name,
+        company: contact.company,
+        email: contact.email,
+        package: t(packageLabelKey(selectedPackage)),
+        modules: selectedModuleLabels,
+        message: contact.message,
+      }),
+    }).catch(() => null);
+    if (response?.ok) {
+      setSubmitted(true);
+      return;
+    }
     const body = [
       `Name: ${contact.name}`,
       `Firma: ${contact.company}`,
@@ -180,7 +196,8 @@ export default function PricingPage() {
                 </Button>
                 {submitted && (
                   <p className="text-sm text-muted-foreground">
-                    Die Angebotsanfrage wurde vorbereitet. Bitte im Mailprogramm noch absenden.
+                    Danke! Die Angebotsanfrage wurde gesendet. Wir melden uns mit einem persönlichen
+                    Angebot.
                   </p>
                 )}
               </div>
