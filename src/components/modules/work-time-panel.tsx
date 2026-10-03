@@ -6,7 +6,8 @@
  * Beginn, Ende und Pause werden eingetragen, die Summe rechnet die Anwendung.
  * Bewusst ohne Zeitmessung, damit die Erfassung auch nachtraeglich stimmt.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Play, Square } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,16 @@ import { Label } from '@/components/ui/label';
 import { useT } from '@/lib/i18n/provider';
 import { formatWorkTime, hasWorkTime, workedHours } from '@/lib/reports/work-time';
 import { today } from '@/lib/utils/format';
+
+const TIMER_KEY = 'facility365.work-timer';
+
+const hhmm = (date: Date) =>
+  `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+
+const elapsedLabel = (startedAt: string): string => {
+  const minutes = Math.max(0, Math.floor((Date.now() - new Date(startedAt).getTime()) / 60000));
+  return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')} h`;
+};
 
 export interface WorkTimeValues {
   workDate: string;
@@ -31,6 +42,37 @@ export function WorkTimePanel({
 }) {
   const t = useT();
   const [draft, setDraft] = useState<WorkTimeValues>(values);
+  const [startedAt, setStartedAt] = useState<string | null>(() =>
+    typeof window === 'undefined' ? null : window.localStorage.getItem(TIMER_KEY),
+  );
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    if (!startedAt) return;
+    const interval = window.setInterval(() => setTick((tick) => tick + 1), 30000);
+    return () => window.clearInterval(interval);
+  }, [startedAt]);
+
+  const startTimer = () => {
+    const started = new Date().toISOString();
+    window.localStorage.setItem(TIMER_KEY, started);
+    setStartedAt(started);
+    setDraft({ ...draft, workDate: today(), workStart: hhmm(new Date()), workEnd: '' });
+  };
+
+  const stopTimer = () => {
+    const started = startedAt ? new Date(startedAt) : null;
+    window.localStorage.removeItem(TIMER_KEY);
+    setStartedAt(null);
+    const next = {
+      ...draft,
+      workDate: draft.workDate || today(),
+      workStart: started ? hhmm(started) : draft.workStart,
+      workEnd: hhmm(new Date()),
+    };
+    setDraft(next);
+    onChange(next);
+  };
   /** Vergleich ueber den Inhalt, da der Aufrufer bei jedem Rendern ein neues Objekt liefert. */
   const key = `${values.workDate}|${values.workStart}|${values.workEnd}|${values.breakMinutes}`;
   const [savedKey, setSavedKey] = useState(key);
@@ -56,6 +98,30 @@ export function WorkTimePanel({
 
   return (
     <section className="flex flex-col gap-4 rounded-xl border bg-card p-4" data-testid="work-time">
+      <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+        {startedAt ? (
+          <Button
+            variant="destructive"
+            size="lg"
+            className="h-12 flex-1 text-base"
+            onClick={stopTimer}
+            data-testid="work-timer-stop"
+          >
+            <Square className="size-4" aria-hidden />
+            Stopp · läuft seit {elapsedLabel(startedAt)}
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            className="h-12 flex-1 text-base"
+            onClick={startTimer}
+            data-testid="work-timer-start"
+          >
+            <Play className="size-4" aria-hidden />
+            Zeit starten
+          </Button>
+        )}
+      </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="col-span-2 flex flex-col gap-1.5 sm:col-span-1">
           <Label htmlFor="work-date">{t('common.date')}</Label>
