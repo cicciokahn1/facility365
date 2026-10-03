@@ -10,7 +10,7 @@
  */
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, Hammer, ImagePlus, Sparkles, TriangleAlert, X } from 'lucide-react';
+import { Camera, Hammer, ImagePlus, TriangleAlert, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -64,9 +64,6 @@ export function QuickDamageDialog({
   const [propertyId, setPropertyId] = useState('');
   const [buildingId, setBuildingId] = useState('');
   const [roomId, setRoomId] = useState('');
-  const [title, setTitle] = useState('');
-  const [scanning, setScanning] = useState(false);
-  const [suggestion, setSuggestion] = useState('');
 
   /** Beim Schliessen leeren, damit nichts aus einem frueheren Scan mitkommt. */
   const changeOpen = (next: boolean) => {
@@ -77,9 +74,6 @@ export function QuickDamageDialog({
       setPropertyId('');
       setBuildingId('');
       setRoomId('');
-      setTitle('');
-      setSuggestion('');
-      setScanning(false);
     }
     onOpenChange(next);
   };
@@ -93,7 +87,7 @@ export function QuickDamageDialog({
   };
 
   const shared = {
-    title: title || (target?.title ?? 'Schnellmeldung'),
+    title: target?.title ?? 'Schnellmeldung',
     description,
     priority,
     propertyId: target?.propertyId ?? propertyId,
@@ -101,48 +95,6 @@ export function QuickDamageDialog({
     roomId: target?.roomId ?? roomId,
     assetId: target?.assetId ?? '',
     photos,
-  };
-
-  const analyzePhoto = async () => {
-    const photo = photos[0];
-    if (!photo || scanning) return;
-    setScanning(true);
-    const response = await fetch('/api/damage-scan', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ image: photo.url }),
-    }).catch(() => null);
-    setScanning(false);
-    if (!response) {
-      toast.error('KI-Analyse nicht erreichbar.');
-      return;
-    }
-    if (response.status === 503) {
-      toast.error('KI-Analyse ist noch nicht eingerichtet.');
-      return;
-    }
-    if (!response.ok) {
-      toast.error('Das Foto konnte nicht analysiert werden.');
-      return;
-    }
-    const result = (await response.json().catch(() => null)) as {
-      title?: string;
-      description?: string;
-      category?: string;
-      priority?: Priority;
-      suggestion?: string;
-    } | null;
-    if (!result) {
-      toast.error('Das Foto konnte nicht analysiert werden.');
-      return;
-    }
-    if (result.title) setTitle(result.title);
-    if (result.description) setDescription(result.description);
-    if (result.priority) setPriority(result.priority);
-    setSuggestion([result.category ? `Kategorie: ${result.category}` : '', result.suggestion ?? '']
-      .filter(Boolean)
-      .join(' · '));
-    toast.success('Foto analysiert – Angaben bitte kurz prüfen.');
   };
 
   const createDamage = () => {
@@ -324,27 +276,6 @@ export function QuickDamageDialog({
             event.target.value = '';
           }}
         />
-
-        {photos.length > 0 ? (
-          <>
-            <Button
-              type="button"
-              variant="default"
-              onClick={() => void analyzePhoto()}
-              disabled={scanning}
-              className="w-full"
-              data-testid="quick-report-analyze"
-            >
-              <Sparkles className="size-4" aria-hidden />
-              {scanning ? 'Analysiere Foto…' : 'Foto analysieren'}
-            </Button>
-            {suggestion ? (
-              <p className="rounded-lg border bg-muted/40 px-3 py-2 text-sm" data-testid="quick-report-suggestion">
-                {suggestion}
-              </p>
-            ) : null}
-          </>
-        ) : null}
 
         {photos.length > 0 ? (
           <ul className="grid grid-cols-3 gap-2">
