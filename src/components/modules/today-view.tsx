@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, Phone, ShieldAlert } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
@@ -136,6 +136,23 @@ const ASSIGNABLE: CompletableKey[] = [
   "rcd",
   "tickets",
 ];
+
+/** Tageszeitliche Begruessung in einfachem Deutsch. */
+const greetingOf = (hour: number): string => {
+  if (hour < 11) return "Guten Morgen";
+  if (hour < 18) return "Guten Tag";
+  return "Guten Abend";
+};
+
+/** Wie viele dieser Vorgaenge wurden heute abgeschlossen. */
+const doneTodayCount = (collection: CompletableKey, items: BaseEntity[], day: string): number =>
+  items.filter(
+    (item) =>
+      isDone(collection, stringField(item, "status")) &&
+      ["completedAt", "fixedAt", "completedAtDate", "doneAt"].some(
+        (field) => stringField(item, field) === day,
+      ),
+  ).length;
 
 export function TodayView() {
   const t = useT();
@@ -317,15 +334,46 @@ export function TodayView() {
         ? todayRows.length === 0
         : empty;
 
+  const hour = new Date().getHours();
+  const firstName = (settings.profileName || access.user?.name || "").trim().split(" ")[0];
+  const greeting = `${greetingOf(hour)}${firstName ? `, ${firstName}` : ""}`;
+  const doneToday =
+    doneTodayCount("orders", orders, day) +
+    doneTodayCount("maintenances", maintenances, day) +
+    doneTodayCount("damages", damages, day) +
+    doneTodayCount("cleaningtasks", cleaningtasks, day);
+  const openNow = nowRows.length + todayRows.length;
+  const ampel =
+    nowRows.length > 0
+      ? { label: "Überfällig", className: "bg-destructive/10 text-destructive" }
+      : todayRows.length > 0
+        ? { label: "Heute fällig", className: "bg-amber-500/10 text-amber-700 dark:text-amber-400" }
+        : { label: "Alles erledigt", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" };
+
   return (
     <div className="flex flex-col gap-6">
       <header>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {t("today.title")}
+            <h1 className="text-2xl font-semibold tracking-tight" data-testid="today-greeting">
+              {greeting}
             </h1>
-            <p className="text-sm text-muted-foreground">{t("today.hint")}</p>
+            <p className="text-sm text-muted-foreground">
+              {formatDate(day, settings.language)} · {t("today.hint")}
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-medium ${ampel.className}`}
+                data-testid="today-ampel"
+              >
+                {ampel.label}
+              </span>
+              <span className="text-xs text-muted-foreground" data-testid="today-summary">
+                {hour >= 16
+                  ? `Gute Arbeit – ${doneToday} erledigt, ${openNow} offen`
+                  : `${openNow} offen · ${doneToday} heute erledigt`}
+              </span>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:flex" data-testid="today-quick-actions">
             <Button
@@ -380,6 +428,19 @@ export function TodayView() {
                 <span className="leading-tight">Rundgang</span>
               </Link>
             </Button>
+            {settings.companyPhone.trim() ? (
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="h-auto min-h-16 flex-col gap-1 px-2 py-2 text-sm sm:h-11 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
+              >
+                <a href={`tel:${settings.companyPhone.trim()}`} data-testid="today-call">
+                  <Phone className="size-4" aria-hidden />
+                  <span className="leading-tight">Anrufen</span>
+                </a>
+              </Button>
+            ) : null}
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-2" aria-label={t("today.title")}>
