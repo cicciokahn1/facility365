@@ -352,7 +352,17 @@ export default function DashboardPage() {
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight">{t('module.dashboard')}</h1>
           <p className="text-sm text-muted-foreground">
-            {settings.profileName ? `${t('dashboard.greeting.day')}, ${settings.profileName}` : t('app.tagline')}
+            {(() => {
+              const hour = new Date().getHours();
+              const key =
+                hour < 11
+                  ? 'dashboard.greeting.morning'
+                  : hour < 18
+                    ? 'dashboard.greeting.day'
+                    : 'dashboard.greeting.evening';
+              const name = (settings.profileName || '').trim().split(' ')[0];
+              return name ? `${t(key)}, ${name}` : t(key);
+            })()}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-3">
