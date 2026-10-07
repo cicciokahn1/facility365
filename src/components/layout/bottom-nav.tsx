@@ -33,7 +33,10 @@ export function BottomNav() {
         ...group,
         modules: sortNavigationModules(
           MODULES.filter(
-            (module) => module.group === group.key && access.canRead(module.key),
+            (module) =>
+              module.group === group.key &&
+              !module.hideFromNav &&
+              access.canRead(module.key),
           ),
         ),
       })).filter((group) => group.modules.length > 0),
