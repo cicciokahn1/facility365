@@ -89,6 +89,56 @@ export interface ModuleDefinition {
 }
 
 /**
+ * Module, die im einfachen Modus nicht im Menue erscheinen.
+ *
+ * Die Seiten bleiben erreichbar; die Liste betrifft nur die Navigation.
+ */
+export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
+  "organizations",
+  "sites",
+  "plans",
+  "rooms",
+  "inspections",
+  "legionella",
+  "rcd",
+  "firechecks",
+  "playgroundchecks",
+  "audit",
+  "walkthrough",
+  "handover",
+  "cleaning",
+  "cleaningplans",
+  "cleaningareas",
+  "cleaners",
+  "cleaningchecks",
+  "cleaningcomplaints",
+  "energy",
+  "solarplants",
+  "solaryields",
+  "suppliers",
+  "sources",
+  "keys",
+  "inventory",
+  "tools",
+  "visitors",
+  "parking",
+  "waste",
+  "stock",
+  "hazards",
+  "outdoorAreas",
+  "vehicles",
+  "portal",
+  "documents",
+  "contracts",
+  "quotes",
+  "invoices",
+  "analytics",
+  "users",
+  "activities",
+  "microsoft",
+]);
+
+/**
  * Fachliche Reihenfolge innerhalb der Ordner.
  *
  * Die Sammlung und die Adresse eines Moduls bleiben unveraendert; diese

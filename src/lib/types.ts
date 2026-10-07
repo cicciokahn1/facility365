@@ -1750,6 +1750,8 @@ export interface AppSettings {
   industryPackage: IndustryPackage;
   /** Abgeschaltete Module; ihre Daten bleiben erhalten. */
   disabledModules: ModuleKey[];
+  /** Einfacher Modus: das Menue zeigt nur die wichtigsten Funktionen. */
+  simpleMode?: boolean;
   /** Zeitpunkt der letzten Speicherung der Modulkonfiguration. */
   modulesUpdatedAt?: string;
   /** Organisationsbezogene Abo-Daten; die tenant_settings-Konfiguration ist führend. */

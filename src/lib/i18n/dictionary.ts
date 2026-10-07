@@ -8081,6 +8081,18 @@ export const dictionary = {
     it: "Il pacchetto è la configurazione di partenza. I moduli modificati manualmente hanno la precedenza, vengono salvati subito e restano invariati al caricamento successivo; i dati dei moduli disattivati restano completamente salvati.",
     en: "The package is the starting configuration. Manually changed modules take precedence, are saved immediately and remain in place on the next load; data from disabled modules remains fully stored.",
   },
+  "settings.simpleMode": {
+    de: "Einfacher Modus",
+    fr: "Mode simple",
+    it: "Modalità semplice",
+    en: "Simple mode",
+  },
+  "settings.simpleModeHint": {
+    de: "Das Menü zeigt nur die wichtigsten Funktionen – ideal für Hauswarte.",
+    fr: "Le menu n'affiche que les fonctions essentielles – idéal pour les concierges.",
+    it: "Il menu mostra solo le funzioni essenziali – ideale per i custodi.",
+    en: "The menu shows only the essential functions – ideal for caretakers.",
+  },
   "settings.packageModules": {
     de: "Module",
     fr: "Modules",

@@ -455,6 +455,20 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
             ))}
           </div>
           <p className="text-xs text-muted-foreground">{t('settings.moduleOverrideHint')}</p>
+          <label className="mt-2 flex items-center justify-between gap-4 rounded-lg border px-3 py-2">
+            <span className="text-sm">
+              <span className="block font-medium">{t('settings.simpleMode')}</span>
+              <span className="block text-xs text-muted-foreground">{t('settings.simpleModeHint')}</span>
+            </span>
+            <Switch
+              checked={draft.simpleMode !== false}
+              onCheckedChange={(checked) => {
+                set('simpleMode', checked);
+                void persist({ ...live, simpleMode: checked });
+              }}
+              data-testid="settings-simple-mode"
+            />
+          </label>
         </CardContent>
       </Card>
 
