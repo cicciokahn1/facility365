@@ -170,12 +170,12 @@ export interface PackagePrice {
 export const PACKAGE_PRICES: Partial<
   Record<Exclude<IndustryPackage, ''>, PackagePrice>
 > = {
-  professional: { currency: 'CHF', yearly: 6900 },
-  property: { currency: 'CHF', yearly: 8900 },
-  care: { currency: 'CHF', yearly: 11900 },
-  institution: { currency: 'CHF', yearly: 12900 },
-  industry: { currency: 'CHF', yearly: 14900 },
-  public: { currency: 'CHF', yearly: 16900 },
+  professional: { currency: 'CHF', yearly: 7400 },
+  property: { currency: 'CHF', yearly: 9400 },
+  care: { currency: 'CHF', yearly: 12500 },
+  institution: { currency: 'CHF', yearly: 13500 },
+  industry: { currency: 'CHF', yearly: 15900 },
+  public: { currency: 'CHF', yearly: 17900 },
   enterprise: { currency: 'CHF' },
 };
 
