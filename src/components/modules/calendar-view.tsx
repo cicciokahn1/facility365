@@ -8,7 +8,7 @@
  * eigene Termine erfassen, bearbeiten und loeschen; mehrere Termine koennen
  * gemeinsam verschoben oder in den Papierkorb gelegt werden.
  */
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   Bell,
@@ -47,6 +47,7 @@ import { WorkPlanView } from "@/components/modules/work-plan-view";
 import { EntityForm } from "@/components/module/entity-form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { useAccess } from "@/lib/auth/scope";
 import { CalendarEvent, CalendarEventKind } from "@/lib/calendar/events";
 import { useCalendarMutations } from "@/lib/calendar/mutations";
@@ -133,6 +134,9 @@ export function CalendarView() {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editId, setEditId] = useState("");
+  const [quickTitle, setQuickTitle] = useState("");
+  const [quickStart, setQuickStart] = useState("");
+  const [quickEnd, setQuickEnd] = useState("");
   const [selectMode, setSelectMode] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -188,6 +192,27 @@ export function CalendarView() {
     );
 
   const editing = editId ? appointments.get(editId) : undefined;
+
+  /** Schnellerfassung wie in Outlook: Titel tippen, Enter, fertig. */
+  const quickAdd = (event: FormEvent) => {
+    event.preventDefault();
+    const title = quickTitle.trim();
+    if (!title || !mayCreate) return;
+    appointments.create(
+      {
+        ...emptyValues(appointmentConfig.fields),
+        title,
+        date: selected,
+        timeStart: quickStart,
+        timeEnd: quickEnd,
+      } as never,
+      settings.profileName || settings.companyName,
+    );
+    setQuickTitle("");
+    setQuickStart("");
+    setQuickEnd("");
+    toast.success(t("toast.created"));
+  };
 
   const createAppointment = (values: FormValues) => {
     appointments.create(
@@ -388,6 +413,47 @@ export function CalendarView() {
         <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           {formatDate(selected, settings.language)}
         </h2>
+        {mayCreate ? (
+          <form
+            className="mb-3 flex flex-wrap items-center gap-2"
+            onSubmit={quickAdd}
+            data-testid="calendar-quick-add"
+          >
+            <Input
+              value={quickTitle}
+              onChange={(event) => setQuickTitle(event.target.value)}
+              placeholder={t("calendar.quickAdd")}
+              aria-label={t("calendar.quickAdd")}
+              className="min-w-40 flex-1"
+              data-testid="calendar-quick-title"
+            />
+            <Input
+              type="time"
+              value={quickStart}
+              onChange={(event) => setQuickStart(event.target.value)}
+              aria-label={t("work.start")}
+              className="w-28"
+              data-testid="calendar-quick-start"
+            />
+            <Input
+              type="time"
+              value={quickEnd}
+              onChange={(event) => setQuickEnd(event.target.value)}
+              aria-label={t("work.end")}
+              className="w-28"
+              data-testid="calendar-quick-end"
+            />
+            <Button
+              type="submit"
+              size="sm"
+              disabled={!quickTitle.trim()}
+              data-testid="calendar-quick-save"
+            >
+              <Plus className="size-4" aria-hidden />
+              {t("action.add")}
+            </Button>
+          </form>
+        ) : null}
         {dayEvents.length === 0 ? (
           <EmptyState titleKey="calendar.noEvents" />
         ) : (
