@@ -294,6 +294,12 @@ export const dictionary = {
     it: "Nuovo appuntamento",
     en: "New appointment",
   },
+  "calendar.quickAdd": {
+    de: "Termin eingeben…",
+    fr: "Saisir un rendez-vous…",
+    it: "Inserisci appuntamento…",
+    en: "Add appointment…",
+  },
   "calendar.select": {
     de: "Auswählen",
     fr: "Sélectionner",
