@@ -270,14 +270,6 @@ export function CalendarView() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setWorkPlanOpen(true)}
-            data-testid="calendar-work-plan"
-          >
-            Arbeitsplan
-          </Button>
           {mayCreate ? (
             <Button
               size="sm"
@@ -288,61 +280,78 @@ export function CalendarView() {
               {t("calendar.newEvent")}
             </Button>
           ) : null}
-          <Button
-            size="sm"
-            variant={selectMode ? "default" : "outline"}
-            onClick={() => {
-              setSelectMode((current) => !current);
-              setPicked([]);
-            }}
-            data-testid="calendar-select-mode"
-          >
-            <CheckSquare className="size-4" aria-hidden />
-            {selectMode ? t("calendar.selectionEnd") : t("calendar.select")}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              const name = settings.companyName || t("app.name");
-              downloadText(
-                toIcs(events, name, window.location.origin),
-                "facility365.ics",
-                "text/calendar",
-              );
-              toast.success(t("exchange.calendarExported"));
-            }}
-            data-testid="calendar-export"
-          >
-            <CalendarArrowDown className="size-4" aria-hidden />
-            {t("exchange.calendarExport")}
-          </Button>
-          <Button
-            size="sm"
-            variant={push.permission === "granted" ? "outline" : "default"}
-            onClick={async () => {
-              if (push.install) {
-                toast.info(t("notify.installTitle"), {
-                  description: t("notify.installHint"),
-                });
-                return;
-              }
-              const result = await push.request();
-              if (result === "granted") toast.success(t("notify.enabled"));
-              else if (result === "denied") toast.error(t("notify.denied"));
-              else toast.info(t("notify.unsupported"));
-            }}
-            data-testid="notifications-enable"
-          >
-            {push.permission === "granted" ? (
-              <BellRing className="size-4" aria-hidden />
-            ) : (
-              <Bell className="size-4" aria-hidden />
-            )}
-            {push.permission === "granted"
-              ? t("notify.active")
-              : t("notify.enable")}
-          </Button>
+          <details className="group">
+            <summary className="inline-flex h-8 cursor-pointer list-none items-center rounded-md border px-3 text-sm font-medium">
+              {t("dashboard.moreActions")}
+            </summary>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setWorkPlanOpen(true)}
+                data-testid="calendar-work-plan"
+              >
+                Arbeitsplan
+              </Button>
+              <Button
+                size="sm"
+                variant={selectMode ? "default" : "outline"}
+                onClick={() => {
+                  setSelectMode((current) => !current);
+                  setPicked([]);
+                }}
+                data-testid="calendar-select-mode"
+              >
+                <CheckSquare className="size-4" aria-hidden />
+                {selectMode ? t("calendar.selectionEnd") : t("calendar.select")}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const name = settings.companyName || t("app.name");
+                  downloadText(
+                    toIcs(events, name, window.location.origin),
+                    "facility365.ics",
+                    "text/calendar",
+                  );
+                  toast.success(t("exchange.calendarExported"));
+                }}
+                data-testid="calendar-export"
+              >
+                <CalendarArrowDown className="size-4" aria-hidden />
+                {t("exchange.calendarExport")}
+              </Button>
+              <Button
+                size="sm"
+                variant={
+                  push.permission === "granted" ? "outline" : "default"
+                }
+                onClick={async () => {
+                  if (push.install) {
+                    toast.info(t("notify.installTitle"), {
+                      description: t("notify.installHint"),
+                    });
+                    return;
+                  }
+                  const result = await push.request();
+                  if (result === "granted") toast.success(t("notify.enabled"));
+                  else if (result === "denied") toast.error(t("notify.denied"));
+                  else toast.info(t("notify.unsupported"));
+                }}
+                data-testid="notifications-enable"
+              >
+                {push.permission === "granted" ? (
+                  <BellRing className="size-4" aria-hidden />
+                ) : (
+                  <Bell className="size-4" aria-hidden />
+                )}
+                {push.permission === "granted"
+                  ? t("notify.active")
+                  : t("notify.enable")}
+              </Button>
+            </div>
+          </details>
         </div>
       </header>
 
