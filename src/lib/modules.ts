@@ -742,7 +742,7 @@ export const MOBILE_NAV_KEYS: ModuleKey[] = [
   "dashboard",
   "today",
   "orders",
-  "walkthrough",
+  "calendar",
 ];
 
 export const moduleByKey = (key: ModuleKey): ModuleDefinition => {
