@@ -135,6 +135,9 @@ export function CalendarView() {
   const [formOpen, setFormOpen] = useState(false);
   const [editId, setEditId] = useState("");
   const [quickTitle, setQuickTitle] = useState("");
+  const [quickCustomer, setQuickCustomer] = useState("");
+  const [quickProperty, setQuickProperty] = useState("");
+  const [quickRepeat, setQuickRepeat] = useState("none");
   const [selectMode, setSelectMode] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -189,6 +192,9 @@ export function CalendarView() {
         : [...current, event.id],
     );
 
+  const customers = useEntityIndex("customers");
+  const properties = useEntityIndex("properties");
+
   const editing = editId ? appointments.get(editId) : undefined;
 
   /** Schnellerfassung wie in Outlook: Titel tippen, Enter, fertig. */
@@ -201,16 +207,26 @@ export function CalendarView() {
         ...emptyValues(appointmentConfig.fields),
         title,
         date: selected,
+        customerId: quickCustomer,
+        propertyId: quickProperty,
+        repeat: quickRepeat,
+        weeklyRepeat: quickRepeat === "weekly",
       } as never,
       settings.profileName || settings.companyName,
     );
     setQuickTitle("");
+    setQuickCustomer("");
+    setQuickProperty("");
+    setQuickRepeat("none");
     toast.success(t("toast.created"));
   };
 
   const createAppointment = (values: FormValues) => {
     appointments.create(
-      values as never,
+      {
+        ...values,
+        weeklyRepeat: values.repeat === "weekly",
+      } as never,
       settings.profileName || settings.companyName,
     );
     toast.success(t("toast.created"));
@@ -218,7 +234,10 @@ export function CalendarView() {
 
   const saveAppointment = (values: FormValues) => {
     if (!editId) return;
-    appointments.update(editId, values as never);
+    appointments.update(editId, {
+      ...values,
+      weeklyRepeat: values.repeat === "weekly",
+    } as never);
     setEditId("");
     toast.success(t("toast.saved"));
   };
@@ -421,6 +440,46 @@ export function CalendarView() {
               className="min-w-40 flex-1"
               data-testid="calendar-quick-title"
             />
+            <select
+              value={quickCustomer}
+              onChange={(event) => setQuickCustomer(event.target.value)}
+              aria-label={t("module.customers.singular")}
+              className="h-9 rounded-md border bg-background px-2 text-sm"
+              data-testid="calendar-quick-customer"
+            >
+              <option value="">{t("module.customers.singular")}</option>
+              {[...customers.values()].map((customer) => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name}
+                </option>
+              ))}
+            </select>
+            <select
+              value={quickProperty}
+              onChange={(event) => setQuickProperty(event.target.value)}
+              aria-label={t("module.properties.singular")}
+              className="h-9 rounded-md border bg-background px-2 text-sm"
+              data-testid="calendar-quick-property"
+            >
+              <option value="">{t("module.properties.singular")}</option>
+              {[...properties.values()].map((property) => (
+                <option key={property.id} value={property.id}>
+                  {property.name}
+                </option>
+              ))}
+            </select>
+            <select
+              value={quickRepeat}
+              onChange={(event) => setQuickRepeat(event.target.value)}
+              aria-label={t("calendar.repeat")}
+              className="h-9 rounded-md border bg-background px-2 text-sm"
+              data-testid="calendar-quick-repeat"
+            >
+              <option value="none">{t("calendar.repeat.none")}</option>
+              <option value="daily">{t("calendar.repeat.daily")}</option>
+              <option value="weekly">{t("calendar.repeat.weekly")}</option>
+              <option value="monthly">{t("calendar.repeat.monthly")}</option>
+            </select>
             <Button
               type="submit"
               size="sm"

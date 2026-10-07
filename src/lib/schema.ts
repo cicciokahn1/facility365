@@ -392,6 +392,14 @@ export const APPOINTMENT_STATUS_OPTIONS: SelectOption[] = [
   },
 ];
 
+/** Wiederholung eines Kalendertermins. */
+export const APPOINTMENT_REPEAT_OPTIONS: SelectOption[] = [
+  option("none", "calendar.repeat.none"),
+  option("daily", "calendar.repeat.daily"),
+  option("weekly", "calendar.repeat.weekly"),
+  option("monthly", "calendar.repeat.monthly"),
+];
+
 /** Kategorien einer Bezugsquelle. */
 export const SOURCE_CATEGORY_OPTIONS: SelectOption[] = [
   option("tools", "sourceCategory.tools"),

@@ -300,6 +300,36 @@ export const dictionary = {
     it: "Inserisci appuntamento…",
     en: "Add appointment…",
   },
+  "calendar.repeat": {
+    de: "Wiederholen",
+    fr: "Répéter",
+    it: "Ripeti",
+    en: "Repeat",
+  },
+  "calendar.repeat.none": {
+    de: "Einmalig",
+    fr: "Une fois",
+    it: "Una volta",
+    en: "Once",
+  },
+  "calendar.repeat.daily": {
+    de: "Täglich",
+    fr: "Quotidien",
+    it: "Giornaliero",
+    en: "Daily",
+  },
+  "calendar.repeat.weekly": {
+    de: "Wöchentlich",
+    fr: "Hebdomadaire",
+    it: "Settimanale",
+    en: "Weekly",
+  },
+  "calendar.repeat.monthly": {
+    de: "Monatlich",
+    fr: "Mensuel",
+    it: "Mensile",
+    en: "Monthly",
+  },
   "calendar.select": {
     de: "Auswählen",
     fr: "Sélectionner",
