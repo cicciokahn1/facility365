@@ -286,6 +286,7 @@ export const emptyAppointment = (): Omit<Appointment, "id" | "number"> => ({
   timeEnd: "",
   breakMinutes: 0,
   weeklyRepeat: false,
+  repeat: "none",
   location: "",
   assignee: "",
   assigneeUserId: "",

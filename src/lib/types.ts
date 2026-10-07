@@ -256,6 +256,8 @@ export interface Appointment extends BaseEntity {
   breakMinutes?: number;
   /** Kennzeichnet einen Einsatz als woechentlich wiederholbar. */
   weeklyRepeat?: boolean;
+  /** Wiederholung: none | daily | weekly | monthly. */
+  repeat?: string;
   location: string;
   assignee: string;
   assigneeUserId: string;
