@@ -14,6 +14,7 @@ import {
   MODULES,
   NAV_GROUPS,
   NavGroup,
+  SIMPLE_HIDDEN_KEYS,
   groupOfPath,
   sortNavigationModules,
 } from '@/lib/modules';
@@ -48,11 +49,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             (module) =>
               module.group === group.key &&
               !module.hideFromNav &&
+              (settings.simpleMode === false ||
+                !SIMPLE_HIDDEN_KEYS.has(module.key)) &&
               access.canRead(module.key),
           ),
         ),
       })).filter((group) => group.modules.length > 0),
-    [access],
+    [access, settings.simpleMode],
   );
 
   return (

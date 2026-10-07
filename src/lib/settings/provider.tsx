@@ -53,6 +53,7 @@ export const defaultSettings: AppSettings = {
   activeUserId: '',
   industryPackage: '',
   disabledModules: [],
+  simpleMode: true,
   subscription: {
     package: '',
     yearlyPrice: 0,
