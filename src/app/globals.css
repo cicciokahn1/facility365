@@ -167,6 +167,13 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* Auf dem Telefon etwas kleiner, damit mehr auf den Bildschirm passt. */
+  @media (max-width: 640px) {
+    html {
+      font-size: 90%;
+    }
+  }
+
   body {
     @apply bg-background text-foreground;
     /* Kein Gummiband-Effekt beim Scrollen auf dem Telefon. */
@@ -178,7 +185,7 @@
     button,
     a[role='button'],
     [data-touch-target] {
-      min-height: 2.75rem;
+      min-height: 44px;
     }
   }
 }
