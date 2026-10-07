@@ -84,6 +84,8 @@ export interface ModuleDefinition {
   group: NavGroup;
   labelKey: TranslationKey;
   singularKey: TranslationKey;
+  /** Versteckt das Modul in Menue und Navigation, ohne seine Seiten zu sperren. */
+  hideFromNav?: boolean;
 }
 
 /**
@@ -197,6 +199,7 @@ export const MODULES: ModuleDefinition[] = [
     group: "overview",
     labelKey: "module.appointments",
     singularKey: "module.appointments.singular",
+    hideFromNav: true,
   },
   {
     key: "today",
