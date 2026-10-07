@@ -478,8 +478,8 @@ export default function DashboardPage() {
         </details>
       </section>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <Card>
+      <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <CalendarDays className="size-4 text-primary" aria-hidden />
@@ -511,7 +511,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Bell className="size-4 text-primary" aria-hidden />
@@ -526,8 +526,8 @@ export default function DashboardPage() {
                 {notifications.map((notification) => (
                   <li key={notification.id}>
                     <Link href={notification.href} className="flex min-h-16 flex-col justify-center gap-0.5 py-3">
-                      <span className="text-sm font-medium">{notification.title}</span>
-                      <span className="text-xs text-muted-foreground">{t(notification.textKey)}</span>
+                      <span className="truncate text-sm font-medium">{notification.title}</span>
+                      <span className="truncate text-xs text-muted-foreground">{t(notification.textKey)}</span>
                     </Link>
                   </li>
                 ))}
@@ -537,7 +537,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="hidden gap-4 sm:grid xl:grid-cols-3">
+      <div className="hidden min-w-0 gap-4 sm:grid xl:grid-cols-3">
         <RecentCard
           titleKey="dashboard.openOrders"
           href="/orders"
@@ -616,7 +616,7 @@ function RecentCard({
 }) {
   const t = useT();
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle className="text-base">{t(titleKey)}</CardTitle>
         <Link href={href} className="text-sm text-primary">

@@ -58,6 +58,7 @@ export function HelpCenter() {
 
   return (
     <div className="flex flex-col gap-4">
+      <h1 className="sr-only">{t('help.title')}</h1>
       <Card>
         <CardHeader className="gap-2">
           <CardTitle className="flex items-center gap-2">
