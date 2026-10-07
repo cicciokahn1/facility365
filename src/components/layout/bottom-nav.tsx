@@ -28,7 +28,6 @@ export function BottomNav() {
   const [open, setOpen] = useState(false);
   const access = useAccess();
   const { settings } = useSettings();
-  const simple = settings.simpleMode !== false;
   const primary = MOBILE_NAV_KEYS.map(moduleByKey).filter((module) => access.canRead(module.key));
   /** Im Menue steht jede Funktion in ihrem Ordner - auch die vier unten. */
   const groups = useMemo(
@@ -40,12 +39,13 @@ export function BottomNav() {
             (module) =>
               module.group === group.key &&
               !module.hideFromNav &&
-              (simple || !SIMPLE_HIDDEN_KEYS.has(module.key)) &&
+              (settings.simpleMode === false ||
+                !SIMPLE_HIDDEN_KEYS.has(module.key)) &&
               access.canRead(module.key),
           ),
         ),
       })).filter((group) => group.modules.length > 0),
-    [access, simple],
+    [access, settings.simpleMode],
   );
   /** Ordner bleiben zu, bis sie gebraucht werden; nur der aktuelle ist offen. */
   const current = groupOfPath(pathname);
