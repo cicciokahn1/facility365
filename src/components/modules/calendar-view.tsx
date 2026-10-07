@@ -135,8 +135,6 @@ export function CalendarView() {
   const [formOpen, setFormOpen] = useState(false);
   const [editId, setEditId] = useState("");
   const [quickTitle, setQuickTitle] = useState("");
-  const [quickStart, setQuickStart] = useState("");
-  const [quickEnd, setQuickEnd] = useState("");
   const [selectMode, setSelectMode] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -203,14 +201,10 @@ export function CalendarView() {
         ...emptyValues(appointmentConfig.fields),
         title,
         date: selected,
-        timeStart: quickStart,
-        timeEnd: quickEnd,
       } as never,
       settings.profileName || settings.companyName,
     );
     setQuickTitle("");
-    setQuickStart("");
-    setQuickEnd("");
     toast.success(t("toast.created"));
   };
 
@@ -426,22 +420,6 @@ export function CalendarView() {
               aria-label={t("calendar.quickAdd")}
               className="min-w-40 flex-1"
               data-testid="calendar-quick-title"
-            />
-            <Input
-              type="time"
-              value={quickStart}
-              onChange={(event) => setQuickStart(event.target.value)}
-              aria-label={t("work.start")}
-              className="w-28"
-              data-testid="calendar-quick-start"
-            />
-            <Input
-              type="time"
-              value={quickEnd}
-              onChange={(event) => setQuickEnd(event.target.value)}
-              aria-label={t("work.end")}
-              className="w-28"
-              data-testid="calendar-quick-end"
             />
             <Button
               type="submit"
