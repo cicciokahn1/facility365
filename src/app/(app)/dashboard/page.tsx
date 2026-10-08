@@ -38,6 +38,7 @@ import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { DAMAGE_STATUS_OPTIONS, MAINTENANCE_STATUS_OPTIONS, ORDER_STATUS_OPTIONS } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
+import { SIMPLE_HIDDEN_KEYS } from '@/lib/modules';
 import { ModuleKey } from '@/lib/types';
 import { formatDate, daysUntil, today } from '@/lib/utils/format';
 import { isDone } from '@/lib/workflow/complete';
@@ -156,6 +157,18 @@ export default function DashboardPage() {
     [cleaningTasks],
   );
 
+  /* Einfacher Modus: Spezialmodule bleiben im Dashboard ausgeblendet. */
+  const simple = settings.simpleMode !== false;
+  const legionellaList = useMemo(() => (simple ? [] : legionella), [simple, legionella]);
+  const rcdList = useMemo(() => (simple ? [] : rcd), [simple, rcd]);
+  const inspectionList = useMemo(() => (simple ? [] : inspections), [simple, inspections]);
+  const documentList = useMemo(() => (simple ? [] : documents), [simple, documents]);
+  const contractList = useMemo(() => (simple ? [] : contracts), [simple, contracts]);
+  const quickActions = useMemo(
+    () => QUICK_ACTIONS.filter((action) => !simple || !SIMPLE_HIDDEN_KEYS.has(action.module)),
+    [simple],
+  );
+
   const appointments = useMemo(
     () =>
       [
@@ -177,7 +190,7 @@ export default function DashboardPage() {
             date: maintenance.nextDate,
             labelKey: 'module.maintenances.singular' as TranslationKey,
           })),
-        ...legionella
+        ...legionellaList
           .filter((check) => check.nextDate)
           .map((check) => ({
             id: check.id,
@@ -186,7 +199,7 @@ export default function DashboardPage() {
             date: check.nextDate,
             labelKey: 'module.legionella.singular' as TranslationKey,
           })),
-        ...rcd
+        ...rcdList
           .filter((check) => check.status !== 'done' && check.nextDate)
           .map((check) => ({
             id: check.id,
@@ -195,7 +208,7 @@ export default function DashboardPage() {
             date: check.nextDate,
             labelKey: 'module.rcd.singular' as TranslationKey,
           })),
-        ...inspections
+        ...inspectionList
           .filter((check) => check.status !== 'done' && check.nextDate)
           .map((check) => ({
             id: check.id,
@@ -225,7 +238,7 @@ export default function DashboardPage() {
       ]
         .sort((a, b) => a.date.localeCompare(b.date))
         .slice(0, 6),
-    [inspections, legionella, openCleaningTasks, openMaintenances, openOrders, openTickets, rcd],
+    [inspectionList, legionellaList, openCleaningTasks, openMaintenances, openOrders, openTickets, rcdList],
   );
 
   const notifications = useMemo(
@@ -261,7 +274,7 @@ export default function DashboardPage() {
             title: damage.title,
             urgency: damage.priority === 'critical' ? 0 : 1,
           })),
-        ...legionella
+        ...legionellaList
           .filter((check) => {
             const days = daysUntil(check.nextDate);
             return days !== null && days <= 14;
@@ -273,7 +286,7 @@ export default function DashboardPage() {
             title: check.title || check.system,
             urgency: dueUrgency(check.nextDate),
           })),
-        ...rcd
+        ...rcdList
           .filter((check) => {
             if (check.status === 'done') return false;
             const days = daysUntil(check.nextDate);
@@ -286,7 +299,7 @@ export default function DashboardPage() {
             title: check.title || check.device,
             urgency: dueUrgency(check.nextDate),
           })),
-        ...inspections
+        ...inspectionList
           .filter((check) => {
             if (check.status === 'done') return false;
             const days = daysUntil(check.nextDate);
@@ -299,7 +312,7 @@ export default function DashboardPage() {
             title: check.title || check.customType,
             urgency: dueUrgency(check.nextDate),
           })),
-        ...documents
+        ...documentList
           .filter((document) => documentExpiryState(document.validUntil, today()) !== 'valid')
           .map((document) => ({
             id: `document-${document.id}`,
@@ -308,7 +321,7 @@ export default function DashboardPage() {
             title: document.title || document.number,
             urgency: documentExpiryState(document.validUntil, today()) === 'expired' ? 0 : 1,
           })),
-        ...contracts
+        ...contractList
           .filter((contract) => isReminderDue(contract, today()))
           .map((contract) => ({
             id: `contract-${contract.id}`,
@@ -338,7 +351,7 @@ export default function DashboardPage() {
       ]
         .sort((a, b) => a.urgency - b.urgency)
         .slice(0, 8),
-    [contracts, documents, inspections, legionella, openCleaningTasks, openDamages, openMaintenances, openOrders, openTickets, rcd],
+    [contractList, documentList, inspectionList, legionellaList, openCleaningTasks, openDamages, openMaintenances, openOrders, openTickets, rcdList],
   );
 
   const criticalOrders = useMemo(
@@ -438,7 +451,7 @@ export default function DashboardPage() {
           {t('dashboard.quickActions')}
         </h2>
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {QUICK_ACTIONS.filter((action) => action.primary && access.canRead(action.module)).map((action) => {
+          {quickActions.filter((action) => action.primary && access.canRead(action.module)).map((action) => {
             const Icon = action.icon;
             return (
               <li key={action.href}>
@@ -459,7 +472,7 @@ export default function DashboardPage() {
             {t('dashboard.moreActions')}
           </summary>
           <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {QUICK_ACTIONS.filter((action) => !action.primary && access.canRead(action.module)).map((action) => {
+            {quickActions.filter((action) => !action.primary && access.canRead(action.module)).map((action) => {
               const Icon = action.icon;
               return (
                 <li key={action.href}>
