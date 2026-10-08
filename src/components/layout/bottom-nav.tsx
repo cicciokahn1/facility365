@@ -126,9 +126,9 @@ export function BottomNav() {
                               active && 'border-primary/40 bg-brand-soft',
                             )}
                           >
-                            <Icon className="size-5 shrink-0 text-primary" aria-hidden />
+                            <Icon className="size-7 shrink-0 text-primary" aria-hidden />
                             <span className="min-w-0 flex-1 truncate">{t(module.labelKey)}</span>
-                            <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                            <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
                           </Link>
                         </li>
                       );
@@ -148,7 +148,7 @@ export function BottomNav() {
                           data-testid={`nav-folder-${group.key}`}
                           className="mb-2 flex w-full items-center gap-2 rounded-lg border bg-card px-3 py-2 text-left text-sm font-semibold"
                         >
-                          <GroupIcon className="size-4 shrink-0 text-primary" aria-hidden />
+                          <GroupIcon className="size-7 shrink-0 text-primary" aria-hidden />
                           <span className="flex-1 truncate">{t(group.labelKey)}</span>
                           <ChevronRight
                             className={cn(
@@ -175,7 +175,7 @@ export function BottomNav() {
                                     : 'text-foreground/80',
                                 )}
                               >
-                                <Clock3 className="size-5" aria-hidden />
+                                <Clock3 className="size-8" aria-hidden />
                                 <span className="line-clamp-2">{t('quickWorkTime.title')}</span>
                               </Link>
                             </li>
@@ -195,7 +195,7 @@ export function BottomNav() {
                                     active && 'border-primary/40 bg-brand-soft',
                                   )}
                                 >
-                                  <Icon className="size-5 text-primary" aria-hidden />
+                                  <Icon className="size-8 text-primary" aria-hidden />
                                   <span className="line-clamp-2 w-full break-words hyphens-auto">
                                     {t(module.labelKey)}
                                   </span>
