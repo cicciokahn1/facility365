@@ -58,6 +58,20 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     [access, settings.simpleMode],
   );
 
+  /** Einfacher Modus: flache Liste ohne Ordner. */
+  const flatModules = useMemo(
+    () =>
+      sortNavigationModules(
+        MODULES.filter(
+          (module) =>
+            !module.hideFromNav &&
+            !SIMPLE_HIDDEN_KEYS.has(module.key) &&
+            access.canRead(module.key),
+        ),
+      ),
+    [access],
+  );
+
   return (
     <nav className="flex h-full w-full flex-col gap-1 overflow-y-auto bg-sidebar px-3 py-4">
       <Link
@@ -81,7 +95,33 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         </span>
       </Link>
 
-      {groups.map((group) => {
+      {settings.simpleMode !== false ? (
+        <ul className="flex flex-col gap-0.5" data-testid="nav-flat">
+          {flatModules.map((module) => {
+            const active = pathname === module.path || pathname.startsWith(`${module.path}/`);
+            const Icon = module.icon;
+            return (
+              <li key={module.key}>
+                <Link
+                  href={module.path}
+                  onClick={onNavigate}
+                  data-active={active}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                    active
+                      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                      : 'text-sidebar-foreground/85 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground',
+                  )}
+                >
+                  <Icon className={cn('size-4 shrink-0', active && 'text-sidebar-primary')} aria-hidden />
+                  <span className="truncate">{t(module.labelKey)}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+      groups.map((group) => {
         const modules = group.modules;
         const open = group.flat || isOpen(group.key);
         const GroupIcon = group.icon;
@@ -160,7 +200,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             )}
           </div>
         );
-      })}
+      })
+      )}
 
       <div className="mt-auto flex items-center gap-3 rounded-lg border border-sidebar-border bg-sidebar-accent/40 px-3 py-2 text-sidebar-foreground">
         <span className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">

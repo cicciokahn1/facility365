@@ -47,6 +47,19 @@ export function BottomNav() {
       })).filter((group) => group.modules.length > 0),
     [access, settings.simpleMode],
   );
+  /** Einfacher Modus: flache Liste ohne Ordner. */
+  const flatModules = useMemo(
+    () =>
+      sortNavigationModules(
+        MODULES.filter(
+          (module) =>
+            !module.hideFromNav &&
+            !SIMPLE_HIDDEN_KEYS.has(module.key) &&
+            access.canRead(module.key),
+        ),
+      ),
+    [access],
+  );
   /** Ordner bleiben zu, bis sie gebraucht werden; nur der aktuelle ist offen. */
   const current = groupOfPath(pathname);
   const [folders, setFolders] = useState<Partial<Record<NavGroup, boolean>>>({});
@@ -96,7 +109,33 @@ export function BottomNav() {
                 <SheetTitle>{t('nav.menu')}</SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-4 p-4 pt-0">
-                {groups.map((group) => {
+                {settings.simpleMode !== false ? (
+                  <ul className="flex flex-col gap-2" data-testid="nav-flat">
+                    {flatModules.map((module) => {
+                      const Icon = module.icon;
+                      const active =
+                        pathname === module.path || pathname.startsWith(`${module.path}/`);
+                      return (
+                        <li key={module.key}>
+                          <Link
+                            href={module.path}
+                            onClick={() => setOpen(false)}
+                            data-active={active}
+                            className={cn(
+                              'flex min-h-12 items-center gap-3 rounded-xl border bg-card px-4 py-3 text-base font-medium',
+                              active && 'border-primary/40 bg-brand-soft',
+                            )}
+                          >
+                            <Icon className="size-5 shrink-0 text-primary" aria-hidden />
+                            <span className="min-w-0 flex-1 truncate">{t(module.labelKey)}</span>
+                            <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                groups.map((group) => {
                   const expanded = group.flat || isOpen(group.key);
                   const GroupIcon = group.icon;
                   return (
@@ -168,7 +207,8 @@ export function BottomNav() {
                       )}
                     </section>
                   );
-                })}
+                })
+                )}
               </div>
             </SheetContent>
           </Sheet>
