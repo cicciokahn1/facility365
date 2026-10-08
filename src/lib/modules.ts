@@ -144,6 +144,10 @@ export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
  * Reihenfolge betrifft ausschliesslich die Darstellung in der Navigation.
  */
 const NAVIGATION_ORDER: ModuleKey[] = [
+  "dashboard",
+  "calendar",
+  "today",
+  "favorites",
   "myArea",
   "customers",
   "organizations",
