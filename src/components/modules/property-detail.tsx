@@ -4,6 +4,7 @@ import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
 import { AreaOverview } from '@/components/modules/area-overview';
 import { PlanManager } from '@/components/modules/plan-manager';
+import { MapCard, NavigateButton } from '@/components/module/map-card';
 
 export function PropertyDetail({ id }: { id: string }) {
   return (
@@ -11,7 +12,13 @@ export function PropertyDetail({ id }: { id: string }) {
       collection="properties"
       id={id}
       defaultTab="dossier"
+      headerExtra={(property) => <NavigateButton address={property.address} />}
       extraTabs={(property, update) => [
+        {
+          value: 'map',
+          labelKey: 'tab.map',
+          content: <MapCard address={property.address} />,
+        },
         {
           value: 'buildings',
           labelKey: 'module.buildings',

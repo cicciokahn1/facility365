@@ -10,6 +10,7 @@ import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
 import { WorkTimePanel } from '@/components/modules/work-time-panel';
 import { OrderPreparation } from '@/components/modules/order-preparation';
+import { NavigateButton } from '@/components/module/map-card';
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
 import { useReportFromOrder } from '@/lib/reports/from-order';
@@ -23,6 +24,7 @@ export function OrderDetail({ id }: { id: string }) {
   const reports = useReportFromOrder();
   const users = useCollectionItems('users');
   const suppliers = useCollectionItems('suppliers');
+  const properties = useCollectionItems('properties');
   const { settings } = useSettings();
 
   return (
@@ -32,8 +34,10 @@ export function OrderDetail({ id }: { id: string }) {
       defaultTab="preparation"
       headerExtra={(order) => {
         const existing = reports.existing(order.id);
+        const site = properties.find((item) => item.id === order.propertyId);
         return (
           <>
+            <NavigateButton address={site?.address} />
             <Button
               size="sm"
               variant={existing ? 'outline' : 'default'}
