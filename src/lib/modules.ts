@@ -125,7 +125,6 @@ export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
   "waste",
   "stock",
   "hazards",
-  "outdoorAreas",
   "vehicles",
   "portal",
   "documents",
