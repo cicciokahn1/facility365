@@ -481,7 +481,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "outdoorAreas",
     path: "/outdoor-areas",
     icon: Trees,
-    group: "operations",
+    group: "cleaning",
     labelKey: "module.outdoorAreas",
     singularKey: "module.outdoorAreas.singular",
   },
