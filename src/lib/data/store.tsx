@@ -279,9 +279,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
           try {
             await read(DEFERRED_COLLECTIONS);
             if (cancelled) return;
+            const deferred: Partial<Store> = {};
+            for (const key of DEFERRED_COLLECTIONS) deferred[key] = next[key];
             setLoaded((state) => {
               if (state.scope !== scope) return state;
-              return { scope, store: { ...state.store, ...next } };
+              return { scope, store: { ...state.store, ...deferred } };
             });
             /** Die Sicherung erst nach dem vollständigen Laden im Hintergrund erstellen. */
             void ensureDailySnapshot(next).catch(() => undefined);
