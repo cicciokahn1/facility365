@@ -44,22 +44,20 @@ export function PlantIdentifier({ areaId, plantSpecies }: { areaId: string; plan
             <strong>{plantSpecies}</strong>
           </p>
         ) : null}
-        <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
-          <li>Google Lens öffnen und Foto der Pflanze machen.</li>
-          <li>Den gefundenen Namen hier eintragen.</li>
-          <li>«Übernehmen» antippen – fertig.</li>
-        </ol>
         <Button
           type="button"
-          variant="outline"
+          size="lg"
           asChild
           data-testid="plant-id-lens"
         >
           <a href={LENS_URL} target="_blank" rel="noopener noreferrer">
-            <ExternalLink className="size-4" aria-hidden />
-            Mit Google Lens erkennen
+            <ExternalLink className="size-5" aria-hidden />
+            Foto machen – Google Lens sagt den Namen
           </a>
         </Button>
+        <p className="text-xs text-muted-foreground">
+          Den gefundenen Namen hier eintragen und «Übernehmen» antippen.
+        </p>
         <div className="flex gap-2">
           <Input
             value={name}
