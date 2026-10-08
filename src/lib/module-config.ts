@@ -33,6 +33,7 @@ import {
   INTERVAL_OPTIONS,
   CONTRACT_STATUS_OPTIONS,
   CONTRACT_TYPE_OPTIONS,
+  INVOICE_CATEGORY_OPTIONS,
   INVOICE_STATUS_OPTIONS,
   KEY_STATUS_OPTIONS,
   NOTICE_PERIOD_OPTIONS,
@@ -2769,12 +2770,26 @@ const invoicesConfig: ModuleConfig<"invoices"> = {
       labelKey: "module.reports.singular",
       collection: "reports",
     },
+    {
+      kind: "relation",
+      name: "supplierId",
+      labelKey: "module.suppliers.singular",
+      collection: "suppliers",
+      filter: true,
+    },
+    {
+      kind: "select",
+      name: "category",
+      labelKey: "common.category",
+      options: INVOICE_CATEGORY_OPTIONS,
+      filter: true,
+    },
     { kind: "date", name: "date", labelKey: "common.date" },
     { kind: "date", name: "dueDate", labelKey: "invoice.dueDate" },
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
   searchOf: (invoice) =>
-    [invoice.number, invoice.title].filter(Boolean).join(" "),
+    [invoice.number, invoice.title, invoice.notes].filter(Boolean).join(" "),
 };
 
 /** Der naechste Termin eines Plans liegt nie vor dem Startdatum. */

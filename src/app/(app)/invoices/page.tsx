@@ -1,5 +1,5 @@
-import { ModuleList } from '@/components/module/module-list';
+import { InvoiceList } from '@/components/modules/invoice-list';
 
 export default function InvoicePage() {
-  return <ModuleList collection="invoices" />;
+  return <InvoiceList />;
 }

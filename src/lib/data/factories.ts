@@ -866,6 +866,8 @@ export const emptyInvoice = (): Omit<Invoice, "id" | "number"> => ({
   propertyId: "",
   orderId: "",
   quoteId: "",
+  supplierId: "",
+  category: "service",
   reportId: "",
   date: new Date().toISOString().slice(0, 10),
   dueDate: "",

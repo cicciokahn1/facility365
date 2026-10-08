@@ -659,6 +659,13 @@ export const INVOICE_STATUS_OPTIONS: SelectOption[] = [
   option("cancelled", "status.cancelled"),
 ];
 
+export const INVOICE_CATEGORY_OPTIONS: SelectOption[] = [
+  option("service", "invoice.category.service"),
+  option("material", "invoice.category.material"),
+  option("external", "invoice.category.external"),
+  option("other", "invoice.category.other"),
+];
+
 export const PRIORITY_OPTIONS: SelectOption[] = [
   option("low", "priority.low"),
   option("medium", "priority.medium"),

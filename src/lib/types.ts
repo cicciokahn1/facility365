@@ -1354,6 +1354,10 @@ export interface Invoice extends BaseEntity {
   propertyId: string;
   orderId: string;
   quoteId: string;
+  /** Ausstellender Lieferant bei eingehenden Rechnungen. */
+  supplierId: string;
+  /** Freie Kategorie, z. B. Dienstleistung, Material oder externe Firma. */
+  category: string;
   /** Rapport, aus dem die Rechnung erstellt wurde; leer bei freier Erfassung. */
   reportId: string;
   date: string;
