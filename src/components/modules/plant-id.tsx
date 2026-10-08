@@ -13,9 +13,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useCollection } from '@/lib/data/store';
+import { compressImage } from '@/lib/media';
 import { toast } from 'sonner';
 
-const LENS_UPLOAD_URL = 'https://lens.google.com/v3/upload';
+const LENS_UPLOAD_URL = 'https://lens.google.com/v3/upload?hl=de&ep=gisbubb';
 
 export function PlantIdentifier({ areaId, plantSpecies }: { areaId: string; plantSpecies: string }) {
   const { update } = useCollection('outdoorAreas');
@@ -23,10 +24,34 @@ export function PlantIdentifier({ areaId, plantSpecies }: { areaId: string; plan
   const [preview, setPreview] = useState('');
   const form = useRef<HTMLFormElement>(null);
   const photo = useRef<HTMLInputElement>(null);
+  const upload = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => () => {
     if (preview) URL.revokeObjectURL(preview);
   }, [preview]);
+
+  const prepare = async (file: File | undefined) => {
+    if (!file || !upload.current) {
+      setPreview('');
+      return;
+    }
+    setBusy(true);
+    try {
+      const { url } = await compressImage(file);
+      const blob = await (await fetch(url)).blob();
+      const jpeg = new File([blob], 'pflanze.jpg', { type: 'image/jpeg' });
+      const transfer = new DataTransfer();
+      transfer.items.add(jpeg);
+      upload.current.files = transfer.files;
+      setPreview(URL.createObjectURL(jpeg));
+    } catch {
+      toast.error('Foto konnte nicht gelesen werden');
+      setPreview('');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const adopt = () => {
     const value = name.trim();
@@ -62,21 +87,19 @@ export function PlantIdentifier({ areaId, plantSpecies }: { areaId: string; plan
           <input
             ref={photo}
             type="file"
-            name="encoded_image"
             accept="image/*"
             capture="environment"
             className="sr-only"
             data-testid="plant-id-photo"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              setPreview(file ? URL.createObjectURL(file) : '');
-            }}
+            onChange={(event) => void prepare(event.target.files?.[0])}
           />
+          <input ref={upload} type="file" name="encoded_image" className="sr-only" tabIndex={-1} aria-hidden />
           <Button
             type="button"
             size="lg"
             variant={preview ? 'outline' : 'default'}
             onClick={() => photo.current?.click()}
+            disabled={busy}
             data-testid="plant-id-camera"
           >
             <Camera className="size-5" aria-hidden />
