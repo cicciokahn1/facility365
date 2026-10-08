@@ -26,7 +26,7 @@ import {
   TicketStatus,
 } from '@/lib/types';
 
-const SEEDED_KEY = 'facility365.demo.seeded.v2';
+const SEEDED_KEY = 'facility365.examples.seeded.v2';
 const SEEDED_V1_KEY = 'facility365.demo.seeded';
 const DEMO_NOTE = 'Beispiel-Daten';
 
