@@ -7,6 +7,9 @@
  * Testeintrag bleiben unveraendert und laufen ohne Frist weiter.
  */
 
+/** Ohne Frist laeuft Facility365 dauerhaft; Testdaten bleiben im eigenen Bereich. */
+export const TRIAL_ENABLED = false;
+
 /** Dauer der kostenlosen Testversion in Tagen. */
 export const TRIAL_DAYS = 30;
 
@@ -66,7 +69,7 @@ export const trialStateOf = (
   record: TrialRecord | null,
   now: Date = new Date(),
 ): TrialState => {
-  if (!record || record.plan !== "trial") return NO_TRIAL;
+  if (!TRIAL_ENABLED || !record || record.plan !== "trial") return NO_TRIAL;
   const daysLeft = daysUntil(record.endsAt, now);
   return {
     isTrial: true,
