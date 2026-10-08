@@ -2374,6 +2374,31 @@ export const dictionary = {
     en: "Contracts",
   },
   "tab.plans": { de: "Pläne", fr: "Plans", it: "Piani", en: "Plans" },
+  "tab.map": { de: "Karte", fr: "Carte", it: "Mappa", en: "Map" },
+  "map.open": {
+    de: "Auf Karte",
+    fr: "Sur la carte",
+    it: "Sulla mappa",
+    en: "Show on map",
+  },
+  "map.navigate": {
+    de: "Route",
+    fr: "Itinéraire",
+    it: "Itinerario",
+    en: "Directions",
+  },
+  "map.noAddress": {
+    de: "Keine Adresse hinterlegt.",
+    fr: "Aucune adresse enregistrée.",
+    it: "Nessun indirizzo registrato.",
+    en: "No address stored.",
+  },
+  "map.allProperties": {
+    de: "Alle auf Karte",
+    fr: "Tout sur la carte",
+    it: "Tutti sulla mappa",
+    en: "All on map",
+  },
   "tab.areas": {
     de: "Flächen",
     fr: "Surfaces",

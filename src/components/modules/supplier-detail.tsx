@@ -2,13 +2,20 @@
 
 import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
+import { MapCard, NavigateButton } from '@/components/module/map-card';
 
 export function SupplierDetail({ id }: { id: string }) {
   return (
     <EntityDetail
       collection="suppliers"
       id={id}
-      extraTabs={() => [
+      headerExtra={(supplier) => <NavigateButton address={supplier.address} />}
+      extraTabs={(supplier) => [
+        {
+          value: 'map',
+          labelKey: 'tab.map',
+          content: <MapCard address={supplier.address} />,
+        },
         {
           value: 'assets',
           labelKey: 'module.assets',
