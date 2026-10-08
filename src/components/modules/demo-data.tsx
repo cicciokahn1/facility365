@@ -623,37 +623,54 @@ export function DemoDataButton() {
   );
 }
 
+/** Eigene Eintraege tragen die Sammlung als Kennungs-Praefix; mitgelieferte Testdaten nicht. */
+const ownEntry = (collection: string) => (item: { id: string }) =>
+  item.id.startsWith(`${collection}_`);
+
+/** Wartezeit, bis auch die nachgeladenen Sammlungen im Speicher stehen. */
+const SETTLE_MS = 5000;
+
 /**
- * Legt die Beispiel-Liegenschaften automatisch an, sobald die Sammlungen
- * bereit sind: auf einem leeren Geraet oder als Ersatz des ersten, kleineren
+ * Legt die Beispiel-Liegenschaften automatisch an, sobald alle Daten geladen
+ * sind: auf einem leeren Geraet oder als Ersatz des ersten, kleineren
  * Beispielsatzes. Laeuft genau einmal je Geraet.
  */
 export function DemoAutoSeed() {
   const collections = useDemoCollections();
+  const latest = useRef(collections);
   const done = useRef(false);
 
   const collectionsReady = Object.values(collections).every((collection) => collection.ready);
 
   useEffect(() => {
+    latest.current = collections;
+  }, [collections]);
+
+  useEffect(() => {
     if (done.current || !collectionsReady) return;
     if (window.localStorage.getItem(SEEDED_KEY)) return;
-    done.current = true;
-    window.localStorage.setItem(SEEDED_KEY, '1');
-    const hadV1 =
-      Boolean(window.localStorage.getItem(SEEDED_V1_KEY)) &&
-      collections.properties.items.some((item) => V1_NAMES.has(item.name));
-    if (hadV1) {
-      removeV1(collections);
-    } else {
-      const empty =
-        collections.customers.items.length === 0 &&
-        collections.properties.items.length === 0 &&
-        collections.orders.items.length === 0;
-      if (!empty) return;
-    }
-    seed(collections);
-    toast.success(SUCCESS);
-  }, [collections, collectionsReady]);
+    const timer = window.setTimeout(() => {
+      const current = latest.current;
+      if (done.current || window.localStorage.getItem(SEEDED_KEY)) return;
+      done.current = true;
+      window.localStorage.setItem(SEEDED_KEY, '1');
+      const hadV1 =
+        Boolean(window.localStorage.getItem(SEEDED_V1_KEY)) &&
+        current.properties.items.some((item) => V1_NAMES.has(item.name));
+      if (hadV1) {
+        removeV1(current);
+      } else {
+        const empty =
+          !current.customers.items.some(ownEntry('customers')) &&
+          !current.properties.items.some(ownEntry('properties')) &&
+          !current.orders.items.some(ownEntry('orders'));
+        if (!empty) return;
+      }
+      seed(current);
+      toast.success(SUCCESS);
+    }, SETTLE_MS);
+    return () => window.clearTimeout(timer);
+  }, [collectionsReady]);
 
   return null;
 }
