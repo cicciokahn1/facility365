@@ -6,11 +6,12 @@
  * zwischengespeicherte Fassung zurueck. Die Nutzdaten liegen ohnehin im
  * Browser, daher genuegt das fuer den vollstaendigen Offline-Betrieb.
  */
-const CACHE = 'facility365-v5';
+const CACHE = 'facility365-v6';
 const OFFLINE_URL = '/dashboard';
 const OFFLINE_ROUTES = [
   OFFLINE_URL,
   '/today',
+  '/calendar',
   '/orders',
   '/maintenances',
   '/inspections',

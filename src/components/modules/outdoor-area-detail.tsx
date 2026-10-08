@@ -3,6 +3,7 @@
 import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
 import { PlanLocation } from '@/components/modules/plan-location';
+import { PlantIdentifier } from '@/components/modules/plant-id';
 
 export function OutdoorAreaDetail({ id }: { id: string }) {
   return (
@@ -10,6 +11,11 @@ export function OutdoorAreaDetail({ id }: { id: string }) {
       collection="outdoorAreas"
       id={id}
       extraTabs={(area) => [
+        {
+          value: 'plant',
+          labelKey: 'outdoor.plantSpecies',
+          content: <PlantIdentifier areaId={area.id} plantSpecies={area.plantSpecies} />,
+        },
         {
           value: 'plans',
           labelKey: 'tab.plans',
