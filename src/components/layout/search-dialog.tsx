@@ -15,7 +15,8 @@ import { useAccess } from '@/lib/auth/scope';
 import { useCollectionItems } from '@/lib/data/store';
 import { fieldValue } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
-import { MODULES } from '@/lib/modules';
+import { MODULES, SIMPLE_HIDDEN_KEYS } from '@/lib/modules';
+import { useSettings } from '@/lib/settings/provider';
 import { configOf, titleOfEntity } from '@/lib/module-config';
 import { BaseEntity, CollectionKey } from '@/lib/types';
 
@@ -275,10 +276,15 @@ export function SearchDialog({
     ],
   );
 
+  const { settings } = useSettings();
   const results = useMemo(() => {
     const needle = deferredQuery.trim().toLowerCase();
     if (!open || !needle) return [];
-    return SEARCHABLE.filter((collection) => access.canRead(collection)).map((collection) => {
+    return SEARCHABLE.filter(
+      (collection) =>
+        (settings.simpleMode === false || !SIMPLE_HIDDEN_KEYS.has(collection)) &&
+        access.canRead(collection),
+    ).map((collection) => {
       const items = collections[collection];
       const matches = items
         .filter((item) => {
@@ -294,7 +300,7 @@ export function SearchDialog({
         }));
       return { collection, matches };
     }).filter((group) => group.matches.length > 0);
-  }, [access, collections, deferredQuery, open]);
+  }, [access, collections, deferredQuery, open, settings.simpleMode]);
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange} shouldFilter={false}>
