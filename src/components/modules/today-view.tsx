@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, Phone, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, Moon, Phone, ShieldAlert } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
@@ -19,6 +19,7 @@ import {
   isProgressable,
 } from "@/components/module/in-progress-button";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useAccess } from "@/lib/auth/scope";
 import { useRelevantEvents } from "@/lib/calendar/relevant";
 import { useCollectionItems } from "@/lib/data/store";
@@ -158,6 +159,7 @@ export function TodayView() {
   const t = useT();
   const [quickReportOpen, setQuickReportOpen] = useState(false);
   const [emergencyOpen, setEmergencyOpen] = useState(false);
+  const [dayEndOpen, setDayEndOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "overdue" | "today">("all");
   const access = useAccess();
   const { settings } = useSettings();
@@ -441,6 +443,16 @@ export function TodayView() {
                 </a>
               </Button>
             ) : null}
+            <Button
+              size="sm"
+              onClick={() => setDayEndOpen(true)}
+              variant="outline"
+              data-testid="today-day-end"
+              className="h-auto min-h-16 flex-col gap-1 px-2 py-2 text-sm sm:h-11 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
+            >
+              <Moon className="size-4" aria-hidden />
+              <span className="leading-tight">Tag abschliessen</span>
+            </Button>
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-2" aria-label={t("today.title")}>
@@ -475,6 +487,28 @@ export function TodayView() {
         standalone
         emergency
       />
+      <Dialog open={dayEndOpen} onOpenChange={setDayEndOpen}>
+        <DialogContent className="w-[calc(100%-1rem)] max-w-md" data-testid="today-day-end-dialog">
+          <DialogTitle className="flex items-center gap-2">
+            <Moon className="size-5 text-primary" aria-hidden />
+            Tag abschliessen
+          </DialogTitle>
+          <DialogDescription className="sr-only">Tageszusammenfassung</DialogDescription>
+          <div className="flex flex-col gap-3 py-2">
+            <p className="text-lg font-medium">Gute Arbeit!</p>
+            <ul className="flex flex-col gap-1 text-sm">
+              <li><strong>{doneToday}</strong> heute erledigt</li>
+              <li><strong>{openNow}</strong> noch offen</li>
+              {nowRows.length > 0 ? (
+                <li className="text-destructive"><strong>{nowRows.length}</strong> überfällig</li>
+              ) : null}
+            </ul>
+            <Button asChild className="mt-1">
+              <Link href="/reports?new=1">Tagesrapport schreiben</Link>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {filteredEmpty ? (
         <EmptyState icon={moduleByKey("today").icon} titleKey="today.empty" />
