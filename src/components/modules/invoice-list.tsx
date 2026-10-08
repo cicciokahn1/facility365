@@ -164,7 +164,23 @@ export function InvoiceList() {
     yearItems,
   ]);
 
-  const createInvoice = (values: FormValues) => {
+  const createInvoice = (formValues: FormValues) => {
+    const { amount, ...values } = formValues;
+    const price = Number(amount) || 0;
+    const items =
+      price > 0
+        ? [
+            {
+              id: crypto.randomUUID(),
+              position: 1,
+              description: String(values.title || ''),
+              quantity: 1,
+              unit: '',
+              unitPrice: price,
+              vatRate: 8.1,
+            },
+          ]
+        : [];
     const payment = {
       recipient: settings.companyName,
       address: settings.companyAddress,
@@ -175,7 +191,7 @@ export function InvoiceList() {
       referenceType: settings.paymentReferenceType,
     };
     const entity = create(
-      { ...values, payment, qrReference: '' } as never,
+      { ...values, items, payment, qrReference: '' } as never,
       settings.profileName || settings.companyName,
     );
     update(entity.id, {
@@ -400,7 +416,16 @@ export function InvoiceList() {
         open={formOpen}
         onOpenChange={setFormOpen}
         title={`${t('action.new')} · ${t(moduleDef.singularKey)}`}
-        fields={config.fields}
+        fields={[
+          ...config.fields,
+          {
+            kind: 'money',
+            name: 'amount',
+            labelKey: 'common.amount',
+            required: false,
+            span: 2,
+          },
+        ]}
         initialValues={defaultValuesOf('invoices')}
         onSubmit={createInvoice}
       />
