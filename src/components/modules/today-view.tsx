@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, Phone, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, Leaf, Phone, ShieldAlert } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
@@ -426,6 +426,17 @@ export function TodayView() {
               <Link href="/walkthrough">
                 <ClipboardCheck className="size-4" aria-hidden />
                 <span className="leading-tight">Rundgang</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="h-auto min-h-16 flex-col gap-1 px-2 py-2 text-sm sm:h-11 sm:flex-row sm:gap-2 sm:px-3 sm:py-2"
+            >
+              <Link href="/outdoor-areas" data-testid="today-plant">
+                <Leaf className="size-4" aria-hidden />
+                <span className="leading-tight">Pflanze</span>
               </Link>
             </Button>
             {settings.companyPhone.trim() ? (

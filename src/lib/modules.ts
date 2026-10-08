@@ -68,6 +68,7 @@ export type NavGroup =
   | "technics"
   | "work"
   | "cleaning"
+  | "outdoor"
   | "energy"
   | "operations"
   | "documents"
@@ -481,7 +482,7 @@ export const MODULES: ModuleDefinition[] = [
     collection: "outdoorAreas",
     path: "/outdoor-areas",
     icon: Trees,
-    group: "cleaning",
+    group: "outdoor",
     labelKey: "module.outdoorAreas",
     singularKey: "module.outdoorAreas.singular",
   },
@@ -775,6 +776,8 @@ export const NAV_GROUPS: NavGroupDefinition[] = [
   { key: "technics", labelKey: "nav.technics", icon: Wrench },
   { key: "work", labelKey: "nav.work", icon: ClipboardList },
   { key: "cleaning", labelKey: "nav.cleaning", icon: SprayCan },
+  /** Steht als eigener Menuepunkt ohne Ordner direkt unter Reinigung. */
+  { key: "outdoor", labelKey: "module.outdoorAreas", icon: Trees, flat: true },
   { key: "energy", labelKey: "nav.energy", icon: Gauge },
   { key: "operations", labelKey: "nav.operations", icon: PackageSearch },
   { key: "documents", labelKey: "nav.documents", icon: Files },
