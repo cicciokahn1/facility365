@@ -1,13 +1,14 @@
 'use client';
 
 /**
- * Pflanzenbestimmung ueber Google Lens - ganz ohne Schluessel.
+ * Pflanzenbestimmung ohne Schluessel.
  *
- * Das Foto wird direkt an Google Lens geschickt; der gefundene Name wird hier
- * eingetragen und als Pflanzenart der Aussenanlage uebernommen.
+ * Das Foto kann direkt an Google Lens oder eine andere Erkennungsapp geteilt
+ * werden; auf dem iPhone genuegt auch ein langer Fingerdruck aufs Foto
+ * («Pflanze bestimmen»). Der gefundene Name wird als Pflanzenart uebernommen.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Camera, Check, Leaf, Search } from 'lucide-react';
+import { Camera, Check, Leaf, Share2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,40 +17,48 @@ import { useCollection } from '@/lib/data/store';
 import { compressImage } from '@/lib/media';
 import { toast } from 'sonner';
 
-const LENS_UPLOAD_URL = 'https://lens.google.com/v3/upload?hl=de&ep=gisbubb';
-
 export function PlantIdentifier({ areaId, plantSpecies }: { areaId: string; plantSpecies: string }) {
   const { update } = useCollection('outdoorAreas');
   const [name, setName] = useState('');
   const [preview, setPreview] = useState('');
-  const form = useRef<HTMLFormElement>(null);
-  const photo = useRef<HTMLInputElement>(null);
-  const upload = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [shareable, setShareable] = useState(false);
+  const photo = useRef<HTMLInputElement>(null);
+  const file = useRef<File | null>(null);
 
   useEffect(() => () => {
     if (preview) URL.revokeObjectURL(preview);
   }, [preview]);
 
-  const prepare = async (file: File | undefined) => {
-    if (!file || !upload.current) {
-      setPreview('');
-      return;
-    }
+  const prepare = async (picked: File | undefined) => {
+    if (!picked) return;
     setBusy(true);
     try {
-      const { url } = await compressImage(file);
+      const { url } = await compressImage(picked);
       const blob = await (await fetch(url)).blob();
-      const jpeg = new File([blob], 'pflanze.jpg', { type: 'image/jpeg' });
-      const transfer = new DataTransfer();
-      transfer.items.add(jpeg);
-      upload.current.files = transfer.files;
-      setPreview(URL.createObjectURL(jpeg));
+      file.current = new File([blob], 'pflanze.jpg', { type: 'image/jpeg' });
+      setShareable(
+        typeof navigator !== 'undefined' &&
+          typeof navigator.canShare === 'function' &&
+          navigator.canShare({ files: [file.current] }),
+      );
+      if (preview) URL.revokeObjectURL(preview);
+      setPreview(URL.createObjectURL(file.current));
     } catch {
       toast.error('Foto konnte nicht gelesen werden');
+      file.current = null;
       setPreview('');
     } finally {
       setBusy(false);
+    }
+  };
+
+  const share = async () => {
+    if (!file.current) return;
+    try {
+      await navigator.share({ files: [file.current], title: 'Pflanze bestimmen' });
+    } catch {
+      // Abgebrochen
     }
   };
 
@@ -76,59 +85,57 @@ export function PlantIdentifier({ areaId, plantSpecies }: { areaId: string; plan
             <strong>{plantSpecies}</strong>
           </p>
         ) : null}
-        <form
-          ref={form}
-          action={LENS_UPLOAD_URL}
-          method="post"
-          encType="multipart/form-data"
-          target="_blank"
-          rel="noreferrer"
-          className="flex flex-col gap-3"
+        <input
+          ref={photo}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="sr-only"
+          data-testid="plant-id-photo"
+          onChange={(event) => void prepare(event.target.files?.[0])}
+        />
+        <Button
+          type="button"
+          size="lg"
+          variant={preview ? 'outline' : 'default'}
+          onClick={() => photo.current?.click()}
+          disabled={busy}
+          data-testid="plant-id-camera"
         >
-          <input
-            ref={photo}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="sr-only"
-            data-testid="plant-id-photo"
-            onChange={(event) => void prepare(event.target.files?.[0])}
-          />
-          <input ref={upload} type="file" name="encoded_image" className="sr-only" tabIndex={-1} aria-hidden />
-          <Button
-            type="button"
-            size="lg"
-            variant={preview ? 'outline' : 'default'}
-            onClick={() => photo.current?.click()}
-            disabled={busy}
-            data-testid="plant-id-camera"
-          >
-            <Camera className="size-5" aria-hidden />
-            {preview ? 'Neues Foto' : '1. Foto machen'}
-          </Button>
-          {preview ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={preview}
-                alt="Pflanzenfoto"
-                className="max-h-48 w-full rounded-md object-cover"
-              />
+          <Camera className="size-5" aria-hidden />
+          {preview ? 'Neues Foto' : '1. Foto machen'}
+        </Button>
+        {preview ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={preview}
+              alt="Pflanzenfoto"
+              className="max-h-48 w-full rounded-md object-cover"
+            />
+            {shareable ? (
               <Button
                 type="button"
                 size="lg"
-                onClick={() => form.current?.submit()}
-                data-testid="plant-id-lens"
+                onClick={() => void share()}
+                data-testid="plant-id-share"
               >
-                <Search className="size-5" aria-hidden />
-                2. Google Lens fragen
+                <Share2 className="size-5" aria-hidden />
+                2. Foto an Google Lens senden
               </Button>
-            </>
-          ) : null}
-        </form>
-        <p className="text-xs text-muted-foreground">
-          Google zeigt den Namen. Hier eintragen und «Übernehmen» antippen.
-        </p>
+            ) : null}
+            <p className="text-xs text-muted-foreground">
+              iPhone: Foto lange gedrückt halten → «Pflanze bestimmen». Sonst:
+              «Foto an Google Lens senden» → Google oder Lens wählen. Den
+              gefundenen Namen unten eintragen und «Übernehmen» antippen.
+            </p>
+          </>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Nach dem Foto: lange draufhalten → «Pflanze bestimmen», oder an
+            Google Lens teilen. Den Namen unten eintragen.
+          </p>
+        )}
         <div className="flex gap-2">
           <Input
             value={name}
