@@ -82,6 +82,7 @@ export function PlantIdentifier({ areaId, plantSpecies }: { areaId: string; plan
           method="post"
           encType="multipart/form-data"
           target="_blank"
+          rel="noreferrer"
           className="flex flex-col gap-3"
         >
           <input
