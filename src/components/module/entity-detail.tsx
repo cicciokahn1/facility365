@@ -86,6 +86,11 @@ export interface EntityDetailProps<K extends CollectionKey> {
     entity: EntityOf<K>,
     update: (values: Partial<EntityOf<K>>, action?: string) => void,
   ) => React.ReactNode;
+  /** Bereich oberhalb der Reiter, z. B. Pflanzenbestimmung. */
+  beforeTabs?: (
+    entity: EntityOf<K>,
+    update: (values: Partial<EntityOf<K>>, action?: string) => void,
+  ) => React.ReactNode;
   /** Zuerst gezeigter Bereich; ohne Angabe die Stammdaten. */
   defaultTab?: string;
   /** Loeschen sperren, z. B. bei Benutzern mit vorhandenen Daten. */
@@ -98,6 +103,7 @@ export function EntityDetail<K extends CollectionKey>({
   id,
   extraTabs,
   headerExtra,
+  beforeTabs,
   defaultTab = "master",
   deleteBlocked = false,
   deleteBlockedKey,
@@ -364,6 +370,8 @@ export function EntityDetail<K extends CollectionKey>({
       {smartObjectLevel ? (
         <SmartObjectView collection={smartObjectLevel} entity={entity} />
       ) : null}
+
+      {beforeTabs?.(entity, applyUpdate)}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="no-scrollbar -mx-1 overflow-x-auto px-1">

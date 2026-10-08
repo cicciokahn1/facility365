@@ -10,12 +10,10 @@ export function OutdoorAreaDetail({ id }: { id: string }) {
     <EntityDetail
       collection="outdoorAreas"
       id={id}
+      beforeTabs={(area) => (
+        <PlantIdentifier areaId={area.id} plantSpecies={area.plantSpecies} />
+      )}
       extraTabs={(area) => [
-        {
-          value: 'plant',
-          labelKey: 'outdoor.plantSpecies',
-          content: <PlantIdentifier areaId={area.id} plantSpecies={area.plantSpecies} />,
-        },
         {
           value: 'plans',
           labelKey: 'tab.plans',
