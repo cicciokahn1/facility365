@@ -23,6 +23,7 @@ export interface GraphMessage {
   webLink: string;
   categories: string[];
   isRead: boolean;
+  hasAttachments: boolean;
 }
 
 export interface GraphEvent {
@@ -91,6 +92,7 @@ interface RawMessage {
   webLink?: string;
   categories?: string[];
   isRead?: boolean;
+  hasAttachments?: boolean;
   from?: { emailAddress?: { name?: string; address?: string } };
 }
 
@@ -103,7 +105,7 @@ export const listMessages = async (
   const path =
     `/me/mailFolders/${encodeURIComponent(folder || 'inbox')}/messages` +
     `?$top=${top}&$orderby=receivedDateTime desc` +
-    '&$select=id,subject,bodyPreview,receivedDateTime,webLink,categories,isRead,from';
+    '&$select=id,subject,bodyPreview,receivedDateTime,webLink,categories,isRead,hasAttachments,from';
   const data = await graphFetch<GraphList<RawMessage>>(config, path);
   return (data.value ?? []).map((item) => ({
     id: item.id,
@@ -115,7 +117,20 @@ export const listMessages = async (
     webLink: item.webLink ?? '',
     categories: item.categories ?? [],
     isRead: item.isRead ?? false,
+    hasAttachments: item.hasAttachments ?? false,
   }));
+};
+
+/** Namen der Anhaenge einer Nachricht - ohne die Dateien selbst zu laden. */
+export const attachmentNames = async (
+  config: GraphConfig,
+  messageId: string,
+): Promise<string[]> => {
+  const data = await graphFetch<GraphList<{ name?: string }>>(
+    config,
+    `/me/messages/${messageId}/attachments?$select=name&$top=20`,
+  );
+  return (data.value ?? []).map((item) => item.name ?? '').filter(Boolean);
 };
 
 /** Vermerkt in Outlook, dass aus der Nachricht ein Auftrag entstanden ist. */

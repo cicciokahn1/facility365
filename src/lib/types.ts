@@ -341,6 +341,8 @@ export interface Property extends BaseEntity {
   contractEnd: string;
   /** Plaene der ganzen Liegenschaft, z. B. Umgebungs- oder Gartenplan. */
   plans: Plan[];
+  /** Zugeordnete Outlook-E-Mails. */
+  mailLinks?: MailLink[];
 }
 
 export interface Building extends BaseEntity {
@@ -701,6 +703,8 @@ export interface Order extends BaseEntity {
   graphMessageId?: string;
   /** Zugehoeriger Termin im Outlook-Kalender. */
   graphEventId?: string;
+  /** Zugeordnete Outlook-E-Mails. */
+  mailLinks?: MailLink[];
   /** Zeitpunkt des letzten Abgleichs mit Microsoft 365. */
   graphSyncedAt?: string;
   hourlyRate?: number;
@@ -1321,6 +1325,20 @@ export interface LineItem {
   vatRate: number;
 }
 
+/** Verknuepfte Outlook-E-Mail an einem Datensatz. */
+export interface MailLink {
+  /** Kennung der Nachricht bei Microsoft Graph. */
+  messageId: string;
+  subject: string;
+  fromName: string;
+  fromAddress: string;
+  receivedAt: string;
+  /** Oeffnet die Nachricht direkt in Outlook. */
+  webLink: string;
+  attachments: string[];
+  linkedAt: string;
+}
+
 export type InvoiceReferenceType = "QRR" | "SCOR";
 
 export interface InvoicePaymentData {
@@ -1360,6 +1378,8 @@ export interface Invoice extends BaseEntity {
   category: string;
   /** Rapport, aus dem die Rechnung erstellt wurde; leer bei freier Erfassung. */
   reportId: string;
+  /** Zugeordnete Outlook-E-Mails. */
+  mailLinks?: MailLink[];
   date: string;
   dueDate: string;
   paidAt: string;

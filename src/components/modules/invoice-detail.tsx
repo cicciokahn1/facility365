@@ -2,6 +2,7 @@
 
 import { EntityDetail } from '@/components/module/entity-detail';
 import { LineItemEditor } from '@/components/module/line-item-editor';
+import { LinkedMails } from '@/components/module/linked-mails';
 import { InvoicePdfPanel } from '@/components/modules/invoice-pdf-panel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -66,6 +67,22 @@ export function InvoiceDetail({ id }: { id: string }) {
           value: 'pdf',
           labelKey: 'tab.pdf',
           content: <InvoicePdfPanel invoice={invoice} />,
+        },
+        {
+          value: 'mails',
+          labelKey: 'tab.mails',
+          content: (
+            <LinkedMails
+              mails={invoice.mailLinks}
+              onRemove={(mail) =>
+                update({
+                  mailLinks: (invoice.mailLinks ?? []).filter(
+                    (item) => item.messageId !== mail.messageId,
+                  ),
+                })
+              }
+            />
+          ),
         },
       ]}
     />

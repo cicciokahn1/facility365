@@ -1,6 +1,7 @@
 'use client';
 
 import { EntityDetail } from '@/components/module/entity-detail';
+import { LinkedMails } from '@/components/module/linked-mails';
 import { RelatedList } from '@/components/module/related-list';
 import { AreaOverview } from '@/components/modules/area-overview';
 import { PlanManager } from '@/components/modules/plan-manager';
@@ -48,6 +49,22 @@ export function PropertyDetail({ id }: { id: string }) {
           value: 'damages',
           labelKey: 'module.damages',
           content: <RelatedList collection="damages" field="propertyId" value={property.id} />,
+        },
+        {
+          value: 'mails',
+          labelKey: 'tab.mails',
+          content: (
+            <LinkedMails
+              mails={property.mailLinks}
+              onRemove={(mail) =>
+                update({
+                  mailLinks: (property.mailLinks ?? []).filter(
+                    (item) => item.messageId !== mail.messageId,
+                  ),
+                })
+              }
+            />
+          ),
         },
       ]}
     />

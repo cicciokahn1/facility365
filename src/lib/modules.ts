@@ -134,7 +134,6 @@ export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
   "analytics",
   "users",
   "activities",
-  "microsoft",
 ]);
 
 /**

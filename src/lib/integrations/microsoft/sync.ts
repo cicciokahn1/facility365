@@ -16,13 +16,14 @@ import {
   GRAPH_CATEGORY,
   GraphEvent,
   GraphMessage,
+  attachmentNames,
   createEvent,
   listEvents,
   markMessageHandled,
   updateEvent,
 } from '@/lib/integrations/microsoft/graph';
 import { GraphConfig } from '@/lib/integrations/microsoft/auth';
-import { AppUser, Building, Order, Property, Room } from '@/lib/types';
+import { AppUser, Building, MailLink, Order, Property, Room } from '@/lib/types';
 import { isDone } from '@/lib/workflow/complete';
 
 /** Standort eines Auftrags als Text - so steht er als Ort im Outlook-Termin. */
@@ -126,6 +127,18 @@ const syncWindow = (days: number): [string, string] => {
   return [from.toISOString().slice(0, 10), to.toISOString().slice(0, 10)];
 };
 
+/** Verknuepfungseintrag einer Nachricht fuer den jeweiligen Datensatz. */
+export const mailLinkOf = (message: GraphMessage, attachments: string[]): MailLink => ({
+  messageId: message.id,
+  subject: message.subject,
+  fromName: message.fromName,
+  fromAddress: message.fromAddress,
+  receivedAt: message.receivedAt,
+  webLink: message.webLink,
+  attachments,
+  linkedAt: new Date().toISOString(),
+});
+
 /** Abgleich der Termine und Uebernahme von Nachrichten. */
 export function useMicrosoftSync(config: GraphConfig) {
   const orders = useCollection('orders');
@@ -137,7 +150,8 @@ export function useMicrosoftSync(config: GraphConfig) {
   const origin = typeof globalThis.location === 'undefined' ? '' : globalThis.location.origin;
   const items = orders.items;
 
-  /** Offene Auftraege mit Termin; erledigte werden nicht mehr abgeglichen. */
+
+/** Offene Auftraege mit Termin; erledigte werden nicht mehr abgeglichen. */
   const plannable = useMemo(
     () => items.filter((order) => order.dueDate && !isDone('orders', order.status)),
     [items],
@@ -231,12 +245,23 @@ export function useMicrosoftSync(config: GraphConfig) {
   /** Nachricht aus Outlook als Auftrag uebernehmen. */
   const orderFromMessage = useCallback(
     async (message: GraphMessage, values: Partial<Order>): Promise<Order> => {
+      const attachments = message.hasAttachments
+        ? await attachmentNames(config, message.id).catch(() => [] as string[])
+        : [];
+      const attachmentText = attachments.length
+        ? `${attachments.join(', ')}`
+        : '';
       const created = orders.create({
         title: values.title || message.subject,
-        description: [message.preview, message.fromName && `Outlook: ${message.fromName}`]
+        description: [
+          message.preview,
+          message.fromName && `Outlook: ${message.fromName}`,
+          attachmentText && `Anhaenge: ${attachmentText}`,
+        ]
           .filter(Boolean)
           .join('\n\n'),
         graphMessageId: message.id,
+        mailLinks: [mailLinkOf(message, attachments)],
         ...values,
       } as Partial<Order>);
       await markMessageHandled(config, message).catch(() => undefined);
