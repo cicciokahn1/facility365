@@ -21,6 +21,8 @@ export interface InvoicePdfApi {
   data: (invoice: Invoice) => InvoicePdfData;
   download: (invoice: Invoice) => Promise<void>;
   print: (invoice: Invoice) => Promise<void>;
+  open: (invoice: Invoice) => Promise<void>;
+  share: (invoice: Invoice) => Promise<void>;
   fileName: (invoice: Invoice) => Promise<string>;
 }
 
@@ -193,6 +195,25 @@ export function useInvoicePdf(): InvoicePdfApi {
     print: async (invoice) => {
       const { printInvoicePdf } = await pdfModule();
       printInvoicePdf(data(invoice), labels(), branding());
+    },
+    open: async (invoice) => {
+      const [{ buildInvoicePdf }, { openPdf }] = await Promise.all([
+        pdfModule(),
+        import('@/lib/pdf/output'),
+      ]);
+      openPdf(await buildInvoicePdf(data(invoice), labels(), branding()));
+    },
+    share: async (invoice) => {
+      const [{ buildInvoicePdf, invoicePdfFileName }, { sharePdf }] = await Promise.all([
+        pdfModule(),
+        import('@/lib/pdf/output'),
+      ]);
+      const current = data(invoice);
+      await sharePdf(
+        await buildInvoicePdf(current, labels(), branding()),
+        invoicePdfFileName(current),
+        current.number,
+      );
     },
     fileName: async (invoice) => {
       const { invoicePdfFileName } = await pdfModule();

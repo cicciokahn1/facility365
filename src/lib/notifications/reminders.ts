@@ -58,14 +58,19 @@ const remember = (keys: string[]) => {
   }
 };
 
-export const show = async (title: string, body: string, href: string): Promise<boolean> => {
+export const show = async (
+  title: string,
+  body: string,
+  href: string,
+  tag = href,
+): Promise<boolean> => {
   if (!notificationsSupported() || Notification.permission !== 'granted') return false;
   const registration = await navigator.serviceWorker.ready;
   await registration.showNotification(title, {
     body,
     icon: '/icon-192.png',
     badge: '/icon-192.png',
-    tag: href,
+    tag,
     data: { href },
   });
   return true;
@@ -140,7 +145,7 @@ export function useDueReminders(
       const fresh = pending().filter((entry) => !already.includes(entry.key));
       if (fresh.length === 0) return;
       for (const entry of fresh) {
-        await show(entry.title, entry.body, entry.href);
+        await show(entry.title, entry.body, entry.href, entry.key);
       }
       remember([...already, ...fresh.map((entry) => entry.key)]);
     };

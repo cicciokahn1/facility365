@@ -6,7 +6,7 @@
  * zwischengespeicherte Fassung zurueck. Die Nutzdaten liegen ohnehin im
  * Browser, daher genuegt das fuer den vollstaendigen Offline-Betrieb.
  */
-const CACHE = 'facility365-v20';
+const CACHE = 'facility365-v21';
 const OFFLINE_URL = '/dashboard';
 const OFFLINE_ROUTES = [
   OFFLINE_URL,
@@ -131,6 +131,7 @@ self.addEventListener('push', (event) => {
       body: payload.body || '',
       icon: '/icon-192.png',
       badge: '/icon-192.png',
+      tag: payload.tag || payload.href || undefined,
       data: { href: payload.href || '/dashboard' },
     }),
   );

@@ -1714,6 +1714,8 @@ export interface ModuleConfig {
 export type Language = "de" | "fr" | "it" | "en";
 export type ThemeMode = "light" | "dark" | "system";
 
+export type NotifyEvent = "assigned" | "newOrders" | "maintenance" | "reports" | "status";
+
 export interface AppSettings {
   companyName: string;
   companyLogo: string;
@@ -1746,6 +1748,8 @@ export interface AppSettings {
   legionellaLimitCfu: number;
   legionellaIntervalMonths: number;
   notificationsEnabled: boolean;
+  /** Ereignisse einzeln ein- oder ausschalten; fehlend bedeutet eingeschaltet. */
+  notificationEvents?: Partial<Record<NotifyEvent, boolean>>;
   emailNotifications: boolean;
   /** Eigene Reinigungskraft des angemeldeten Geraets. */
   cleaningCleanerId: string;
