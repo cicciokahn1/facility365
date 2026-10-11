@@ -5531,6 +5531,12 @@ export const dictionary = {
     it: "Parco giochi",
     en: "Playground",
   },
+  "inspection.type.emergencyEquipment": {
+    de: "Notfall-Ausrüstung (Defibrillator, Augendusche, Verbandkasten)",
+    fr: "Équipement d'urgence (défibrillateur, douche oculaire, trousse de secours)",
+    it: "Attrezzatura di emergenza (defibrillatore, doccia oculare, cassetta di pronto soccorso)",
+    en: "Emergency equipment (defibrillator, eye wash, first-aid kit)",
+  },
   "inspection.type.custom": {
     de: "Individuelle Prüfung",
     fr: "Contrôle individuel",

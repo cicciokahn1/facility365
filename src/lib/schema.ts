@@ -491,6 +491,7 @@ export const INSPECTION_TYPE_OPTIONS: SelectOption[] = [
   option("elevator", "inspection.type.elevator"),
   option("ladder", "inspection.type.ladder"),
   option("playground", "inspection.type.playground"),
+  option("emergencyEquipment", "inspection.type.emergencyEquipment"),
   option("custom", "inspection.type.custom"),
 ];
 

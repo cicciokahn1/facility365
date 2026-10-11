@@ -1135,6 +1135,7 @@ export const table: Record<string, string> = {
   "inspection.type.elevator": "Aufzug",
   "inspection.type.ladder": "Leitern und Tritte",
   "inspection.type.playground": "Spielplatz",
+  "inspection.type.emergencyEquipment": "Notfall-Ausrüstung (Defibrillator, Augendusche, Verbandkasten)",
   "inspection.type.custom": "Individuelle Prüfung",
   "module.rcd": "FI-Kontrollen",
   "module.rcd.singular": "FI-Kontrolle",
