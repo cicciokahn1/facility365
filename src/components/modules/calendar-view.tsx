@@ -38,6 +38,7 @@ import {
   FlameKindling,
   Headset,
   ToyBrick,
+  Snowflake,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -92,6 +93,7 @@ const EVENT_ICONS: Record<CalendarEventKind, LucideIcon> = {
   solar: Sun,
   cleaning: SprayCan,
   ticket: Headset,
+  winter: Snowflake,
 };
 
 const iso = (date: Date): string =>

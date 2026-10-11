@@ -21,6 +21,7 @@ import {
 } from "@/components/module/bulk-create-dialog";
 import { DataExchange } from "@/components/module/data-exchange";
 import { EntityForm } from "@/components/module/entity-form";
+import { duplicateSuppliers } from "@/lib/suppliers/duplicates";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -52,7 +53,7 @@ import { moduleByCollection } from "@/lib/modules";
 import { closedStatusValues } from "@/lib/module-status";
 import { FormValues, SelectField, asString } from "@/lib/schema";
 import { useSettings } from "@/lib/settings/provider";
-import { BaseEntity, CollectionKey, InvoicePaymentData } from "@/lib/types";
+import { BaseEntity, CollectionKey, InvoicePaymentData, Supplier } from "@/lib/types";
 import { referenceFor } from "@/lib/invoices/swiss-qr";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
@@ -228,6 +229,17 @@ export function ModuleList({
   );
 
   const handleCreate = (values: FormValues) => {
+    if (collection === "suppliers") {
+      const existing = duplicateSuppliers(
+        all as Supplier[],
+        values as Partial<Supplier>,
+      )[0];
+      if (existing) {
+        toast.error(`${t("supplier.duplicateBlocked")}: ${existing.name}`);
+        router.push(`${moduleDef.path}/${existing.id}`);
+        return;
+      }
+    }
     const payment: InvoicePaymentData = {
       recipient: settings.paymentRecipient,
       address: settings.paymentAddress,
