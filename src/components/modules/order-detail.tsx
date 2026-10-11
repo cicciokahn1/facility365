@@ -10,6 +10,7 @@ import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
 import { WorkTimePanel } from '@/components/modules/work-time-panel';
 import { OrderPreparation } from '@/components/modules/order-preparation';
+import { LinkedMails } from '@/components/module/linked-mails';
 import { NavigateButton } from '@/components/module/map-card';
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
@@ -108,6 +109,22 @@ export function OrderDetail({ id }: { id: string }) {
           value: 'reports',
           labelKey: 'module.reports',
           content: <RelatedList collection="reports" field="orderId" value={order.id} />,
+        },
+        {
+          value: 'mails',
+          labelKey: 'tab.mails',
+          content: (
+            <LinkedMails
+              mails={order.mailLinks}
+              onRemove={(mail) =>
+                update({
+                  mailLinks: (order.mailLinks ?? []).filter(
+                    (item) => item.messageId !== mail.messageId,
+                  ),
+                })
+              }
+            />
+          ),
         },
       ]}
     />

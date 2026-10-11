@@ -10,7 +10,7 @@
  */
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { CalendarSync, Inbox, Link2, LogOut, RefreshCw } from 'lucide-react';
+import { CalendarSync, Inbox, Link2, LogOut, MailPlus, Paperclip, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useAccess } from '@/lib/auth/scope';
-import { useCollectionItems } from '@/lib/data/store';
+import { useCollection, useCollectionItems } from '@/lib/data/store';
 import {
   GraphConfig,
   GraphSession,
@@ -38,11 +38,17 @@ import {
   startMicrosoftSignIn,
   subscribeSession,
 } from '@/lib/integrations/microsoft/auth';
-import { GraphEvent, GraphMessage, graphAccount, listMessages } from '@/lib/integrations/microsoft/graph';
-import { SyncResult, useMicrosoftSync } from '@/lib/integrations/microsoft/sync';
+import {
+  GraphEvent,
+  GraphMessage,
+  attachmentNames,
+  graphAccount,
+  listMessages,
+} from '@/lib/integrations/microsoft/graph';
+import { SyncResult, mailLinkOf, useMicrosoftSync } from '@/lib/integrations/microsoft/sync';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
-import { Order, Priority } from '@/lib/types';
+import { MailLink, Order, Priority } from '@/lib/types';
 import { formatDate } from '@/lib/utils/format';
 
 const NONE = 'none';
@@ -62,6 +68,11 @@ export function MicrosoftIntegration() {
   const access = useAccess();
   const { settings, save } = useSettings();
   const properties = useCollectionItems('properties');
+  const propertiesStore = useCollection('properties');
+  const invoicesStore = useCollection('invoices');
+  const ordersStore = useCollection('orders');
+  const invoices = useCollectionItems('invoices');
+  const orders = useCollectionItems('orders');
   const buildings = useCollectionItems('buildings');
   const rooms = useCollectionItems('rooms');
   const users = useCollectionItems('users');
@@ -171,6 +182,30 @@ export function MicrosoftIntegration() {
   }, [connected, settings.microsoftSyncCalendar]);
 
   const openOrder = (order: Order) => router.push(`/orders/${order.id}`);
+
+  /**
+   * Nachricht einem Datensatz zuordnen; Betreff, Absender, Datum und die
+   * Namen der Anhaenge werden mitgespeichert, die Mail bleibt in Outlook.
+   */
+  const assignMessage = async (
+    message: GraphMessage,
+    target: 'properties' | 'orders' | 'invoices',
+    entityId: string,
+  ) => {
+    const attachments = message.hasAttachments
+      ? await attachmentNames(config, message.id).catch(() => [] as string[])
+      : [];
+    const link = mailLinkOf(message, attachments);
+    const store =
+      target === 'orders' ? ordersStore : target === 'invoices' ? invoicesStore : propertiesStore;
+    const entity = store.items.find((item) => item.id === entityId);
+    if (!entity) return;
+    const existing = ((entity as { mailLinks?: MailLink[] }).mailLinks ?? []) as MailLink[];
+    if (!existing.some((item) => item.messageId === link.messageId)) {
+      store.update(entityId, { mailLinks: [...existing, link] } as never);
+    }
+    toast.success(t('ms.linkedSaved'));
+  };
 
   const takeEvent = (event: GraphEvent) => {
     const created = sync.orderFromEvent(event);
@@ -304,7 +339,10 @@ export function MicrosoftIntegration() {
                     buildingId: item.buildingId,
                   }))}
                   users={users.map((item) => ({ id: item.id, name: item.name }))}
+                  orders={orders.map((item) => ({ id: item.id, name: `${item.number} ${item.title}`.trim() }))}
+                  invoices={invoices.map((item) => ({ id: item.id, name: `${item.number} ${item.title}`.trim() }))}
                   disabled={!canWrite}
+                  onAssign={(target, entityId) => void assignMessage(message, target, entityId)}
                   onCreate={async (values) => {
                     try {
                       const created = await sync.orderFromMessage(message, values);
@@ -402,19 +440,27 @@ interface MessageRowProps {
   buildings: (Choice & { propertyId: string })[];
   rooms: (Choice & { buildingId: string })[];
   users: Choice[];
+  orders: Choice[];
+  invoices: Choice[];
   disabled: boolean;
   onCreate: (values: Partial<Order>) => void;
+  onAssign: (target: 'properties' | 'orders' | 'invoices', entityId: string) => void;
 }
 
 /** Eine Nachricht mit den Feldern, die der Auftrag zusaetzlich braucht. */
+type AssignTarget = 'properties' | 'orders' | 'invoices';
+
 function MessageRow({
   message,
   properties,
   buildings,
   rooms,
   users,
+  orders,
+  invoices,
   disabled,
   onCreate,
+  onAssign,
 }: MessageRowProps) {
   const t = useT();
   const { settings } = useSettings();
@@ -427,6 +473,9 @@ function MessageRow({
   const [priority, setPriority] = useState<Priority>('medium');
   const [dueDate, setDueDate] = useState('');
   const [workStart, setWorkStart] = useState('');
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [assignTarget, setAssignTarget] = useState<AssignTarget>('orders');
+  const [assignEntity, setAssignEntity] = useState(NONE);
 
   const buildingChoices =
     propertyId === NONE ? buildings : buildings.filter((item) => item.propertyId === propertyId);
@@ -459,11 +508,82 @@ function MessageRow({
               .join(' · ')}
           </p>
           <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{message.preview}</p>
+          {message.hasAttachments ? (
+            <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+              <Paperclip className="size-3" aria-hidden />
+              {t('ms.attachments')}
+            </p>
+          ) : null}
         </div>
-        <Button size="sm" variant="outline" onClick={() => setOpen((value) => !value)}>
-          {t('ms.toOrder')}
-        </Button>
+        <div className="flex shrink-0 gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setAssignOpen((value) => !value)}
+          >
+            <MailPlus className="size-4" aria-hidden />
+            {t('ms.assign')}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setOpen((value) => !value)}>
+            {t('ms.toOrder')}
+          </Button>
+        </div>
       </div>
+      {!assignOpen ? null : (
+        <div className="mt-3 flex flex-wrap items-end gap-3 border-t pt-3">
+          <div className="flex flex-col gap-1.5">
+            <Label>{t('ms.assignTo')}</Label>
+            <Select
+              value={assignTarget}
+              onValueChange={(value) => {
+                setAssignTarget(value as AssignTarget);
+                setAssignEntity(NONE);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="properties">{t('module.properties.singular')}</SelectItem>
+                <SelectItem value="orders">{t('module.orders.singular')}</SelectItem>
+                <SelectItem value="invoices">{t('module.invoices.singular')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex min-w-56 flex-1 flex-col gap-1.5">
+            <Label>{t('ms.assignEntity')}</Label>
+            <Select value={assignEntity} onValueChange={setAssignEntity}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NONE}>{t('common.none')}</SelectItem>
+                {(assignTarget === 'orders'
+                  ? orders
+                  : assignTarget === 'invoices'
+                    ? invoices
+                    : properties
+                ).map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            onClick={() => {
+              if (assignEntity === NONE) return;
+              onAssign(assignTarget, assignEntity);
+              setAssignOpen(false);
+              setAssignEntity(NONE);
+            }}
+            disabled={disabled || assignEntity === NONE}
+          >
+            {t('ms.assign')}
+          </Button>
+        </div>
+      )}
       {!open ? null : (
         <div className="mt-3 grid gap-3 border-t pt-3 md:grid-cols-2">
           <div className="flex flex-col gap-1.5 md:col-span-2">

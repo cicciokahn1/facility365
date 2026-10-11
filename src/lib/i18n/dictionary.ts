@@ -8521,10 +8521,10 @@ export const dictionary = {
   },
 
   "module.microsoft": {
-    de: "Microsoft 365",
-    fr: "Microsoft 365",
-    it: "Microsoft 365",
-    en: "Microsoft 365",
+    de: "Outlook-Mails",
+    fr: "E-mails Outlook",
+    it: "E-mail Outlook",
+    en: "Outlook mail",
   },
   "history.microsoftSync": {
     de: "Aus Microsoft 365 übernommen",
@@ -8603,6 +8603,48 @@ export const dictionary = {
     fr: "Déconnecter",
     it: "Scollegare",
     en: "Disconnect",
+  },
+  "tab.mails": {
+    de: "E-Mails",
+    fr: "E-mails",
+    it: "E-mail",
+    en: "Emails",
+  },
+  "ms.noLinked": {
+    de: "Keine E-Mails zugeordnet",
+    fr: "Aucun e-mail associé",
+    it: "Nessuna e-mail associata",
+    en: "No emails linked",
+  },
+  "ms.assign": {
+    de: "Zuordnen",
+    fr: "Associer",
+    it: "Associa",
+    en: "Link",
+  },
+  "ms.assignTo": {
+    de: "Zuordnen an",
+    fr: "Associer à",
+    it: "Associa a",
+    en: "Link to",
+  },
+  "ms.assignEntity": {
+    de: "Datensatz wählen",
+    fr: "Choisir l’entrée",
+    it: "Scegli voce",
+    en: "Choose entry",
+  },
+  "ms.linkedSaved": {
+    de: "E-Mail zugeordnet",
+    fr: "E-mail associé",
+    it: "E-mail associata",
+    en: "Email linked",
+  },
+  "ms.attachments": {
+    de: "Anhänge",
+    fr: "Pièces jointes",
+    it: "Allegati",
+    en: "Attachments",
   },
   "ms.connected": {
     de: "Verbunden",
