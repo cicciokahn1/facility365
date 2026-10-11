@@ -34,7 +34,10 @@ import { LANGUAGES, useT } from '@/lib/i18n/provider';
 import { INTEGRATIONS } from '@/lib/integrations/registry';
 import { moduleByKey } from '@/lib/modules';
 import { usePushPermission } from '@/lib/notifications/reminders';
-import { registerPushSubscription } from '@/lib/notifications/push-subscription';
+import {
+  registerPushSubscription,
+  unregisterPushSubscription,
+} from '@/lib/notifications/push-subscription';
 import {
   OPTIONAL_MODULES,
   PACKAGE_KEYS,
@@ -49,6 +52,7 @@ import {
   IndustryPackage,
   Language,
   ModuleKey,
+  NotifyEvent,
   OrganizationSubscription,
   ThemeMode,
 } from '@/lib/types';
@@ -56,6 +60,8 @@ import { cn } from '@/lib/utils';
 import { formatBytes } from '@/lib/utils/format';
 
 /** Das Formular wird erst eingehaengt, wenn die gespeicherten Werte vorliegen. */
+const NOTIFY_EVENTS: NotifyEvent[] = ['assigned', 'newOrders', 'maintenance', 'reports', 'status'];
+
 export default function SettingsPage() {
   const t = useT();
   const { settings, ready } = useSettings();
@@ -562,7 +568,14 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
             <span className="text-sm">{t('settings.notificationsOn')}</span>
             <Switch
               checked={draft.notificationsEnabled}
-              onCheckedChange={(checked) => set('notificationsEnabled', checked)}
+              onCheckedChange={(checked) => {
+                set('notificationsEnabled', checked);
+                if (!checked) {
+                  void unregisterPushSubscription().then(() => toast.info(t('notify.unsubscribed')));
+                } else if (push.permission === 'granted') {
+                  void registerPushSubscription();
+                }
+              }}
               data-testid="settings-push-toggle"
             />
           </label>
@@ -580,6 +593,22 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
                   ? t('notify.installHint')
                   : t('settings.pushHint')}
           </p>
+          {draft.notificationsEnabled ? (
+            <div className="flex flex-col gap-2 rounded-lg border p-3">
+              <p className="text-sm font-medium">{t('settings.notifyEvents')}</p>
+              {NOTIFY_EVENTS.map((event) => (
+                <label key={event} className="flex items-center justify-between gap-4">
+                  <span className="text-sm">{t(`notify.event.${event}`)}</span>
+                  <Switch
+                    checked={draft.notificationEvents?.[event] !== false}
+                    onCheckedChange={(checked) =>
+                      set('notificationEvents', { ...draft.notificationEvents, [event]: checked })
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+          ) : null}
           <label className="flex items-center justify-between gap-4">
             <span className="text-sm">{t('settings.emailNotifications')}</span>
             <Switch

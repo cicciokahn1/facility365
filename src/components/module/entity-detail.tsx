@@ -32,6 +32,7 @@ import {
 } from "@/components/module/linked-records";
 import { ObjectDossier } from "@/components/module/object-dossier";
 import { SmartObjectView } from "@/components/modules/smart-object-view";
+import { PdfExportButton, PDF_COLLECTIONS } from "@/components/module/pdf-export-button";
 import { PhotoGallery } from "@/components/module/photo-gallery";
 import {
   AlertDialog,
@@ -293,6 +294,9 @@ export function EntityDetail<K extends CollectionKey>({
             ) : null}
             {showFollowUp ? (
               <FollowUpActions collection={collection} entity={entity} />
+            ) : null}
+            {PDF_COLLECTIONS.has(collection) ? (
+              <PdfExportButton collection={collection} entity={entity} />
             ) : null}
             {headerExtra?.(entity, applyUpdate)}
           </div>

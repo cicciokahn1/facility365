@@ -20,6 +20,8 @@ export interface ReportPdfApi {
   data: (report: Report) => ReportPdfData;
   download: (report: Report) => Promise<void>;
   print: (report: Report) => Promise<void>;
+  open: (report: Report) => Promise<void>;
+  share: (report: Report) => Promise<void>;
   /** Empfaengeradresse des Kunden; leer, wenn keine erfasst ist. */
   recipient: (report: Report) => string;
   mailtoUrl: (report: Report) => string;
@@ -178,6 +180,25 @@ export function useReportPdf(): ReportPdfApi {
     print: async (report) => {
       const { printReportPdf } = await pdfModule();
       printReportPdf(data(report), labels(), branding());
+    },
+    open: async (report) => {
+      const [{ buildReportPdf }, { openPdf }] = await Promise.all([
+        pdfModule(),
+        import('@/lib/pdf/output'),
+      ]);
+      openPdf(buildReportPdf(data(report), labels(), branding()));
+    },
+    share: async (report) => {
+      const [{ buildReportPdf, reportPdfFileName }, { sharePdf }] = await Promise.all([
+        pdfModule(),
+        import('@/lib/pdf/output'),
+      ]);
+      const current = data(report);
+      await sharePdf(
+        buildReportPdf(current, labels(), branding()),
+        reportPdfFileName(current),
+        `${t('module.reports.singular')} ${current.number}`,
+      );
     },
     recipient,
     mailtoUrl,

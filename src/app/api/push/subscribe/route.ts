@@ -62,3 +62,32 @@ export async function POST(request: Request) {
   if (error) return NextResponse.json({ error: 'save_failed' }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
+
+/** Meldet dieses Geraet ab; andere Geraete des Benutzers bleiben angemeldet. */
+export async function DELETE(request: Request) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
+  const authorization = request.headers.get('authorization') ?? '';
+  const token = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
+  if (!url || !serviceKey || !token) {
+    return NextResponse.json({ error: 'not_configured' }, { status: 503 });
+  }
+  const admin = createClient(url, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const {
+    data: { user },
+    error: userError,
+  } = await admin.auth.getUser(token);
+  if (userError || !user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  const payload = (await request.json().catch(() => null)) as Record<string, unknown> | null;
+  const endpoint = text(payload?.endpoint);
+  if (!endpoint) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
+  const { error } = await admin
+    .from('push_subscriptions')
+    .delete()
+    .eq('endpoint', endpoint)
+    .eq('user_id', user.id);
+  if (error) return NextResponse.json({ error: 'delete_failed' }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}

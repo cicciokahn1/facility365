@@ -7,6 +7,10 @@ type DispatchPayload = {
   title?: string;
   body?: string;
   href?: string;
+  /** Ereignisart fuer die Einstellungen des Benutzers, z. B. "assigned". */
+  event?: string;
+  /** Gleiche Kennung ersetzt eine bereits gezeigte Mitteilung statt sie zu verdoppeln. */
+  tag?: string;
 };
 
 const adminClient = () => {
@@ -32,6 +36,8 @@ export async function POST(request: Request) {
   const title = payload?.title ?? 'Facility365';
   const body = payload?.body ?? '';
   const href = payload?.href ?? '/dashboard';
+  const event = payload?.event ?? '';
+  const tag = payload?.tag ?? href;
   if (!userId) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
 
   const admin = adminClient();
@@ -50,6 +56,17 @@ export async function POST(request: Request) {
     settingsData.notificationsEnabled === false
   ) {
     return NextResponse.json({ sent: 0, skipped: 'disabled' });
+  }
+  if (
+    event &&
+    settingsData &&
+    typeof settingsData === 'object' &&
+    'notificationEvents' in settingsData &&
+    settingsData.notificationEvents &&
+    typeof settingsData.notificationEvents === 'object' &&
+    (settingsData.notificationEvents as Record<string, unknown>)[event] === false
+  ) {
+    return NextResponse.json({ sent: 0, skipped: 'event_disabled' });
   }
 
   const { data: subscriptions, error } = await admin
@@ -72,7 +89,7 @@ export async function POST(request: Request) {
           endpoint: subscription.endpoint,
           keys: { p256dh: subscription.p256dh, auth: subscription.auth },
         },
-        JSON.stringify({ title, body, href }),
+        JSON.stringify({ title, body, href, tag }),
       );
       sent += 1;
     } catch (sendError) {

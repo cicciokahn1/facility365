@@ -1,7 +1,7 @@
 'use client';
 
 /** Rechnungs-PDF herunterladen und drucken. */
-import { Download, Printer } from 'lucide-react';
+import { Download, ExternalLink, Printer, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -51,7 +51,15 @@ export function InvoicePdfPanel({ invoice }: { invoice: Invoice }) {
         ) : null}
       </div>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Button variant="outline" className="h-12" onClick={() => void pdf.open(invoice)}>
+          <ExternalLink className="size-4" aria-hidden />
+          {t('action.open')}
+        </Button>
+        <Button variant="outline" className="h-12" onClick={() => void pdf.share(invoice)}>
+          <Share2 className="size-4" aria-hidden />
+          {t('action.share')}
+        </Button>
         <Button
           className="h-12"
           onClick={() => void pdf.download(invoice)}

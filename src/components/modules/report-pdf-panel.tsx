@@ -1,7 +1,7 @@
 'use client';
 
 /** Rapport-PDF herunterladen, drucken und als E-Mail vorbereiten. */
-import { Download, Mail, Printer } from 'lucide-react';
+import { Download, ExternalLink, Mail, Printer, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,15 @@ export function ReportPdfPanel({ report }: { report: Report }) {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <Button variant="outline" className="h-12" onClick={() => void pdf.open(report)}>
+          <ExternalLink className="size-4" aria-hidden />
+          {t('action.open')}
+        </Button>
+        <Button variant="outline" className="h-12" onClick={() => void pdf.share(report)}>
+          <Share2 className="size-4" aria-hidden />
+          {t('action.share')}
+        </Button>
         <Button className="h-12" onClick={() => void pdf.download(report)} data-testid="pdf-download">
           <Download className="size-4" aria-hidden />
           {t('action.download')}

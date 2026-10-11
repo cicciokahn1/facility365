@@ -34,3 +34,25 @@ export async function registerPushSubscription(): Promise<boolean> {
     return false;
   }
 }
+
+/** Push auf diesem Geraet abmelden - beim Browser und beim Server. */
+export async function unregisterPushSubscription(): Promise<void> {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager?.getSubscription();
+    if (!subscription) return;
+    const endpoint = subscription.endpoint;
+    await subscription.unsubscribe();
+    const client = await supabase();
+    const token = client ? (await client.auth.getSession()).data.session?.access_token : '';
+    if (!token) return;
+    await fetch('/api/push/subscribe', {
+      method: 'DELETE',
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ endpoint }),
+    });
+  } catch {
+    /* Ohne Verbindung bleibt der Eintrag; der Server entfernt ihn beim naechsten Versand. */
+  }
+}
