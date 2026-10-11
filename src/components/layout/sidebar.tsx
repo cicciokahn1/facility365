@@ -97,11 +97,17 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
       {settings.simpleMode !== false ? (
         <ul className="flex flex-col gap-0.5" data-testid="nav-flat">
-          {flatModules.map((module) => {
+          {flatModules.map((module, index) => {
             const active = pathname === module.path || pathname.startsWith(`${module.path}/`);
             const Icon = module.icon;
+            const firstAdmin = index === flatModules.findIndex((item) => item.group === "admin");
             return (
               <li key={module.key}>
+                {firstAdmin ? (
+                  <p className="mt-3 px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60">
+                    {t("nav.admin")}
+                  </p>
+                ) : null}
                 <Link
                   href={module.path}
                   onClick={onNavigate}

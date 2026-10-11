@@ -111,12 +111,19 @@ export function BottomNav() {
               <div className="flex flex-col gap-4 p-4 pt-0">
                 {settings.simpleMode !== false ? (
                   <ul className="flex flex-col gap-2" data-testid="nav-flat">
-                    {flatModules.map((module) => {
+                    {flatModules.map((module, index) => {
                       const Icon = module.icon;
                       const active =
                         pathname === module.path || pathname.startsWith(`${module.path}/`);
+                      const firstAdmin =
+                        index === flatModules.findIndex((item) => item.group === "admin");
                       return (
                         <li key={module.key}>
+                          {firstAdmin ? (
+                            <p className="mt-2 px-1 pb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                              {t("nav.admin")}
+                            </p>
+                          ) : null}
                           <Link
                             href={module.path}
                             onClick={() => setOpen(false)}
