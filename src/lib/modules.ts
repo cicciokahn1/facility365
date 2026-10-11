@@ -725,6 +725,7 @@ export const MODULES: ModuleDefinition[] = [
     path: "/microsoft",
     icon: MailPlus,
     group: "admin",
+    hideFromNav: true,
     labelKey: "module.microsoft",
     singularKey: "module.microsoft",
   },
