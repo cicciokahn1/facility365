@@ -200,6 +200,7 @@ const suppliersConfig: ModuleConfig<"suppliers"> = {
     { kind: "email", name: "email", labelKey: "common.email" },
     text("website", "common.website"),
     { kind: "number", name: "hourlyRate", labelKey: "settings.hourlyRate" },
+    { kind: "textarea", name: "services", labelKey: "supplier.services", span: 2 },
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
   ],
   searchOf: (supplier) =>
@@ -208,9 +209,13 @@ const suppliersConfig: ModuleConfig<"suppliers"> = {
       supplier.name,
       supplier.contactPerson,
       supplier.category,
+      supplier.services,
       supplier.email,
       supplier.phone,
+      supplier.mobile,
+      supplier.website,
       supplier.address.city,
+      supplier.notes,
     ]
       .filter(Boolean)
       .join(" "),

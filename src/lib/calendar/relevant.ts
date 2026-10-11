@@ -36,6 +36,7 @@ const COLLECTION_OF: Record<CalendarEventKind, CollectionKey> = {
   solar: "solarplants",
   cleaning: "cleaningtasks",
   ticket: "tickets",
+  winter: "outdoorAreas",
 };
 
 export function useRelevantEvents(): CalendarEvent[] {

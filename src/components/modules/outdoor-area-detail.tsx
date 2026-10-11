@@ -4,6 +4,7 @@ import { EntityDetail } from '@/components/module/entity-detail';
 import { RelatedList } from '@/components/module/related-list';
 import { PlanLocation } from '@/components/modules/plan-location';
 import { PlantIdentifier } from '@/components/modules/plant-id';
+import { WinterService } from '@/components/modules/winter-service';
 
 export function OutdoorAreaDetail({ id }: { id: string }) {
   return (
@@ -14,6 +15,11 @@ export function OutdoorAreaDetail({ id }: { id: string }) {
         <PlantIdentifier areaId={area.id} plantSpecies={area.plantSpecies} />
       )}
       extraTabs={(area) => [
+        {
+          value: 'winter',
+          labelKey: 'tab.winter',
+          content: <WinterService area={area} />,
+        },
         {
           value: 'plans',
           labelKey: 'tab.plans',

@@ -32,7 +32,8 @@ export type CalendarEventKind =
   | "contract"
   | "solar"
   | "cleaning"
-  | "ticket";
+  | "ticket"
+  | "winter";
 
 export interface CalendarEvent {
   id: string;
@@ -122,6 +123,7 @@ export function useCalendarEvents(): CalendarEvent[] {
   const cleaningPlans = useCollectionItems("cleaningplans");
   const cleaningAreas = useCollectionItems("cleaningareas");
   const tickets = useCollectionItems("tickets");
+  const outdoorAreas = useCollectionItems("outdoorAreas");
 
   return useMemo(() => {
     const events: CalendarEvent[] = [];
@@ -555,6 +557,40 @@ export function useCalendarEvents(): CalendarEvent[] {
         });
       });
 
+    outdoorAreas
+      .filter((area) => area.winterActive && area.winterNextCheck && !area.deletedAt)
+      .forEach((area) => {
+        const step = area.winterIntervalDays ?? 0;
+        let date = area.winterNextCheck ?? "";
+        let index = 0;
+        while (date && date <= until && index < 120) {
+          events.push({
+            id: `winter-${area.id}-${index}`,
+            kind: "winter",
+            sourceId: area.id,
+            href: `/outdoor-areas/${area.id}`,
+            labelKey: "winter.check",
+            title: area.name || area.number,
+            date,
+            time: "",
+            customerId: "",
+            propertyId: area.propertyId,
+            buildingId: area.buildingId,
+            assetId: "",
+            recurring: index > 0,
+            source:
+              index === 0
+                ? { collection: "outdoorAreas", field: "winterNextCheck" }
+                : undefined,
+          });
+          if (step <= 0) break;
+          index += 1;
+          const next = new Date(`${date}T12:00:00`);
+          next.setDate(next.getDate() + step);
+          date = next.toISOString().slice(0, 10);
+        }
+      });
+
     return events.sort((a, b) =>
       `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`),
     );
@@ -577,6 +613,7 @@ export function useCalendarEvents(): CalendarEvent[] {
     solarPlants,
     tickets,
     vehicles,
+    outdoorAreas,
   ]);
 }
 

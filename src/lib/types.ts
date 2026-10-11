@@ -233,6 +233,8 @@ export interface Supplier extends BaseEntity {
   status: ActiveStatus;
   /** Individueller Verrechnungssatz für externe Leistungen. */
   hourlyRate?: number;
+  /** Angebotene Dienstleistungen, frei beschrieben. */
+  services?: string;
 }
 
 export type AppointmentStatus = "planned" | "done" | "cancelled";
@@ -1652,6 +1654,38 @@ export interface OutdoorArea extends BaseEntity {
   nextCareDate: string;
   seasonalTasks: string;
   description: string;
+  /** Winterdienst fuer diesen Standort aktiv. */
+  winterActive?: boolean;
+  /** Einsatzgebiet, z. B. Zufahrt, Gehwege, Treppen. */
+  winterZone?: string;
+  /** Zustaendiger Benutzer aus der Benutzerverwaltung. */
+  winterUserId?: string;
+  /** Kontrollgang alle n Tage; 0 = nur bei Bedarf. */
+  winterIntervalDays?: number;
+  winterNextCheck?: string;
+  winterLogs?: WinterLog[];
+}
+
+export type WinterLogKind = "check" | "clearing" | "gritting";
+
+/** Einsatz oder Kontrollgang des Winterdienstes. */
+export interface WinterLog {
+  id: string;
+  kind: WinterLogKind;
+  date: string;
+  time: string;
+  weather: string;
+  work: string;
+  /** Streumittel aus dem Lager; leer, wenn keines verwendet wurde. */
+  stockItemId: string;
+  materialName: string;
+  materialQuantity: number;
+  materialUnit: string;
+  photos: Photo[];
+  remarks: string;
+  /** Mangel, der als Auftrag weiterverfolgt wird. */
+  orderId: string;
+  doneBy: string;
 }
 
 export interface PlanLayer {

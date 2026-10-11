@@ -116,7 +116,6 @@ export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
   "energy",
   "solarplants",
   "solaryields",
-  "suppliers",
   "sources",
   "keys",
   "inventory",

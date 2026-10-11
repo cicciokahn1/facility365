@@ -274,6 +274,7 @@ export const emptySupplier = (): Omit<Supplier, "id" | "number"> => ({
   website: "",
   category: "",
   status: "active",
+  services: "",
 });
 
 export const emptyAppointment = (): Omit<Appointment, "id" | "number"> => ({
