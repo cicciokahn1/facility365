@@ -816,6 +816,7 @@ export type InspectionType =
   | "elevator"
   | "ladder"
   | "playground"
+  | "emergencyEquipment"
   | "custom";
 
 /** Wiederkehrende Kontrolle der Betreiberpflichten. */
