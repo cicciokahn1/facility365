@@ -203,6 +203,66 @@ export const HELP_SHORT_VIDEOS: HelpVideo[] = [
       scene('dashboard', 'Oben rechts scannen – der passende Datensatz öffnet sich sofort vor Ort.', 7, '/dashboard'),
     ],
   },
+  {
+    id: 'suppliers',
+    title: 'Lieferanten',
+    summary: 'Firmen finden, anrufen, verknüpfen.',
+    scenes: [
+      scene('suppliers', 'Die Lieferantenliste mit Suche, Kategorie-Filter und Sortierung.', 7, '/suppliers'),
+      scene('supplier-detail', 'Oben stehen Anrufen, E-Mail, Website und Route; Tabs zeigen Aufträge, Rechnungen und Objekte.', 9),
+      scene('supplier-detail', 'Doppelte Firmen werden erkannt und blockiert – die Liste bleibt sauber.', 6),
+    ],
+  },
+  {
+    id: 'invoices',
+    title: 'Rechnungen',
+    summary: 'Offene Posten im Griff.',
+    scenes: [
+      scene('invoices', 'Jahr und Monat wählen, nach Status, Objekt, Lieferant und Kategorie filtern.', 8, '/invoices'),
+      scene('invoices', 'Offene und überfällige Rechnungen stehen prominent oben – mit Betrag und Anzahl.', 7),
+      scene('invoices', 'Der Reiter «PDF» zeigt die Rechnung mit QR-Einzahlungsschein; ein Tipp setzt «Bezahlt».', 7),
+    ],
+  },
+  {
+    id: 'winter',
+    title: 'Winterdienst',
+    summary: 'Schneeräumung und Glatteis dokumentieren.',
+    scenes: [
+      scene('outdoor-detail', 'In der Aussenanlage steht der Reiter «Winterdienst» – mit Gebiet, Zuständigkeit und Intervall.', 8, '/outdoor-areas'),
+      scene('winter', 'Kontrollgang, Schneeräumung oder Glatteis erfassen: Datum, Wetter, Arbeiten, Fotos.', 9),
+      scene('winter', 'Streumittel wird automatisch aus dem Lager abgebucht; Mängel werden direkt zum Auftrag.', 7),
+    ],
+  },
+  {
+    id: 'plants',
+    title: 'Pflanze erkennen',
+    summary: 'Foto machen – Google Lens nennt den Namen.',
+    scenes: [
+      scene('outdoor-detail', 'In der Aussenanlage steht oben «Pflanze erkennen».', 7, '/outdoor-areas'),
+      scene('outdoor-detail', '«1. Foto machen», dann «2. Foto an Google Lens senden» – Google nennt die Pflanze.', 9),
+      scene('outdoor-detail', 'Namen eintragen, «Übernehmen» – die Pflanze bleibt bei der Anlage gespeichert.', 7),
+    ],
+  },
+  {
+    id: 'emergency-equipment',
+    title: 'Notfall-Ausrüstung',
+    summary: 'Defibrillator, Augendusche, Verbandkasten kontrollieren.',
+    scenes: [
+      scene('inspections', 'Inspektionen → «Neu» → Art «Notfall-Ausrüstung» wählen.', 8, '/inspections'),
+      scene('inspections', 'Intervall und Liegenschaft eintragen – der nächste Termin erscheint im Kalender.', 8),
+      scene('inspections', 'Nach der Kontrolle wird das nächste Datum automatisch gesetzt und erinnert.', 6),
+    ],
+  },
+  {
+    id: 'outlook',
+    title: 'Outlook-Mails',
+    summary: 'Das Brief-Symbol oben rechts.',
+    scenes: [
+      scene('dashboard', 'Oben rechts neben dem QR-Scanner: das Brief-Symbol öffnet die Mails.', 7, '/microsoft'),
+      scene('microsoft', 'Mails laden, einer Liegenschaft, einem Auftrag oder einer Rechnung zuordnen.', 9),
+      scene('microsoft', 'Mit einem Klick entsteht aus einer Mail direkt ein Auftrag.', 7),
+    ],
+  },
 ];
 
 type VideoCopy = {
@@ -221,6 +281,12 @@ const SHORT_VIDEO_COPY: Partial<Record<Language, Record<string, VideoCopy>>> = {
     cleaning: { title: 'Nettoyage', summary: 'Tâches par pièce et par jour.', captions: ['Tâches de nettoyage avec pièce, fréquence et responsables. Les tâches terminées sont cochées.'] },
     report: { title: 'Rapport et temps de travail', summary: 'Saisir le temps et créer un rapport.', captions: ['Temps de travail de/à avec pause – les heures sont calculées.', 'Les rapports regroupent le travail, le matériel et le temps – en PDF ou pour la facturation.'] },
     qr: { title: 'Code QR', summary: 'Scanner et accéder directement à la fiche.', captions: ['Chaque installation et chaque pièce possède un code QR.', 'Scanner en haut à droite ouvre immédiatement la fiche correspondante.'] },
+    suppliers: { title: 'Fournisseurs', summary: 'Trouver, appeler et lier des entreprises.', captions: ['La liste des fournisseurs avec recherche, filtre par catégorie et tri.', 'En haut : appeler, e-mail, site web et itinéraire ; les onglets montrent mandats, factures et objets.', 'Les doublons sont détectés et bloqués – la liste reste propre.'] },
+    invoices: { title: 'Factures', summary: 'Garder les postes ouverts sous contrôle.', captions: ['Choisir année et mois, filtrer par statut, objet, fournisseur et catégorie.', 'Les factures ouvertes et échues sont affichées en évidence – avec montant et nombre.', 'L’onglet « PDF » affiche la facture avec bulletin de versement QR ; un appui la marque « Payée ».'] },
+    winter: { title: 'Service d’hiver', summary: 'Documenter déneigement et verglas.', captions: ['Dans l’espace extérieur, l’onglet « Service d’hiver » – zone, responsable et intervalle.', 'Saisir ronde de contrôle, déneigement ou verglas : date, météo, travaux, photos.', 'Le produit de dégivrage est déduit du stock ; les défauts deviennent directement des mandats.'] },
+    plants: { title: 'Identifier une plante', summary: 'Prendre une photo – Google Lens donne le nom.', captions: ['En haut de l’espace extérieur : « Identifier une plante ».', '« 1. Prendre une photo », puis « 2. Envoyer la photo à Google Lens » – Google nomme la plante.', 'Saisir le nom, appuyer sur « Reprendre » – la plante reste enregistrée.'] },
+    'emergency-equipment': { title: 'Équipement d’urgence', summary: 'Contrôler défibrillateur, douche oculaire et trousse de secours.', captions: ['Contrôles → « Nouveau » → choisir le type « Équipement d’urgence ».', 'Saisir intervalle et bien – la prochaine date apparaît au calendrier.', 'Après le contrôle, la prochaine date est définie automatiquement.'] },
+    outlook: { title: 'E-mails Outlook', summary: 'L’icône d’enveloppe en haut à droite.', captions: ['En haut à droite, à côté du scanner QR : l’enveloppe ouvre les e-mails.', 'Charger les e-mails et les lier à un bien, un mandat ou une facture.', 'Un clic transforme un e-mail en mandat.'] },
   },
   it: {
     dashboard: { title: 'Dashboard', summary: 'Ciò che è importante oggi – a colpo d’occhio.', captions: ['In alto: Oggi, ordini aperti, manutenzioni in scadenza e segnalazioni.', 'Con «Oggi» ogni persona vede solo ciò che deve fare adesso.'] },
@@ -231,6 +297,12 @@ const SHORT_VIDEO_COPY: Partial<Record<Language, Record<string, VideoCopy>>> = {
     cleaning: { title: 'Pulizia', summary: 'Attività per locale e giorno.', captions: ['Attività di pulizia con locale, frequenza e responsabili. Le attività concluse vengono spuntate.'] },
     report: { title: 'Rapporto e tempo di lavoro', summary: 'Registrare il tempo e creare un rapporto.', captions: ['Tempo di lavoro da/a con pausa – le ore vengono calcolate.', 'I rapporti riuniscono lavoro, materiale e tempo – come PDF o per la fatturazione.'] },
     qr: { title: 'Codice QR', summary: 'Scansionare e aprire subito la scheda.', captions: ['Ogni impianto e ogni locale ha un codice QR.', 'La scansione in alto a destra apre subito la scheda corretta.'] },
+    suppliers: { title: 'Fornitori', summary: 'Trovare, chiamare e collegare le aziende.', captions: ['La lista dei fornitori con ricerca, filtro per categoria e ordinamento.', 'In alto: chiama, e-mail, sito web e percorso; le schede mostrano ordini, fatture e oggetti.', 'I duplicati vengono riconosciuti e bloccati – la lista resta pulita.'] },
+    invoices: { title: 'Fatture', summary: 'Tenere sotto controllo le partite aperte.', captions: ['Scegliere anno e mese, filtrare per stato, oggetto, fornitore e categoria.', 'Le fatture aperte e scadute sono in evidenza – con importo e numero.', 'La scheda «PDF» mostra la fattura con polizza QR; un tocco la segna «Pagata».'] },
+    winter: { title: 'Servizio invernale', summary: 'Documentare sgombero neve e ghiaccio.', captions: ['Nell’area esterna la scheda «Servizio invernale» – zona, responsabile e intervallo.', 'Registrare controllo, sgombero neve o ghiaccio: data, meteo, lavori, foto.', 'Il materiale antighiaccio viene scalato dal magazzino; i difetti diventano ordini.'] },
+    plants: { title: 'Riconoscere una pianta', summary: 'Fare una foto – Google Lens dice il nome.', captions: ['In alto nell’area esterna: «Riconoscere una pianta».', '«1. Fare una foto», poi «2. Inviare la foto a Google Lens» – Google indica la pianta.', 'Inserire il nome, toccare «Applica» – la pianta resta salvata.'] },
+    'emergency-equipment': { title: 'Attrezzatura di emergenza', summary: 'Controllare defibrillatore, doccia oculare e cassetta di pronto soccorso.', captions: ['Controlli → «Nuovo» → scegliere il tipo «Attrezzatura di emergenza».', 'Inserire intervallo e oggetto – la prossima data appare nel calendario.', 'Dopo il controllo, la prossima data viene impostata automaticamente.'] },
+    outlook: { title: 'E-mail Outlook', summary: 'L’icona della busta in alto a destra.', captions: ['In alto a destra, accanto allo scanner QR: la busta apre le e-mail.', 'Caricare le e-mail e collegarle a un oggetto, un ordine o una fattura.', 'Con un tocco l’e-mail diventa un ordine.'] },
   },
   en: {
     dashboard: { title: 'Dashboard', summary: 'What matters today – at a glance.', captions: ['At the top: Today, open orders, due maintenance and reported damage.', 'Today shows each person only what needs to be done now.'] },
@@ -241,6 +313,12 @@ const SHORT_VIDEO_COPY: Partial<Record<Language, Record<string, VideoCopy>>> = {
     cleaning: { title: 'Cleaning', summary: 'Tasks by room and day.', captions: ['Cleaning tasks show room, frequency and responsibility. Completed tasks are checked off.'] },
     report: { title: 'Report and working time', summary: 'Record time and create a report.', captions: ['Working time from/to with a break – hours are calculated automatically.', 'Reports combine work, materials and time – as a PDF or for billing.'] },
     qr: { title: 'QR code', summary: 'Scan and open the record directly.', captions: ['Every asset and room has a QR code.', 'Scan at the top right to open the matching record immediately.'] },
+    suppliers: { title: 'Suppliers', summary: 'Find, call and link companies.', captions: ['The supplier list with search, category filter and sorting.', 'At the top: call, e-mail, website and directions; tabs show orders, invoices and sites.', 'Duplicates are detected and blocked – the list stays clean.'] },
+    invoices: { title: 'Invoices', summary: 'Keep open items under control.', captions: ['Pick year and month, filter by status, site, supplier and category.', 'Open and overdue invoices are highlighted at the top – with amount and count.', 'The “PDF” tab shows the invoice with the QR payment slip; one tap marks it paid.'] },
+    winter: { title: 'Winter service', summary: 'Document snow clearing and ice control.', captions: ['In the outdoor area, the “Winter service” tab – zone, person responsible and interval.', 'Record inspection round, snow clearing or gritting: date, weather, work done, photos.', 'Gritting material is deducted from stock automatically; defects become orders directly.'] },
+    plants: { title: 'Identify a plant', summary: 'Take a photo – Google Lens names it.', captions: ['At the top of the outdoor area: “Identify plant”.', '“1. Take a photo”, then “2. Send photo to Google Lens” – Google names the plant.', 'Enter the name, tap “Apply” – the plant stays saved with the area.'] },
+    'emergency-equipment': { title: 'Emergency equipment', summary: 'Check defibrillator, eye wash and first-aid kit.', captions: ['Inspections → “New” → choose the type “Emergency equipment”.', 'Set interval and site – the next date appears in the calendar.', 'After the check, the next date is set automatically.'] },
+    outlook: { title: 'Outlook mail', summary: 'The envelope icon top right.', captions: ['Top right next to the QR scanner: the envelope opens the mail.', 'Load mail and assign it to a site, an order or an invoice.', 'One tap turns an e-mail into an order.'] },
   },
 };
 
