@@ -44,11 +44,11 @@ const scene = (
 
 export const HELP_INTRO_VIDEO: HelpVideo = {
   id: 'intro',
-  title: 'Facility365 in 2 Minuten',
+  title: 'Facility365 in 1 Minute',
   summary: 'Vom Schaden bis zum erledigten Auftrag – ein kompletter Ablauf in der echten App.',
   src: '/help/video/facility365-in-2-minuten.mp4',
   poster: '/help/video/facility365-in-2-minuten.jpg',
-  durationSeconds: 124,
+  durationSeconds: 57,
   scenes: [
     scene(
       'dashboard',
@@ -342,15 +342,15 @@ export const helpShortVideosFor = (language: Language): HelpVideo[] => {
 
 const INTRO_COPY: Partial<Record<Language, Pick<HelpVideo, 'title' | 'summary'>>> = {
   fr: {
-    title: 'Facility365 en 2 minutes',
+    title: 'Facility365 en 1 minute',
     summary: 'Du dommage au mandat terminé – un parcours complet dans l’application.',
   },
   it: {
-    title: 'Facility365 in 2 minuti',
+    title: 'Facility365 in 1 minuto',
     summary: 'Dal danno all’ordine completato – un flusso completo nell’app.',
   },
   en: {
-    title: 'Facility365 in 2 minutes',
+    title: 'Facility365 in 1 minute',
     summary: 'From damage report to completed order – a complete workflow in the real app.',
   },
 };
