@@ -63,9 +63,10 @@ import {
   EntityOf,
   Photo,
 } from "@/lib/types";
-import type { CleaningCheck } from "@/lib/types";
+import type { ChecklistItem, CleaningCheck } from "@/lib/types";
 import { FOLLOW_UP_SOURCES } from "@/lib/links/follow-up";
 import { DossierLevel } from "@/lib/links/dossier";
+import { ChecklistEditor } from "@/components/module/checklist-editor";
 import { isCompletable } from "@/lib/workflow/complete";
 import { formatDate, formatMonth, formatMoney } from "@/lib/utils/format";
 
@@ -215,6 +216,21 @@ export function EntityDetail<K extends CollectionKey>({
   };
 
   const tabs = extraTabs?.(entity, applyUpdate) ?? [];
+
+  /** Datensaetze mit Checkliste (z. B. SUVA-Vorlagen) erhalten einen eigenen Reiter. */
+  const checklist = (entity as { checklist?: ChecklistItem[] }).checklist;
+  if (Array.isArray(checklist) && checklist.length > 0) {
+    tabs.unshift({
+      value: "checklist",
+      labelKey: "tab.checklist",
+      content: (
+        <ChecklistEditor
+          items={checklist}
+          onChange={(items) => applyUpdate({ checklist: items } as unknown as Partial<EntityOf<K>>)}
+        />
+      ),
+    });
+  }
 
   /** Objekte der Hierarchie zeigen zusaetzlich ihren modeluebergreifenden Verlauf. */
   const smartObjectLevel: "properties" | "buildings" | "rooms" | "assets" | undefined = (
