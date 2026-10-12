@@ -19,7 +19,13 @@ export type PdfSection =
   | { kind: 'pairs'; title: string; pairs: PdfPair[] }
   | { kind: 'text'; title: string; text: string }
   | { kind: 'table'; title: string; head: string[]; rows: string[][] }
-  | { kind: 'checklist'; title: string; items: { text: string; done: boolean }[] }
+  | {
+      kind: 'checklist';
+      title: string;
+      items: { text: string; done: boolean; answer?: 'yes' | 'part' | 'no' }[];
+      /** Beschriftungen der drei SUVA-Antworten. */
+      answerLabels?: [string, string, string];
+    }
   | { kind: 'photos'; title: string; photos: { url: string; caption: string }[] }
   | { kind: 'signature'; title: string; image: string; caption: string; empty: string };
 
@@ -199,13 +205,45 @@ const drawTable = (doc: jsPDF, head: string[], rows: string[][], y: number): num
 
 const drawChecklist = (
   doc: jsPDF,
-  items: { text: string; done: boolean }[],
+  items: { text: string; done: boolean; answer?: 'yes' | 'part' | 'no' }[],
   y: number,
+  answerLabels?: [string, string, string],
 ): number => {
   let cursor = y;
-  items.forEach((item) => {
-    const lines: string[] = doc.splitTextToSize(item.text || '–', CONTENT - 8);
-    cursor = ensureSpace(doc, cursor, lines.length * 4.6 + 2);
+  /** SUVA-Format: drei Kästchen rechts vom Fragetext. */
+  const suva = items.some((item) => item.answer !== undefined || answerLabels !== undefined) && answerLabels;
+  items.forEach((item, index) => {
+    const textWidth = suva ? CONTENT - 46 : CONTENT - 8;
+    const lines: string[] = doc.splitTextToSize(item.text || '–', textWidth);
+    const extra = suva ? 8 : 2;
+    cursor = ensureSpace(doc, cursor, lines.length * 4.6 + extra);
+    if (suva && answerLabels) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...ACCENT);
+      doc.text(`${index + 1}`, MARGIN, cursor);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...INK);
+      doc.text(lines, MARGIN + 7, cursor);
+      (['yes', 'part', 'no'] as const).forEach((answer, i) => {
+        const x = MARGIN + CONTENT - 40 + i * 14;
+        doc.setDrawColor(...MUTED);
+        doc.rect(x, cursor - 3.4, 3.2, 3.2);
+        if (item.answer === answer) {
+          doc.setDrawColor(...ACCENT);
+          doc.setLineWidth(0.6);
+          doc.line(x + 0.5, cursor - 1.6, x + 1.3, cursor - 0.6);
+          doc.line(x + 1.3, cursor - 0.6, x + 2.8, cursor - 2.8);
+          doc.setLineWidth(0.2);
+        }
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...MUTED);
+        doc.text(answerLabels[i], x + 4.2, cursor - 0.4);
+      });
+      cursor += lines.length * 4.6 + 3.4;
+      return;
+    }
     doc.setDrawColor(...MUTED);
     doc.rect(MARGIN, cursor - 3, 3.4, 3.4);
     if (item.done) {
@@ -326,7 +364,7 @@ export const buildDocumentPdf = (data: DocumentPdfData, branding: DocumentPdfBra
         y = drawTable(doc, section.head, section.rows, y);
         break;
       case 'checklist':
-        y = drawChecklist(doc, section.items, y);
+        y = drawChecklist(doc, section.items, y, section.answerLabels);
         break;
       case 'photos':
         y = drawPhotos(doc, section.photos, y);

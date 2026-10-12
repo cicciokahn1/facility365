@@ -46,30 +46,88 @@ export function ChecklistEditor({
       ) : null}
 
       <ul className="divide-y rounded-xl border bg-card">
-        {items.map((item) => (
-          <li key={item.id} className="flex items-center gap-3 p-3">
-            <Checkbox
-              checked={item.done}
-              onCheckedChange={(checked) =>
-                onChange(
-                  items.map((entry) =>
-                    entry.id === item.id ? { ...entry, done: checked === true } : entry,
-                  ),
-                )
-              }
-              aria-label={labelOf(item)}
-            />
-            <span className={item.done ? 'flex-1 text-muted-foreground line-through' : 'flex-1'}>
-              {labelOf(item)}
-            </span>
-            <Button
-              size="icon"
-              variant="ghost"
-              aria-label={t('action.delete')}
-              onClick={() => onChange(items.filter((entry) => entry.id !== item.id))}
-            >
-              <Trash2 className="size-4 text-destructive" />
-            </Button>
+        {items.map((item, index) => (
+          <li key={item.id} className="flex flex-col gap-2 p-3">
+            {item.text.startsWith('suva.') ? (
+              /* SUVA-Frage im Originalformat: Nummer, Fragetext, ja/teilweise/nein. */
+              <>
+                <div className="flex items-start gap-3">
+                  <span className="mt-0.5 w-7 shrink-0 text-sm font-semibold text-primary">
+                    {index + 1}
+                  </span>
+                  <span className="flex-1 text-sm font-medium">{labelOf(item)}</span>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label={t('action.delete')}
+                    onClick={() => onChange(items.filter((entry) => entry.id !== item.id))}
+                  >
+                    <Trash2 className="size-4 text-destructive" />
+                  </Button>
+                </div>
+                <div className="ml-10 flex items-center gap-5">
+                  {(
+                    [
+                      ['yes', t('common.yes')],
+                      ['part', t('common.partly')],
+                      ['no', t('common.no')],
+                    ] as const
+                  ).map(([answer, label]) => (
+                    <label
+                      key={answer}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <Checkbox
+                        checked={item.answer === answer}
+                        onCheckedChange={(checked) =>
+                          onChange(
+                            items.map((entry) =>
+                              entry.id === item.id
+                                ? {
+                                    ...entry,
+                                    answer: checked === true ? answer : undefined,
+                                    done: checked === true && answer === 'yes',
+                                  }
+                                : entry,
+                            ),
+                          )
+                        }
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  checked={item.done}
+                  onCheckedChange={(checked) =>
+                    onChange(
+                      items.map((entry) =>
+                        entry.id === item.id ? { ...entry, done: checked === true } : entry,
+                      ),
+                    )
+                  }
+                  aria-label={labelOf(item)}
+                />
+                <span
+                  className={
+                    item.done ? 'flex-1 text-muted-foreground line-through' : 'flex-1'
+                  }
+                >
+                  {labelOf(item)}
+                </span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  aria-label={t('action.delete')}
+                  onClick={() => onChange(items.filter((entry) => entry.id !== item.id))}
+                >
+                  <Trash2 className="size-4 text-destructive" />
+                </Button>
+              </div>
+            )}
           </li>
         ))}
         <li className="flex items-center gap-2 p-3">

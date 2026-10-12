@@ -490,6 +490,7 @@ export const table: Record<string, string> = {
   "common.none": "Nessuno",
   "common.yes": "Sì",
   "common.no": "No",
+  "common.partly": "parzialmente",
   "common.retry": "Riprova",
   "common.optional": "Opzionale",
   "common.notSet": "Non impostato",
