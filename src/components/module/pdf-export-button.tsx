@@ -128,7 +128,9 @@ export function PdfExportButton({
           /** SUVA-Vorlagenpunkte werden im PDF lokalisiert ausgegeben. */
           text: item.text in dictionary ? t(item.text as TranslationKey) : item.text,
           done: item.done,
+          answer: item.answer,
         })),
+        answerLabels: [t('common.yes'), t('common.partly'), t('common.no')],
       });
     }
     const materials = fieldValue(entity, 'materials');

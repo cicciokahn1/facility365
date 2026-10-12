@@ -644,6 +644,8 @@ export interface ChecklistItem {
   id: string;
   text: string;
   done: boolean;
+  /** SUVA-Antwort: ja, teilweise oder nein. */
+  answer?: "yes" | "part" | "no";
 }
 
 export interface MaterialItem {

@@ -2240,6 +2240,7 @@ export const dictionary = {
   "common.none": { de: "Keine", fr: "Aucun", it: "Nessuno", en: "None" },
   "common.yes": { de: "Ja", fr: "Oui", it: "Sì", en: "Yes" },
   "common.no": { de: "Nein", fr: "Non", it: "No", en: "No" },
+  "common.partly": { de: "teilweise", fr: "partiellement", it: "parzialmente", en: "partially" },
   "common.retry": { de: "Erneut versuchen", fr: "Réessayer", it: "Riprova", en: "Try again" },
   "common.optional": {
     de: "Optional",
