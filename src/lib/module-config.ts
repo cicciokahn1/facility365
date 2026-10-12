@@ -87,6 +87,7 @@ import {
   EntityOf,
   MaintenanceInterval,
 } from "@/lib/types";
+import { suvaChecklist } from "@/lib/suva-checklists";
 
 export interface ModuleConfig<K extends CollectionKey> {
   collection: K;
@@ -1406,6 +1407,10 @@ const inspectionsConfig: ModuleConfig<"inspections"> = {
       labelKey: "inspection.kind",
       options: INSPECTION_TYPE_OPTIONS,
       filter: true,
+      applyChange: (value, values) => ({
+        ...values,
+        checklist: suvaChecklist("inspections", asString(value)),
+      }),
     },
     text("customType", "inspection.customType", {
       visibleWhen: (values) => values.type === "custom",
@@ -1536,6 +1541,7 @@ const playgroundChecksConfig: ModuleConfig<"playgroundchecks"> = {
         withPlaygroundNextDate({
           ...values,
           interval: PLAYGROUND_INTERVALS[asString(value)] ?? values.interval,
+          checklist: suvaChecklist("playgroundchecks", asString(value)),
         }),
     },
     {
@@ -3378,6 +3384,9 @@ export const defaultValuesOf = (collection: CollectionKey): FormValues => {
       defaults[field.name] = field.suggestionsOf(defaults)[0] ?? "";
     else defaults[field.name] = "";
   });
+  if (collection === "playgroundchecks" || collection === "inspections") {
+    defaults.checklist = suvaChecklist(collection, asString(defaults.type));
+  }
   return defaults;
 };
 

@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { useT } from '@/lib/i18n/provider';
+import { dictionary, type TranslationKey } from '@/lib/i18n/dictionary';
 import { ChecklistItem } from '@/lib/types';
 import { newId } from '@/lib/utils/id';
 
@@ -21,6 +22,9 @@ export function ChecklistEditor({
 }) {
   const t = useT();
   const [text, setText] = useState('');
+  /** SUVA-Vorlagenpunkte sind Woerterbuch-Schluessel und werden lokalisiert. */
+  const labelOf = (item: ChecklistItem) =>
+    item.text in dictionary ? t(item.text as TranslationKey) : item.text;
   const done = items.filter((item) => item.done).length;
 
   const add = () => {
@@ -53,10 +57,10 @@ export function ChecklistEditor({
                   ),
                 )
               }
-              aria-label={item.text}
+              aria-label={labelOf(item)}
             />
             <span className={item.done ? 'flex-1 text-muted-foreground line-through' : 'flex-1'}>
-              {item.text}
+              {labelOf(item)}
             </span>
             <Button
               size="icon"

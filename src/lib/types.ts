@@ -848,6 +848,8 @@ export interface Inspection extends BaseEntity {
   technicalCheckpoints?: TechnicalCheckpointResult[];
   technicalMeasurements?: Record<string, string>;
   previousMeasurements?: Record<string, string>;
+  /** SUVA-Checkliste der Kontrolle. */
+  checklist?: ChecklistItem[];
 }
 
 export interface TechnicalCheckpointResult {
@@ -901,6 +903,8 @@ export interface PlaygroundCheck extends BaseEntity {
   damageId: string;
   /** Auftrag, der aus den Maengeln erstellt wurde. */
   orderId: string;
+  /** SUVA-Checkliste der Kontrolle. */
+  checklist?: ChecklistItem[];
 }
 
 /** Geprueftes Brandschutzelement; frei erweiterbar ueber 'custom'. */
@@ -977,6 +981,8 @@ export interface FireCheck extends BaseEntity {
   damageId: string;
   /** Auftrag, der aus den Maengeln erstellt wurde. */
   orderId: string;
+  /** SUVA-Checkliste der Kontrolle. */
+  checklist?: ChecklistItem[];
 }
 
 /** Stand eines Schluessels. */
