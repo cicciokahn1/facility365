@@ -27,6 +27,7 @@ import type { DocumentPdfData, PdfPair, PdfSection } from '@/lib/pdf/document-pd
 import { asString } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
 import type { BaseEntity, ChecklistItem, CollectionKey, MaterialItem } from '@/lib/types';
+import { dictionary, type TranslationKey } from '@/lib/i18n/dictionary';
 import { formatDate, formatDateTime, formatMoney, formatMonth } from '@/lib/utils/format';
 
 /** Module mit PDF-Export im Kopf der Detailansicht. */
@@ -123,7 +124,11 @@ export function PdfExportButton({
       sections.push({
         kind: 'checklist',
         title: t('tab.checklist'),
-        items: (checklist as ChecklistItem[]).map((item) => ({ text: item.text, done: item.done })),
+        items: (checklist as ChecklistItem[]).map((item) => ({
+          /** SUVA-Vorlagenpunkte werden im PDF lokalisiert ausgegeben. */
+          text: item.text in dictionary ? t(item.text as TranslationKey) : item.text,
+          done: item.done,
+        })),
       });
     }
     const materials = fieldValue(entity, 'materials');
