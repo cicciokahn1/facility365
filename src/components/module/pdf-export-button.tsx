@@ -130,7 +130,12 @@ export function PdfExportButton({
           done: item.done,
           answer: item.answer,
         })),
-        answerLabels: [t('common.yes'), t('common.partly'), t('common.no')],
+        /** SUVA-Fragen zeigen das Dreifachkästchen; eigene Punkte nur das Kreuz. */
+        answerLabels: (checklist as ChecklistItem[]).some(
+          (item) => item.answer !== undefined || item.text.startsWith('suva.'),
+        )
+          ? [t('common.yes'), t('common.partly'), t('common.no')]
+          : undefined,
       });
     }
     const materials = fieldValue(entity, 'materials');
