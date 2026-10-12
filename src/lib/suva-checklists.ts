@@ -1,95 +1,127 @@
 /**
- * SUVA-Checklisten als fertige Vorlagen.
+ * Vorlagen aus der SUVA-Checkliste als fertige Pruefpaennen.
  *
- * Pro Kontrollart liegen die ueblichen Pruefpunkte bereits vor; die Punkte
- * sind Woerterbuch-Schluessel und werden in der App-Sprache angezeigt.
- * Eigene Punkte lassen sich wie gewohnt ergaenzen oder entfernen.
+ * Die Leiterkontrolle enthaelt die 21 Fragen der offiziellen SUVA-
+ * Checkliste 67028.d «Tragbare Leitern und Tritte» wortgetreu.
+ * Die Spielplatzkontrolle folgt den Kontrollstufen der SN EN 1176-7,
+ * welche die SUVA-Praxis fuer Pausen- und Spielplaetze vorsieht.
+ * Die Punkte sind Woerterbuch-Schluessel und werden in der App-Sprache
+ * angezeigt; eigene Punkte lassen sich ergaenzen oder entfernen.
  */
 import { ChecklistItem } from "@/lib/types";
 import { newId } from "@/lib/utils/id";
 
+/** SUVA 67028.d – Wochenkontrolle des Spielplatzes (Sichtkontrolle). */
 const PLAYGROUND_VISUAL = [
-  "suva.pg.fallzone",
-  "suva.pg.edges",
-  "suva.pg.corrosion",
-  "suva.pg.obstacles",
-  "suva.pg.anchoring",
+  "suva.pgv.cleanliness",
+  "suva.pgv.foreignBodies",
+  "suva.pgv.surface",
+  "suva.pgv.foundations",
+  "suva.pgv.hazards",
 ];
 
+/** SUVA/EN 1176-7 – Quartalskontrolle (Funktionskontrolle). */
 const PLAYGROUND_FUNCTIONAL = [
-  "suva.pg.fallzone",
-  "suva.pg.entrapment",
-  "suva.pg.edges",
-  "suva.pg.anchoring",
-  "suva.pg.corrosion",
-  "suva.pg.distances",
-  "suva.pg.obstacles",
+  "suva.pgf.stability",
+  "suva.pgf.wear",
+  "suva.pgf.foundations",
+  "suva.pgf.surface",
+  "suva.pgf.movingParts",
+  "suva.pgf.fasteners",
+  "suva.pgf.entrapment",
+  "suva.pgf.edges",
+  "suva.pgf.distances",
+  "suva.pgf.access",
 ];
 
+/** SUVA/EN 1176-7 – Jahreskontrolle (Hauptkontrolle). */
 const PLAYGROUND_PERIODIC = [
-  "suva.pg.fallzone",
-  "suva.pg.entrapment",
-  "suva.pg.edges",
-  "suva.pg.anchoring",
-  "suva.pg.corrosion",
-  "suva.pg.foundations",
-  "suva.pg.distances",
-  "suva.pg.obstacles",
-  "suva.pg.signage",
+  "suva.pgp.stability",
+  "suva.pgp.wear",
+  "suva.pgp.foundations",
+  "suva.pgp.corrosion",
+  "suva.pgp.surface",
+  "suva.pgp.entrapment",
+  "suva.pgp.maintenance",
+  "suva.pgp.signage",
 ];
 
-const INSPECTION_CHECKLISTS: Record<string, string[]> = {
-  playground: PLAYGROUND_FUNCTIONAL,
-  ladder: [
-    "suva.ladder.rungs",
-    "suva.ladder.stiles",
-    "suva.ladder.paint",
-    "suva.ladder.joints",
-    "suva.ladder.feet",
-    "suva.ladder.spreader",
-    "suva.ladder.marking",
-    "suva.ladder.clean",
-  ],
-  emergencyLight: [
-    "suva.emlight.function",
-    "suva.emlight.signage",
-    "suva.emlight.battery",
-    "suva.emlight.test",
-  ],
-  escapeRoute: [
-    "suva.escape.free",
-    "suva.escape.doors",
-    "suva.escape.signage",
-    "suva.escape.light",
-  ],
-  elevator: [
-    "suva.elev.alarm",
-    "suva.elev.doors",
-    "suva.elev.light",
-    "suva.elev.protocol",
-  ],
-  fire: ["suva.fire.extinguisher", "suva.fire.access", "suva.fire.tagged"],
-  emergencyEquipment: [
-    "suva.eme.aed",
-    "suva.eme.consumables",
-    "suva.eme.eyewash",
-    "suva.eme.kit",
-    "suva.eme.access",
-  ],
-  safety: ["suva.safety.ppe", "suva.safety.hazards", "suva.safety.cleanliness"],
-};
+/** SUVA-Checkliste 67028.d «Tragbare Leitern und Tritte», 21 Fragen. */
+const LADDER = [
+  "suva.ladder.q1",
+  "suva.ladder.q2",
+  "suva.ladder.q3",
+  "suva.ladder.q4",
+  "suva.ladder.q5",
+  "suva.ladder.q6",
+  "suva.ladder.q7",
+  "suva.ladder.q8",
+  "suva.ladder.q9",
+  "suva.ladder.q10",
+  "suva.ladder.q11",
+  "suva.ladder.q12",
+  "suva.ladder.q13",
+  "suva.ladder.q14",
+  "suva.ladder.q15",
+  "suva.ladder.q16",
+  "suva.ladder.q17",
+  "suva.ladder.q18",
+  "suva.ladder.q19",
+  "suva.ladder.q20",
+  "suva.ladder.q21",
+];
 
-const PLAYGROUND_CHECKLISTS: Record<string, string[]> = {
-  visual: PLAYGROUND_VISUAL,
-  functional: PLAYGROUND_FUNCTIONAL,
-  periodic: PLAYGROUND_PERIODIC,
-};
+const EMERGENCY_LIGHT = [
+  "suva.emlight.function",
+  "suva.emlight.signage",
+  "suva.emlight.battery",
+  "suva.emlight.test",
+];
+
+const ESCAPE_ROUTE = [
+  "suva.escape.free",
+  "suva.escape.doors",
+  "suva.escape.signage",
+  "suva.escape.light",
+];
+
+const ELEVATOR = [
+  "suva.elev.alarm",
+  "suva.elev.doors",
+  "suva.elev.light",
+  "suva.elev.protocol",
+];
+
+const FIRE = ["suva.fire.extinguisher", "suva.fire.access", "suva.fire.tagged"];
+
+const EMERGENCY_EQUIPMENT = [
+  "suva.eme.aed",
+  "suva.eme.consumables",
+  "suva.eme.eyewash",
+  "suva.eme.kit",
+  "suva.eme.access",
+];
+
+const SAFETY = ["suva.safety.ppe", "suva.safety.hazards", "suva.safety.cleanliness"];
 
 const CHECKLISTS: Partial<
   Record<"playgroundchecks" | "inspections", Record<string, string[]>>
 > = {
-  playgroundchecks: PLAYGROUND_CHECKLISTS,
-  inspections: INSPECTION_CHECKLISTS,
+  playgroundchecks: {
+    visual: PLAYGROUND_VISUAL,
+    functional: PLAYGROUND_FUNCTIONAL,
+    periodic: PLAYGROUND_PERIODIC,
+  },
+  inspections: {
+    playground: PLAYGROUND_FUNCTIONAL,
+    ladder: LADDER,
+    emergencyLight: EMERGENCY_LIGHT,
+    escapeRoute: ESCAPE_ROUTE,
+    elevator: ELEVATOR,
+    fire: FIRE,
+    emergencyEquipment: EMERGENCY_EQUIPMENT,
+    safety: SAFETY,
+  },
 };
 
 /** Vorlage je Kontrollart; leer, wenn keine Vorlage existiert. */
