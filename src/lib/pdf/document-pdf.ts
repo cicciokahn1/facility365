@@ -219,6 +219,15 @@ const drawChecklist = (
     doc.setFontSize(9.5);
     doc.setTextColor(...INK);
     doc.text(lines, MARGIN + 6, cursor);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    if (item.done) {
+      doc.setTextColor(...ACCENT);
+      doc.text('Ja', MARGIN + CONTENT, cursor, { align: 'right' });
+    } else {
+      doc.setTextColor(...MUTED);
+      doc.text('–', MARGIN + CONTENT, cursor, { align: 'right' });
+    }
     cursor += lines.length * 4.6 + 1.4;
   });
   return cursor + 3;
