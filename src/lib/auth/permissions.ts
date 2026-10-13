@@ -226,7 +226,9 @@ export const canDelete = (scope: AccessScope, module: ModuleKey): boolean =>
   canWrite(scope, module) &&
   (scope.role === "superadmin" ||
     scope.role === "orgadmin" ||
-    scope.role === "sitemanager");
+    scope.role === "sitemanager" ||
+    /* Auftraege duerfen alle Personen mit Schreibrecht loeschen. */
+    module === "orders");
 
 export const canManageUsers = (scope: AccessScope): boolean =>
   scope.active && scope.manageUsers;
