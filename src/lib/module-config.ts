@@ -1407,8 +1407,7 @@ const inspectionsConfig: ModuleConfig<"inspections"> = {
       labelKey: "inspection.kind",
       options: INSPECTION_TYPE_OPTIONS,
       filter: true,
-      applyChange: (value, values) => ({
-        ...values,
+      applyChange: (value) => ({
         checklist: suvaChecklist("inspections", asString(value)),
       }),
     },
@@ -1539,7 +1538,6 @@ const playgroundChecksConfig: ModuleConfig<"playgroundchecks"> = {
       filter: true,
       applyChange: (value, values) =>
         withPlaygroundNextDate({
-          ...values,
           interval: PLAYGROUND_INTERVALS[asString(value)] ?? values.interval,
           checklist: suvaChecklist("playgroundchecks", asString(value)),
         }),
