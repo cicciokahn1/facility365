@@ -32,7 +32,7 @@ export function OrderDetail({ id }: { id: string }) {
     <EntityDetail
       collection="orders"
       id={id}
-      defaultTab="preparation"
+      defaultTab="master"
       headerExtra={(order) => {
         const existing = reports.existing(order.id);
         const site = properties.find((item) => item.id === order.propertyId);
@@ -60,11 +60,16 @@ export function OrderDetail({ id }: { id: string }) {
         );
       }}
       extraTabs={(order, update) => [
-        {
-          value: 'preparation',
-          labelKey: 'tab.preparation',
-          content: <OrderPreparation order={order} />,
-        },
+        /* Arbeitsvorbereitung nur bei verknuepfter Quelle oder Checkliste. */
+        ...(order.sourceId || (order.checklist?.length ?? 0) > 0
+          ? [
+              {
+                value: 'preparation' as const,
+                labelKey: 'tab.preparation' as const,
+                content: <OrderPreparation order={order} />,
+              },
+            ]
+          : []),
         {
           value: 'workTime',
           labelKey: 'tab.workTime',
