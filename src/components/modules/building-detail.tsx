@@ -5,6 +5,7 @@ import { Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { EntityDetail } from '@/components/module/entity-detail';
+import { FaultManager } from '@/components/modules/building-faults';
 import { RelatedList } from '@/components/module/related-list';
 import { AreaOverview } from '@/components/modules/area-overview';
 import { FloorEditor } from '@/components/modules/floor-editor';
@@ -115,6 +116,16 @@ export function BuildingDetail({ id }: { id: string }) {
           value: 'assets',
           labelKey: 'module.assets',
           content: <RelatedList collection="assets" field="buildingId" value={building.id} />,
+        },
+        {
+          value: 'faults',
+          labelKey: 'fault.manual',
+          content: (
+            <FaultManager
+              building={building}
+              onChange={(faults) => update({ faults })}
+            />
+          ),
         },
       ]}
     />

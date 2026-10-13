@@ -347,6 +347,30 @@ export interface Property extends BaseEntity {
   mailLinks?: MailLink[];
 }
 
+/** Eintrag im Stoerungshandbuch eines Gebaeudes. */
+export interface BuildingFault {
+  id: string;
+  title: string;
+  /** Technische Kategorie, z. B. heizung, elektro, wasser. */
+  category: string;
+  symptoms: string;
+  causes: string;
+  /** Sichere Pruefschritte - keine gefaehrlichen Eingriffe. */
+  checkSteps: string;
+  immediateMeasures: string;
+  escalation: string;
+  /** Fachfirma aus der Lieferantenverwaltung. */
+  supplierId: string;
+  /** Betroffene Anlage. */
+  assetId: string;
+  /** Verknuepfte Dokumente aus der Dokumentenablage. */
+  documentIds: string[];
+  /** Sicherheitskritische Stoerung. */
+  critical: boolean;
+  /** Auftrag, der aus der Stoerung entstanden ist. */
+  orderId: string;
+}
+
 export interface Building extends BaseEntity {
   name: string;
   propertyId: string;
@@ -364,6 +388,8 @@ export interface Building extends BaseEntity {
   renewalPriority?: Priority;
   responsible?: string;
   conditionNote?: string;
+  /** Stoerungshandbuch des Gebaeudes. */
+  faults?: BuildingFault[];
 }
 
 /** Stockwerk eines Gebaeudes. */
@@ -423,6 +449,8 @@ export interface Room extends BaseEntity {
   renewalPriority?: Priority;
   responsible?: string;
   conditionNote?: string;
+  /** Stoerungshandbuch des Gebaeudes. */
+  faults?: BuildingFault[];
 }
 
 export type AssetStatus = "active" | "maintenance" | "defect" | "inactive";
