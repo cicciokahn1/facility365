@@ -388,6 +388,7 @@ const propertiesConfig: ModuleConfig<"properties"> = {
       labelKey: "module.sites.singular",
       collection: "sites",
       filter: true,
+      advanced: true,
     },
     {
       kind: "relation",
@@ -404,9 +405,9 @@ const propertiesConfig: ModuleConfig<"properties"> = {
       filter: true,
     },
     { kind: "address", name: "address", labelKey: "common.address", span: 2 },
-    { kind: "date", name: "contractStart", labelKey: "customer.contractStart" },
-    { kind: "date", name: "contractEnd", labelKey: "customer.contractEnd" },
-    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
+    { kind: "date", name: "contractStart", labelKey: "customer.contractStart", advanced: true },
+    { kind: "date", name: "contractEnd", labelKey: "customer.contractEnd", advanced: true },
+    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2, advanced: true },
   ],
   searchOf: (property) =>
     [
@@ -441,8 +442,8 @@ const buildingsConfig: ModuleConfig<"buildings"> = {
       filter: true,
     },
     { kind: "address", name: "address", labelKey: "common.address", span: 2 },
-    text("yearBuilt", "common.date"),
-    { kind: "number", name: "area", labelKey: "common.area" },
+    { ...text("yearBuilt", "common.date"), advanced: true },
+    { kind: "number", name: "area", labelKey: "common.area", advanced: true },
     {
       kind: "select",
       name: "conditionStatus",
@@ -476,8 +477,9 @@ const buildingsConfig: ModuleConfig<"buildings"> = {
       name: "description",
       labelKey: "common.description",
       span: 2,
+      advanced: true,
     },
-    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2 },
+    { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2, advanced: true },
   ],
   searchOf: (building) =>
     [
