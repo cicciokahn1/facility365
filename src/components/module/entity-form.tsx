@@ -45,6 +45,8 @@ import {
   isAddressValue,
 } from "@/lib/schema";
 import { useSettings } from "@/lib/settings/provider";
+import type { ChecklistItem } from "@/lib/types";
+import { ChecklistEditor } from "@/components/module/checklist-editor";
 import { cn } from "@/lib/utils";
 
 export interface EntityFormProps {
@@ -167,6 +169,16 @@ function FormBody({
           );
         })}
       </div>
+
+      {/* Kontrollen mit SUVA-Vorlage: die Checkliste direkt beim Ausfuellen. */}
+      {Array.isArray(values.checklist) &&
+      (values.checklist as ChecklistItem[]).length > 0 ? (
+        <ChecklistEditor
+          items={values.checklist as ChecklistItem[]}
+          onChange={(items) => setValues((current) => ({ ...current, checklist: items }))}
+        />
+      ) : null}
+
       {!showAllFields && availableFields.length > visibleFields.length ? (
         <Button
           type="button"
