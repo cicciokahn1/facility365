@@ -1,0 +1,41 @@
+# Facility365 – Eigenes Hosting auf einem eigenen Server.
+#
+# Aufbau: Caddy (HTTPS automatisch) -> App -> Datenbank
+# Der Daten-Ordner bleibt auf dem Server, taegliche Sicherung eingebaut.
+#
+# Start:
+#   1. .env anlegen (Vorlage: .env.production.example)
+#   2. docker compose up -d
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      FACILITY365_API_KEY: ${FACILITY365_API_KEY}
+      WEB_PUSH_PUBLIC_KEY: ${WEB_PUSH_PUBLIC_KEY}
+      WEB_PUSH_PRIVATE_KEY: ${WEB_PUSH_PRIVATE_KEY}
+      WEB_PUSH_SUBJECT: ${WEB_PUSH_SUBJECT:-mailto:info@facility365.ch}
+      NEXT_PUBLIC_MSAL_CLIENT_ID: ${NEXT_PUBLIC_MSAL_CLIENT_ID:-}
+      NEXT_PUBLIC_MSAL_TENANT_ID: ${NEXT_PUBLIC_MSAL_TENANT_ID:-}
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - app
+
+volumes:
+  caddy-data:
