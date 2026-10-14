@@ -6,6 +6,8 @@ import { RelatedList } from '@/components/module/related-list';
 import { AreaOverview } from '@/components/modules/area-overview';
 import { PlanManager } from '@/components/modules/plan-manager';
 import { MapCard, NavigateButton } from '@/components/module/map-card';
+import { TenantReportQr } from '@/components/modules/tenant-report-qr';
+import { YearReport } from '@/components/modules/year-report';
 
 export function PropertyDetail({ id }: { id: string }) {
   return (
@@ -49,6 +51,16 @@ export function PropertyDetail({ id }: { id: string }) {
           value: 'damages',
           labelKey: 'module.damages',
           content: <RelatedList collection="damages" field="propertyId" value={property.id} />,
+        },
+        {
+          value: 'yearReport',
+          labelKey: 'yearReport.kind',
+          content: <YearReport property={property} />,
+        },
+        {
+          value: 'tenantReport',
+          labelKey: 'tab.tenantReport',
+          content: <TenantReportQr property={property} />,
         },
         {
           value: 'mails',
