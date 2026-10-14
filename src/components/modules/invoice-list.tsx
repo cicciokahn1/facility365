@@ -46,13 +46,17 @@ const moduleDef = moduleByCollection('invoices');
 
 /** Eine versandte Rechnung gilt nach der Faelligkeit als ueberfaellig. */
 const effectiveStatus = (invoice: Invoice, today: string): InvoiceStatus =>
-  invoice.status === 'sent' && invoice.dueDate && invoice.dueDate < today
+  ['sent', 'inReview', 'approved'].includes(invoice.status) &&
+  invoice.dueDate &&
+  invoice.dueDate < today
     ? 'overdue'
     : invoice.status;
 
 const STATUS_LABEL: Record<InvoiceStatus, TranslationKey> = {
   draft: 'status.draft',
+  inReview: 'status.inReview',
   sent: 'status.open',
+  approved: 'status.approved',
   paid: 'status.paid',
   overdue: 'status.overdue',
   cancelled: 'status.cancelled',
@@ -103,7 +107,7 @@ export function InvoiceList() {
   );
 
   const openItems = yearItems.filter((invoice) =>
-    ['sent', 'overdue'].includes(effectiveStatus(invoice, today)),
+    ['sent', 'inReview', 'approved', 'overdue'].includes(effectiveStatus(invoice, today)),
   );
   const openTotal = openItems.reduce((sum, invoice) => sum + gross(invoice), 0);
   const yearTotal = yearItems.reduce(

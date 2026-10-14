@@ -1402,7 +1402,8 @@ export interface Quote extends BaseEntity {
   currency: string;
 }
 
-export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled";
+export type InvoiceStatus =
+  "draft" | "inReview" | "sent" | "approved" | "paid" | "overdue" | "cancelled";
 
 export interface Invoice extends BaseEntity {
   title: string;

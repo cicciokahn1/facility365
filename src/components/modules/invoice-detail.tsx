@@ -19,8 +19,36 @@ export function InvoiceDetail({ id }: { id: string }) {
       headerExtra={(invoice, update) => {
         const isPaid = invoice.status === 'paid';
         const isCancelled = invoice.status === 'cancelled';
+        const inReview = invoice.status === 'inReview';
+        const approved = invoice.status === 'approved';
         return (
           <div className="flex flex-wrap items-center gap-2">
+            {inReview ? (
+              <Badge variant="outline">{t('invoice.inReviewHint')}</Badge>
+            ) : null}
+            {approved ? (
+              <Badge variant="secondary">{t('invoice.approvedHint')}</Badge>
+            ) : null}
+            {!isCancelled && !isPaid && (invoice.status === 'draft' || invoice.status === 'sent') ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => update({ status: 'inReview' }, 'invoice.sentForReview')}
+                data-testid="invoice-send-review"
+              >
+                {t('invoice.sendForReview')}
+              </Button>
+            ) : null}
+            {!isCancelled && !isPaid && inReview ? (
+              <Button
+                size="sm"
+                onClick={() => update({ status: 'approved' }, 'invoice.approved')}
+                data-testid="invoice-approve"
+              >
+                <CheckCircle2 className="size-4" aria-hidden />
+                {t('invoice.approve')}
+              </Button>
+            ) : null}
             {isPaid ? (
               <Badge variant="secondary">
                 {t('invoice.paidAt')}: {invoice.paidAt ? new Date(invoice.paidAt).toLocaleDateString() : '–'}

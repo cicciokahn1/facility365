@@ -654,7 +654,9 @@ export const QUOTE_STATUS_OPTIONS: SelectOption[] = [
 
 export const INVOICE_STATUS_OPTIONS: SelectOption[] = [
   option("draft", "status.draft"),
+  option("inReview", "status.inReview"),
   option("sent", "status.sent"),
+  option("approved", "status.approved"),
   option("paid", "status.paid"),
   option("overdue", "status.overdue"),
   option("cancelled", "status.cancelled"),
