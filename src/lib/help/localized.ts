@@ -16,6 +16,7 @@ const CATEGORY_COPY: Record<Exclude<Language, 'de'>, Record<string, CategoryCopy
     planning: { title: 'Calendrier et tâches', description: 'Rendez-vous, liste du jour et rappels.' },
     finance: { title: 'Factures et analyses', description: 'Offres, factures, coûts et rapports.' },
     admin: { title: 'Utilisateurs et administration', description: 'Rôles, droits, paramètres et corbeille.' },
+    regelwerk: { title: 'Reglement et normes', description: 'Checklists SUVA officielles et ou les traiter dans l\'application.' },
   },
   it: {
     'new-tools': { title: 'Nuovi strumenti', description: 'I nuovi percorsi semplici per i custodi.' },
@@ -29,6 +30,7 @@ const CATEGORY_COPY: Record<Exclude<Language, 'de'>, Record<string, CategoryCopy
     planning: { title: 'Calendario e attività', description: 'Appuntamenti, elenco di oggi e promemoria.' },
     finance: { title: 'Fatture e analisi', description: 'Offerte, fatture, costi e rapporti.' },
     admin: { title: 'Utenti e amministrazione', description: 'Ruoli, diritti, impostazioni e cestino.' },
+    regelwerk: { title: 'Regolamenti e norme', description: 'Checklist SUVA ufficiali e dove svolgerle nell\'app.' },
   },
   en: {
     'new-tools': { title: 'New tools', description: 'The latest simple workflows for caretakers.' },

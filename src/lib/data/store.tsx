@@ -607,9 +607,31 @@ export function useCollection<K extends CollectionKey>(
       if (["orders", "damages", "tickets", "maintenances"].includes(collection)) {
         notifyAssignee(entity as BaseEntity, "assigned");
       }
+      /* Kritischer Schaden: Bereitschaftsperson der Liegenschaft alarmieren. */
+      if (
+        collection === "damages" &&
+        (entity as { priority?: string }).priority === "high"
+      ) {
+        const site = getStore().properties.find(
+          (item) => item.id === (entity as { propertyId?: string }).propertyId,
+        ) as { oncallUserId?: string } | undefined;
+        const oncall = getStore().users.find(
+          (item) => item.id === site?.oncallUserId,
+        ) as { externalId?: string; id?: string } | undefined;
+        if (oncall?.externalId && oncall.id !== currentActor().id) {
+          void sendRemotePush({
+            userId: oncall.externalId,
+            title: `Facility365 – ${entity.number}`,
+            body: (entity as { title?: string }).title || entity.number,
+            href: `/damages/${entity.id}`,
+            event: "newOrders",
+            tag: `push-damage-oncall-${entity.id}`,
+          });
+        }
+      }
       return entity;
     },
-    [collection, items, logActivity, notifyAssignee, saveItem],
+    [collection, getStore, items, logActivity, notifyAssignee, saveItem],
   );
 
   const update = useCallback(

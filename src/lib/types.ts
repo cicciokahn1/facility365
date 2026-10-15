@@ -345,6 +345,8 @@ export interface Property extends BaseEntity {
   plans: Plan[];
   /** Zugeordnete Outlook-E-Mails. */
   mailLinks?: MailLink[];
+  /** Bereitschaftsperson der Liegenschaft; wird bei kritischen Schaeden alarmiert. */
+  oncallUserId?: string;
 }
 
 /** Eintrag im Stoerungshandbuch eines Gebaeudes. */

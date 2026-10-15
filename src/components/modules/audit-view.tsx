@@ -3,7 +3,7 @@
 /** Auditmodus: Standort und Zeitraum waehlen, Ampelstatus sehen, Bericht als PDF. */
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ClipboardCheck, FileDown, Hammer, Save, Settings2, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -58,7 +58,13 @@ export function AuditView({ mode = 'audit' }: { mode?: 'audit' | 'walkthrough' }
   const orderStore = useCollection('orders');
   const maintenanceStore = useCollection('maintenances');
 
-  const [property, setProperty] = useState(ALL);
+  const searchParams = useSearchParams();
+  const initialProperty = searchParams.get('p');
+  const [property, setProperty] = useState(() =>
+    initialProperty && properties.some((item) => item.id === initialProperty)
+      ? initialProperty
+      : ALL,
+  );
   const [building, setBuilding] = useState(ALL);
   const [from, setFrom] = useState(yearStart());
   const [to, setTo] = useState(today());

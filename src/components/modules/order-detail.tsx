@@ -11,6 +11,7 @@ import { RelatedList } from '@/components/module/related-list';
 import { WorkTimePanel } from '@/components/modules/work-time-panel';
 import { OrderPreparation } from '@/components/modules/order-preparation';
 import { LinkedMails } from '@/components/module/linked-mails';
+import { OrderSignDialog } from '@/components/modules/order-sign-dialog';
 import { NavigateButton } from '@/components/module/map-card';
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
@@ -33,12 +34,13 @@ export function OrderDetail({ id }: { id: string }) {
       collection="orders"
       id={id}
       defaultTab="master"
-      headerExtra={(order) => {
+      headerExtra={(order, applyUpdate) => {
         const existing = reports.existing(order.id);
         const site = properties.find((item) => item.id === order.propertyId);
         return (
           <>
             <NavigateButton address={site?.address} />
+            <OrderSignDialog order={order} onChange={applyUpdate} />
             <Button
               size="sm"
               variant={existing ? 'outline' : 'default'}

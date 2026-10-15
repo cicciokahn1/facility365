@@ -378,6 +378,7 @@ export const APPOINTMENT_TYPE_OPTIONS: SelectOption[] = [
   option("visit", "appointment.type.visit"),
   option("service", "appointment.type.service"),
   option("absence", "appointment.type.absence"),
+  option("shift", "appointment.type.shift"),
   option("other", "appointment.type.other"),
 ];
 
