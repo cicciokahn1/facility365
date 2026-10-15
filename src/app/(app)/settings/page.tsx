@@ -636,6 +636,9 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
           <Button variant="outline" asChild data-testid="settings-help">
             <Link href="/help">{t('help.title')}</Link>
           </Button>
+          <Button variant="outline" asChild data-testid="settings-legal">
+            <Link href="/legal">{t('legal.title')}</Link>
+          </Button>
         </CardContent>
       </Card>
 

@@ -1485,6 +1485,7 @@ export const table: Record<string, string> = {
   "notice.missing": "Titel und Text fehlen.",
   "property.oncall": "Bereitschaft",
   "property.oncallHint": "Diese Person wird bei kritischen Schaeden (Prioritaet hoch) automatisch per Push benachrichtigt.",
+  "legal.title": "AGB und Datenschutz",
   "material.receipt": "Quittung",
   "warranty.expiryTitle": "Garantie laeuft ab",
   "warranty.expired": "abgelaufen",

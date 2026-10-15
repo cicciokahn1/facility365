@@ -122,6 +122,10 @@ function LoginForm() {
           <Link className="text-primary underline-offset-4 hover:underline" href="/pricing">
             Preise und Angebot ansehen
           </Link>
+          {' · '}
+          <Link className="text-primary underline-offset-4 hover:underline" href="/legal">
+            AGB und Datenschutz
+          </Link>
         </div>
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-2">
