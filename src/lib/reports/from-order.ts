@@ -40,7 +40,20 @@ export const reportValuesFromOrder = (order: Order): Partial<Report> => ({
   hourlyRate: order.hourlyRate,
   /** Material und Fotos werden kopiert, damit der Rapport eigenstaendig bleibt. */
   materials: order.materials.map((item) => ({ ...item, id: newId('mat') })),
-  photos: order.photos.map((photo) => ({ ...photo, id: newId('pho') })),
+  photos: [
+    ...order.photos.map((photo) => ({ ...photo, id: newId('pho') })),
+    /** Belegfotos der Materialpositionen landen als Fotos im Rapport. */
+    ...order.materials
+      .filter((item) => item.receiptUrl)
+      .map((item) => ({
+        id: newId('pho'),
+        url: item.receiptUrl ?? '',
+        name: item.name,
+        caption: item.name,
+        takenAt: new Date().toISOString(),
+        size: 0,
+      })),
+  ],
   notes: order.notes,
   /** Auf dem Auftrag erfasste Unterschrift bleibt im Rapport sichtbar. */
   signature: order.signature,

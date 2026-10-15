@@ -1485,6 +1485,7 @@ export const table: Record<string, string> = {
   "notice.missing": "Titel und Text fehlen.",
   "property.oncall": "Bereitschaft",
   "property.oncallHint": "Diese Person wird bei kritischen Schaeden (Prioritaet hoch) automatisch per Push benachrichtigt.",
+  "material.receipt": "Quittung",
   "migrate.title": "Gerätedaten übernehmen",
   "migrate.intro": "Auf diesem Gerät liegen noch Daten aus dem lokalen Betrieb. Sie können in die Datenbank übernommen werden; vorhandene Datensätze bleiben unverändert.",
   "migrate.run": "Jetzt übernehmen",

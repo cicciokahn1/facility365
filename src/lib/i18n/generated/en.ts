@@ -1485,6 +1485,7 @@ export const table: Record<string, string> = {
   "notice.missing": "Title and text are missing.",
   "property.oncall": "On-call",
   "property.oncallHint": "This person is push-notified on critical damage (high priority).",
+  "material.receipt": "Receipt",
   "migrate.title": "Take over device data",
   "migrate.intro": "This device still holds local data. It can be taken over into the database; existing records stay unchanged.",
   "migrate.run": "Take over now",
