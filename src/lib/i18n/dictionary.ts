@@ -7497,6 +7497,24 @@ export const dictionary = {
     it: "Ricevuta",
     en: "Receipt",
   },
+  "warranty.expiryTitle": {
+    de: "Garantie laeuft ab",
+    fr: "Garantie expire",
+    it: "Garanzia in scadenza",
+    en: "Warranty expiring",
+  },
+  "warranty.expired": {
+    de: "abgelaufen",
+    fr: "expiree",
+    it: "scaduta",
+    en: "expired",
+  },
+  "warranty.expiring": {
+    de: "laeuft bald ab",
+    fr: "expire bientot",
+    it: "in scadenza",
+    en: "expiring soon",
+  },
   "migrate.title": {
     de: "Gerätedaten übernehmen",
     fr: "Reprendre les données de l’appareil",

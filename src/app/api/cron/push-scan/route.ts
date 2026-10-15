@@ -122,5 +122,39 @@ export async function GET(request: Request) {
     }
   }
 
+  /** Garantien: abgelaufen oder in 30 Tagen faellig -> Leitung melden. */
+  for (const table of ['assets', 'inventory'] as const) {
+    const { data: rows } = await admin
+      .from(table)
+      .select('id, tenant_id, data')
+      .is('deleted_at', null);
+    for (const row of rows ?? []) {
+      const data = (row.data ?? {}) as {
+        title?: string;
+        name?: string;
+        number?: string;
+        warrantyUntil?: string;
+      };
+      const warrantyUntil = (data.warrantyUntil ?? '').slice(0, 10);
+      if (!warrantyUntil || warrantyUntil > docSoon) continue;
+      const targets = managersByTenant.get(row.tenant_id as string) ?? [];
+      const tag = `cron-warranty-${row.id}-${warrantyUntil}`;
+      const { error: dedupeError } = await admin
+        .from('push_sent')
+        .insert({ tag, tenant_id: row.tenant_id });
+      if (dedupeError) continue;
+      scanned += 1;
+      for (const authId of targets) {
+        notified += await deliverPush(admin, authId, {
+          title: `Garantie ${warrantyUntil < today ? 'abgelaufen' : 'läuft ab'}: ${data.number ?? ''}`,
+          body: `${data.title ?? data.name ?? ''} – ${warrantyUntil}`,
+          href: `/${table}/${row.id}`,
+          event: 'maintenance',
+          tag,
+        });
+      }
+    }
+  }
+
   return NextResponse.json({ scanned, notified });
 }

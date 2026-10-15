@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 import { ModuleList } from '@/components/module/module-list';
 import { AssetCardExport } from '@/components/modules/asset-card-export';
+import { WarrantyExpiry } from '@/components/modules/warranty-expiry';
 import { QuickDamageDialog, QuickDamageTarget } from '@/components/modules/quick-damage-dialog';
 import { Button } from '@/components/ui/button';
 import { findAsset } from '@/lib/assets/passport';
@@ -155,6 +156,7 @@ export default function AssetsPage() {
 
   return (
     <div className="flex flex-col gap-4">
+      <WarrantyExpiry />
       <div className="flex flex-wrap justify-end gap-2">
         <Button variant="outline" onClick={() => setExporting(true)} data-testid="card-export">
           <CreditCard className="size-4" aria-hidden />
