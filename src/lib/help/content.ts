@@ -843,6 +843,57 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       },
     ],
   },
+  {
+    id: "regelwerk",
+    title: "Regelwerk und Normen",
+    description: "Offizielle SUVA-Checklisten und Normen und wo sie in der App abgearbeitet werden.",
+    articles: [
+      {
+        id: "suva-ladders",
+        title: "Leitern und Tritte (SUVA 67028)",
+        summary: "Die offizielle SUVA-Checkliste ist in der App hinterlegt.",
+        paragraphs: [
+          "Die SUVA-Checkliste 67028.d prueft, ob Leitern und Tritte sicher eingesetzt und gewartet werden: richtiges Arbeitsmittel, Aufstellen, Anstellwinkel, Spreizsicherung, Ueberstieg, Instandhaltung und Lagerung.",
+          "In der App liegt die Liste fertig vor: Inspektionen → Neu → Art «Leitern und Tritte». Die nummerierten Fragen werden mit «ja / teilweise / nein» beantwortet, das Kontroll-PDF zeigt sie im SUVA-Format.",
+        ],
+        path: "/inspections",
+        keywords: ["suva", "leiter", "tritt", "67028", "checkliste"],
+      },
+      {
+        id: "suva-playground",
+        title: "Spielplaetze (SN EN 1176-7)",
+        summary: "Drei Kontrollstufen nach Norm - als Vorlage hinterlegt.",
+        paragraphs: [
+          "Spielplatzgeraete werden nach SN EN 1176-7 kontrolliert: die woechentliche Sichtkontrolle, die quartalsweise Funktionskontrolle und die jaehrliche Hauptkontrolle.",
+          "Bei Spielplatzkontrollen → Neu wird die passende Liste je nach Kontrollart automatisch vorgefuellt - Fallzone, Einklemmstellen, Kanten, Verankerung, Korrosion und Beschilderung.",
+        ],
+        path: "/playgrounds",
+        keywords: ["spielplatz", "en 1176", "suva", "kontrolle"],
+      },
+      {
+        id: "rules-emergency",
+        title: "Notfall- und Sicherheitsausruestung",
+        summary: "Defibrillator, Augendusche, Feuerloescher und Fluchtwege regelmaessig pruefen.",
+        paragraphs: [
+          "Defibrillatoren, Augenduschen, Verbandkasten, Feuerloescher und Notbeleuchtung muessen regelmaessig kontrolliert werden; Feuerloescher folgen der SN EN 3 Reihe, Fluchtwege und Notbeleuchtung den VKF-Vorgaben.",
+          "In der App: Inspektionen → Neu → Art «Notfall-Ausruestung», «Feuerloescher», «Notbeleuchtung» oder «Fluchtwege». Das Intervall legt das naechste Datum fest, die Erinnerung kommt automatisch.",
+        ],
+        path: "/inspections",
+        keywords: ["defibrillator", "augendusche", "feuerloescher", "fluchtweg", "vkf", "en 3"],
+      },
+      {
+        id: "rules-sources",
+        title: "Wo die offiziellen Dokumente zu finden sind",
+        summary: "Original-Merkblaetter und Normen im Netz.",
+        paragraphs: [
+          "SUVA-Merkblaetter gibt es kostenlos auf www.suva.ch - etwa 67028.d «Leitern und Tritte» und die Publikationen zu Spielplatzsicherheit. Die EN-Normen laufen ueber den Schweizerischen Normen-Verband (SNV, www.snv.ch), die VKF-Richtlinien ueber www.bsv-online.ch.",
+          "Die in der App eingebauten Listen entsprechen diesen Quellen. Veraendert sich eine Norm, wird die Vorlage in der App angepasst - bereits erfasste Kontrollen bleiben unveraendert dokumentiert.",
+        ],
+        path: "/help",
+        keywords: ["suva", "snv", "vkf", "norm", "merkblatt", "quelle"],
+      },
+    ],
+  },
 ];
 
 /** Alle Artikel als flache Liste - für Suche und Verlinkung. */

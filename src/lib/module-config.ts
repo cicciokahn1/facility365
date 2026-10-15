@@ -408,7 +408,14 @@ const propertiesConfig: ModuleConfig<"properties"> = {
     { kind: "date", name: "contractStart", labelKey: "customer.contractStart", advanced: true },
     { kind: "date", name: "contractEnd", labelKey: "customer.contractEnd", advanced: true },
     { kind: "textarea", name: "notes", labelKey: "common.notes", span: 2, advanced: true },
-  ],
+      {
+      kind: "relation",
+      name: "oncallUserId",
+      labelKey: "property.oncall",
+      collection: "users",
+      advanced: true,
+    },
+],
   searchOf: (property) =>
     [
       property.number,

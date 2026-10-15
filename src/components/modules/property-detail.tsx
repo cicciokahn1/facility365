@@ -7,6 +7,8 @@ import { AreaOverview } from '@/components/modules/area-overview';
 import { PlanManager } from '@/components/modules/plan-manager';
 import { MapCard, NavigateButton } from '@/components/module/map-card';
 import { TenantReportQr } from '@/components/modules/tenant-report-qr';
+import { WalkthroughQr } from '@/components/modules/walkthrough-qr';
+import { TenantNotice } from '@/components/modules/tenant-notice';
 import { YearReport } from '@/components/modules/year-report';
 
 export function PropertyDetail({ id }: { id: string }) {
@@ -60,7 +62,13 @@ export function PropertyDetail({ id }: { id: string }) {
         {
           value: 'tenantReport',
           labelKey: 'tab.tenantReport',
-          content: <TenantReportQr property={property} />,
+          content: (
+            <div className="grid gap-4">
+              <TenantReportQr property={property} />
+              <WalkthroughQr property={property} />
+              <TenantNotice property={property} />
+            </div>
+          ),
         },
         {
           value: 'mails',

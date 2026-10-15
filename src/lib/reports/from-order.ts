@@ -42,6 +42,9 @@ export const reportValuesFromOrder = (order: Order): Partial<Report> => ({
   materials: order.materials.map((item) => ({ ...item, id: newId('mat') })),
   photos: order.photos.map((photo) => ({ ...photo, id: newId('pho') })),
   notes: order.notes,
+  /** Auf dem Auftrag erfasste Unterschrift bleibt im Rapport sichtbar. */
+  signature: order.signature,
+  signedBy: order.signedBy,
 });
 
 export interface ReportFromOrderApi {

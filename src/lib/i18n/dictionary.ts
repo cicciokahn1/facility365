@@ -426,6 +426,12 @@ export const dictionary = {
     it: "Assenza",
     en: "Absence",
   },
+  "appointment.type.shift": {
+    de: "Schicht",
+    fr: "Service",
+    it: "Turno",
+    en: "Shift",
+  },
   "appointment.type.other": {
     de: "Sonstiges",
     fr: "Autre",
@@ -7413,6 +7419,78 @@ export const dictionary = {
     en: "Last backup",
   },
 
+  "qr.walkthrough": {
+    de: "QR Rundgang",
+    fr: "QR ronde",
+    it: "QR giro",
+    en: "QR walkthrough",
+  },
+  "qr.walkthroughHint": {
+    de: "QR-Code an der Liegenschaft aufhaengen: Scannen startet den Rundgang direkt.",
+    fr: "Accrocher le QR au site : le scan ouvre directement la ronde.",
+    it: "Appendere il QR all\'immobile: la scansione avvia il giro.",
+    en: "Hang the QR code at the site: scanning opens the walkthrough directly.",
+  },
+  "notice.title": {
+    de: "Mieter-Aushang",
+    fr: "Affiche locataires",
+    it: "Avviso inquilini",
+    en: "Tenant notice",
+  },
+  "notice.hint": {
+    de: "Aushang an die Bewohner als PDF erstellen, z. B. «Warmwasser morgen abgestellt».",
+    fr: "Creer une affiche PDF pour les residents, p. ex. «eau chaude coupee demain».",
+    it: "Creare un avviso PDF per gli inquilini, p. es. «acqua calda sospesa domani».",
+    en: "Create a PDF notice for residents, e.g. 'hot water off tomorrow'.",
+  },
+  "notice.subject": {
+    de: "Titel",
+    fr: "Titre",
+    it: "Titolo",
+    en: "Title",
+  },
+  "notice.text": {
+    de: "Text des Aushangs",
+    fr: "Texte de l\'affiche",
+    it: "Testo dell\'avviso",
+    en: "Notice text",
+  },
+  "notice.validUntil": {
+    de: "Gueltig bis",
+    fr: "Valable jusqu\'au",
+    it: "Valido fino al",
+    en: "Valid until",
+  },
+  "notice.open": {
+    de: "PDF oeffnen",
+    fr: "Ouvrir le PDF",
+    it: "Apri PDF",
+    en: "Open PDF",
+  },
+  "notice.download": {
+    de: "PDF laden",
+    fr: "Telecharger le PDF",
+    it: "Scarica PDF",
+    en: "Download PDF",
+  },
+  "notice.missing": {
+    de: "Titel und Text fehlen.",
+    fr: "Titre et texte manquants.",
+    it: "Titolo e testo mancanti.",
+    en: "Title and text are missing.",
+  },
+  "property.oncall": {
+    de: "Bereitschaft",
+    fr: "Service de garde",
+    it: "Pernotto",
+    en: "On-call",
+  },
+  "property.oncallHint": {
+    de: "Diese Person wird bei kritischen Schaeden (Prioritaet hoch) automatisch per Push benachrichtigt.",
+    fr: "Cette personne recoit une notification push en cas de dommage critique (priorite haute).",
+    it: "Questa persona riceve una notifica push in caso di danno critico (priorita alta).",
+    en: "This person is push-notified on critical damage (high priority).",
+  },
   "migrate.title": {
     de: "Gerätedaten übernehmen",
     fr: "Reprendre les données de l’appareil",
