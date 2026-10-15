@@ -31,7 +31,6 @@ import {
 import { COLLECTIONS } from "@/lib/data/collections";
 import { NUMBER_PAD, NUMBER_PREFIX, emptyEntity } from "@/lib/data/factories";
 import { describeChanges } from "@/lib/data/changes";
-import { sendRemotePush } from "@/lib/notifications/remote-push";
 import {
   SyncState,
   offlineRepository,
@@ -558,28 +557,6 @@ export function useCollection<K extends CollectionKey>(
   /** Bereits vergebene Nummern, solange der neue Stand noch nicht angezeigt wird. */
   const issued = useRef<string[]>([]);
 
-  /** Server-Push an die zuständige Person - laeuft ohne geoeffnete App. */
-  const notifyAssignee = useCallback(
-    (entity: BaseEntity, event: "assigned" | "status", suffix = "") => {
-      const target = (entity as { assigneeUserId?: string }).assigneeUserId ?? "";
-      if (!target || target === currentActor().id) return;
-      const user = getStore().users.find((entry) => entry.id === target) as
-        | { externalId?: string }
-        | undefined;
-      if (!user?.externalId) return;
-      const title = (entity as { title?: string }).title || entity.number;
-      void sendRemotePush({
-        userId: user.externalId,
-        title: `Facility365 – ${entity.number}`,
-        body: title,
-        href: `/${collection}/${entity.id}`,
-        event,
-        tag: `push-${collection}-${entity.id}-${event}${suffix}`,
-      });
-    },
-    [collection, getStore],
-  );
-
   const get = useCallback((id: string) => index.get(id), [index]);
 
   const create = useCallback(
@@ -604,34 +581,9 @@ export function useCollection<K extends CollectionKey>(
       issued.current.push(entity.number);
       saveItem(collection, entity);
       logActivity(collection, entity, "history.created");
-      if (["orders", "damages", "tickets", "maintenances"].includes(collection)) {
-        notifyAssignee(entity as BaseEntity, "assigned");
-      }
-      /* Kritischer Schaden: Bereitschaftsperson der Liegenschaft alarmieren. */
-      if (
-        collection === "damages" &&
-        (entity as { priority?: string }).priority === "high"
-      ) {
-        const site = getStore().properties.find(
-          (item) => item.id === (entity as { propertyId?: string }).propertyId,
-        ) as { oncallUserId?: string } | undefined;
-        const oncall = getStore().users.find(
-          (item) => item.id === site?.oncallUserId,
-        ) as { externalId?: string; id?: string } | undefined;
-        if (oncall?.externalId && oncall.id !== currentActor().id) {
-          void sendRemotePush({
-            userId: oncall.externalId,
-            title: `Facility365 – ${entity.number}`,
-            body: (entity as { title?: string }).title || entity.number,
-            href: `/damages/${entity.id}`,
-            event: "newOrders",
-            tag: `push-damage-oncall-${entity.id}`,
-          });
-        }
-      }
       return entity;
     },
-    [collection, getStore, items, logActivity, notifyAssignee, saveItem],
+    [collection, items, logActivity, saveItem],
   );
 
   const update = useCallback(
@@ -675,17 +627,8 @@ export function useCollection<K extends CollectionKey>(
       };
       saveItem(collection, next as BaseEntity);
       logActivity(collection, next as BaseEntity, action, changes);
-      if (["orders", "damages", "tickets", "maintenances"].includes(collection)) {
-        const before = current as { assigneeUserId?: string; status?: string };
-        const after = next as { assigneeUserId?: string; status?: string };
-        if (after.assigneeUserId && after.assigneeUserId !== before.assigneeUserId) {
-          notifyAssignee(next as BaseEntity, "assigned");
-        } else if (after.status && after.status !== before.status) {
-          notifyAssignee(next as BaseEntity, "status", `-${after.status}`);
-        }
-      }
     },
-    [collection, getStore, index, logActivity, notifyAssignee, saveItem],
+    [collection, getStore, index, logActivity, saveItem],
   );
 
   const remove = useCallback(
