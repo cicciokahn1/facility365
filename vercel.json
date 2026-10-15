@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/cron/push-scan",
-      "schedule": "0 6 * * *"
-    }
-  ]
-}
