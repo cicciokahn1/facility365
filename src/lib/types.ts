@@ -689,6 +689,8 @@ export interface MaterialItem {
   billable?: boolean;
   invoicedAt?: string;
   invoicedInvoiceId?: string;
+  /** Foto des Kaufbelegs (Quittung). */
+  receiptUrl?: string;
 }
 
 export interface Order extends BaseEntity {

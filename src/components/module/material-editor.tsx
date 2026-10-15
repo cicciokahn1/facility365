@@ -1,8 +1,9 @@
 'use client';
 
 /** Verbrauchtes Material mit Summe; Positionen frei oder aus dem Lager. */
-import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Camera, Plus, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ import {
 import { useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { useSettings } from '@/lib/settings/provider';
+import { PHOTO_ACCEPT, photoFromFile } from '@/lib/media';
 import { MaterialItem } from '@/lib/types';
 import { formatMoney } from '@/lib/utils/format';
 import { newId } from '@/lib/utils/id';
@@ -33,6 +35,8 @@ export function MaterialEditor({
   const stock = useCollectionItems('stock');
   const empty = { name: '', quantity: '1', unit: 'Stk', price: '', stockItemId: '' };
   const [draft, setDraft] = useState(empty);
+  const receiptInput = useRef<HTMLInputElement | null>(null);
+  const receiptTarget = useRef('');
   const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
   const pickStock = (stockItemId: string) => {
@@ -84,6 +88,25 @@ export function MaterialEditor({
               <span className="text-sm font-medium">
                 {formatMoney(item.quantity * item.price, settings.currency)}
               </span>
+              {item.receiptUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- Belegfoto als Data-URL
+                <img
+                  src={item.receiptUrl}
+                  alt=""
+                  className="size-9 shrink-0 rounded-md object-cover"
+                />
+              ) : null}
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label={t('material.receipt')}
+                onClick={() => {
+                  receiptTarget.current = item.id;
+                  receiptInput.current?.click();
+                }}
+              >
+                <Camera className="size-4" />
+              </Button>
               <Button
                 size="icon"
                 variant="ghost"
@@ -145,6 +168,26 @@ export function MaterialEditor({
           {t('action.add')}
         </Button>
       </div>
+      <input
+        ref={receiptInput}
+        type="file"
+        accept={PHOTO_ACCEPT}
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          event.target.value = '';
+          if (!file) return;
+          void photoFromFile(file)
+            .then((photo) =>
+              onChange(
+                items.map((entry) =>
+                  entry.id === receiptTarget.current ? { ...entry, receiptUrl: photo.url } : entry,
+                ),
+              ),
+            )
+            .catch(() => toast.error(t('app.errorText')));
+        }}
+      />
     </section>
   );
 }

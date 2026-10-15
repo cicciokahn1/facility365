@@ -7491,6 +7491,12 @@ export const dictionary = {
     it: "Questa persona riceve una notifica push in caso di danno critico (priorita alta).",
     en: "This person is push-notified on critical damage (high priority).",
   },
+  "material.receipt": {
+    de: "Quittung",
+    fr: "Recu",
+    it: "Ricevuta",
+    en: "Receipt",
+  },
   "migrate.title": {
     de: "Gerätedaten übernehmen",
     fr: "Reprendre les données de l’appareil",
