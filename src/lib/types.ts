@@ -1348,6 +1348,10 @@ export interface Report extends BaseEntity {
   signedBy: string;
   /** Zeitpunkt der Unterschrift als ISO-Zeichenkette. */
   signedAt: string;
+  /** Kundenfeedback (1-5 Sterne) aus dem oeffentlichen Feedback-Link. */
+  feedbackRating?: number;
+  feedbackComment?: string;
+  feedbackAt?: string;
   billable?: boolean;
   invoicedAt?: string;
   invoicedInvoiceId?: string;
