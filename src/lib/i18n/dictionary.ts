@@ -760,6 +760,12 @@ export const dictionary = {
     it: "Ricorrente",
     en: "Recurring",
   },
+  "today.navigate": {
+    de: "Zur Adresse navigieren",
+    fr: "Naviguer vers l'adresse",
+    it: "Naviga all'indirizzo",
+    en: "Navigate to address",
+  },
   "cleaning.printWeekly": {
     de: "Wochenplan drucken",
     fr: "Imprimer le planning hebdomadaire",
