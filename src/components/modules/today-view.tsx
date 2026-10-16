@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, Leaf, Phone, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ClipboardCheck, ClipboardList, FileText, Leaf, MapPin, Phone, ShieldAlert } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { DoneButton } from "@/components/module/done-button";
@@ -23,6 +23,7 @@ import { useAccess } from "@/lib/auth/scope";
 import { useRelevantEvents } from "@/lib/calendar/relevant";
 import { useCollectionItems } from "@/lib/data/store";
 import { fieldValue, stringField } from "@/lib/entity-values";
+import { isAddressValue } from "@/lib/schema";
 import { useT } from "@/lib/i18n/provider";
 import { titleOfEntity } from "@/lib/module-config";
 import { moduleByCollection, moduleByKey } from "@/lib/modules";
@@ -45,6 +46,7 @@ interface Row {
   responsible: string;
   checklistCount: number;
   recurring: boolean;
+  navHref?: string;
 }
 
 const references = (
@@ -56,17 +58,27 @@ const references = (
 
 type References = ReturnType<typeof references>;
 
+function relationOf(item: BaseEntity, lookup: References): BaseEntity | undefined {
+  if (stringField(item, "assetId")) {
+    const found = lookup.assets.find((entry) => entry.id === stringField(item, "assetId"));
+    if (found) return found;
+  }
+  if (stringField(item, "roomId")) {
+    const found = lookup.rooms.find((entry) => entry.id === stringField(item, "roomId"));
+    if (found) return found;
+  }
+  if (stringField(item, "buildingId")) {
+    const found = lookup.buildings.find((entry) => entry.id === stringField(item, "buildingId"));
+    if (found) return found;
+  }
+  if (stringField(item, "propertyId")) {
+    return lookup.properties.find((entry) => entry.id === stringField(item, "propertyId"));
+  }
+  return undefined;
+}
+
 function contextOf(item: BaseEntity, lookup: References): string {
-  const relation =
-    stringField(item, "assetId") && lookup.assets.find((entry) => entry.id === stringField(item, "assetId"))
-      ? lookup.assets.find((entry) => entry.id === stringField(item, "assetId"))
-      : stringField(item, "roomId") && lookup.rooms.find((entry) => entry.id === stringField(item, "roomId"))
-        ? lookup.rooms.find((entry) => entry.id === stringField(item, "roomId"))
-        : stringField(item, "buildingId") && lookup.buildings.find((entry) => entry.id === stringField(item, "buildingId"))
-          ? lookup.buildings.find((entry) => entry.id === stringField(item, "buildingId"))
-          : stringField(item, "propertyId") && lookup.properties.find((entry) => entry.id === stringField(item, "propertyId"))
-            ? lookup.properties.find((entry) => entry.id === stringField(item, "propertyId"))
-            : undefined;
+  const relation = relationOf(item, lookup);
   if (!relation) return "";
   const collection = lookup.assets.includes(relation)
     ? "assets"
@@ -78,10 +90,37 @@ function contextOf(item: BaseEntity, lookup: References): string {
   return titleOfEntity(collection, relation);
 }
 
+const mapsHref = (address: string): string =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+
+/** Adresse des zugehoerigen Ortes; steigt bei Bedarf zu Gebaeude/Liegenschaft auf. */
+function addressOf(item: BaseEntity, lookup: References): string {
+  const all = [...lookup.assets, ...lookup.rooms, ...lookup.buildings, ...lookup.properties];
+  let node = relationOf(item, lookup);
+  for (let depth = 0; node && depth < 4; depth += 1) {
+    const address = fieldValue(node, "address");
+    if (isAddressValue(address) && (address.street || address.city)) {
+      return [
+        address.street,
+        [address.zip, address.city].filter(Boolean).join(" "),
+        address.country,
+      ]
+        .filter(Boolean)
+        .join(", ");
+    }
+    const parentId =
+      stringField(node, "buildingId") || stringField(node, "propertyId");
+    node = parentId ? all.find((entry) => entry.id === parentId) : undefined;
+  }
+  return "";
+}
+
 function detailsOf(item: BaseEntity, lookup: References) {
   const checklist = fieldValue(item, "checklist");
+  const address = addressOf(item, lookup);
   return {
     context: contextOf(item, lookup),
+    navHref: address ? mapsHref(address) : undefined,
     responsible:
       stringField(item, "assignee") ||
       stringField(item, "responsible") ||
@@ -557,6 +596,18 @@ function Section({
                   {row.overdue ? ` · ${t("notify.overdue")}` : ""}
                 </span>
               </Link>
+              {row.navHref ? (
+                <a
+                  href={row.navHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={t("today.navigate")}
+                  title={t("today.navigate")}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border text-primary hover:bg-primary/10"
+                >
+                  <MapPin className="size-5" />
+                </a>
+              ) : null}
               {row.collection ? (
                 <div className="flex w-full gap-2 sm:w-auto sm:shrink-0">
                   {isProgressable(row.collection) ? (
