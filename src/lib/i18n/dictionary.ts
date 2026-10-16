@@ -6886,6 +6886,12 @@ export const dictionary = {
     it: "Si prega di firmare e indicare il nome",
     en: "Please sign and enter the name first",
   },
+  "tab.feedback": {
+    de: "Feedback",
+    fr: "Feedback",
+    it: "Feedback",
+    en: "Feedback",
+  },
   "tab.pdf": { de: "PDF", fr: "PDF", it: "PDF", en: "PDF" },
   "tab.assistant": {
     de: "KI-Assistent",
@@ -7520,6 +7526,42 @@ export const dictionary = {
     fr: "expire bientot",
     it: "in scadenza",
     en: "expiring soon",
+  },
+  "feedback.hint": {
+    de: "Link an den Kunden senden – dort kann er den Rapport mit Sternen und einem Kommentar bewerten.",
+    fr: "Envoyer le lien au client – il peut evaluer le rapport avec des etoiles et un commentaire.",
+    it: "Inviare il link al cliente – puo valutare il rapporto con stelle e un commento.",
+    en: "Send the link to the customer – they can rate the report with stars and a comment.",
+  },
+  "feedback.copyLink": {
+    de: "Feedback-Link kopieren",
+    fr: "Copier le lien de feedback",
+    it: "Copia il link di feedback",
+    en: "Copy feedback link",
+  },
+  "feedback.linkCopied": {
+    de: "Link kopiert",
+    fr: "Lien copie",
+    it: "Link copiato",
+    en: "Link copied",
+  },
+  "feedback.copyManually": {
+    de: "Link manuell kopieren",
+    fr: "Copier le lien manuellement",
+    it: "Copia il link manualmente",
+    en: "Copy the link manually",
+  },
+  "feedback.none": {
+    de: "Noch kein Feedback eingegangen.",
+    fr: "Aucun feedback recu pour le moment.",
+    it: "Nessun feedback ricevuto finora.",
+    en: "No feedback received yet.",
+  },
+  "feedback.noComment": {
+    de: "Nur Bewertung ohne Kommentar.",
+    fr: "Note seule sans commentaire.",
+    it: "Solo valutazione senza commento.",
+    en: "Rating only, no comment.",
   },
   "migrate.title": {
     de: "Gerätedaten übernehmen",

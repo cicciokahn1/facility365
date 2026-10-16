@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { MaterialEditor } from '@/components/module/material-editor';
 import { ReportAssistant } from '@/components/modules/report-assistant';
+import { ReportFeedback } from '@/components/modules/report-feedback';
 import { ReportPdfPanel } from '@/components/modules/report-pdf-panel';
 import { ReportSignDialog } from '@/components/modules/report-sign-dialog';
 import { ReportSignature } from '@/components/modules/report-signature';
@@ -77,6 +78,11 @@ export function ReportDetail({ id }: { id: string }) {
           value: 'signature',
           labelKey: 'tab.signature',
           content: <ReportSignature report={report} onChange={update} />,
+        },
+        {
+          value: 'feedback',
+          labelKey: 'tab.feedback',
+          content: <ReportFeedback report={report} />,
         },
         {
           value: 'pdf',
