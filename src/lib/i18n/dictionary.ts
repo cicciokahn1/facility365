@@ -7492,7 +7492,7 @@ export const dictionary = {
     en: "This person is push-notified on critical damage (high priority).",
   },
   "legal.title": {
-    de: "AGB und Datenschutz",
+    de: "AGB, Datenschutz und AVV",
     fr: "CG et protection des donnees",
     it: "CG e protezione dei dati",
     en: "Terms and privacy",

@@ -1,7 +1,7 @@
 /** Oeffentliche Rechtsseite: AGB und Datenschutzerklaerung. */
 import Link from 'next/link';
 
-import { AGB_MD, PRIVACY_MD } from '@/lib/legal/texts';
+import { AGB_MD, DPA_MD, PRIVACY_MD } from '@/lib/legal/texts';
 
 /** Schlichte Markdown-zu-HTML-Umwandlung fuer die zwei Rechtstexte. */
 const htmlOf = (md: string): string => {
@@ -50,6 +50,11 @@ export default function LegalPage() {
       <article
         className="flex flex-col gap-3"
         dangerouslySetInnerHTML={{ __html: htmlOf(PRIVACY_MD) }}
+      />
+      <hr className="my-8" />
+      <article
+        className="flex flex-col gap-3"
+        dangerouslySetInnerHTML={{ __html: htmlOf(DPA_MD) }}
       />
     </main>
   );
