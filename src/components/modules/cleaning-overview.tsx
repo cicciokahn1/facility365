@@ -143,6 +143,7 @@ export function CleaningOverview() {
       keys.add(key);
       rows.push({
         sortKey: `${task.date}${task.workStart}`,
+        cleanerId: task.cleanerId,
         date: formatDate(task.date, settings.language),
         time: task.workStart,
         title: task.title || task.number,
@@ -162,6 +163,7 @@ export function CleaningOverview() {
         keys.add(key);
         rows.push({
           sortKey: `${date}${plan.timeStart}`,
+          cleanerId: plan.cleanerId,
           date: formatDate(date, settings.language),
           time: plan.timeStart,
           title: plan.title || area?.name || plan.number,
@@ -179,12 +181,19 @@ export function CleaningOverview() {
     return rows.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
   }, [areas, buildings, cleaners, plans, rooms, settings.language, visibleTasks]);
 
-  const printSchedule = async (mode: 'weekly' | 'roomSheets'): Promise<void> => {
+  const printSchedule = async (
+    mode: 'weekly' | 'roomSheets',
+    onlyCleanerId?: string,
+    title?: string,
+  ): Promise<void> => {
     const { downloadCleaningSchedulePdf } = await import('@/lib/cleaning/cleaning-schedule-pdf');
+    const rows = onlyCleanerId
+      ? scheduleRows.filter((row) => row.cleanerId === onlyCleanerId)
+      : scheduleRows;
     downloadCleaningSchedulePdf(
-      scheduleRows,
+      rows,
       {
-        weeklyPlan: t('cleaning.weeklyPlan'),
+        weeklyPlan: title ?? t('cleaning.weeklyPlan'),
         roomSheets: t('cleaning.roomSheets'),
         date: t('common.date'),
         time: t('cleaning.time'),
@@ -341,6 +350,53 @@ export function CleaningOverview() {
 
       <Card>
         <CardHeader>
+          <CardTitle className="text-base">{t('cleaning.staffPlans')}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          {cleaners.filter((cleaner) => cleaner.status === 'active').length === 0 ? (
+            <div className="p-4">
+              <EmptyState titleKey="list.empty" />
+            </div>
+          ) : (
+            <ul className="divide-y" data-testid="cleaning-staff-plans">
+              {cleaners
+                .filter((cleaner) => cleaner.status === 'active')
+                .map((cleaner) => {
+                  const name = [cleaner.firstName, cleaner.name].filter(Boolean).join(' ');
+                  const count = scheduleRows.filter((row) => row.cleanerId === cleaner.id).length;
+                  return (
+                    <li key={cleaner.id} className="flex items-center gap-3 p-3">
+                      <Link href={`/cleaning/staff/${cleaner.id}`} className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium">{name}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {count} {t('cleaning.weeklyEntries')}
+                        </span>
+                      </Link>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          void printSchedule(
+                            'weekly',
+                            cleaner.id,
+                            `${name} – ${t('cleaning.weeklyPlan')}`,
+                          )
+                        }
+                      >
+                        <Printer className="size-4" aria-hidden />
+                        {t('cleaning.printWeekly')}
+                      </Button>
+                    </li>
+                  );
+                })}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle className="text-base">{t('cleaning.tours')}</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -359,7 +415,7 @@ export function CleaningOverview() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{t('cleaning.activePlans')}</CardTitle>
+          <CardTitle className="text-base">{t('cleaning.controlPlans')}</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {plans.length === 0 ? (

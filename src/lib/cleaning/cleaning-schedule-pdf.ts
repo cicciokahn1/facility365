@@ -6,6 +6,8 @@ import type { Language } from '@/lib/i18n/dictionary';
 
 export interface CleaningScheduleRow {
   sortKey: string;
+  /** Reinigungskraft fuer personenbezogene Plaene. */
+  cleanerId?: string;
   date: string;
   time: string;
   title: string;
