@@ -51,6 +51,11 @@ import { useT } from "@/lib/i18n/provider";
 import { configOf, defaultValuesOf, titleOfEntity } from "@/lib/module-config";
 import { moduleByCollection } from "@/lib/modules";
 import { closedStatusValues } from "@/lib/module-status";
+import {
+  type CompletableKey,
+  isCompletable,
+  useMarkDone,
+} from "@/lib/workflow/complete";
 import { FormValues, SelectField, asString } from "@/lib/schema";
 import { useSettings } from "@/lib/settings/provider";
 import { BaseEntity, CollectionKey, InvoicePaymentData, Supplier } from "@/lib/types";
@@ -93,6 +98,7 @@ export function ModuleList({
   const moduleDef = moduleByCollection(collection);
   const config = configOf(collection);
   const { items: all, create, update } = useCollection(collection);
+  const markDone = useMarkDone(collection as CompletableKey);
   const access = useAccess();
   /** Nur Datensaetze des eigenen Sichtbereichs; die Rolle entscheidet. */
   const items = useMemo(
@@ -300,6 +306,19 @@ export function ModuleList({
                 {selected.length > 0 ? (
                   <Button variant="outline" onClick={() => setMassOpen(true)}>
                     {t("list.bulkEdit")} ({selected.length})
+                  </Button>
+                ) : null}
+                {selected.length > 0 && isCompletable(collection) ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      selected.forEach((id) => markDone(id));
+                      setSelected([]);
+                      toast.success(t("action.markedDone"));
+                    }}
+                    data-testid="bulk-done"
+                  >
+                    {t("action.markDone")} ({selected.length})
                   </Button>
                 ) : null}
                 {mayBulk ? (
