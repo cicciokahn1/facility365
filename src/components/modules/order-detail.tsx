@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { ChecklistEditor } from '@/components/module/checklist-editor';
 import { EntityDetail } from '@/components/module/entity-detail';
 import { MaterialEditor } from '@/components/module/material-editor';
 import { RelatedList } from '@/components/module/related-list';
@@ -82,27 +81,22 @@ export function OrderDetail({ id }: { id: string }) {
                 workStart: order.workStart,
                 workEnd: order.workEnd,
                 breakMinutes: order.breakMinutes,
+                hourlyRate: order.hourlyRate,
               }}
               onChange={(values) => {
                 update({
                   ...values,
-                  hourlyRate: hourlyRateFor({
-                    explicit: order.hourlyRate,
-                    user: users.find((user) => user.id === order.assigneeUserId),
-                    supplier: suppliers.find((supplier) => supplier.id === order.supplierId),
-                    settings,
-                  }),
+                  hourlyRate:
+                    values.hourlyRate ??
+                    hourlyRateFor({
+                      user: users.find((user) => user.id === order.assigneeUserId),
+                      supplier: suppliers.find((supplier) => supplier.id === order.supplierId),
+                      settings,
+                    }),
                 });
                 toast.success(t('toast.saved'));
               }}
             />
-          ),
-        },
-        {
-          value: 'checklist',
-          labelKey: 'tab.checklist',
-          content: (
-            <ChecklistEditor items={order.checklist} onChange={(checklist) => update({ checklist })} />
           ),
         },
         {

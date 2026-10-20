@@ -31,34 +31,28 @@ export function ReportDetail({ id }: { id: string }) {
       headerExtra={(report, update) => (
         <>
           <ReportSignDialog report={report} onChange={update} />
-          {report.signature ? (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                const existing = report.invoicedInvoiceId
-                  ? invoices.find((invoice) => invoice.id === report.invoicedInvoiceId)
-                  : undefined;
-                if (existing) {
-                  router.push(`/invoices/${existing.id}`);
-                  return;
-                }
-                const invoice = createInvoice(report, t('report.workPosition'));
-                /** Die Rechnung ist gespeichert; das PDF folgt direkt aus demselben Datensatz. */
-                void invoicePdf.download(invoice);
-                toast.success(t('report.invoiceCreated'), { description: t('report.invoiceHint') });
-                router.push(`/invoices/${invoice.id}`);
-              }}
-              data-testid="report-create-invoice"
-            >
-              <Receipt className="size-4" aria-hidden />
-              {report.invoicedInvoiceId ? t('report.openInvoice') : t('report.toInvoice')}
-            </Button>
-          ) : (
-            <span className="text-xs text-muted-foreground" data-testid="invoice-needs-signature">
-              {t('report.invoiceNeedsSignature')}
-            </span>
-          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              const existing = report.invoicedInvoiceId
+                ? invoices.find((invoice) => invoice.id === report.invoicedInvoiceId)
+                : undefined;
+              if (existing) {
+                router.push(`/invoices/${existing.id}`);
+                return;
+              }
+              const invoice = createInvoice(report, t('report.workPosition'));
+              /** Die Rechnung ist gespeichert; das PDF folgt direkt aus demselben Datensatz. */
+              void invoicePdf.download(invoice);
+              toast.success(t('report.invoiceCreated'), { description: t('report.invoiceHint') });
+              router.push(`/invoices/${invoice.id}`);
+            }}
+            data-testid="report-create-invoice"
+          >
+            <Receipt className="size-4" aria-hidden />
+            {report.invoicedInvoiceId ? t('report.openInvoice') : t('report.toInvoice')}
+          </Button>
         </>
       )}
       extraTabs={(report, update) => [

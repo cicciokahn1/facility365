@@ -67,6 +67,7 @@ export function CleaningTaskDetail({ id }: { id: string }) {
                 workStart: task.workStart,
                 workEnd: task.workEnd,
                 breakMinutes: task.breakMinutes,
+                hourlyRate: task.hourlyRate,
               }}
               onChange={(values) => {
                 const cleaner = cleaners.find((entry) => entry.id === task.cleanerId);
@@ -75,13 +76,14 @@ export function CleaningTaskDetail({ id }: { id: string }) {
                   workStart: values.workStart,
                   workEnd: values.workEnd,
                   breakMinutes: values.breakMinutes,
-                  hourlyRate: hourlyRateFor({
-                    explicit: task.hourlyRate,
-                    user: users.find((entry) => entry.id === task.assigneeUserId),
-                    cleaner,
-                    supplier: suppliers.find((entry) => entry.id === cleaner?.supplierId),
-                    settings,
-                  }),
+                  hourlyRate:
+                    values.hourlyRate ??
+                    hourlyRateFor({
+                      user: users.find((entry) => entry.id === task.assigneeUserId),
+                      cleaner,
+                      supplier: suppliers.find((entry) => entry.id === cleaner?.supplierId),
+                      settings,
+                    }),
                 });
                 toast.success(t('toast.saved'));
               }}

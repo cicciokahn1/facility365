@@ -6760,6 +6760,12 @@ export const dictionary = {
   },
   "work.start": { de: "Arbeitsbeginn", fr: "Début", it: "Inizio", en: "Start" },
   "work.end": { de: "Arbeitsende", fr: "Fin", it: "Fine", en: "End" },
+  "work.rateAuto": {
+    de: "automatisch",
+    fr: "automatique",
+    it: "automatico",
+    en: "automatic",
+  },
   "work.break": {
     de: "Pause (Min.)",
     fr: "Pause (min)",
