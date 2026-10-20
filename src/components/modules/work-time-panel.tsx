@@ -31,6 +31,8 @@ export interface WorkTimeValues {
   workStart: string;
   workEnd: string;
   breakMinutes: number;
+  /** Manueller Stundensatz; leer laesst die automatische Ermittlung greifen. */
+  hourlyRate?: number;
 }
 
 export function WorkTimePanel({
@@ -74,7 +76,7 @@ export function WorkTimePanel({
     onChange(next);
   };
   /** Vergleich ueber den Inhalt, da der Aufrufer bei jedem Rendern ein neues Objekt liefert. */
-  const key = `${values.workDate}|${values.workStart}|${values.workEnd}|${values.breakMinutes}`;
+  const key = `${values.workDate}|${values.workStart}|${values.workEnd}|${values.breakMinutes}|${values.hourlyRate ?? ''}`;
   const [savedKey, setSavedKey] = useState(key);
 
   if (savedKey !== key) {
@@ -92,7 +94,8 @@ export function WorkTimePanel({
     draft.workDate !== values.workDate ||
     draft.workStart !== values.workStart ||
     draft.workEnd !== values.workEnd ||
-    draft.breakMinutes !== values.breakMinutes;
+    draft.breakMinutes !== values.breakMinutes ||
+    (draft.hourlyRate ?? null) !== (values.hourlyRate ?? null);
 
   const set = (patch: Partial<WorkTimeValues>) => setDraft({ ...draft, ...patch });
 
@@ -122,7 +125,7 @@ export function WorkTimePanel({
           </Button>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         <div className="col-span-2 flex flex-col gap-1.5 sm:col-span-1">
           <Label htmlFor="work-date">{t('common.date')}</Label>
           <Input
@@ -168,6 +171,26 @@ export function WorkTimePanel({
             value={String(draft.breakMinutes ?? 0)}
             onChange={(event) => set({ breakMinutes: Number(event.target.value) || 0 })}
             data-testid="work-break"
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="work-rate">{t('settings.hourlyRate')}</Label>
+          <Input
+            id="work-rate"
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={0.05}
+            className="h-11"
+            value={draft.hourlyRate ?? ''}
+            placeholder={t('work.rateAuto')}
+            onChange={(event) =>
+              set({
+                hourlyRate:
+                  event.target.value === '' ? undefined : Number(event.target.value) || 0,
+              })
+            }
+            data-testid="work-rate"
           />
         </div>
       </div>
