@@ -11,7 +11,7 @@ import { useCallback } from 'react';
 
 import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { hourlyRateFor } from '@/lib/reports/hourly-rate';
-import { workedHours } from '@/lib/reports/work-time';
+import { WorkTime, workedHours } from '@/lib/reports/work-time';
 import { useSettings } from '@/lib/settings/provider';
 import { Invoice, InvoicePaymentData, LineItem, Report } from '@/lib/types';
 import { referenceFor } from '@/lib/invoices/swiss-qr';
@@ -24,12 +24,16 @@ export const invoiceItemsFromReport = (
   vatRate: number,
   hourlyRate: number,
   additionalMaterials: LineItem[] = [],
+  /** Auftragszeiten als Reserve, wenn der Rapport selbst keine Arbeitszeit traegt. */
+  orderTime?: WorkTime,
 ): LineItem[] => {
-  const hours = workedHours({
-    start: report.workStart,
-    end: report.workEnd,
-    breakMinutes: report.breakMinutes,
-  });
+  const hours =
+    workedHours({
+      start: report.workStart,
+      end: report.workEnd,
+      breakMinutes: report.breakMinutes,
+    }) ||
+    (orderTime ? workedHours(orderTime) : 0);
   const items: LineItem[] = [];
 
     if (hours > 0 && report.billable !== false && !report.invoicedInvoiceId) {
@@ -133,6 +137,13 @@ export function useInvoiceFromReport(): (report: Report, workLabel: string) => I
               unitPrice: material.price,
               vatRate: settings.vatRate,
             })),
+            order
+              ? {
+                  start: order.workStart,
+                  end: order.workEnd,
+                  breakMinutes: order.breakMinutes,
+                }
+              : undefined,
           ),
         currency: settings.currency,
         notes: servicesOf(report),
