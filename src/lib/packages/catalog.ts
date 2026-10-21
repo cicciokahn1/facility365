@@ -197,9 +197,14 @@ export const SETUP_EXCLUDED = [
  */
 export const ADDON_PRICES: Partial<Record<ModuleKey, number>> = {};
 
+/** Diese Module werden nicht als kostenpflichtige Zusatzmodule angeboten. */
+const NO_ADDON: ModuleKey[] = ['waste'];
+
 /** Module, die NICHT im gewaehlten Paket sind = zubuchbare Zusatzmodule. */
 export const addonModulesOf = (key: IndustryPackage): ModuleKey[] =>
-  key === '' || key === 'custom' ? [] : disabledByPackage(key);
+  key === '' || key === 'custom'
+    ? []
+    : disabledByPackage(key).filter((module) => !NO_ADDON.includes(module));
 
 /** Enthaltene optionale Module, als Gruppenliste fuer die Anzeige. */
 export const includedGroupsOf = (key: IndustryPackage): ModuleGroup[] => {
