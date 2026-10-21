@@ -86,7 +86,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
     benefit:
       'Alle Module in einem System: vom Auftrag ueber Wartung, Kontrollen und Reinigung bis zu Offerten und Rechnungen.',
     whyThis:
-      'Die einzige Stufe ohne Modulbeschraenkung - wer das volle Spektrum anbietet, faehrt mit Professional am guenstigsten.',
+      'Das Komplettpaket: hoechste Stufe mit festem Preis - alles enthalten, nichts dazubuchen, keine Ueberraschungen.',
     groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce'],
     extraModules: ['visitors', 'parking', 'waste', 'hazards'],
   },
@@ -141,12 +141,12 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
     extraModules: ['vehicles', 'contracts', 'analytics', 'portal'],
   },
   enterprise: {
-    summary: 'Individuelle Loesung fuer Konzerne und Gruppen.',
-    target: 'Grosse Organisationen mit mehreren Standorten, Mandanten oder besonderen Anforderungen.',
+    summary: 'Der freie Baukasten: Du waehlst selbst, welche Module du brauchst.',
+    target: 'Organisationen mit besonderen Anforderungen, die kein Standardpaket vollstaendig trifft.',
     benefit:
-      'Voller Modulumfang wie Professional, dazu individuelle Konfiguration, Anbindungen und Vereinbarungen nach Mass.',
+      'Statt ein festes Paket zu nehmen, stellst du aus allen verfuegbaren Modulen deine eigene Loesung zusammen - Umfang und Preis werden individuell vereinbart.',
     whyThis:
-      'Fuer Kunden, deren Anforderungen ueber Standardpakete hinausgehen - Umfang und Preis werden gemeinsam definiert.',
+      'Fuer Kunden, die weder das Komplettpaket noch ein Standardpaket brauchen: maximal flexibel, alles auswaehlbar, Angebot nach Auswahl.',
     groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce'],
     extraModules: ['visitors', 'parking', 'waste', 'hazards'],
   },
@@ -200,11 +200,16 @@ export const ADDON_PRICES: Partial<Record<ModuleKey, number>> = {};
 /** Diese Module werden nicht als kostenpflichtige Zusatzmodule angeboten. */
 const NO_ADDON: ModuleKey[] = ['waste'];
 
-/** Module, die NICHT im gewaehlten Paket sind = zubuchbare Zusatzmodule. */
+/**
+ * Module, die NICHT im gewaehlten Paket sind = zubuchbare Zusatzmodule.
+ * Enterprise ist ein Baukasten: dort stehen alle abschaltbaren Module zur Auswahl.
+ */
 export const addonModulesOf = (key: IndustryPackage): ModuleKey[] =>
-  key === '' || key === 'custom'
-    ? []
-    : disabledByPackage(key).filter((module) => !NO_ADDON.includes(module));
+  key === 'enterprise'
+    ? OPTIONAL_MODULES.filter((module) => !NO_ADDON.includes(module))
+    : key === '' || key === 'custom'
+      ? []
+      : disabledByPackage(key).filter((module) => !NO_ADDON.includes(module));
 
 /** Enthaltene optionale Module, als Gruppenliste fuer die Anzeige. */
 export const includedGroupsOf = (key: IndustryPackage): ModuleGroup[] => {
