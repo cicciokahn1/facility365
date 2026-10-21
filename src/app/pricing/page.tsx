@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Check, Minus, Plus } from 'lucide-react';
+import { Check, Plus } from 'lucide-react';
 import { SUPPORT_EMAIL } from '@/lib/branding/support';
 import {
   addonModulesOf,
@@ -20,7 +20,6 @@ import {
   MODULE_GROUPS,
   monthlyPrice,
   PACKAGE_INFO,
-  SETUP_EXCLUDED,
   SETUP_FEES,
   SETUP_INCLUDED,
   yearlyPrice,
@@ -321,32 +320,19 @@ export default function PricingPage() {
           <CardHeader>
             <CardTitle>Einrichtung (einmalig)</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-6 md:grid-cols-2">
-            <div>
-              <p className="font-medium">In der Einrichtungspauschale enthalten</p>
-              <ul className="mt-2 space-y-1 text-sm">
-                {SETUP_INCLUDED.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-4 text-primary" aria-hidden />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="font-medium">Separat offerierbar</p>
-              <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                {SETUP_EXCLUDED.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <Minus className="mt-0.5 size-4" aria-hidden />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <p className="text-xs text-muted-foreground md:col-span-2">
-              Die genauen Einrichtungsbetruege richten sich nach Paket und Aufwand und werden
-              transparent im persoenlichen Angebot ausgewiesen.
+          <CardContent>
+            <ul className="space-y-1 text-sm">
+              {SETUP_INCLUDED.map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <Check className="mt-0.5 size-4 text-primary" aria-hidden />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Datenuebernahme, umfangreiche Schulungen und individuelle Konfiguration werden
+              bei Bedarf separat offeriert. Die genauen Einrichtungsbeträge richten sich nach
+              Paket und Aufwand und werden transparent im persoenlichen Angebot ausgewiesen.
             </p>
           </CardContent>
         </Card>
