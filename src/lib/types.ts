@@ -26,6 +26,7 @@ export type ModuleKey =
   | "solarplants"
   | "solaryields"
   | "orders"
+  | "workTimes"
   | "maintenances"
   | "legionella"
   | "rcd"
@@ -77,6 +78,7 @@ export type CollectionKey = Exclude<
   ModuleKey,
   | "dashboard"
   | "calendar"
+  | "workTimes"
   | "myArea"
   | "plans"
   | "cleaning"

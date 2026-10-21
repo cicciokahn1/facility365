@@ -52,6 +52,7 @@ export const OPTIONAL_MODULES: ModuleKey[] = [
   'parking',
   'waste',
   'stock',
+  'workTimes',
   'legionella',
   'rcd',
   'inspections',
