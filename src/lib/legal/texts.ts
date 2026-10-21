@@ -2,7 +2,7 @@
 export const AGB_MD = `# Allgemeine Geschäftsbedingungen (AGB) – Facility365
 
 **Version 2.0 – gültig ab Oktober 2026**
-**Betreiber: Francesco Macedonio, Guglerstrasse 31, 4512 Bellach, Schweiz – F.Macedonio@facility365.ch**
+**Betreiber: Francesco Macedonio, Guglerstrasse 31, 4512 Bellach, Schweiz – francesco.macedonio@hotmail.ch**
 
 > Hinweis: Diese Fassung wurde technisch aktualisiert. Vor dem kommerziellen Start ist eine juristische Prüfung nach Schweizer Recht empfohlen.
 
@@ -123,7 +123,7 @@ Schweizerisches Recht; Gerichtsstand wie in den AGB.
 export const PRIVACY_MD = `# Datenschutzerklärung – Facility365
 
 **Version 2.0 – gültig ab Oktober 2026**
-**Verantwortliche Stelle: Francesco Macedonio, Guglerstrasse 31, 4512 Bellach, Schweiz – F.Macedonio@facility365.ch**
+**Verantwortliche Stelle: Francesco Macedonio, Guglerstrasse 31, 4512 Bellach, Schweiz – francesco.macedonio@hotmail.ch**
 
 > Hinweis: Nach dem Schweizer Datenschutzgesetz (nDSG / revDSG). Technisch aktualisierte Fassung – juristische Prüfung empfohlen.
 
@@ -157,7 +157,7 @@ Ihre Inhalte bleiben für die Vertragsdauer gespeichert. Nach Kündigung stehen 
 
 ## 6. Ihre Rechte
 
-Sie haben Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Bearbeitung sowie Datenübertragbarkeit. Wenden Sie sich dafür an F.Macedonio@facility365.ch. Beschwerderecht beim EDÖB (Eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter).
+Sie haben Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Bearbeitung sowie Datenübertragbarkeit. Wenden Sie sich dafür an francesco.macedonio@hotmail.ch. Beschwerderecht beim EDÖB (Eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter).
 
 ## 7. Sicherheit
 

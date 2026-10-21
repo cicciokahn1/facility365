@@ -192,10 +192,52 @@ export const SETUP_EXCLUDED = [
 ];
 
 /**
- * OFFENE ENTSCHEIDUNG: Monatspreis je zubuchbarem Zusatzmodul (CHF).
- * null = wird im Angebot individuell verrechnet.
+ * Monatspreise (CHF) je Zusatzmodul, gestaffelt nach Umfang:
+ * kleine Verwaltungsmodule 29, Kontrollen und mittlere Module 49,
+ * Reinigung und Geschaeftliches 79, Portal 99.
  */
-export const ADDON_PRICES: Partial<Record<ModuleKey, number>> = {};
+export const ADDON_PRICES: Partial<Record<ModuleKey, number>> = {
+  // Kleine Verwaltungsmodule
+  organizations: 29,
+  sites: 29,
+  suppliers: 29,
+  sources: 29,
+  keys: 29,
+  inventory: 29,
+  tools: 29,
+  stock: 29,
+  visitors: 29,
+  parking: 29,
+  workTimes: 29,
+  // Kontrollen, Nachweise und mittlere Module
+  energy: 49,
+  solarplants: 49,
+  solaryields: 49,
+  vehicles: 49,
+  legionella: 49,
+  rcd: 49,
+  inspections: 49,
+  playgroundchecks: 49,
+  firechecks: 49,
+  audit: 49,
+  walkthrough: 49,
+  handover: 49,
+  // Reinigung (gesamter Reinigungsbereich pro Modul)
+  cleaning: 79,
+  cleaningtasks: 79,
+  cleaningplans: 79,
+  cleaningareas: 79,
+  cleaners: 79,
+  cleaningchecks: 79,
+  cleaningcomplaints: 79,
+  // Kaufmaennisches und Auswertung
+  contracts: 79,
+  quotes: 79,
+  invoices: 79,
+  analytics: 79,
+  // Kundenportal
+  portal: 99,
+};
 
 /** Diese Module werden nicht als kostenpflichtige Zusatzmodule angeboten. */
 const NO_ADDON: ModuleKey[] = ['waste'];
