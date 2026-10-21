@@ -1420,7 +1420,7 @@ export const table: Record<string, string> = {
   "auth.intro": "Ogni account vede soltanto i propri dati.",
   "auth.toSignUp": "Non hai un account? Crea un account",
   "auth.toSignIn": "Hai già un account? Accedi",
-  "auth.checkMail": "Account creato. Conferma l’e-mail se viene richiesta una conferma.",
+  "auth.checkMail": "E-mail inviata – controlla la posta e attiva l’account tramite il link.",
   "auth.notConfigured": "Nessun servizio account configurato; i dati restano su questo dispositivo.",
   "auth.continueLocal": "Continua in locale",
   "auth.forgot": "Password dimenticata?",

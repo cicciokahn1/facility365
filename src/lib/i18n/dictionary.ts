@@ -7108,10 +7108,10 @@ export const dictionary = {
     en: "Already have an account? Sign in",
   },
   "auth.checkMail": {
-    de: "Konto erstellt. Bestätige die E-Mail, falls eine Bestätigung verlangt wird.",
-    fr: "Compte créé. Confirmez l’e-mail si une confirmation est demandée.",
-    it: "Account creato. Conferma l’e-mail se viene richiesta una conferma.",
-    en: "Account created. Confirm the email if a confirmation is required.",
+    de: "E-Mail gesendet – bitte Posteingang prüfen und das Konto über den Link aktivieren.",
+    fr: "E-mail envoyé – vérifiez votre boîte de réception et activez le compte via le lien.",
+    it: "E-mail inviata – controlla la posta e attiva l’account tramite il link.",
+    en: "Email sent – please check your inbox and activate the account via the link.",
   },
   "auth.notConfigured": {
     de: "Es ist kein Konto-Dienst hinterlegt; die Daten bleiben auf diesem Gerät.",
