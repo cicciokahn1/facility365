@@ -207,7 +207,7 @@ export default function PricingPage() {
                     onClick={() => choosePackage(key)}
                     aria-pressed={selected}
                   >
-                    {selected ? 'Ausgewaehlt' : 'Paket waehlen'}
+                    {selected ? 'Ausgewählt' : 'Paket wählen'}
                   </Button>
                 </CardContent>
               </Card>
