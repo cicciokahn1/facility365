@@ -13,6 +13,7 @@ import {
   CalendarDays,
   ClipboardCheck,
   ClipboardList,
+  Clock3,
   DoorClosed,
   Droplets,
   FileSignature,
@@ -162,6 +163,7 @@ const NAVIGATION_ORDER: ModuleKey[] = [
   "damages",
   "orders",
   "tickets",
+  "workTimes",
   "handover",
   "cleaning",
   "cleaningtasks",
@@ -500,6 +502,14 @@ export const MODULES: ModuleDefinition[] = [
     singularKey: "module.orders.singular",
   },
   {
+    key: "workTimes",
+    path: "/work-time",
+    icon: Clock3,
+    group: "work",
+    labelKey: "quickWorkTime.title",
+    singularKey: "quickWorkTime.title",
+  },
+  {
     key: "maintenances",
     collection: "maintenances",
     path: "/maintenances",
@@ -784,9 +794,6 @@ export const NAV_GROUPS: NavGroupDefinition[] = [
 
 /** Ordner, in dem die aufgerufene Seite liegt - fuer das automatische Aufklappen. */
 export const groupOfPath = (pathname: string): NavGroup | undefined =>
-  pathname === "/work-time" || pathname.startsWith("/work-time/")
-    ? "work"
-    :
   MODULES.filter(
     (module) =>
       pathname === module.path || pathname.startsWith(`${module.path}/`),
