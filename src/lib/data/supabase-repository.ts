@@ -53,6 +53,15 @@ export const currentTenantId = async (): Promise<string> => {
 const tenantSettingsMissing = (error: { code?: string; message?: string }): boolean =>
   error.code === '42P01' || error.message?.includes('tenant_settings') === true;
 
+/** Die Datenbank benennt diese Tabellen im snake_case-Stil. */
+const TABLE_NAMES: Partial<Record<CollectionKey, string>> = {
+  privateNotes: 'private_notes',
+  privateFiles: 'private_files',
+  outdoorAreas: 'outdoorareas',
+};
+
+const tableOf = (collection: CollectionKey): string => TABLE_NAMES[collection] ?? collection;
+
 const rowOf = <K extends CollectionKey>(item: EntityOf<K>, userId: string, tenantId: string) => ({
   id: item.id,
   user_id: userId,
@@ -65,7 +74,7 @@ const rowOf = <K extends CollectionKey>(item: EntityOf<K>, userId: string, tenan
 export const supabaseRepository: Repository = {
   async read<K extends CollectionKey>(collection: K): Promise<EntityOf<K>[]> {
     const query = (await client())
-      .from(collection)
+      .from(tableOf(collection))
       .select('id, number, data, deleted_at');
     const { data, error } =
       collection === 'activities'
@@ -87,7 +96,7 @@ export const supabaseRepository: Repository = {
   async save<K extends CollectionKey>(collection: K, item: EntityOf<K>): Promise<void> {
     const [userId, tenantId] = await Promise.all([currentUserId(), currentTenantId()]);
     const { error } = await (await client())
-      .from(collection)
+      .from(tableOf(collection))
       .upsert(rowOf(item, userId, tenantId), { onConflict: 'tenant_id,id' });
     if (error) throw new Error(error.message);
   },
@@ -95,7 +104,7 @@ export const supabaseRepository: Repository = {
   async removeOne(collection: CollectionKey, id: string): Promise<void> {
     const tenantId = await currentTenantId();
     const { error } = await (await client())
-      .from(collection)
+      .from(tableOf(collection))
       .delete()
       .eq('tenant_id', tenantId)
       .eq('id', id);
@@ -106,7 +115,7 @@ export const supabaseRepository: Repository = {
     const [userId, tenantId] = await Promise.all([currentUserId(), currentTenantId()]);
     if (items.length > 0) {
       const { error } = await (await client())
-        .from(collection)
+        .from(tableOf(collection))
         .upsert(
           items.map((item) => rowOf(item, userId, tenantId)),
           { onConflict: 'tenant_id,id' },
@@ -119,7 +128,7 @@ export const supabaseRepository: Repository = {
      */
     const keep = items.map((item) => item.id);
     const query = (await client())
-      .from(collection)
+      .from(tableOf(collection))
       .update({ deleted_at: new Date().toISOString() })
       .eq('tenant_id', tenantId)
       .is('deleted_at', null);
@@ -190,7 +199,7 @@ export const supabaseRepository: Repository = {
     const tenantId = await currentTenantId();
     for (const collection of collections) {
       const { error } = await (await client())
-        .from(collection)
+        .from(tableOf(collection))
         .update({ deleted_at: new Date().toISOString() })
         .eq('tenant_id', tenantId)
         .is('deleted_at', null);
