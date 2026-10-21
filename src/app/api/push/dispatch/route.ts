@@ -76,7 +76,7 @@ export async function POST(request: Request) {
   if (error) return NextResponse.json({ error: 'load_failed' }, { status: 500 });
 
   webpush.setVapidDetails(
-    process.env.FACILITY365_VAPID_SUBJECT ?? 'mailto:admin@facility365.ch',
+    process.env.FACILITY365_VAPID_SUBJECT ?? 'mailto:francesco.macedonio@hotmail.ch',
     'BMFOcMBnET9KD0-_-Kl3E2OwkUc0EzvHdpQ-t7C1Mv9L_tBWtxuKv79znoqFImTUwJ_wFif-Qq4aKeoNiCuAUmA',
     privateKey,
   );
