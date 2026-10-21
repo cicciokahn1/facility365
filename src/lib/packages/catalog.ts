@@ -37,29 +37,29 @@ export interface ModuleGroup {
 export const MODULE_GROUPS: Record<string, ModuleGroup> = {
   structure: {
     title: 'Struktur und Partner',
-    description: 'Organisationen, Standorte, Lieferanten und Bezugsquellen verwalten.',
+    description: 'Organisationen, Standorte, Lieferanten und Bezugsqüllen verwalten.',
     modules: ['organizations', 'sites', 'suppliers', 'sources'],
   },
   technics: {
     title: 'Technik und Material',
-    description: 'Energie, Solaranlagen, Schluessel, Inventar, Werkzeuge und Lager.',
+    description: 'Energie, Solaranlagen, Schlüssel, Inventar, Werkzeuge und Lager.',
     modules: ['energy', 'solarplants', 'solaryields', 'keys', 'inventory', 'tools', 'stock'],
   },
   controls: {
     title: 'Kontrollen und Nachweise',
     description:
-      'Legionella, Elektro (NIV/RCD), Inspektionen, Spielplatz- und Brandchecks, Audits, Begehungen und Uebergaben.',
+      'Legionella, Elektro (NIV/RCD), Inspektionen, Spielplatz- und Brandchecks, Audits, Begehungen und Übergaben.',
     modules: ['legionella', 'rcd', 'inspections', 'playgroundchecks', 'firechecks', 'audit', 'walkthrough', 'handover'],
   },
   cleaning: {
     title: 'Reinigung',
     description:
-      'Reinigungsplaene, Flaechen, Mitarbeitende, Aufgaben, Qualitaetskontrollen und Reklamationen.',
+      'Reinigungspläne, Flächen, Mitarbeitende, Aufgaben, Qualitätskontrollen und Reklamationen.',
     modules: ['cleaning', 'cleaningtasks', 'cleaningplans', 'cleaningareas', 'cleaners', 'cleaningchecks', 'cleaningcomplaints'],
   },
   commerce: {
-    title: 'Kaufmaennisch',
-    description: 'Vertraege, Offerten, Rechnungen, Auswertungen und Kundenportal.',
+    title: 'Kaufmännisch',
+    description: 'Verträge, Offerten, Rechnungen, Auswertungen und Kundenportal.',
     modules: ['contracts', 'quotes', 'invoices', 'analytics', 'portal'],
   },
 };
@@ -81,72 +81,72 @@ export interface PackageInfo {
 
 export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, PackageInfo> = {
   professional: {
-    summary: 'Das Komplettpaket fuer Facility-Management- und Hauswartbetriebe.',
-    target: 'Hauswartfirmen und FM-Dienstleister, die mehrere Liegenschaften fuer Kunden betreuen.',
+    summary: 'Das Komplettpaket für Facility-Management- und Hauswartbetriebe.',
+    target: 'Hauswartfirmen und FM-Dienstleister, die mehrere Liegenschaften für Kunden betreuen.',
     benefit:
-      'Alle Module in einem System: vom Auftrag ueber Wartung, Kontrollen und Reinigung bis zu Offerten und Rechnungen.',
+      'Alle Module in einem System: vom Auftrag über Wartung, Kontrollen und Reinigung bis zu Offerten und Rechnungen.',
     whyThis:
-      'Das Komplettpaket: hoechste Stufe mit festem Preis - alles enthalten, nichts dazubuchen, keine Ueberraschungen.',
+      'Das Komplettpaket: höchste Stufe mit festem Preis - alles enthalten, nichts dazubuchen, keine Überraschungen.',
     groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce'],
     extraModules: ['visitors', 'parking', 'waste', 'hazards'],
   },
   property: {
-    summary: 'Das Paket fuer Immobilienverwaltungen und Bewirtschafter.',
+    summary: 'Das Paket für Immobilienverwaltungen und Bewirtschafter.',
     target: 'Verwaltungen, die Liegenschaften im eigenen oder fremden Auftrag bewirtschaften.',
     benefit:
-      'Betreiberpflichten dokumentiert erfuellen: Kontrollen, Wartungen und Schaeden je Liegenschaft lueckenlos nachweisen - plus Vertraege, Offerten und Rechnungen.',
+      'Betreiberpflichten dokumentiert erfüllen: Kontrollen, Wartungen und Schäden je Liegenschaft lückenlos nachweisen - plus Verträge, Offerten und Rechnungen.',
     whyThis:
-      'Deckt Bewirtschaftung und kaufmaennische Arbeit ab, ohne den Reinigungsbetrieb, den eine Verwaltung selten selbst fuehrt.',
+      'Deckt Bewirtschaftung und kaufmännische Arbeit ab, ohne den Reinigungsbetrieb, den eine Verwaltung selten selbst führt.',
     groups: ['structure', 'technics', 'controls', 'commerce'],
     extraModules: ['vehicles'],
   },
   care: {
-    summary: 'Das Paket fuer Pflege- und Betreuungseinrichtungen.',
-    target: 'Alters- und Pflegeheime, Spitaeler, Kliniken und betreute Wohnformen.',
+    summary: 'Das Paket für Pflege- und Betreuungseinrichtungen.',
+    target: 'Alters- und Pflegeheime, Spitäler, Kliniken und betreute Wohnformen.',
     benefit:
-      'Hygiene im Griff: Reinigungsplaene und -kontrollen, Legionella- und Sicherheitsnachweise sowie einwandfreie Dokumentation fuer Audits.',
+      'Hygiene im Griff: Reinigungspläne und -kontrollen, Legionella- und Sicherheitsnachweise sowie einwandfreie Dokumentation für Audits.',
     whyThis:
       'Einzige Stufe mit vollem Reinigungsbereich plus kompletten Kontrollen - die Nachweispflichten im Pflegealltag sind damit abgedeckt.',
     groups: ['structure', 'technics', 'controls', 'cleaning'],
     extraModules: ['contracts', 'analytics'],
   },
   institution: {
-    summary: 'Das Paket fuer soziale Institutionen und Wohnheime.',
-    target: 'Wohnheime, Werkstaetten, Tagesstaetten und gemeinnuetzige Traegerschaften.',
+    summary: 'Das Paket für soziale Institutionen und Wohnheime.',
+    target: 'Wohnheime, Werkstätten, Tagesstätten und gemeinnützige Trägerschaften.',
     benefit:
-      'Betrieb, Technik und Reinigung in einem Werkzeug: Auftraege verteilen, Kontrollen fuehren und Reinigungsqualitaet sichern - auch mit wechselnden Teams.',
+      'Betrieb, Technik und Reinigung in einem Werkzeug: Aufträge verteilen, Kontrollen führen und Reinigungsqualität sichern - auch mit wechselnden Teams.',
     whyThis:
       'Wie Care, aber auf institutionellen Wohn- und Arbeitsbetrieb zugeschnitten; dieselben Nachweis- und Reinigungsmodule ohne Pflegefokus.',
     groups: ['structure', 'technics', 'controls', 'cleaning'],
     extraModules: ['contracts', 'analytics'],
   },
   industry: {
-    summary: 'Das Paket fuer Industrie- und Produktionsbetriebe.',
+    summary: 'Das Paket für Industrie- und Produktionsbetriebe.',
     target: 'Industrieunternehmen mit eigenem Unterhalts- und Facility-Team.',
     benefit:
-      'Fuhrpark, Werkzeuge, Lager und Gefahrstoffe im Griff, dazu die gesetzlichen Kontrollen und das Kaufmaennische fuer externe Auftraege.',
+      'Fuhrpark, Werkzeuge, Lager und Gefahrstoffe im Griff, dazu die gesetzlichen Kontrollen und das Kaufmännische für externe Aufträge.',
     whyThis:
-      'Vollausstattung fuer technische Betriebe - ohne Reinigungsbereich, den Industriebetriebe meist extern vergeben.',
+      'Vollausstattung für technische Betriebe - ohne Reinigungsbereich, den Industriebetriebe meist extern vergeben.',
     groups: ['structure', 'technics', 'controls', 'commerce'],
     extraModules: ['vehicles', 'hazards'],
   },
   public: {
-    summary: 'Das Paket fuer Gemeinden und oeffentliche Verwaltungen.',
-    target: 'Gemeinden, Staedte, Schulen und oeffentliche Betriebe.',
+    summary: 'Das Paket für Gemeinden und öffentliche Verwaltungen.',
+    target: 'Gemeinden, Städte, Schulen und öffentliche Betriebe.',
     benefit:
-      'Vom Schulhaus bis zur Werkhalle: Kontrollen (Spielplatz, Brandschutz, Legionella), Reinigung, Auftraege und ein Meldeportal fuer die Bevoelkerung.',
+      'Vom Schulhaus bis zur Werkhalle: Kontrollen (Spielplatz, Brandschutz, Legionella), Reinigung, Aufträge und ein Meldeportal für die Bevölkerung.',
     whyThis:
-      'Die breiteste Stufe nach Professional: enthaelt Reinigung und das Buergermelde-Portal - die beiden Dinge, die eine Gemeinde braucht.',
+      'Die breiteste Stufe nach Professional: enthält Reinigung und das Bürgermelde-Portal - die beiden Dinge, die eine Gemeinde braucht.',
     groups: ['structure', 'technics', 'controls', 'cleaning'],
     extraModules: ['vehicles', 'contracts', 'analytics', 'portal'],
   },
   enterprise: {
-    summary: 'Der freie Baukasten: Du waehlst selbst, welche Module du brauchst.',
-    target: 'Organisationen mit besonderen Anforderungen, die kein Standardpaket vollstaendig trifft.',
+    summary: 'Der freie Baukasten: Du wählst selbst, welche Module du brauchst.',
+    target: 'Organisationen mit besonderen Anforderungen, die kein Standardpaket vollständig trifft.',
     benefit:
-      'Statt ein festes Paket zu nehmen, stellst du aus allen verfuegbaren Modulen deine eigene Loesung zusammen - Umfang und Preis werden individuell vereinbart.',
+      'Statt ein festes Paket zu nehmen, stellst du aus allen verfügbaren Modulen deine eigene Lösung zusammen - Umfang und Preis werden individüll vereinbart.',
     whyThis:
-      'Fuer Kunden, die weder das Komplettpaket noch ein Standardpaket brauchen: maximal flexibel, alles auswaehlbar, Angebot nach Auswahl.',
+      'Für Kunden, die weder das Komplettpaket noch ein Standardpaket brauchen: maximal flexibel, alles auswählbar, Angebot nach Auswahl.',
     groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce'],
     extraModules: ['visitors', 'parking', 'waste', 'hazards'],
   },
@@ -181,14 +181,14 @@ export const SETUP_FEES: Record<Exclude<IndustryPackage, '' | 'custom'>, number 
 export const SETUP_INCLUDED = [
   'Grundkonfiguration der Installation',
   'Einrichtung der Benutzer und Mandanten',
-  'Persoenliche Einfuehrung in den Betrieb',
+  'Persönliche Einführung in den Betrieb',
 ];
 
 /** Separat offeriert, nicht Teil der Pauschale. */
 export const SETUP_EXCLUDED = [
-  'Uebernahme bestehender Daten',
+  'Übernahme bestehender Daten',
   'Umfangreiche Schulungen',
-  'Individuelle Konfiguration und Anbindungen',
+  'Individülle Konfiguration und Anbindungen',
 ];
 
 /**
