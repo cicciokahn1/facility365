@@ -127,6 +127,20 @@ function LoginForm() {
             AGB und Datenschutz
           </Link>
         </div>
+        {mode !== "signUp" ? (
+          <button
+            type="button"
+            data-testid="auth-trial-cta"
+            onClick={() => {
+              setMode("signUp");
+              setError("");
+              setHint("");
+            }}
+            className="mb-4 block w-full rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-center text-sm font-medium text-primary hover:bg-primary/15"
+          >
+            {t("trial.start")} – {t("trial.noCard")}
+          </button>
+        ) : null}
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-2">
             <Label htmlFor="auth-email">{t("auth.email")}</Label>

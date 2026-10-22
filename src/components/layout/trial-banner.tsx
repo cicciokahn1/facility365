@@ -47,15 +47,32 @@ export function TrialNotice() {
   const t = useT();
   const trial = useTrial();
   if (!trial.isTrial || trial.expired) return null;
-  if (!TRIAL_WARN_DAYS.includes(trial.daysLeft)) return null;
+
+  const urgent = trial.daysLeft <= TRIAL_WARN_DAYS[0];
+  const end = new Date(trial.endsAt);
+  const date = Number.isNaN(end.getTime())
+    ? ""
+    : end.toLocaleDateString();
 
   return (
     <p
       data-testid="trial-notice"
-      className="flex flex-wrap items-center gap-2 bg-warning/20 px-4 py-2 text-sm text-warning-foreground"
+      className={cn(
+        "flex flex-wrap items-center gap-2 px-4 py-2 text-sm",
+        urgent
+          ? "bg-warning/20 text-warning-foreground"
+          : "bg-brand-soft text-primary",
+      )}
     >
-      <AlertTriangle className="size-4 shrink-0" aria-hidden />
-      {t("trial.notice", { days: trial.daysLeft })}
+      {urgent ? (
+        <AlertTriangle className="size-4 shrink-0" aria-hidden />
+      ) : (
+        <Clock className="size-4 shrink-0" aria-hidden />
+      )}
+      <span className="font-medium">{t("trial.title")}</span>
+      {urgent
+        ? t("trial.notice", { days: trial.daysLeft })
+        : t("trial.remaining", { days: trial.daysLeft, date })}
       <Link href="/trial" className="font-medium underline">
         {t("trial.extend")}
       </Link>
