@@ -123,12 +123,16 @@ const setState = (patch: Partial<SyncState>) => {
   emit();
 };
 
+/** Merkt, dass die Warteschlange selbst nicht geschrieben werden konnte
+ *  (z. B. voller Speicher): bleibt bestehen, bis das Schreiben wieder klappt. */
+let storageBlocked = "";
+
 const refreshPending = () => {
   const queue = readQueue();
   setState({
     pending: queue.length,
-    failed: queue.some((op) => op.attempts >= MAX_ATTEMPTS),
-    lastError: queue.find((op) => op.lastError)?.lastError ?? "",
+    failed: queue.some((op) => op.attempts >= MAX_ATTEMPTS) || storageBlocked !== "",
+    lastError: storageBlocked || queue.find((op) => op.lastError)?.lastError || "",
   });
 };
 
@@ -162,12 +166,13 @@ const enqueue = (op: QueuedOp) => {
   refreshPending();
 };
 
-const dequeue = (id: string) => {
-  writeJson(
+const dequeue = (id: string): boolean => {
+  const ok = writeJson(
     queueKey(),
     readQueue().filter((entry) => entry.id !== id),
   );
   refreshPending();
+  return ok;
 };
 
 /** Fehlertext ohne Datensaetze: Sammlung, Aktion und kurze Fehlerangabe. */
@@ -313,6 +318,7 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
   if (!isOnline() || readQueue().length === 0) return true;
 
   let changed = false;
+  const serverCache = new Map<CollectionKey, BaseEntity[]>();
   const run = async () => {
     setState({ syncing: true });
     try {
@@ -320,7 +326,7 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
         if (op.attempts >= MAX_ATTEMPTS) continue;
         try {
           if (op.kind === "save") {
-            const server = (await remote.read(op.collection)) as BaseEntity[];
+            const server = await serverItems(op.collection);
             const theirs = server.find((entry) => entry.id === op.item.id);
             const merged = theirs
               ? resolve(op.collection, op.item, theirs)
@@ -337,7 +343,19 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
             );
             putCache(op.collection, op.items);
           }
-          dequeue(op.id);
+          /** Schlaegt das Entfernen fehl (z. B. voller Speicher), wuerde der
+           *  Vorgang endlos wiederholt: dann abbrechen und den Fehler zeigen. */
+          if (!dequeue(op.id)) {
+            console.warn("Warteschlange nicht schreibbar:", op.collection);
+            storageBlocked =
+              "Speicher voll: Synchronisation pausiert, bitte Speicher freigeben";
+            refreshPending();
+            break;
+          }
+          if (storageBlocked) {
+            storageBlocked = "";
+            refreshPending();
+          }
           changed = true;
         } catch (error) {
           console.warn("Sync-Vorgang fehlgeschlagen:", errorText(op, error));
@@ -365,6 +383,14 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
       setState({ syncing: false });
       refreshPending();
     }
+  };
+
+  /** Liest die Collection einmal je Lauf statt einmal je Eintrag. */
+  const serverItems = async (collection: CollectionKey): Promise<BaseEntity[]> => {
+    if (!serverCache.has(collection)) {
+      serverCache.set(collection, (await remote.read(collection)) as BaseEntity[]);
+    }
+    return serverCache.get(collection) ?? [];
   };
 
   flushing = run();
