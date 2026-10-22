@@ -396,6 +396,39 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
           changed = true;
           setState({ processed: state.processed + 1 });
         } catch (error) {
+          /** Gehoert die Kennung auf dem Server einem anderen Mandanten
+           *  (z. B. feste Test-Kennung in einem zweiten Datenraum), bekommt
+           *  der lokale Datensatz eine neue Kennung; alle lokalen Verweise
+           *  werden umgebogen und einmal erneut gespeichert. Fremde
+           *  Datensaetze werden niemals ueberschrieben. */
+          if (
+            op.kind === "save" &&
+            error instanceof Error &&
+            error.message.startsWith("23505:")
+          ) {
+            const freshId = reIdLocalItem(op.collection, op.item.id);
+            try {
+              const freshItem = { ...op.item, id: freshId };
+              await withTimeout(
+                remote.save(
+                  op.collection,
+                  freshItem as EntityOf<CollectionKey>,
+                ),
+                `save:${op.collection}`,
+              );
+              if (!dequeue(op.id)) {
+                storageBlocked =
+                  "Speicher voll: Synchronisation pausiert, bitte Speicher freigeben";
+                refreshPending();
+                break;
+              }
+              changed = true;
+              setState({ processed: state.processed + 1 });
+              continue;
+            } catch (retryError) {
+              error = retryError;
+            }
+          }
           console.warn("Sync-Vorgang fehlgeschlagen:", errorText(op, error));
           countAttempt(op.id, error, op);
           /** Dauerhaft verweigerte Vorgaenge (z. B. fehlende Schreibrechte)
@@ -435,6 +468,56 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
       serverCache.set(collection, (await remote.read(collection)) as BaseEntity[]);
     }
     return serverCache.get(collection) ?? [];
+  };
+
+  /** Gibt einem lokalen Datensatz eine neue Kennung und biegt alle lokalen
+   *  Verweise um (Cache, Warteschlange und Verweisfelder wie assetId). */
+  const reIdLocalItem = (collection: CollectionKey, oldId: string): string => {
+    const freshId = newId(collection.slice(0, 2));
+    putCache(
+      collection,
+      cached(collection).map((item) =>
+        item.id === oldId ? { ...item, id: freshId } : item,
+      ),
+    );
+    for (const key of COLLECTIONS) {
+      const list = cached(key) as BaseEntity[];
+      let touched = false;
+      const mapped = list.map((item) => {
+        const next = { ...item } as Record<string, unknown>;
+        let changedItem = false;
+        for (const field of Object.keys(next)) {
+          if (field.endsWith("Id") && next[field] === oldId) {
+            next[field] = freshId;
+            changedItem = true;
+          }
+        }
+        if (changedItem) touched = true;
+        return changedItem ? (next as unknown as BaseEntity) : item;
+      });
+      if (touched) putCache(key, mapped as EntityOf<CollectionKey>[]);
+    }
+    writeJson(
+      queueKey(),
+      readQueue().map((queued) => {
+        if (queued.kind === "save" && queued.item.id === oldId) {
+          return { ...queued, item: { ...queued.item, id: freshId } };
+        }
+        if (queued.kind === "remove" && queued.itemId === oldId) {
+          return { ...queued, itemId: freshId };
+        }
+        if (queued.kind === "write") {
+          return {
+            ...queued,
+            items: queued.items.map((item) =>
+              item.id === oldId ? { ...item, id: freshId } : item,
+            ),
+          };
+        }
+        return queued;
+      }),
+    );
+    return freshId;
   };
 
   flushing = run();
