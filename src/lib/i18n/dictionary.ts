@@ -9767,6 +9767,12 @@ export const dictionary = {
     it: "Versione di prova prolungata",
     en: "Trial extended",
   },
+  "trial.planStatus": {
+    de: "Kontostatus",
+    fr: "Statut du compte",
+    it: "Stato dell'account",
+    en: "Account status",
+  },
   "trial.licensed": {
     de: "Lizenziert",
     fr: "Licencié",
