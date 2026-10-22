@@ -66,11 +66,18 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
   const loadTenant = useCallback(async (): Promise<TrialRecord | null> => {
     const client = await supabase();
     if (!client || !tenantId) return null;
-    const { data } = await client
+    /** Die Mandanten-Regel (RLS) liefert ohnehin nur den aktiven Mandanten;
+     *  eine eigene id-Abfrage kann bei mehreren Mitgliedschaften eine andere
+     *  Zeile treffen und dann leer ausgehen. Fehler werden nicht verschluckt. */
+    const { data, error } = await client
       .from("tenants")
       .select("plan, trial_ends_at")
-      .eq("id", tenantId)
+      .limit(1)
       .maybeSingle();
+    if (error) {
+      console.warn("Mandantenstatus nicht lesbar:", error.code ?? error.message);
+      return null;
+    }
     const row = data as TenantRow | null;
     if (!row) return null;
     if (row.plan === "licensed") {
