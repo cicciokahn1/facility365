@@ -8,7 +8,7 @@
  * angezeigt.
  */
 import Link from "next/link";
-import { AlertTriangle, Clock } from "lucide-react";
+import { AlertTriangle, BadgeCheck, Clock } from "lucide-react";
 
 import { useT } from "@/lib/i18n/provider";
 import { useTrial } from "@/lib/trial/provider";
@@ -18,6 +18,20 @@ import { cn } from "@/lib/utils";
 export function TrialBadge() {
   const t = useT();
   const trial = useTrial();
+
+  /** Lizenzierte Bestandskonten: dezenter Status ohne Frist. */
+  if (trial.plan === "licensed") {
+    return (
+      <span
+        data-testid="licensed-badge"
+        className="flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
+      >
+        <BadgeCheck className="size-3.5" aria-hidden />
+        <span className="hidden sm:inline">{t("trial.licensed")}</span>
+      </span>
+    );
+  }
+
   if (!trial.isTrial || trial.expired) return null;
 
   const urgent = trial.daysLeft <= TRIAL_WARN_DAYS[1];

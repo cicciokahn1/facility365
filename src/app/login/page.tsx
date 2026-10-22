@@ -7,6 +7,7 @@
  * das Konto, nicht ueber das Geraet.
  */
 import { Suspense, useEffect, useState } from "react";
+import { ClipboardCheck, Sparkles, Wrench } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -261,36 +262,79 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center gap-8 overflow-hidden bg-background p-4">
-      {/* Dezente Farbflaechen hinter der Anmeldung. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        <div className="absolute left-1/2 top-[-8rem] h-80 w-[40rem] max-w-none -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
-        <div className="absolute bottom-[-6rem] right-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-      </div>
+    <main className="flex min-h-dvh bg-background">
+      {/* Marken-Panel: nur auf grossen Bildschirmen sichtbar. */}
+      <BrandPanel />
 
-      <div className="flex flex-col items-center gap-2 text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element -- statische Marke ohne Groessenwechsel */}
-        <img
-          src={BRAND_LOGO_SRC}
-          alt="Facility365"
-          data-testid="login-logo"
-          className="h-24 w-auto max-w-[260px] rounded object-contain drop-shadow-sm dark:bg-white/95 dark:p-2"
-        />
-        <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-          Facility365 – Facility Management
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 p-4 sm:p-8">
+        {/* Kompaktes Branding auf kleinen Bildschirmen. */}
+        <div className="flex flex-col items-center gap-2 text-center lg:hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element -- statische Marke ohne Groessenwechsel */}
+          <img
+            src={BRAND_LOGO_SRC}
+            alt="Facility365"
+            data-testid="login-logo"
+            className="h-16 w-auto max-w-[220px] rounded object-contain drop-shadow-sm dark:bg-white/95 dark:p-2"
+          />
+          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Facility365 – Facility Management
+          </p>
+        </div>
+
+        <Suspense>
+          <LoginForm />
+        </Suspense>
+
+        <p className="text-xs text-muted-foreground">
+          © {new Date().getFullYear()} Facility365
         </p>
       </div>
-
-      <Suspense>
-        <LoginForm />
-      </Suspense>
-
-      <p className="text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Facility365
-      </p>
     </main>
+  );
+}
+
+function BrandPanel() {
+  const t = useT();
+  const features = [
+    { icon: Wrench, text: t("auth.heroWartung") },
+    { icon: Sparkles, text: t("auth.heroReinigung") },
+    { icon: ClipboardCheck, text: t("auth.heroUebergabe") },
+  ];
+  return (
+    <aside
+      className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-primary p-10 text-primary-foreground lg:flex xl:w-[55%]"
+      data-testid="login-brand"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element -- statische Marke ohne Groessenwechsel */}
+      <img
+        src={BRAND_LOGO_SRC}
+        alt="Facility365"
+        className="h-16 w-auto max-w-[220px] self-start rounded-lg bg-white/95 p-2 object-contain"
+      />
+
+      <div className="relative z-10 flex flex-col gap-6">
+        <h1 className="max-w-md text-3xl font-bold leading-tight xl:text-4xl">
+          {t("auth.heroTitle")}
+        </h1>
+        <ul className="flex flex-col gap-3">
+          {features.map(({ icon: Icon, text }) => (
+            <li key={text} className="flex items-center gap-3 text-sm">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/15">
+                <Icon className="size-4.5" aria-hidden />
+              </span>
+              {text}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* eslint-disable-next-line @next/next/no-img-element -- Illustration des Marken-Panels */}
+      <img
+        src="/brand/login-hero.png"
+        alt=""
+        aria-hidden
+        className="relative -mb-10 -mr-10 mt-6 w-full max-w-[520px] self-end rounded-xl object-cover opacity-95"
+      />
+    </aside>
   );
 }
