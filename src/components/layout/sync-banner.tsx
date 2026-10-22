@@ -47,6 +47,11 @@ export function SyncBanner() {
           {t("sync.count").replace("{n}", String(sync.pending))}
         </span>
       ) : null}
+      {sync.failed && sync.lastError ? (
+        <span data-testid="sync-error" className="text-xs">
+          {sync.lastError}
+        </span>
+      ) : null}
       {sync.online && sync.pending > 0 && !sync.syncing ? (
         <Button
           size="sm"

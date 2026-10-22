@@ -28,31 +28,28 @@ const cacheKey = (collection: CollectionKey): string =>
   `${workspacePrefix()}sync.${collection}`;
 const queueKey = (): string => `${workspacePrefix()}sync.queue`;
 
-interface SaveOp {
+interface QueuedOpBase {
+  id: string;
+  at: string;
+  collection: CollectionKey;
+  attempts: number;
+  /** Letzte lesbare Fehlermeldung des fehlgeschlagenen Versuchs. */
+  lastError?: string;
+}
+
+interface SaveOp extends QueuedOpBase {
   kind: "save";
-  id: string;
-  at: string;
-  collection: CollectionKey;
   item: BaseEntity;
-  attempts: number;
 }
 
-interface RemoveOp {
+interface RemoveOp extends QueuedOpBase {
   kind: "remove";
-  id: string;
-  at: string;
-  collection: CollectionKey;
   itemId: string;
-  attempts: number;
 }
 
-interface WriteOp {
+interface WriteOp extends QueuedOpBase {
   kind: "write";
-  id: string;
-  at: string;
-  collection: CollectionKey;
   items: BaseEntity[];
-  attempts: number;
 }
 
 type QueuedOp = SaveOp | RemoveOp | WriteOp;
@@ -69,6 +66,8 @@ export interface SyncState {
   lastSync: string;
   /** Mindestens ein Vorgang laesst sich dauerhaft nicht uebertragen. */
   failed: boolean;
+  /** Lesbare Ursache des letzten Fehlschlags (ohne Datensaetze). */
+  lastError: string;
 }
 
 const readJson = <T>(key: string, fallback: T): T => {
@@ -103,6 +102,7 @@ let state: SyncState = {
   syncing: false,
   lastSync: "",
   failed: false,
+  lastError: "",
 };
 
 const emit = () => listeners.forEach((listener) => listener());
@@ -114,7 +114,8 @@ const setState = (patch: Partial<SyncState>) => {
     next.pending === state.pending &&
     next.syncing === state.syncing &&
     next.lastSync === state.lastSync &&
-    next.failed === state.failed
+    next.failed === state.failed &&
+    next.lastError === state.lastError
   ) {
     return;
   }
@@ -127,6 +128,7 @@ const refreshPending = () => {
   setState({
     pending: queue.length,
     failed: queue.some((op) => op.attempts >= MAX_ATTEMPTS),
+    lastError: queue.find((op) => op.lastError)?.lastError ?? "",
   });
 };
 
@@ -168,11 +170,26 @@ const dequeue = (id: string) => {
   refreshPending();
 };
 
-const countAttempt = (id: string) => {
+/** Fehlertext ohne Datensaetze: Sammlung, Aktion und kurze Fehlerangabe. */
+const errorText = (op: QueuedOp, error: unknown): string => {
+  const source = error as { code?: string; message?: string } | null;
+  const detail = (source?.code ?? source?.message ?? "fehlgeschlagen")
+    .replace(/\s+/g, " ")
+    .slice(0, 120);
+  return `${op.collection}/${op.kind}: ${detail}`;
+};
+
+const countAttempt = (id: string, error?: unknown, op?: QueuedOp) => {
   writeJson(
     queueKey(),
     readQueue().map((entry) =>
-      entry.id === id ? { ...entry, attempts: entry.attempts + 1 } : entry,
+      entry.id === id
+        ? {
+            ...entry,
+            attempts: entry.attempts + 1,
+            lastError: op ? errorText(op, error) : entry.lastError,
+          }
+        : entry,
     ),
   );
   refreshPending();
@@ -275,7 +292,7 @@ const resolve = (
 export const resetAttempts = (): void => {
   writeJson(
     queueKey(),
-    readQueue().map((entry) => ({ ...entry, attempts: 0 })),
+    readQueue().map((entry) => ({ ...entry, attempts: 0, lastError: undefined })),
   );
   refreshPending();
 };
@@ -322,8 +339,24 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
           }
           dequeue(op.id);
           changed = true;
-        } catch {
-          countAttempt(op.id);
+        } catch (error) {
+          console.warn("Sync-Vorgang fehlgeschlagen:", errorText(op, error));
+          countAttempt(op.id, error, op);
+          /** Dauerhaft verweigerte Vorgaenge (z. B. fehlende Schreibrechte)
+           *  werden nicht sinnlos wiederholt: sofort als fehlgeschlagen markiert. */
+          const code = (error as { code?: string } | null)?.code;
+          if (code === "42501") {
+            const entry = readQueue().find((queued) => queued.id === op.id);
+            if (entry) {
+              writeJson(
+                queueKey(),
+                readQueue().map((queued) =>
+                  queued.id === op.id ? { ...queued, attempts: MAX_ATTEMPTS } : queued,
+                ),
+              );
+              refreshPending();
+            }
+          }
           if (!isOnline()) break;
         }
       }
