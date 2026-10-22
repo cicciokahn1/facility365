@@ -27,7 +27,7 @@ export function TrialBadge() {
         className="flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
       >
         <BadgeCheck className="size-3.5" aria-hidden />
-        <span className="hidden sm:inline">{t("trial.licensed")}</span>
+        <span>{t("trial.licensed")}</span>
       </span>
     );
   }
