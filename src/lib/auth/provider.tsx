@@ -17,7 +17,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { authMessage, AuthMessage } from '@/lib/auth/errors';
-import { isSupabaseConfigured, isSupabaseReachable, supabase } from '@/lib/supabase/client';
+import {
+  isSupabaseConfigured,
+  isSupabaseReachable,
+  markSessionAlive,
+  sessionExpiredWithBrowser,
+  supabase,
+} from '@/lib/supabase/client';
 
 export const AUTH_REQUIRED = process.env.NEXT_PUBLIC_AUTH_REQUIRED === 'true';
 
@@ -98,7 +104,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       const { data } = await client.auth.getSession();
       if (!active) return;
-      const current = data.session?.user;
+      let current = data.session?.user;
+      /** Ohne «Angemeldet bleiben» endet die Sitzung mit dem Browser: das
+       *  Anmelde-Cookie lebt weiter, also hier die Sitzung aufraeumen. */
+      if (current && sessionExpiredWithBrowser()) {
+        await client.auth.signOut();
+        if (!active) return;
+        current = undefined;
+      }
+      if (current) markSessionAlive();
       setMembership(null);
       setMembershipReady(!current);
       setUser(
@@ -123,6 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!client || !active) return;
       const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
         const next = session?.user;
+        if (next) markSessionAlive();
         setMembership(null);
         setMembershipReady(!next);
         setUser(

@@ -7094,6 +7094,12 @@ export const dictionary = {
     it: "Esci",
     en: "Sign out",
   },
+  "auth.staySignedIn": {
+    de: "Angemeldet bleiben",
+    fr: "Rester connecté",
+    it: "Rimani connesso",
+    en: "Stay signed in",
+  },
   "auth.email": { de: "E-Mail", fr: "E-mail", it: "E-mail", en: "Email" },
   "auth.password": {
     de: "Passwort",
