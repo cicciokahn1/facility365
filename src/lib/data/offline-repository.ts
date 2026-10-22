@@ -304,6 +304,19 @@ export const resetAttempts = (): void => {
 
 let flushing: Promise<void> | null = null;
 
+/** Abbruch, wenn ein Server-Aufruf gar nicht mehr antwortet. */
+const CALL_TIMEOUT_MS = 45_000;
+const withTimeout = <T>(promise: Promise<T>, label: string): Promise<T> =>
+  Promise.race([
+    promise,
+    new Promise<T>((_resolve, reject) =>
+      setTimeout(
+        () => reject(new Error(`timeout:${label}`)),
+        CALL_TIMEOUT_MS,
+      ),
+    ),
+  ]);
+
 /**
  * Warteschlange abarbeiten.
  *
@@ -322,24 +335,38 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
   const run = async () => {
     setState({ syncing: true });
     try {
+      const startCount = readQueue().length;
+      console.info(`[sync] Lauf gestartet: ${startCount} offen`);
       for (const op of readQueue()) {
         if (op.attempts >= MAX_ATTEMPTS) continue;
         try {
           if (op.kind === "save") {
-            const server = await serverItems(op.collection);
+            const server = await withTimeout(
+              serverItems(op.collection),
+              `read:${op.collection}`,
+            );
             const theirs = server.find((entry) => entry.id === op.item.id);
             const merged = theirs
               ? resolve(op.collection, op.item, theirs)
               : op.item;
-            await remote.save(op.collection, merged as EntityOf<CollectionKey>);
+            await withTimeout(
+              remote.save(op.collection, merged as EntityOf<CollectionKey>),
+              `save:${op.collection}`,
+            );
             applyToCache(op.collection, merged);
           } else if (op.kind === "remove") {
-            await remote.removeOne(op.collection, op.itemId);
+            await withTimeout(
+              remote.removeOne(op.collection, op.itemId),
+              `remove:${op.collection}`,
+            );
             dropFromCache(op.collection, op.itemId);
           } else {
-            await remote.write(
-              op.collection,
-              op.items as EntityOf<CollectionKey>[],
+            await withTimeout(
+              remote.write(
+                op.collection,
+                op.items as EntityOf<CollectionKey>[],
+              ),
+              `write:${op.collection}`,
             );
             putCache(op.collection, op.items);
           }
@@ -379,6 +406,12 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
         }
       }
       if (changed) setState({ lastSync: new Date().toISOString() });
+      const left = readQueue();
+      const firstFailure = left.find((op) => op.lastError);
+      console.info(
+        `[sync] Lauf beendet: ${left.length} offen` +
+          (firstFailure ? `, erster Fehler: ${firstFailure.lastError}` : ""),
+      );
     } finally {
       setState({ syncing: false });
       refreshPending();
