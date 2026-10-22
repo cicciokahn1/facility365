@@ -47,6 +47,7 @@ import {
   packageTargetKey,
 } from '@/lib/packages/packages';
 import { useSettings } from '@/lib/settings/provider';
+import { useAccess } from '@/lib/auth/scope';
 import {
   AppSettings,
   IndustryPackage,
@@ -71,6 +72,9 @@ export default function SettingsPage() {
 
 function SettingsForm({ settings }: { settings: AppSettings }) {
   const t = useT();
+  const access = useAccess();
+  /** Paketauswahl, Modulschalter und Schnittstellen sind Admin-Aufgaben. */
+  const canAdmin = access.scope.manageUsers;
   const { settings: live, save } = useSettings();
   const push = usePushPermission();
   const clearAll = useClearAllData();
@@ -409,6 +413,8 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
         </CardContent>
       </Card>
 
+      {canAdmin ? (
+        <>
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{t('settings.package')}</CardTitle>
@@ -523,6 +529,8 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
           </ul>
         </CardContent>
       </Card>
+        </>
+      ) : null}
 
       <Card>
         <CardHeader>
