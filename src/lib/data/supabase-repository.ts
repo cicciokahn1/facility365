@@ -108,6 +108,23 @@ export const supabaseRepository: Repository = {
     const { error } = await (await client())
       .from(tableOf(collection))
       .upsert(rowOf(item, userId, tenantId), { onConflict: 'tenant_id,id' });
+    /** Manche Tabellen haben den Primaerschluessel nur auf id: liegt die id
+     *  schon vor, wird als Update unter Mandanten-Bedingung nachgeliefert.
+     *  Gehoert die Zeile einem fremden Mandanten, greift die Regel (RLS) und
+     *  der Eintrag bleibt mit lesbarem Fehler sichtbar. */
+    if (error?.code === '23505') {
+      const { data: updated, error: updateError } = await (await client())
+        .from(tableOf(collection))
+        .update(rowOf(item, userId, tenantId))
+        .eq('tenant_id', tenantId)
+        .eq('id', item.id)
+        .select('id');
+      if (updateError) throw new Error(updateError.message);
+      if (!updated || updated.length === 0) {
+        throw new Error('23505:fremder Datensatz mit gleicher id');
+      }
+      return;
+    }
     if (error) throw new Error(error.message);
   },
 
