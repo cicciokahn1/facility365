@@ -59,6 +59,14 @@ export default function PricingPage() {
     [selectedAddons, t],
   );
 
+  /** Live-Preisschaetzung: Paket-Monatspreis + gewaehlte Zusatzmodule. */
+  const addonMonthly = selectedAddons.reduce(
+    (sum, module) => sum + (ADDON_PRICES[module] ?? 0),
+    0,
+  );
+  const packageMonthly = monthlyPrice(selectedPackage);
+  const estimateMonthly = (packageMonthly ?? 0) + addonMonthly;
+
   const offerHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
     `Facility365 Angebot – ${t(packageLabelKey(selectedPackage))}`,
   )}&body=${encodeURIComponent(
@@ -312,6 +320,42 @@ export default function PricingPage() {
                 Dieses Paket enthaelt bereits alle verfuegbaren Module.
               </p>
             )}
+            {addonMonthly > 0 && (
+              <p className="text-sm font-medium sm:col-span-3">
+                Gewählte Zusatzmodule: + {formatMoney(addonMonthly)}/Mt.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Preisschaetzung */}
+        <Card className="border-primary/40 bg-primary/5">
+          <CardHeader>
+            <CardTitle>Geschätzte Kosten</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1 text-sm">
+            {packageMonthly !== null ? (
+              <>
+                <p>
+                  Paket: {formatMoney(packageMonthly)}/Mt. ({formatMoney(yearlyPrice(selectedPackage)!)}/Jahr)
+                </p>
+                <p>Zusatzmodule: + {formatMoney(addonMonthly)}/Mt.</p>
+                <p className="pt-1 text-lg font-semibold">
+                  Total: {formatMoney(estimateMonthly)}/Mt. ·{' '}
+                  {formatMoney(estimateMonthly * 12)}/Jahr
+                </p>
+              </>
+            ) : (
+              <>
+                <p>Gewählte Module: {formatMoney(addonMonthly)}/Mt. (Richtwert)</p>
+                <p className="pt-1 text-lg font-semibold">
+                  Der Gesamtpreis wird nach deiner Auswahl individuell offeriert.
+                </p>
+              </>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Schätzung ohne Einrichtung – die genauen Konditionen stehen im persönlichen Angebot.
+            </p>
           </CardContent>
         </Card>
 
