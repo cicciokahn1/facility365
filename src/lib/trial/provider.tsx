@@ -20,6 +20,7 @@ import { useAuth } from "@/lib/auth/provider";
 import { supabase } from "@/lib/supabase/client";
 import {
   NO_TRIAL,
+  TrialPlan,
   TrialRecord,
   TrialState,
   extendTrial,
@@ -29,6 +30,8 @@ import {
 } from "@/lib/trial/trial";
 
 interface TrialApi extends TrialState {
+  /** Lizenzstand des Mandanten; null ohne Eintrag (aeltre/lokale Daten). */
+  plan: TrialPlan | null;
   /** Frist steht fest; vorher zeigt die Oberflaeche keine Sperre. */
   ready: boolean;
   /** Startet die Testzeit auf diesem Geraet (Browserbetrieb). */
@@ -69,7 +72,12 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
       .eq("id", tenantId)
       .maybeSingle();
     const row = data as TenantRow | null;
-    if (!row || row.plan !== "trial" || !row.trial_ends_at) return null;
+    if (!row) return null;
+    if (row.plan === "licensed") {
+      return { plan: "licensed", startedAt: "", endsAt: "" };
+    }
+    /** Testversion ohne Enddatum: keine Frist erfinden, nichts sperren. */
+    if (row.plan !== "trial" || !row.trial_ends_at) return null;
     return { plan: "trial", startedAt: "", endsAt: row.trial_ends_at };
   }, [tenantId]);
 
@@ -125,7 +133,7 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<TrialApi>(() => {
     void tick;
     const state = record ? trialStateOf(record) : NO_TRIAL;
-    return { ...state, ready, start, extend };
+    return { ...state, plan: record?.plan ?? null, ready, start, extend };
   }, [extend, ready, record, start, tick]);
 
   return (

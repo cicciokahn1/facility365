@@ -7149,6 +7149,30 @@ export const dictionary = {
     it: "Password dimenticata?",
     en: "Forgot password?",
   },
+  "auth.heroTitle": {
+    de: "Facility Management einfach gemacht.",
+    fr: "La gestion immobilière en toute simplicité.",
+    it: "Il facility management reso semplice.",
+    en: "Facility management made simple.",
+  },
+  "auth.heroWartung": {
+    de: "Wartung, Rapporte und Mängel im Griff",
+    fr: "Maintenance, rapports et défauts sous contrôle",
+    it: "Manutenzione, rapporti e difetti sotto controllo",
+    en: "Maintenance, reports and defects under control",
+  },
+  "auth.heroReinigung": {
+    de: "Reinigungspläne und Kontrollen digital",
+    fr: "Plans de nettoyage et contrôles numériques",
+    it: "Piani di pulizia e controlli digitali",
+    en: "Digital cleaning plans and checks",
+  },
+  "auth.heroUebergabe": {
+    de: "Abnahmen und Übergaben per Handy",
+    fr: "Réceptions et remises depuis le mobile",
+    it: "Collaudi e consegne dal cellulare",
+    en: "Inspections and handovers on mobile",
+  },
   "auth.resetTitle": {
     de: "Passwort zurücksetzen",
     fr: "Réinitialiser le mot de passe",
@@ -9742,6 +9766,12 @@ export const dictionary = {
     fr: "Version d’essai prolongée",
     it: "Versione di prova prolungata",
     en: "Trial extended",
+  },
+  "trial.licensed": {
+    de: "Lizenziert",
+    fr: "Licencié",
+    it: "Con licenza",
+    en: "Licensed",
   },
   "trial.remaining": {
     de: "Noch {days} Tage bis {date}",
