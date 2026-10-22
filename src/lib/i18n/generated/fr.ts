@@ -1885,6 +1885,7 @@ export const table: Record<string, string> = {
   "trial.planLoadError": "non lisible (erreur base de données)",
   "trial.planNoRow": "aucun enregistrement de locataire lisible",
   "trial.planNoTenant": "aucun locataire attribué",
+  "trial.planMismatch": "locataire base de données différent de l'appartenance",
   "trial.licensed": "Licencié",
   "trial.remaining": "Encore {days} jours jusqu’au {date}",
   "trial.noCard": "Aucune carte de crédit requise.",

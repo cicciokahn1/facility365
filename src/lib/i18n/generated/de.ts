@@ -1885,6 +1885,7 @@ export const table: Record<string, string> = {
   "trial.planLoadError": "nicht ladbar (Datenbankfehler)",
   "trial.planNoRow": "kein Mandantendatensatz lesbar",
   "trial.planNoTenant": "kein Mandant zugeordnet",
+  "trial.planMismatch": "Mandant der Datenbank weicht von der Mitgliedschaft ab",
   "trial.licensed": "Lizenziert",
   "trial.remaining": "Noch {days} Tage bis {date}",
   "trial.noCard": "Keine Kreditkarte erforderlich.",

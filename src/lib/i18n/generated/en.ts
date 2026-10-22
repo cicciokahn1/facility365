@@ -1885,6 +1885,7 @@ export const table: Record<string, string> = {
   "trial.planLoadError": "unreadable (database error)",
   "trial.planNoRow": "no tenant record readable",
   "trial.planNoTenant": "no tenant assigned",
+  "trial.planMismatch": "database tenant differs from membership",
   "trial.licensed": "Licensed",
   "trial.remaining": "{days} days left until {date}",
   "trial.noCard": "No credit card required.",

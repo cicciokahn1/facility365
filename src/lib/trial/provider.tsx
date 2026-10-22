@@ -38,7 +38,12 @@ interface TrialApi extends TrialState {
   loadError: boolean;
   /** Warum kein Status vorliegt: 'no-tenant' keine Mitgliedschaft,
    *  'no-row' Mandantenzeile nicht lesbar (RLS), 'unknown-plan' anderer Wert. */
-  emptyReason: "no-tenant" | "no-row" | "unknown-plan" | null;
+  emptyReason:
+    | "no-tenant"
+    | "no-row"
+    | "unknown-plan"
+    | "tenant-mismatch"
+    | null;
   /** Gelesener plan-Wert bei 'unknown-plan' (Diagnose). */
   rawPlan: string | null;
   /** Startet die Testzeit auf diesem Geraet (Browserbetrieb). */
@@ -61,7 +66,7 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [emptyReason, setEmptyReason] = useState<
-    "no-tenant" | "no-row" | "unknown-plan" | null
+    "no-tenant" | "no-row" | "unknown-plan" | "tenant-mismatch" | null
   >(null);
   /** Gelesener plan-Wert, falls er keinem bekannten Status entspricht. */
   const [rawPlan, setRawPlan] = useState<string | null>(null);
@@ -78,7 +83,7 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
 
   interface LoadResult {
     record: TrialRecord | null;
-    reason: "no-tenant" | "no-row" | "unknown-plan" | null;
+    reason: "no-tenant" | "no-row" | "unknown-plan" | "tenant-mismatch" | null;
     rawPlan?: string;
   }
 
@@ -103,7 +108,16 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
       return none(null);
     }
     const row = data as TenantRow | null;
-    if (!row) return none("no-row");
+    if (!row) {
+      /** Kein Datensatz sichtbar: stimmt die Datenbank-Sicht
+       *  (current_tenant) mit der Mitgliedschaft ueberein? */
+      const dbTenant = await client.rpc("current_tenant");
+      const dbId = typeof dbTenant.data === "string" ? dbTenant.data : "";
+      if (!dbTenant.error && dbId && dbId !== tenantId) {
+        return none("tenant-mismatch");
+      }
+      return none("no-row");
+    }
     if (row.plan === "licensed") {
       return {
         record: { plan: "licensed", startedAt: "", endsAt: "" },

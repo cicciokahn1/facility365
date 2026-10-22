@@ -9791,6 +9791,12 @@ export const dictionary = {
     it: "nessun tenant assegnato",
     en: "no tenant assigned",
   },
+  "trial.planMismatch": {
+    de: "Mandant der Datenbank weicht von der Mitgliedschaft ab",
+    fr: "locataire base de données différent de l'appartenance",
+    it: "tenant del database diverso dall'appartenenza",
+    en: "database tenant differs from membership",
+  },
   "trial.licensed": {
     de: "Lizenziert",
     fr: "Licencié",

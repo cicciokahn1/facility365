@@ -71,7 +71,9 @@ export default function TrialPage() {
                     ? `${trial.rawPlan ?? "?"}`
                     : trial.emptyReason === "no-row"
                       ? t("trial.planNoRow")
-                      : t("trial.planNoTenant")}
+                      : trial.emptyReason === "tenant-mismatch"
+                        ? t("trial.planMismatch")
+                        : t("trial.planNoTenant")}
           </p>
           <p className="text-sm text-muted-foreground">{t("trial.separate")}</p>
           <p className="text-sm text-muted-foreground">{t("trial.noCard")}</p>

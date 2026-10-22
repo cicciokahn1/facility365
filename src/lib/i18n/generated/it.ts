@@ -1885,6 +1885,7 @@ export const table: Record<string, string> = {
   "trial.planLoadError": "non leggibile (errore database)",
   "trial.planNoRow": "nessun record tenant leggibile",
   "trial.planNoTenant": "nessun tenant assegnato",
+  "trial.planMismatch": "tenant del database diverso dall'appartenenza",
   "trial.licensed": "Con licenza",
   "trial.remaining": "Ancora {days} giorni fino al {date}",
   "trial.noCard": "Nessuna carta di credito necessaria.",
