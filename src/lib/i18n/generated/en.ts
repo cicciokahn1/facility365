@@ -1881,6 +1881,7 @@ export const table: Record<string, string> = {
   "trial.extend": "Extend demo / contact us",
   "trial.extendAdmin": "Extend trial by 30 days",
   "trial.extended": "Trial extended",
+  "trial.planStatus": "Account status",
   "trial.licensed": "Licensed",
   "trial.remaining": "{days} days left until {date}",
   "trial.noCard": "No credit card required.",
