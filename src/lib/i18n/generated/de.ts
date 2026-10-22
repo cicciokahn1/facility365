@@ -1883,6 +1883,8 @@ export const table: Record<string, string> = {
   "trial.extended": "Testversion verlängert",
   "trial.planStatus": "Kontostatus",
   "trial.planLoadError": "nicht ladbar (Datenbankfehler)",
+  "trial.planNoRow": "kein Mandantendatensatz lesbar",
+  "trial.planNoTenant": "kein Mandant zugeordnet",
   "trial.licensed": "Lizenziert",
   "trial.remaining": "Noch {days} Tage bis {date}",
   "trial.noCard": "Keine Kreditkarte erforderlich.",

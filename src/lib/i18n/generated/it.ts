@@ -1883,6 +1883,8 @@ export const table: Record<string, string> = {
   "trial.extended": "Versione di prova prolungata",
   "trial.planStatus": "Stato dell'account",
   "trial.planLoadError": "non leggibile (errore database)",
+  "trial.planNoRow": "nessun record tenant leggibile",
+  "trial.planNoTenant": "nessun tenant assegnato",
   "trial.licensed": "Con licenza",
   "trial.remaining": "Ancora {days} giorni fino al {date}",
   "trial.noCard": "Nessuna carta di credito necessaria.",

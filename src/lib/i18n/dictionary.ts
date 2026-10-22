@@ -9779,6 +9779,18 @@ export const dictionary = {
     it: "non leggibile (errore database)",
     en: "unreadable (database error)",
   },
+  "trial.planNoRow": {
+    de: "kein Mandantendatensatz lesbar",
+    fr: "aucun enregistrement de locataire lisible",
+    it: "nessun record tenant leggibile",
+    en: "no tenant record readable",
+  },
+  "trial.planNoTenant": {
+    de: "kein Mandant zugeordnet",
+    fr: "aucun locataire attribué",
+    it: "nessun tenant assegnato",
+    en: "no tenant assigned",
+  },
   "trial.licensed": {
     de: "Lizenziert",
     fr: "Licencié",

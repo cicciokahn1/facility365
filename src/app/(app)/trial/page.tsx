@@ -63,9 +63,15 @@ export default function TrialPage() {
             {t("trial.planStatus")}:{" "}
             {trial.loadError
               ? t("trial.planLoadError")
-              : trial.ready
-                ? trial.plan ?? "—"
-                : "…"}
+              : !trial.ready
+                ? "…"
+                : trial.plan
+                  ? trial.plan
+                  : trial.emptyReason === "unknown-plan"
+                    ? `${trial.rawPlan ?? "?"}`
+                    : trial.emptyReason === "no-row"
+                      ? t("trial.planNoRow")
+                      : t("trial.planNoTenant")}
           </p>
           <p className="text-sm text-muted-foreground">{t("trial.separate")}</p>
           <p className="text-sm text-muted-foreground">{t("trial.noCard")}</p>

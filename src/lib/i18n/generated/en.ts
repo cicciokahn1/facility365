@@ -1883,6 +1883,8 @@ export const table: Record<string, string> = {
   "trial.extended": "Trial extended",
   "trial.planStatus": "Account status",
   "trial.planLoadError": "unreadable (database error)",
+  "trial.planNoRow": "no tenant record readable",
+  "trial.planNoTenant": "no tenant assigned",
   "trial.licensed": "Licensed",
   "trial.remaining": "{days} days left until {date}",
   "trial.noCard": "No credit card required.",
