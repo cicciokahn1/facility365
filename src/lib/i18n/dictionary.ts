@@ -4340,6 +4340,18 @@ export const dictionary = {
     it: "Sincronizza ora",
     en: "Sync now",
   },
+  "sync.processed": {
+    de: "{n} übertragen",
+    fr: "{n} transmises",
+    it: "{n} sincronizzate",
+    en: "{n} synced",
+  },
+  "sync.exhausted": {
+    de: "{n} dauerhaft fehlgeschlagen",
+    fr: "{n} définitivement échouées",
+    it: "{n} definitivamente non riuscite",
+    en: "{n} permanently failed",
+  },
   "history.conflict": {
     de: "Konflikt zusammengeführt",
     fr: "Conflit fusionné",
