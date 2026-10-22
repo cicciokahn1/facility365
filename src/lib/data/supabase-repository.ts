@@ -95,6 +95,16 @@ export const supabaseRepository: Repository = {
 
   async save<K extends CollectionKey>(collection: K, item: EntityOf<K>): Promise<void> {
     const [userId, tenantId] = await Promise.all([currentUserId(), currentTenantId()]);
+    /** activities ist ein append-only Protokoll (nur insert-Rechte): ein Upsert
+     *  wuerde ein Update-Recht verlangen, das es bewusst nicht gibt. */
+    if (collection === 'activities') {
+      const { error } = await (await client())
+        .from(tableOf(collection))
+        .insert(rowOf(item, userId, tenantId));
+      /** Schon vorhanden = bereits synchronisiert, kein Fehler. */
+      if (error && error.code !== '23505') throw new Error(error.message);
+      return;
+    }
     const { error } = await (await client())
       .from(tableOf(collection))
       .upsert(rowOf(item, userId, tenantId), { onConflict: 'tenant_id,id' });
