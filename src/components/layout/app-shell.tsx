@@ -9,7 +9,7 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, Menu } from "lucide-react";
+import { ArrowLeft, LogOut, Menu } from "lucide-react";
 
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { GlobalSearch } from "@/components/layout/global-search";
@@ -27,6 +27,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { BRAND_MARK_SRC, isBrandLogo } from "@/lib/branding/logo";
+import { useAuth } from "@/lib/auth/provider";
 import { useStorageError } from "@/lib/data/store";
 import { useT } from "@/lib/i18n/provider";
 import { useSettings } from "@/lib/settings/provider";
@@ -38,6 +39,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const storageError = useStorageError();
   const { settings } = useSettings();
+  const auth = useAuth();
 
   return (
     <TrialGuard>
@@ -111,6 +113,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <ScanButton />
               <MailButton />
               <TrialBadge />
+              {auth.enabled && auth.user ? (
+                <Button
+                  variant="ghost"
+                  className="h-9 shrink-0 px-2 sm:gap-1.5"
+                  aria-label={t("auth.signOut")}
+                  title={t("auth.signOut")}
+                  data-testid="header-sign-out"
+                  onClick={() => {
+                    void auth.signOut().then(() => router.replace("/login"));
+                  }}
+                >
+                  <LogOut className="size-5" aria-hidden />
+                  <span className="hidden text-sm sm:inline">
+                    {t("auth.signOut")}
+                  </span>
+                </Button>
+              ) : null}
             </div>
           </header>
 
