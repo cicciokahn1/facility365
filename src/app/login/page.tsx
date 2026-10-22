@@ -74,7 +74,7 @@ function LoginForm() {
 
   if (!auth.enabled) {
     return (
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-sm shadow-lg">
         <CardHeader>
           <CardTitle>{t("auth.signIn")}</CardTitle>
           <CardDescription data-testid="auth-disabled">
@@ -108,7 +108,7 @@ function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm" data-testid="login-card">
+    <Card className="w-full max-w-sm shadow-lg" data-testid="login-card">
       <CardHeader>
         <CardTitle>
           {mode === "signIn"
@@ -261,17 +261,36 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-background p-4">
-      {/* eslint-disable-next-line @next/next/no-img-element -- statische Marke ohne Groessenwechsel */}
-      <img
-        src={BRAND_LOGO_SRC}
-        alt="Facility365"
-        data-testid="login-logo"
-        className="h-20 w-auto max-w-[240px] rounded object-contain dark:bg-white/95 dark:p-2"
-      />
+    <main className="relative flex min-h-dvh flex-col items-center justify-center gap-8 overflow-hidden bg-background p-4">
+      {/* Dezente Farbflaechen hinter der Anmeldung. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+      >
+        <div className="absolute left-1/2 top-[-8rem] h-80 w-[40rem] max-w-none -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
+        <div className="absolute bottom-[-6rem] right-[-6rem] h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      </div>
+
+      <div className="flex flex-col items-center gap-2 text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element -- statische Marke ohne Groessenwechsel */}
+        <img
+          src={BRAND_LOGO_SRC}
+          alt="Facility365"
+          data-testid="login-logo"
+          className="h-24 w-auto max-w-[260px] rounded object-contain drop-shadow-sm dark:bg-white/95 dark:p-2"
+        />
+        <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+          Facility365 – Facility Management
+        </p>
+      </div>
+
       <Suspense>
         <LoginForm />
       </Suspense>
+
+      <p className="text-xs text-muted-foreground">
+        © {new Date().getFullYear()} Facility365
+      </p>
     </main>
   );
 }
