@@ -47,7 +47,17 @@ export function SyncBanner() {
           {t("sync.count").replace("{n}", String(sync.pending))}
         </span>
       ) : null}
-      {sync.failed && sync.lastError ? (
+      {sync.processed > 0 ? (
+        <span data-testid="sync-processed" className="text-xs">
+          {t("sync.processed").replace("{n}", String(sync.processed))}
+        </span>
+      ) : null}
+      {sync.exhausted > 0 ? (
+        <span data-testid="sync-exhausted" className="text-xs">
+          {t("sync.exhausted").replace("{n}", String(sync.exhausted))}
+        </span>
+      ) : null}
+      {sync.lastError ? (
         <span data-testid="sync-error" className="text-xs">
           {sync.lastError}
         </span>

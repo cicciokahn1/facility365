@@ -68,6 +68,10 @@ export interface SyncState {
   failed: boolean;
   /** Lesbare Ursache des letzten Fehlschlags (ohne Datensaetze). */
   lastError: string;
+  /** In diesem Lauf erfolgreich uebertragene Vorgaenge. */
+  processed: number;
+  /** Eintraege, deren Versuche aufgebraucht sind (werden uebersprungen). */
+  exhausted: number;
 }
 
 const readJson = <T>(key: string, fallback: T): T => {
@@ -103,6 +107,8 @@ let state: SyncState = {
   lastSync: "",
   failed: false,
   lastError: "",
+  processed: 0,
+  exhausted: 0,
 };
 
 const emit = () => listeners.forEach((listener) => listener());
@@ -115,7 +121,9 @@ const setState = (patch: Partial<SyncState>) => {
     next.syncing === state.syncing &&
     next.lastSync === state.lastSync &&
     next.failed === state.failed &&
-    next.lastError === state.lastError
+    next.lastError === state.lastError &&
+    next.processed === state.processed &&
+    next.exhausted === state.exhausted
   ) {
     return;
   }
@@ -133,6 +141,7 @@ const refreshPending = () => {
     pending: queue.length,
     failed: queue.some((op) => op.attempts >= MAX_ATTEMPTS) || storageBlocked !== "",
     lastError: storageBlocked || queue.find((op) => op.lastError)?.lastError || "",
+    exhausted: queue.filter((op) => op.attempts >= MAX_ATTEMPTS).length,
   });
 };
 
@@ -336,6 +345,7 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
     setState({ syncing: true });
     try {
       const startCount = readQueue().length;
+      setState({ processed: 0 });
       console.info(`[sync] Lauf gestartet: ${startCount} offen`);
       for (const op of readQueue()) {
         if (op.attempts >= MAX_ATTEMPTS) continue;
@@ -384,6 +394,7 @@ export const flushQueue = async (remote: Repository): Promise<boolean> => {
             refreshPending();
           }
           changed = true;
+          setState({ processed: state.processed + 1 });
         } catch (error) {
           console.warn("Sync-Vorgang fehlgeschlagen:", errorText(op, error));
           countAttempt(op.id, error, op);
