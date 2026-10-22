@@ -60,7 +60,12 @@ export default function TrialPage() {
           {/* Gelandener Status aus der Datenbank (keine personenbezogenen Daten) –
               macht sichtbar, was die Statusabfrage tatsaechlich liefert. */}
           <p className="text-xs text-muted-foreground" data-testid="trial-plan">
-            {t("trial.planStatus")}: {trial.ready ? trial.plan ?? "—" : "…"}
+            {t("trial.planStatus")}:{" "}
+            {trial.loadError
+              ? t("trial.planLoadError")
+              : trial.ready
+                ? trial.plan ?? "—"
+                : "…"}
           </p>
           <p className="text-sm text-muted-foreground">{t("trial.separate")}</p>
           <p className="text-sm text-muted-foreground">{t("trial.noCard")}</p>

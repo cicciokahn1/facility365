@@ -34,6 +34,8 @@ interface TrialApi extends TrialState {
   plan: TrialPlan | null;
   /** Frist steht fest; vorher zeigt die Oberflaeche keine Sperre. */
   ready: boolean;
+  /** Datenbank-Lesefehler beim Mandantenstatus (Diagnose, kein Silent-Fail). */
+  loadError: boolean;
   /** Startet die Testzeit auf diesem Geraet (Browserbetrieb). */
   start: () => void;
   /** Verlaengert die Testzeit um weitere Tage (Administration). */
@@ -52,6 +54,7 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
   const tenantId = auth.membership?.tenantId ?? "";
   const [record, setRecord] = useState<TrialRecord | null>(null);
   const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   /** Der Tageswechsel muss die Anzeige erneuern, ohne dass jemand neu laedt. */
   const [tick, setTick] = useState(0);
 
@@ -76,6 +79,7 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
       .maybeSingle();
     if (error) {
       console.warn("Mandantenstatus nicht lesbar:", error.code ?? error.message);
+      setLoadError(true);
       return null;
     }
     const row = data as TenantRow | null;
@@ -140,8 +144,15 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<TrialApi>(() => {
     void tick;
     const state = record ? trialStateOf(record) : NO_TRIAL;
-    return { ...state, plan: record?.plan ?? null, ready, start, extend };
-  }, [extend, ready, record, start, tick]);
+    return {
+      ...state,
+      plan: record?.plan ?? null,
+      ready,
+      loadError,
+      start,
+      extend,
+    };
+  }, [extend, loadError, ready, record, start, tick]);
 
   return (
     <TrialContext.Provider value={value}>{children}</TrialContext.Provider>

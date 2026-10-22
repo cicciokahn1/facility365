@@ -9773,6 +9773,12 @@ export const dictionary = {
     it: "Stato dell'account",
     en: "Account status",
   },
+  "trial.planLoadError": {
+    de: "nicht ladbar (Datenbankfehler)",
+    fr: "non lisible (erreur base de données)",
+    it: "non leggibile (errore database)",
+    en: "unreadable (database error)",
+  },
   "trial.licensed": {
     de: "Lizenziert",
     fr: "Licencié",

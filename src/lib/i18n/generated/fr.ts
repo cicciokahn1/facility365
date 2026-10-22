@@ -1882,6 +1882,7 @@ export const table: Record<string, string> = {
   "trial.extendAdmin": "Prolonger la version d’essai de 30 jours",
   "trial.extended": "Version d’essai prolongée",
   "trial.planStatus": "Statut du compte",
+  "trial.planLoadError": "non lisible (erreur base de données)",
   "trial.licensed": "Licencié",
   "trial.remaining": "Encore {days} jours jusqu’au {date}",
   "trial.noCard": "Aucune carte de crédit requise.",
