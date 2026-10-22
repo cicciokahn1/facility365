@@ -7,8 +7,8 @@
  * Testeintrag bleiben unveraendert und laufen ohne Frist weiter.
  */
 
-/** Ohne Frist laeuft Facility365 dauerhaft; Testdaten bleiben im eigenen Bereich. */
-export const TRIAL_ENABLED = false;
+/** 30-Tage-Testversion aktiv: nach Ablauf sperrt der TrialGuard die Oberflaeche. */
+export const TRIAL_ENABLED = true;
 
 /** Dauer der kostenlosen Testversion in Tagen. */
 export const TRIAL_DAYS = 30;
