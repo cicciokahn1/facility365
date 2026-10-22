@@ -53,6 +53,32 @@ export const isSupabaseReachable = async (): Promise<boolean> => {
 
 let client: Promise<SupabaseClient> | null = null;
 
+/** «Angemeldet bleiben»: die Sitzung ueberlebt das Schliessen des Browsers. */
+const STAY_KEY = 'facility365.stay-signed-in';
+/** Merker der laufenden Browsersitzung; faellt mit dem Schliessen weg. */
+const ALIVE_KEY = 'facility365.session-alive';
+
+/** Gewaehlte Sitzungsdauer merken. */
+export const setStaySignedIn = (stay: boolean): void => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(STAY_KEY, stay ? '1' : '0');
+};
+
+/** Die laufende Browsersitzung als aktiv markieren. */
+export const markSessionAlive = (): void => {
+  if (typeof window === 'undefined') return;
+  window.sessionStorage.setItem(ALIVE_KEY, '1');
+};
+
+/** Wurde ohne «Angemeldet bleiben» eine neue Browsersitzung geoeffnet? */
+export const sessionExpiredWithBrowser = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return (
+    window.localStorage.getItem(STAY_KEY) === '0' &&
+    !window.sessionStorage.getItem(ALIVE_KEY)
+  );
+};
+
 /**
  * Einzelne Verbindung je Browsersitzung; ohne Konfiguration `null`.
  *
