@@ -314,7 +314,6 @@ export function ModuleList({
                     onClick={() => {
                       selected.forEach((id) => markDone(id));
                       setSelected([]);
-                      toast.success(t("action.markedDone"));
                     }}
                     data-testid="bulk-done"
                   >

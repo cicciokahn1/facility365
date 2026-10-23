@@ -1,7 +1,6 @@
 "use client";
 
 import { CirclePlay } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { useCollection } from "@/lib/data/store";
@@ -61,7 +60,6 @@ export function InProgressButton({
           "history.started",
           user,
         );
-        toast.success(t("status.inProgress"));
       }}
       data-testid="mark-in-progress"
     >
