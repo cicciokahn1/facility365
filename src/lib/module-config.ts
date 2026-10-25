@@ -57,6 +57,9 @@ import {
   RCD_STATUS_OPTIONS,
   SIA416_AREA_OPTIONS,
   DIN277_AREA_OPTIONS,
+  ONCALL_INCIDENT_STATUS_OPTIONS,
+  ONCALL_ORIGIN_OPTIONS,
+  ONCALL_URGENCY_OPTIONS,
   REPORT_STATUS_OPTIONS,
   REPORT_TYPE_OPTIONS,
   SelectOption,
@@ -3319,6 +3322,150 @@ const privateFilesConfig: ModuleConfig<"privateFiles"> = {
   searchOf: (file) => [file.name, file.folder, file.mimeType].join(" "),
 };
 
+const oncallPeriodsConfig: ModuleConfig<"oncallperiods"> = {
+  collection: "oncallperiods",
+  titleOf: (period) => period.title || period.number,
+  fields: [
+    text("title", "common.title", { span: 2 }),
+    {
+      kind: "relation",
+      name: "assigneeUserId",
+      labelKey: "oncall.assignee",
+      collection: "users",
+      required: true,
+      filter: true,
+    },
+    {
+      kind: "relation",
+      name: "deputyUserId",
+      labelKey: "oncall.deputy",
+      collection: "users",
+    },
+    text("startAt", "oncall.startAt", { required: true }),
+    text("endAt", "oncall.endAt", { required: true }),
+  ],
+  searchOf: (period) => [period.number, period.title].filter(Boolean).join(" "),
+};
+
+const oncallIncidentsConfig: ModuleConfig<"oncallincidents"> = {
+  collection: "oncallincidents",
+  titleOf: (incident) => incident.title || incident.number,
+  statusField: "status",
+  statusOptions: ONCALL_INCIDENT_STATUS_OPTIONS,
+  fields: [
+    text("title", "common.title", { required: true, span: 2 }),
+    {
+      kind: "select",
+      name: "urgency",
+      labelKey: "common.priority",
+      options: ONCALL_URGENCY_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: "select",
+      name: "status",
+      labelKey: "common.status",
+      options: ONCALL_INCIDENT_STATUS_OPTIONS,
+      filter: true,
+    },
+    {
+      kind: "select",
+      name: "origin",
+      labelKey: "oncall.origin",
+      options: ONCALL_ORIGIN_OPTIONS,
+      filter: true,
+    },
+    { kind: "date", name: "reportedAt", labelKey: "oncall.reportedAt" },
+    text("reporterName", "oncall.reporterName"),
+    text("reporterContact", "oncall.reporterContact"),
+    {
+      kind: "relation",
+      name: "siteId",
+      labelKey: "module.sites.singular",
+      collection: "sites",
+      filter: true,
+    },
+    {
+      kind: "relation",
+      name: "propertyId",
+      labelKey: "module.properties.singular",
+      collection: "properties",
+      filter: true,
+    },
+    {
+      kind: "relation",
+      name: "buildingId",
+      labelKey: "module.buildings.singular",
+      collection: "buildings",
+      parentValueField: "propertyId",
+      parentKey: "propertyId",
+    },
+    {
+      kind: "relation",
+      name: "roomId",
+      labelKey: "module.rooms.singular",
+      collection: "rooms",
+      parentValueField: "buildingId",
+      parentKey: "buildingId",
+    },
+    {
+      kind: "relation",
+      name: "assetId",
+      labelKey: "module.assets.singular",
+      collection: "assets",
+    },
+    {
+      kind: "relation",
+      name: "assigneeUserId",
+      labelKey: "common.assignee",
+      collection: "users",
+      filter: true,
+    },
+    text("takenAt", "oncall.takenAt"),
+    text("workStartedAt", "oncall.workStartedAt"),
+    text("workEndedAt", "oncall.workEndedAt"),
+    {
+      kind: "textarea",
+      name: "description",
+      labelKey: "common.description",
+      span: 2,
+    },
+    {
+      kind: "textarea",
+      name: "measures",
+      labelKey: "oncall.measures",
+      span: 2,
+    },
+    {
+      kind: "textarea",
+      name: "closingNote",
+      labelKey: "oncall.closingNote",
+      span: 2,
+    },
+    {
+      kind: "relation",
+      name: "linkedDamageId",
+      labelKey: "module.damages.singular",
+      collection: "damages",
+    },
+    {
+      kind: "relation",
+      name: "linkedOrderId",
+      labelKey: "module.orders.singular",
+      collection: "orders",
+    },
+  ],
+  searchOf: (incident) =>
+    [
+      incident.number,
+      incident.title,
+      incident.description,
+      incident.reporterName,
+    ]
+      .filter(Boolean)
+      .join(" "),
+};
+
 export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   customers: customersConfig,
   suppliers: suppliersConfig,
@@ -3367,6 +3514,8 @@ export const MODULE_CONFIGS: { [K in CollectionKey]: ModuleConfig<K> } = {
   activities: activitiesConfig,
   privateNotes: privateNotesConfig,
   privateFiles: privateFilesConfig,
+  oncallperiods: oncallPeriodsConfig,
+  oncallincidents: oncallIncidentsConfig,
 };
 
 export const configOf = <K extends CollectionKey>(

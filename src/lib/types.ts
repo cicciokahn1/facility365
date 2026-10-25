@@ -71,7 +71,10 @@ export type ModuleKey =
   | "settings"
   | "myArea"
   | "privateNotes"
-  | "privateFiles";
+  | "privateFiles"
+  | "oncall"
+  | "oncallperiods"
+  | "oncallincidents";
 
 /** Sammlungen, die Datensaetze fuehren. */
 export type CollectionKey = Exclude<
@@ -93,6 +96,7 @@ export type CollectionKey = Exclude<
   | "trash"
   | "help"
   | "settings"
+  | "oncall"
 >;
 
 export interface Photo {
@@ -1315,6 +1319,71 @@ export interface Ticket extends BaseEntity {
   sourceId?: string;
 }
 
+/** Dringlichkeit einer Notfallmeldung. */
+export type OncallUrgency = "low" | "normal" | "high" | "critical";
+
+/**
+ * Status einer Notfallmeldung. Externe Meldungen starten als `unverified`
+ * («Neu – ungeprueft») und muessen geprueft werden, bevor sie ein Einsatz werden.
+ */
+export type OncallIncidentStatus =
+  | "unverified"
+  | "new"
+  | "verified"
+  | "assigned"
+  | "in_progress"
+  | "done"
+  | "aborted";
+
+/** Herkunft der Meldung: intern erfasst oder ueber das oeffentliche Formular. */
+export type OncallIncidentOrigin = "internal" | "external";
+
+/** Eine geplante Pikettperiode eines Mitarbeiters. */
+export interface OncallPeriod extends BaseEntity {
+  title: string;
+  /** Zustaendiger Pikettmitarbeiter (Verweis auf users). */
+  assigneeUserId: string;
+  /** Stellvertretung (Verweis auf users). */
+  deputyUserId: string;
+  /** Beginn und Ende der Periode als ISO-Zeitpunkt (lokale Zeit des Mandanten). */
+  startAt: string;
+  endAt: string;
+}
+
+/** Eine eingegangene Notfall- oder Stoermeldung des Pikettdienstes. */
+export interface OncallIncident extends BaseEntity {
+  title: string;
+  description: string;
+  urgency: OncallUrgency;
+  status: OncallIncidentStatus;
+  origin: OncallIncidentOrigin;
+  /** Meldende Person (frei erfasst, auch fuer externe Melder). */
+  reporterName: string;
+  /** Telefon oder E-Mail der meldenden Person. */
+  reporterContact: string;
+  /** Meldezeitpunkt (ISO). */
+  reportedAt: string;
+  siteId: string;
+  propertyId: string;
+  buildingId: string;
+  roomId: string;
+  assetId: string;
+  /** Zustaendiger Mitarbeiter, dem die Meldung zugewiesen ist. */
+  assigneeUserId: string;
+  /** Zeitpunkt der Uebernahme durch den Pikettmitarbeiter (ISO). */
+  takenAt: string;
+  /** Einsatzbeginn und -ende, sofern ein Einsatz stattfindet (ISO). */
+  workStartedAt: string;
+  workEndedAt: string;
+  /** Beschreibung der ergriffenen Massnahmen. */
+  measures: string;
+  /** Abschlussbemerkungen. */
+  closingNote: string;
+  /** Optionaler Verweis auf einen bestehenden Schaden oder Auftrag. */
+  linkedDamageId: string;
+  linkedOrderId: string;
+}
+
 export type ReportType =
   "daily" | "weekly" | "order" | "maintenance" | "damage" | "inspection";
 export type ReportStatus = "draft" | "final";
@@ -1986,6 +2055,8 @@ export interface CollectionMap {
   activities: Activity;
   privateNotes: PrivateNote;
   privateFiles: PrivateFile;
+  oncallperiods: OncallPeriod;
+  oncallincidents: OncallIncident;
 }
 
 export type EntityOf<K extends CollectionKey> = CollectionMap[K];

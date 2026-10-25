@@ -40,6 +40,8 @@ import {
   Property,
   Quote,
   RcdCheck,
+  OncallIncident,
+  OncallPeriod,
   Report,
   Room,
   Site,
@@ -123,6 +125,8 @@ export const NUMBER_PREFIX: Record<CollectionKey, string> = {
   activities: "AK",
   privateNotes: "NO",
   privateFiles: "PF",
+  oncallperiods: "PD",
+  oncallincidents: "NM",
 };
 
 /**
@@ -820,6 +824,43 @@ export const emptyTicket = (): Omit<Ticket, "id" | "number"> => ({
   comments: [],
 });
 
+export const emptyOncallPeriod = (): Omit<OncallPeriod, "id" | "number"> => ({
+  ...base(),
+  title: "",
+  assigneeUserId: "",
+  deputyUserId: "",
+  startAt: "",
+  endAt: "",
+});
+
+export const emptyOncallIncident = (): Omit<
+  OncallIncident,
+  "id" | "number"
+> => ({
+  ...base(),
+  title: "",
+  description: "",
+  urgency: "normal",
+  status: "new",
+  origin: "internal",
+  reporterName: "",
+  reporterContact: "",
+  reportedAt: new Date().toISOString(),
+  siteId: "",
+  propertyId: "",
+  buildingId: "",
+  roomId: "",
+  assetId: "",
+  assigneeUserId: "",
+  takenAt: "",
+  workStartedAt: "",
+  workEndedAt: "",
+  measures: "",
+  closingNote: "",
+  linkedDamageId: "",
+  linkedOrderId: "",
+});
+
 export const emptyReport = (): Omit<Report, "id" | "number"> => ({
   ...base(),
   title: "",
@@ -1073,6 +1114,8 @@ const FACTORIES = {
   activities: emptyActivity,
   privateNotes: emptyPrivateNote,
   privateFiles: emptyPrivateFile,
+  oncallperiods: emptyOncallPeriod,
+  oncallincidents: emptyOncallIncident,
 } as const;
 
 /** Leerer Datensatz einer Sammlung, noch ohne Kennung und Nummer. */

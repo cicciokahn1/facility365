@@ -42,6 +42,7 @@ import {
   SunMedium,
   Trees,
   ShieldAlert,
+  Siren,
   ShieldCheck,
   ShoppingBag,
   SprayCan,
@@ -68,6 +69,7 @@ export type NavGroup =
   | "objects"
   | "technics"
   | "work"
+  | "oncall"
   | "cleaning"
   | "outdoor"
   | "energy"
@@ -163,6 +165,9 @@ const NAVIGATION_ORDER: ModuleKey[] = [
   "damages",
   "orders",
   "tickets",
+  "oncall",
+  "oncallperiods",
+  "oncallincidents",
   "workTimes",
   "handover",
   "cleaning",
@@ -573,6 +578,32 @@ export const MODULES: ModuleDefinition[] = [
     singularKey: "module.tickets.singular",
   },
   {
+    key: "oncall",
+    path: "/oncall",
+    icon: Siren,
+    group: "oncall",
+    labelKey: "module.oncall",
+    singularKey: "module.oncall",
+  },
+  {
+    key: "oncallperiods",
+    collection: "oncallperiods",
+    path: "/oncall/plan",
+    icon: CalendarClock,
+    group: "oncall",
+    labelKey: "module.oncallperiods",
+    singularKey: "module.oncallperiods.singular",
+  },
+  {
+    key: "oncallincidents",
+    collection: "oncallincidents",
+    path: "/oncall/incidents",
+    icon: MessageSquareWarning,
+    group: "oncall",
+    labelKey: "module.oncallincidents",
+    singularKey: "module.oncallincidents.singular",
+  },
+  {
     key: "damages",
     collection: "damages",
     path: "/damages",
@@ -781,6 +812,7 @@ export const NAV_GROUPS: NavGroupDefinition[] = [
   { key: "objects", labelKey: "nav.objects", icon: Building2 },
   { key: "technics", labelKey: "nav.technics", icon: Wrench },
   { key: "work", labelKey: "nav.work", icon: ClipboardList },
+  { key: "oncall", labelKey: "module.oncall", icon: Siren },
   { key: "cleaning", labelKey: "nav.cleaning", icon: SprayCan },
   /** Steht als eigener Menuepunkt ohne Ordner direkt unter Reinigung. */
   { key: "outdoor", labelKey: "module.outdoorAreas", icon: Trees, flat: true },
