@@ -52,6 +52,7 @@ export const OPTIONAL_MODULES: ModuleKey[] = [
   'parking',
   'waste',
   'stock',
+  'hazards',
   'workTimes',
   'legionella',
   'rcd',
@@ -114,14 +115,16 @@ const COMMERCE: ModuleKey[] = ['contracts', 'quotes', 'invoices', 'analytics', '
 const PACKAGES: Record<Exclude<IndustryPackage, '' | 'custom'>, ModuleKey[]> = {
   /** Hauswartfirmen: der volle Umfang. */
   professional: OPTIONAL_MODULES,
+  /** Einstieg fuer einzelne Hauswarte und kleine Betriebe: nur die Kernfunktionen. */
+  starter: [],
   /** Immobilienverwaltung: Bestand, Betreiberpflichten und Kaufmaennisches. */
   property: [...STRUCTURE, ...TECHNICS, ...CONTROLS, ...COMMERCE, 'vehicles'],
-  /** Alters- und Pflegeheime, Spitaeler: Hygiene, Reinigung und Nachweise. */
+  /** Alters- und Pflegeheime: Hygiene, Reinigung und Nachweise. */
   care: [...STRUCTURE, ...TECHNICS, ...CONTROLS, ...CLEANING, 'contracts', 'analytics'],
-  /** Soziale Institutionen, Wohnheime: Betrieb, Technik und Reinigung. */
+  /** Legacy-Paket (nicht mehr verkauft): Betrieb, Technik und Reinigung. */
   institution: [...STRUCTURE, ...TECHNICS, ...CONTROLS, ...CLEANING, 'contracts', 'analytics'],
-  /** Industrie: Technik, Fahrzeuge, Werkzeuge und Kosten. */
-  industry: [...STRUCTURE, ...TECHNICS, 'vehicles', ...CONTROLS, ...COMMERCE],
+  /** Industrie: Technik, Fahrzeuge, Werkzeuge, Gefahrstoffe und Kosten. */
+  industry: [...STRUCTURE, ...TECHNICS, 'vehicles', ...CONTROLS, ...COMMERCE, 'hazards'],
   /** Gemeinden und oeffentliche Verwaltungen: Betrieb, Reinigung und Berichte. */
   public: [
     ...STRUCTURE,
@@ -132,6 +135,18 @@ const PACKAGES: Record<Exclude<IndustryPackage, '' | 'custom'>, ModuleKey[]> = {
     'contracts',
     'analytics',
     'portal',
+    'hazards',
+  ],
+  /** Spitaeler und Kliniken: wie Care, plus Besucher und Gefahrstoffe. */
+  hospital: [
+    ...STRUCTURE,
+    ...TECHNICS,
+    ...CONTROLS,
+    ...CLEANING,
+    'contracts',
+    'analytics',
+    'visitors',
+    'hazards',
   ],
   /** Enterprise: vollständiger Umfang ohne individuelle Paketbeschränkung. */
   enterprise: OPTIONAL_MODULES,
@@ -139,12 +154,14 @@ const PACKAGES: Record<Exclude<IndustryPackage, '' | 'custom'>, ModuleKey[]> = {
 
 export const PACKAGE_KEYS: IndustryPackage[] = [
   '',
+  'starter',
   'professional',
   'property',
   'care',
   'institution',
   'industry',
   'public',
+  'hospital',
   'enterprise',
   'custom',
 ];
@@ -171,14 +188,18 @@ export interface PackagePrice {
 export const PACKAGE_PRICES: Partial<
   Record<Exclude<IndustryPackage, ''>, PackagePrice>
 > = {
-  /** Einsteig-Paket fuer Verwaltungen. */
-  property: { currency: 'CHF', yearly: 7400 },
-  industry: { currency: 'CHF', yearly: 9400 },
-  care: { currency: 'CHF', yearly: 10900 },
+  /** Einstiegspaket fuer einzelne Hauswarte und kleine Betriebe. */
+  starter: { currency: 'CHF', yearly: 1990 },
+  property: { currency: 'CHF', yearly: 6900 },
+  industry: { currency: 'CHF', yearly: 8900 },
+  care: { currency: 'CHF', yearly: 9900 },
+  /** Legacy-Preis fuer bestehende Institution-Mandanten; nicht mehr verkauft. */
   institution: { currency: 'CHF', yearly: 11900 },
-  public: { currency: 'CHF', yearly: 14900 },
+  public: { currency: 'CHF', yearly: 12900 },
+  /** Spitaeler: Einstiegspreis, groessere Betreiber individuell. */
+  hospital: { currency: 'CHF', yearly: 14900 },
   /** Komplettpaket: hoechste Stufe mit festem Preis. */
-  professional: { currency: 'CHF', yearly: 19900 },
+  professional: { currency: 'CHF', yearly: 17900 },
   /** Enterprise: Kunde stellt das Paket selbst zusammen, Preis individuell. */
   enterprise: { currency: 'CHF' },
 };

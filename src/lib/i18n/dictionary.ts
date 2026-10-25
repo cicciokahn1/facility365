@@ -8458,6 +8458,12 @@ export const dictionary = {
     it: "Personalizzato",
     en: "Custom",
   },
+  "package.starter": {
+    de: "Facility365 Starter",
+    fr: "Facility365 Starter",
+    it: "Facility365 Starter",
+    en: "Facility365 Starter",
+  },
   "package.professional": {
     de: "Facility365 Professional",
     fr: "Facility365 Professional",
@@ -8494,6 +8500,12 @@ export const dictionary = {
     it: "Facility365 Public",
     en: "Facility365 Public",
   },
+  "package.hospital": {
+    de: "Facility365 Hospital",
+    fr: "Facility365 Hospital",
+    it: "Facility365 Hospital",
+    en: "Facility365 Hospital",
+  },
   "package.enterprise": {
     de: "Facility365 Enterprise",
     fr: "Facility365 Enterprise",
@@ -8505,6 +8517,12 @@ export const dictionary = {
     fr: "Groupe cible",
     it: "Destinatari",
     en: "Target group",
+  },
+  "package.starter.target": {
+    de: "Einzelne Hauswarte, kleine Hauswartungsbetriebe und kleine Organisationen",
+    fr: "Concierges individuels, petites entreprises de conciergerie et petites organisations",
+    it: "Custodi singoli, piccole imprese di facility e piccole organizzazioni",
+    en: "Individual caretakers, small caretaking businesses and small organisations",
   },
   "package.professional.target": {
     de: "Hauswartungen, FM-Dienstleister und kleinere Betriebe",
@@ -8537,10 +8555,16 @@ export const dictionary = {
     en: "Industry, manufacturing, and technical businesses",
   },
   "package.public.target": {
-    de: "Gemeinden, Städte, Schulen und öffentliche Verwaltungen",
-    fr: "Communes, villes, écoles et administrations publiques",
-    it: "Comuni, città, scuole e amministrazioni pubbliche",
-    en: "Municipalities, cities, schools, and public administrations",
+    de: "Gemeinden, Städte, Schulen sowie öffentliche und soziale Einrichtungen",
+    fr: "Communes, villes, écoles et institutions publiques et sociales",
+    it: "Comuni, città, scuole e istituzioni pubbliche e sociali",
+    en: "Municipalities, cities, schools, and public and social institutions",
+  },
+  "package.hospital.target": {
+    de: "Spitäler, Kliniken und grössere Gesundheitseinrichtungen",
+    fr: "Hôpitaux, cliniques et grands établissements de santé",
+    it: "Ospedali, cliniche e grandi strutture sanitarie",
+    en: "Hospitals, clinics and larger healthcare facilities",
   },
   "package.enterprise.target": {
     de: "Grosse Organisationen und individuelle Enterprise-Verträge",

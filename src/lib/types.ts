@@ -1767,12 +1767,15 @@ export interface Plan {
 /** Branchenpaket; leer bedeutet «alle Module aktiv». */
 export type IndustryPackage =
   | ""
+  | "starter"
   | "professional"
   | "property"
   | "care"
-  | "institution"
+  | /** Legacy: wird nicht mehr angeboten, bestehende Mandanten behalten den Umfang. */
+    "institution"
   | "industry"
   | "public"
+  | "hospital"
   | "enterprise"
   | "custom";
 
