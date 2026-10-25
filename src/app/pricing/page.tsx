@@ -24,7 +24,7 @@ import {
   SETUP_INCLUDED,
   yearlyPrice,
 } from '@/lib/packages/catalog';
-import { packageLabelKey } from '@/lib/packages/packages';
+import { disabledByPackage, packageLabelKey } from '@/lib/packages/packages';
 import { moduleByKey } from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
 import type { IndustryPackage, ModuleKey } from '@/lib/types';
@@ -270,6 +270,35 @@ export default function PricingPage() {
                     </tr>
                   ),
                 )}
+                {(
+                  [
+                    'contracts',
+                    'analytics',
+                    'portal',
+                    'vehicles',
+                    'visitors',
+                    'hazards',
+                    'waste',
+                    'parking',
+                  ] as ModuleKey[]
+                ).map((module) => (
+                  <tr key={module} className="border-b">
+                    <td className="px-3 py-3 font-medium">
+                      {t(moduleByKey(module).labelKey)}
+                    </td>
+                    {CATALOG_ORDER.map((key) => (
+                      <td key={key} className="px-3 py-3">
+                        {!disabledByPackage(key).includes(module) ? (
+                          <Check className="size-4 text-primary" aria-label="enthalten" />
+                        ) : module === 'waste' ? (
+                          <span className="text-muted-foreground">–</span>
+                        ) : (
+                          <Plus className="size-4 text-muted-foreground" aria-label="Zusatzmodul" />
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
                 <tr className="border-b">
                   <td className="px-3 py-3 font-medium">Monatspreis</td>
                   {CATALOG_ORDER.map((key) => (
