@@ -62,7 +62,8 @@ const activateLicense = async (
 
 const setSubscriptionStatus = async (
   subscriptionId: string,
-  status: 'canceled' | 'past_due',
+  status: 'canceling' | 'canceled' | 'past_due',
+  endsAt?: string | null,
 ) => {
   const admin = adminClient();
   if (!admin) return;
@@ -76,6 +77,17 @@ const setSubscriptionStatus = async (
     .from('billing_customers')
     .update({ status, updated_at: new Date().toISOString() })
     .eq('tenant_id', data.tenant_id);
+  /**
+   * Bei Ende sperrt die bestehende Trial-Guard die
+   * Oberflaeche: plan auf abgelaufene Testphase setzen. Die Daten bleiben
+   * unveraendert erhalten.
+   */
+  if (status === 'canceled') {
+    await admin
+      .from('tenants')
+      .update({ plan: 'trial', trial_ends_at: endsAt ?? new Date().toISOString() })
+      .eq('id', data.tenant_id);
+  }
 };
 
 export async function POST(request: Request) {
@@ -112,6 +124,24 @@ export async function POST(request: Request) {
           pkg,
           typeof session.customer === 'string' ? session.customer : null,
           typeof session.subscription === 'string' ? session.subscription : null,
+        );
+      }
+      break;
+    }
+    case 'customer.subscription.updated': {
+      const subscription = event.data.object as Stripe.Subscription;
+      /**
+       * Kuendigung zum Laufzeitende: Stripe meldet zuerst
+       * cancel_at_period_end; der Kunde darf bis zum Periodenende
+       * weiterarbeiten. Erst subscription.deleted sperrt.
+       */
+      if (subscription.cancel_at_period_end) {
+        const periodEnd = (subscription as unknown as { current_period_end?: number })
+          .current_period_end;
+        await setSubscriptionStatus(
+          subscription.id,
+          'canceling',
+          periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
         );
       }
       break;
