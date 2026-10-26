@@ -10221,6 +10221,11 @@ export const dictionary = {
   "oncall.public.location": { de: "Standort / Gebäude", fr: "Lieu / bâtiment", it: "Luogo / edificio", en: "Location / building" },
   "oncall.public.missingLink": { de: "Dieser Meldelink ist ungültig oder abgelaufen.", fr: "Ce lien de signalement est invalide ou expiré.", it: "Questo link di segnalazione non è valido o è scaduto.", en: "This report link is invalid or has expired." },
   "oncall.public.copyLink": { de: "Öffentlichen Meldelink kopieren", fr: "Copier le lien public", it: "Copia link pubblico", en: "Copy public report link" },
+  "oncall.materialUsed": { de: "Verwendetes Material (optional)", fr: "Matériel utilisé (facultatif)", it: "Materiale utilizzato (facoltativo)", en: "Material used (optional)" },
+  "oncall.complete.action": { de: "Einsatz erledigen", fr: "Clôturer l'intervention", it: "Concludi intervento", en: "Complete callout" },
+  "oncall.complete.dialogTitle": { de: "Einsatz abschliessen", fr: "Clôturer l'intervention", it: "Concludi l'intervento", en: "Complete callout" },
+  "oncall.complete.closingNoteRequired": { de: "Bitte eine Abschlussnotiz eintragen.", fr: "Veuillez saisir une note de clôture.", it: "Inserire una nota di chiusura.", en: "Please enter a closing note." },
+  "oncall.complete.confirm": { de: "Einsatz als erledigt abschliessen", fr: "Confirmer la clôture", it: "Conferma chiusura", en: "Confirm completion" },
 } as const satisfies Record<string, Entry>;
 
 export type TranslationKey = keyof typeof dictionary;

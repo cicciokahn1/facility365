@@ -856,6 +856,7 @@ export const emptyOncallIncident = (): Omit<
   workStartedAt: "",
   workEndedAt: "",
   measures: "",
+  materialUsed: "",
   closingNote: "",
   linkedDamageId: "",
   linkedOrderId: "",

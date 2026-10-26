@@ -1,4 +1,4 @@
-import { EntityDetail } from "@/components/module/entity-detail";
+import { OncallIncidentDetail } from "@/components/modules/oncall-incident-detail";
 
 export default async function OncallIncidentDetailPage({
   params,
@@ -6,5 +6,5 @@ export default async function OncallIncidentDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <EntityDetail collection="oncallincidents" id={id} />;
+  return <OncallIncidentDetail id={id} />;
 }

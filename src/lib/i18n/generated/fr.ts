@@ -2155,4 +2155,9 @@ export const table: Record<string, string> = {
   "oncall.public.location": "Lieu / bâtiment",
   "oncall.public.missingLink": "Ce lien de signalement est invalide ou expiré.",
   "oncall.public.copyLink": "Copier le lien public",
+  "oncall.materialUsed": "Matériel utilisé (facultatif)",
+  "oncall.complete.action": "Clôturer l'intervention",
+  "oncall.complete.dialogTitle": "Clôturer l'intervention",
+  "oncall.complete.closingNoteRequired": "Veuillez saisir une note de clôture.",
+  "oncall.complete.confirm": "Confirmer la clôture",
 };

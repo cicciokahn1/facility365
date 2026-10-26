@@ -1377,6 +1377,8 @@ export interface OncallIncident extends BaseEntity {
   workEndedAt: string;
   /** Beschreibung der ergriffenen Massnahmen. */
   measures: string;
+  /** Verwendetes Material, falls angegeben. */
+  materialUsed: string;
   /** Abschlussbemerkungen. */
   closingNote: string;
   /** Optionaler Verweis auf einen bestehenden Schaden oder Auftrag. */

@@ -2155,4 +2155,9 @@ export const table: Record<string, string> = {
   "oncall.public.location": "Location / building",
   "oncall.public.missingLink": "This report link is invalid or has expired.",
   "oncall.public.copyLink": "Copy public report link",
+  "oncall.materialUsed": "Material used (optional)",
+  "oncall.complete.action": "Complete callout",
+  "oncall.complete.dialogTitle": "Complete callout",
+  "oncall.complete.closingNoteRequired": "Please enter a closing note.",
+  "oncall.complete.confirm": "Confirm completion",
 };

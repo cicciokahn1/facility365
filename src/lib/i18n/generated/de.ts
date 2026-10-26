@@ -2155,4 +2155,9 @@ export const table: Record<string, string> = {
   "oncall.public.location": "Standort / Gebäude",
   "oncall.public.missingLink": "Dieser Meldelink ist ungültig oder abgelaufen.",
   "oncall.public.copyLink": "Öffentlichen Meldelink kopieren",
+  "oncall.materialUsed": "Verwendetes Material (optional)",
+  "oncall.complete.action": "Einsatz erledigen",
+  "oncall.complete.dialogTitle": "Einsatz abschliessen",
+  "oncall.complete.closingNoteRequired": "Bitte eine Abschlussnotiz eintragen.",
+  "oncall.complete.confirm": "Einsatz als erledigt abschliessen",
 };

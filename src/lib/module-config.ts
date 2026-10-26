@@ -3438,6 +3438,12 @@ const oncallIncidentsConfig: ModuleConfig<"oncallincidents"> = {
     },
     {
       kind: "textarea",
+      name: "materialUsed",
+      labelKey: "oncall.materialUsed",
+      span: 2,
+    },
+    {
+      kind: "textarea",
       name: "closingNote",
       labelKey: "oncall.closingNote",
       span: 2,
