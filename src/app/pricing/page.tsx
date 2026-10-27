@@ -65,38 +65,6 @@ export default function PricingPage() {
   const [selectedAddons, setSelectedAddons] = useState<ModuleKey[]>([]);
   const [contact, setContact] = useState({ name: '', company: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
-  const [checkoutBusy, setCheckoutBusy] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
-
-  /** Startet den Stripe-Checkout; ohne Anmeldung oder Stripe faellt es aufs Angebot zurueck. */
-  const startCheckout = async (key: PackageKey) => {
-    setCheckoutBusy(true);
-    setCheckoutError(null);
-    const response = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ package: key }),
-    }).catch(() => null);
-    setCheckoutBusy(false);
-    if (response?.ok) {
-      const { url } = (await response.json()) as { url?: string };
-      if (url) {
-        window.location.href = url;
-        return;
-      }
-    }
-    if (response?.status === 401) {
-      window.location.href = `/login?next=/pricing`;
-      return;
-    }
-    if (response?.status === 503) {
-      setCheckoutError(
-        'Der Online-Kauf ist noch nicht eingerichtet. Fordern Sie unten ein Angebot an.',
-      );
-      return;
-    }
-    setCheckoutError('Der Kauf konnte nicht gestartet werden. Bitte versuchen Sie es erneut.');
-  };
 
   const addons = addonModulesOf(selectedPackage);
   const addonLabels = useMemo(
@@ -272,27 +240,12 @@ export default function PricingPage() {
                     >
                       {selected ? 'Ausgewählt' : 'Paket wählen'}
                     </Button>
-                    {SELLABLE.includes(key) && (
-                      <Button
-                        variant="secondary"
-                        onClick={() => void startCheckout(key)}
-                        disabled={checkoutBusy}
-                      >
-                        Jetzt kaufen
-                      </Button>
-                    )}
                   </div>
                 </CardContent>
               </Card>
             );
           })}
         </section>
-
-        {checkoutError && (
-          <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm">
-            {checkoutError}
-          </p>
-        )}
 
         {/* Vergleichstabelle */}
         <Card>
