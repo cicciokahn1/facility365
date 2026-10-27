@@ -28,9 +28,9 @@ begin
 
   -- Nur diese Funktion darf die Testfrist veraendern: sie laeuft als
   -- security definer (Tabellen-Eigner) und schaltet den Guard-Trigger
-  -- transaktionslokal aus. Ein SET-Flag waere von aussen setzbar und
-  -- damit umgehbar; ein Trigger-Disable nicht. Schlaegt das Update fehl,
-  -- stellt der Transaktions-Rollback den Trigger automatisch wieder her.
+  -- kurz aus und direkt danach wieder ein. Ein SET-Flag waere von aussen
+  -- setzbar und damit umgehbar; ein Trigger-Disable nicht. Schlaegt das
+  -- Update fehl, stellt der Transaktions-Rollback den Trigger wieder her.
   execute 'alter table public.tenants disable trigger tenants_guard_license';
 
   update public.tenants t
