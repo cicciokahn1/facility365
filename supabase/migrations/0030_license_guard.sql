@@ -1,4 +1,4 @@
--- 0026_license_guard.sql
+-- 0030_license_guard.sql
 -- P0-Fix (Vorschlag, noch nicht ausgefuehrt):
 -- Verhindert, dass eine Mandanten-Leitung ihre Lizenz oder Testfrist selbst
 -- aendert (plan / trial_started_at / trial_ends_at). Die Update-Regel
@@ -37,6 +37,12 @@ begin
   set trial_ends_at = greatest(coalesce(t.trial_ends_at, now()), now()) + make_interval(days => days)
   where t.id = tenant and t.plan = 'trial'
   returning t.trial_ends_at into ends;
+
+  -- WICHTIG: DISABLE TRIGGER ist persistent (Katalogaenderung), nicht
+  -- transaktionslokal. Ohne Re-Aktivierung bliebe der Guard nach dem
+  -- ersten erfolgreichen Aufruf dauerhaft aus. Beim Fehlerfall stellt
+  -- der Rollback den Zustand ohnehin wieder her.
+  execute 'alter table public.tenants enable trigger tenants_guard_license';
 
   return ends;
 end;
