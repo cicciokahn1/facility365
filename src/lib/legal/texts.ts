@@ -12,7 +12,7 @@ Diese AGB gelten für die Nutzung der Web-Anwendung «Facility365» («Dienst»)
 
 ## 2. Leistungsumfang
 
-Facility365 ist eine Software-as-a-Service zur Facility-Management-Organisation: Aufträge, Schadensmeldungen, Kontrollen, Wartungen, Rapporte, Reinigung, Rechnungen und Dokumentation. Der konkrete Leistungsumfang richtet sich nach dem gebuchten Paket auf der Preisseite (Professional, Property, Care, Institution, Industry, Public oder Enterprise). Zusatzmodule können einzeln zugebucht werden und werden separat verrechnet.
+Facility365 ist eine Software-as-a-Service zur Facility-Management-Organisation: Aufträge, Schadensmeldungen, Kontrollen, Wartungen, Rapporte, Reinigung, Rechnungen und Dokumentation. Der konkrete Leistungsumfang richtet sich nach dem gebuchten Paket auf der Preisseite (Starter, Property, Industry, Care, Public, Professional sowie individuelle Enterprise-Pakete). Zusatzmodule können einzeln zugebucht werden und werden separat verrechnet.
 
 Der Betreiber bemüht sich um einen störungsfreien Betrieb, gewährleistet jedoch keine ununterbrochene Verfügbarkeit (z. B. Wartung, Updates, Störungen der Hosting-Partner Vercel und Supabase).
 
