@@ -2,7 +2,6 @@
 
 /** „Erledigt“ im Kopf von Auftrag, Wartung und Schaden; ueberall gleich. */
 import { CheckCircle2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { useT } from '@/lib/i18n/provider';
@@ -33,7 +32,6 @@ export function DoneButton({
       className={className}
       onClick={() => {
         markDone(id);
-        toast.success(t('action.markedDone'), { description: t('action.doneHint') });
       }}
       data-testid="mark-done"
     >

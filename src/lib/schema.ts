@@ -148,6 +148,11 @@ export const STATUS_TONES: Record<string, Tone> = {
   medium: "info",
   high: "warning",
   critical: "danger",
+  unverified: "danger",
+  verified: "brand",
+  assigned: "info",
+  in_progress: "warning",
+  aborted: "neutral",
 };
 
 export const HAZARD_STATUS_OPTIONS: SelectOption[] = [
@@ -179,6 +184,31 @@ const option = (value: string, labelKey: TranslationKey): SelectOption => ({
   labelKey,
   tone: STATUS_TONES[value] ?? "neutral",
 });
+
+/** Pikettdienst: Dringlichkeit einer Notfallmeldung. */
+export const ONCALL_URGENCY_OPTIONS: SelectOption[] = [
+  option("low", "oncall.urgency.low"),
+  option("normal", "oncall.urgency.normal"),
+  option("high", "oncall.urgency.high"),
+  option("critical", "oncall.urgency.critical"),
+];
+
+/** Pikettdienst: Bearbeitungsstand einer Notfallmeldung. */
+export const ONCALL_INCIDENT_STATUS_OPTIONS: SelectOption[] = [
+  option("unverified", "oncall.status.unverified"),
+  option("new", "status.new"),
+  option("verified", "oncall.status.verified"),
+  option("assigned", "oncall.status.assigned"),
+  option("in_progress", "status.inProgress"),
+  option("done", "status.done"),
+  option("aborted", "oncall.status.aborted"),
+];
+
+/** Pikettdienst: Herkunft einer Meldung (internes Formular oder oeffentlich). */
+export const ONCALL_ORIGIN_OPTIONS: SelectOption[] = [
+  option("internal", "oncall.origin.internal"),
+  option("external", "oncall.origin.external"),
+];
 
 export const ACTIVE_OPTIONS: SelectOption[] = [
   option("active", "status.active"),

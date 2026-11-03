@@ -15,7 +15,19 @@
 import { NextResponse } from 'next/server';
 
 import { COLLECTIONS } from '@/lib/data/collections';
-import { CollectionKey } from '@/lib/types';
+import { disabledByPackage } from '@/lib/packages/packages';
+import { CollectionKey, IndustryPackage, ModuleKey } from '@/lib/types';
+
+/** Collections, die einem optionalen Modul entsprechen (Paketgrenze). */
+const COLLECTION_MODULES = [
+  'organizations', 'sites', 'suppliers', 'sources',
+  'energy', 'solarplants', 'solaryields', 'keys', 'inventory', 'tools', 'stock',
+  'legionella', 'rcd', 'inspections', 'playgroundchecks', 'firechecks',
+  'cleaningareas', 'cleaners', 'cleaningplans', 'cleaningtasks',
+  'cleaningchecks', 'cleaningcomplaints',
+  'contracts', 'quotes', 'invoices',
+  'vehicles', 'visitors', 'parking', 'waste', 'hazards',
+];
 
 const MAX_LIMIT = 500;
 
@@ -55,6 +67,40 @@ export async function GET(
   }
   const limit = Math.min(Number(query.get('limit')) || 100, MAX_LIMIT);
   const withDeleted = query.get('deleted') === '1';
+
+  /**
+   * Paketgrenze (serverseitig): die Schnittstelle laeuft mit dem
+   * Service-Schluessel und umgeht RLS - deshalb wird das Paket des
+   * Mandanten hier geprueft. billing_customers (Kauf) hat Vorrang vor
+   * tenant_settings (freie Wahl/Testphase); ''/'custom' = kein Limit.
+   */
+  if ((COLLECTION_MODULES as string[]).includes(collection)) {
+    const settingsUrl = new URL(`${url}/rest/v1/tenant_settings`);
+    settingsUrl.searchParams.set('select', 'data');
+    settingsUrl.searchParams.set('tenant_id', `eq.${tenant}`);
+    const billingUrl = new URL(`${url}/rest/v1/billing_customers`);
+    billingUrl.searchParams.set('select', 'package');
+    billingUrl.searchParams.set('tenant_id', `eq.${tenant}`);
+    billingUrl.searchParams.set('status', 'neq.canceled');
+    const headers = { apikey: serviceKey, authorization: `Bearer ${serviceKey}` };
+    const [billingRes, settingsRes] = await Promise.all([
+      fetch(billingUrl, { headers, signal: AbortSignal.timeout(8000) }).catch(() => null),
+      fetch(settingsUrl, { headers, signal: AbortSignal.timeout(8000) }).catch(() => null),
+    ]);
+    const billingRows = (await billingRes?.json().catch(() => [])) as { package?: string }[];
+    const settingsRows = (await settingsRes?.json().catch(() => [])) as {
+      data?: { industryPackage?: string };
+    }[];
+    const pkg =
+      billingRows?.[0]?.package ?? settingsRows?.[0]?.data?.industryPackage ?? '';
+    if (
+      pkg &&
+      pkg !== 'custom' &&
+      disabledByPackage(pkg as IndustryPackage).includes(collection as ModuleKey)
+    ) {
+      return NextResponse.json({ error: 'module_not_in_package' }, { status: 403 });
+    }
+  }
 
   const target = new URL(`${url}/rest/v1/${collection}`);
   target.searchParams.set('select', 'id,number,data,deleted_at');

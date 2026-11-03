@@ -218,6 +218,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           </Button>
         ) : null}
       </div>
+      <p className="px-1 pt-2 text-[10px] text-sidebar-foreground/50">
+        © {new Date().getFullYear()} Facility365 – Alle Rechte vorbehalten
+      </p>
     </nav>
   );
 }

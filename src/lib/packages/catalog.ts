@@ -18,12 +18,13 @@ import { disabledByPackage, OPTIONAL_MODULES, PACKAGE_PRICES } from './packages'
 
 /** Anzeigereihenfolge der Pakete auf der Preisseite. */
 export const CATALOG_ORDER: Exclude<IndustryPackage, '' | 'custom'>[] = [
-  'professional',
+  'starter',
   'property',
-  'care',
-  'institution',
   'industry',
+  'care',
   'public',
+  'hospital',
+  'professional',
   'enterprise',
 ];
 
@@ -77,9 +78,21 @@ export interface PackageInfo {
   groups: string[];
   /** Zusaetzliche Einzelmodule ausserhalb der Gruppen. */
   extraModules: ModuleKey[];
+  /** true = Preis ist ein Einstiegspreis («ab CHF …»). */
+  priceFrom?: boolean;
 }
 
 export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, PackageInfo> = {
+  starter: {
+    summary: 'Der Einstieg für einzelne Hauswarte und kleine Betriebe.',
+    target: 'Einzelne Hauswarte, kleine Hauswartungsbetriebe und kleine Organisationen.',
+    benefit:
+      'Liegenschaften, Aufträge, Wartungen, Schäden und Rapporte in einer App - mobil und offline nutzbar, ohne Einführungsprojekt.',
+    whyThis:
+      'Der günstigste Einstieg: alle Kernfunktionen für den Hauswart-Alltag, ohne Branchenmodule. Aufwertung auf ein Branchenpaket jederzeit möglich.',
+    groups: [],
+    extraModules: [],
+  },
   professional: {
     summary: 'Das Komplettpaket für Facility-Management- und Hauswartbetriebe.',
     target: 'Hauswartfirmen und FM-Dienstleister, die mehrere Liegenschaften für Kunden betreuen.',
@@ -102,7 +115,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   },
   care: {
     summary: 'Das Paket für Pflege- und Betreuungseinrichtungen.',
-    target: 'Alters- und Pflegeheime, Spitäler, Kliniken und betreute Wohnformen.',
+    target: 'Alters- und Pflegeheime sowie betreute Wohnformen. Für Spitäler und Kliniken ist Facility365 Hospital vorgesehen.',
     benefit:
       'Hygiene im Griff: Reinigungspläne und -kontrollen, Legionella- und Sicherheitsnachweise sowie einwandfreie Dokumentation für Audits.',
     whyThis:
@@ -110,13 +123,14 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
     groups: ['structure', 'technics', 'controls', 'cleaning'],
     extraModules: ['contracts', 'analytics'],
   },
+  /** Legacy-Paket: nicht mehr verkauft, bestehende Mandanten laufen weiter. */
   institution: {
-    summary: 'Das Paket für soziale Institutionen und Wohnheime.',
+    summary: 'Das Paket für soziale Institutionen und Wohnheime (nicht mehr verkauft).',
     target: 'Wohnheime, Werkstätten, Tagesstätten und gemeinnützige Trägerschaften.',
     benefit:
       'Betrieb, Technik und Reinigung in einem Werkzeug: Aufträge verteilen, Kontrollen führen und Reinigungsqualität sichern - auch mit wechselnden Teams.',
     whyThis:
-      'Wie Care, aber auf institutionellen Wohn- und Arbeitsbetrieb zugeschnitten; dieselben Nachweis- und Reinigungsmodule ohne Pflegefokus.',
+      'Wird nicht mehr angeboten: wohnorientierte Fälle laufen über Care, öffentliche und soziale Einrichtungen über Public, komplexe Fälle über Enterprise.',
     groups: ['structure', 'technics', 'controls', 'cleaning'],
     extraModules: ['contracts', 'analytics'],
   },
@@ -132,13 +146,25 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   },
   public: {
     summary: 'Das Paket für Gemeinden und öffentliche Verwaltungen.',
-    target: 'Gemeinden, Städte, Schulen und öffentliche Betriebe.',
+    target:
+      'Gemeinden, Städte, Schulen, Werkhöfe sowie öffentliche und soziale Einrichtungen.',
     benefit:
       'Vom Schulhaus bis zur Werkhalle: Kontrollen (Spielplatz, Brandschutz, Legionella), Reinigung, Aufträge und ein Meldeportal für die Bevölkerung.',
     whyThis:
-      'Die breiteste Stufe nach Professional: enthält Reinigung und das Bürgermelde-Portal - die beiden Dinge, die eine Gemeinde braucht.',
+      'Die breiteste Stufe nach Professional: enthält Reinigung und das Bürgermelde-Portal - die beiden Dinge, die eine Gemeinde braucht. Auch Flughäfen und Bahnhöfe sind mögliche Anwendungsfälle; sehr komplexe Betreiber betreuen wir über Enterprise.',
     groups: ['structure', 'technics', 'controls', 'cleaning'],
-    extraModules: ['vehicles', 'contracts', 'analytics', 'portal'],
+    extraModules: ['vehicles', 'contracts', 'analytics', 'portal', 'hazards'],
+  },
+  hospital: {
+    summary: 'Das Paket für Spitäler und Kliniken.',
+    target: 'Spitäler, Kliniken und grössere Gesundheitseinrichtungen.',
+    benefit:
+      'Hohe Dokumentations- und Kontrolltiefe: Audits, Begehungen, Nachweise und Reinigungsplanung - ergänzt um Besucher und Gefahrstoffe.',
+    whyThis:
+      'Baut auf Care auf und ergänzt Besucher- und Gefahrstoff-Management - die Bereiche, die in Kliniken zusätzlich zum Pflege-Alltag dazukommen. Grössere Betreiber offerieren wir individuell.',
+    groups: ['structure', 'technics', 'controls', 'cleaning'],
+    extraModules: ['contracts', 'analytics', 'visitors', 'hazards'],
+    priceFrom: true,
   },
   enterprise: {
     summary: 'Der freie Baukasten: Du wählst selbst, welche Module du brauchst.',
@@ -168,12 +194,14 @@ export const yearlyPrice = (key: IndustryPackage): number | null =>
  * Industry < Public; Enterprise immer individuell.
  */
 export const SETUP_FEES: Record<Exclude<IndustryPackage, '' | 'custom'>, number | null> = {
+  starter: null,
   professional: null,
   property: null,
   care: null,
   institution: null,
   industry: null,
   public: null,
+  hospital: null,
   enterprise: null,
 };
 
@@ -199,6 +227,7 @@ export const SETUP_EXCLUDED = [
 export const ADDON_PRICES: Partial<Record<ModuleKey, number>> = {
   // Kleine Verwaltungsmodule
   organizations: 29,
+  hazards: 29,
   sites: 29,
   suppliers: 29,
   sources: 29,

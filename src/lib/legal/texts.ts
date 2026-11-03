@@ -12,7 +12,7 @@ Diese AGB gelten für die Nutzung der Web-Anwendung «Facility365» («Dienst»)
 
 ## 2. Leistungsumfang
 
-Facility365 ist eine Software-as-a-Service zur Facility-Management-Organisation: Aufträge, Schadensmeldungen, Kontrollen, Wartungen, Rapporte, Reinigung, Rechnungen und Dokumentation. Der konkrete Leistungsumfang richtet sich nach dem gebuchten Paket auf der Preisseite (Professional, Property, Care, Institution, Industry, Public oder Enterprise). Zusatzmodule können einzeln zugebucht werden und werden separat verrechnet.
+Facility365 ist eine Software-as-a-Service zur Facility-Management-Organisation: Aufträge, Schadensmeldungen, Kontrollen, Wartungen, Rapporte, Reinigung, Rechnungen und Dokumentation. Der konkrete Leistungsumfang richtet sich nach dem gebuchten Paket auf der Preisseite (Starter, Property, Industry, Care, Public, Professional sowie individuelle Enterprise-Pakete). Zusatzmodule können einzeln zugebucht werden und werden separat verrechnet.
 
 Der Betreiber bemüht sich um einen störungsfreien Betrieb, gewährleistet jedoch keine ununterbrochene Verfügbarkeit (z. B. Wartung, Updates, Störungen der Hosting-Partner Vercel und Supabase).
 
@@ -95,8 +95,8 @@ Vertragsdauer der App-Nutzung. Nach Vertragsende stehen die Daten 90 Tage zum Ex
 
 Die verantwortliche Stelle stimmt dem Einsatz folgender Unterauftragsbearbeiter zu:
 
-- **Vercel Inc.** (USA) – Auslieferung der Web-Anwendung. [OFFEN: genutzte Serverregion zu bestätigen]
-- **Supabase Inc.** (USA) – Datenbank und Authentifizierung. [OFFEN: Projektregion zu bestätigen – im Supabase-Dashboard einsehbar]
+- **Vercel Inc.** (USA) – Auslieferung der Web-Anwendung ueber das globale Edge-Netzwerk des Anbieters.
+- **Supabase Inc.** (USA) – Datenbank und Authentifizierung; das Facility365-Projekt liegt in der Region **Schweden (Stockholm, EU)**.
 - **E-Mail-Versand:** aktuell der eingebaute E-Mail-Dienst von Supabase. Ein eigener SMTP-Anbieter ist noch nicht eingerichtet und wird vor Einsatz nachträglich mitgeteilt.
 
 Neue Unterauftragsbearbeiter werden den Kunden vorab mitgeteilt; Widerspruch innert 14 Tagen möglich.
@@ -145,8 +145,8 @@ Daten werden nur verwendet, um den Dienst bereitzustellen: Speicherung und Anzei
 
 ## 4. Hosting und Auftragsbearbeiter
 
-- **Web-Anwendung:** Vercel Inc. (USA) – Auslieferung der App. [OFFEN: genutzte Region zu bestätigen]
-- **Datenbank, Authentifizierung und Backups:** Supabase Inc. (USA). [OFFEN: Projektregion zu bestätigen – im Supabase-Dashboard einsehbar]
+- **Web-Anwendung:** Vercel Inc. (USA) – Auslieferung der App ueber das globale Edge-Netzwerk des Anbieters.
+- **Datenbank, Authentifizierung und Backups:** Supabase Inc. (USA); das Facility365-Projekt liegt in der Region **Schweden (Stockholm, EU)**.
 - **E-Mail:** Der Versand von System-E-Mails (z. B. Kontobestätigung) erfolgt derzeit über den E-Mail-Dienst von Supabase; ein eigener SMTP-Anbieter ist noch nicht eingerichtet.
 
 Es gelten die Datenschutzbestimmungen der jeweiligen Auftragsbearbeiter. Eine ausschliessliche Speicherung sämtlicher Daten in der Schweiz ist zum jetzigen Zeitpunkt **nicht** gegeben; Übermittlungen ins Ausland erfolgen nur zu Anbietern mit angemessenem Schutzniveau.

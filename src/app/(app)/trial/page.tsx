@@ -36,7 +36,9 @@ export default function TrialPage() {
           <CardTitle className="text-base">
             {trial.isTrial
               ? t("trial.badge", { days: trial.daysLeft })
-              : t("trial.expiredTitle")}
+              : trial.plan === "licensed"
+                ? t("trial.licensed")
+                : t("trial.expiredTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -55,6 +57,24 @@ export default function TrialPage() {
               {t("trial.expiredText")}
             </p>
           )}
+          {/* Gelandener Status aus der Datenbank (keine personenbezogenen Daten) –
+              macht sichtbar, was die Statusabfrage tatsaechlich liefert. */}
+          <p className="text-xs text-muted-foreground" data-testid="trial-plan">
+            {t("trial.planStatus")}:{" "}
+            {trial.loadError
+              ? t("trial.planLoadError")
+              : !trial.ready
+                ? "…"
+                : trial.plan
+                  ? trial.plan
+                  : trial.emptyReason === "unknown-plan"
+                    ? `${trial.rawPlan ?? "?"}`
+                    : trial.emptyReason === "no-row"
+                      ? t("trial.planNoRow")
+                      : trial.emptyReason === "tenant-mismatch"
+                        ? t("trial.planMismatch")
+                        : t("trial.planNoTenant")}
+          </p>
           <p className="text-sm text-muted-foreground">{t("trial.separate")}</p>
           <p className="text-sm text-muted-foreground">{t("trial.noCard")}</p>
 

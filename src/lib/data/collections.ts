@@ -54,4 +54,6 @@ export const COLLECTIONS: CollectionKey[] = [
   "activities",
   "privateNotes",
   "privateFiles",
+  "oncallperiods",
+  "oncallincidents",
 ];

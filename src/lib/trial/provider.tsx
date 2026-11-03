@@ -34,6 +34,18 @@ interface TrialApi extends TrialState {
   plan: TrialPlan | null;
   /** Frist steht fest; vorher zeigt die Oberflaeche keine Sperre. */
   ready: boolean;
+  /** Datenbank-Lesefehler beim Mandantenstatus (Diagnose, kein Silent-Fail). */
+  loadError: boolean;
+  /** Warum kein Status vorliegt: 'no-tenant' keine Mitgliedschaft,
+   *  'no-row' Mandantenzeile nicht lesbar (RLS), 'unknown-plan' anderer Wert. */
+  emptyReason:
+    | "no-tenant"
+    | "no-row"
+    | "unknown-plan"
+    | "tenant-mismatch"
+    | null;
+  /** Gelesener plan-Wert bei 'unknown-plan' (Diagnose). */
+  rawPlan: string | null;
   /** Startet die Testzeit auf diesem Geraet (Browserbetrieb). */
   start: () => void;
   /** Verlaengert die Testzeit um weitere Tage (Administration). */
@@ -52,6 +64,12 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
   const tenantId = auth.membership?.tenantId ?? "";
   const [record, setRecord] = useState<TrialRecord | null>(null);
   const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [emptyReason, setEmptyReason] = useState<
+    "no-tenant" | "no-row" | "unknown-plan" | "tenant-mismatch" | null
+  >(null);
+  /** Gelesener plan-Wert, falls er keinem bekannten Status entspricht. */
+  const [rawPlan, setRawPlan] = useState<string | null>(null);
   /** Der Tageswechsel muss die Anzeige erneuern, ohne dass jemand neu laedt. */
   const [tick, setTick] = useState(0);
 
@@ -63,22 +81,58 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
     return () => window.clearInterval(timer);
   }, []);
 
-  const loadTenant = useCallback(async (): Promise<TrialRecord | null> => {
+  interface LoadResult {
+    record: TrialRecord | null;
+    reason: "no-tenant" | "no-row" | "unknown-plan" | "tenant-mismatch" | null;
+    rawPlan?: string;
+  }
+
+  const loadTenant = useCallback(async (): Promise<LoadResult> => {
+    const none = (reason: LoadResult["reason"]): LoadResult => ({
+      record: null,
+      reason,
+    });
     const client = await supabase();
-    if (!client || !tenantId) return null;
-    const { data } = await client
+    if (!client || !tenantId) return none("no-tenant");
+    /** Die Mandanten-Regel (RLS) liefert ohnehin nur den aktiven Mandanten;
+     *  eine eigene id-Abfrage kann bei mehreren Mitgliedschaften eine andere
+     *  Zeile treffen und dann leer ausgehen. Fehler werden nicht verschluckt. */
+    const { data, error } = await client
       .from("tenants")
       .select("plan, trial_ends_at")
-      .eq("id", tenantId)
+      .limit(1)
       .maybeSingle();
-    const row = data as TenantRow | null;
-    if (!row) return null;
-    if (row.plan === "licensed") {
-      return { plan: "licensed", startedAt: "", endsAt: "" };
+    if (error) {
+      console.warn("Mandantenstatus nicht lesbar:", error.code ?? error.message);
+      setLoadError(true);
+      return none(null);
     }
-    /** Testversion ohne Enddatum: keine Frist erfinden, nichts sperren. */
-    if (row.plan !== "trial" || !row.trial_ends_at) return null;
-    return { plan: "trial", startedAt: "", endsAt: row.trial_ends_at };
+    const row = data as TenantRow | null;
+    if (!row) {
+      /** Kein Datensatz sichtbar: stimmt die Datenbank-Sicht
+       *  (current_tenant) mit der Mitgliedschaft ueberein? */
+      const dbTenant = await client.rpc("current_tenant");
+      const dbId = typeof dbTenant.data === "string" ? dbTenant.data : "";
+      if (!dbTenant.error && dbId && dbId !== tenantId) {
+        return none("tenant-mismatch");
+      }
+      return none("no-row");
+    }
+    if (row.plan === "licensed") {
+      return {
+        record: { plan: "licensed", startedAt: "", endsAt: "" },
+        reason: null,
+      };
+    }
+    if (row.plan === "trial" && row.trial_ends_at) {
+      return {
+        record: { plan: "trial", startedAt: "", endsAt: row.trial_ends_at },
+        reason: null,
+      };
+    }
+    /** Testversion ohne Enddatum oder fremder Wert: nichts erfinden,
+     *  aber den gelesenen Wert fuer die Diagnose behalten. */
+    return { record: null, reason: "unknown-plan", rawPlan: row.plan };
   }, [tenantId]);
 
   useEffect(() => {
@@ -89,13 +143,16 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
         if (!tenantId) {
           if (active) {
             setRecord(null);
+            setEmptyReason("no-tenant");
             setReady(true);
           }
           return;
         }
         const loaded = await loadTenant();
         if (!active) return;
-        setRecord(loaded);
+        setRecord(loaded.record);
+        setEmptyReason(loaded.reason);
+        setRawPlan(loaded.rawPlan ?? null);
         setReady(true);
         return;
       }
@@ -133,8 +190,17 @@ export function TrialProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<TrialApi>(() => {
     void tick;
     const state = record ? trialStateOf(record) : NO_TRIAL;
-    return { ...state, plan: record?.plan ?? null, ready, start, extend };
-  }, [extend, ready, record, start, tick]);
+    return {
+      ...state,
+      plan: record?.plan ?? null,
+      ready,
+      loadError,
+      emptyReason,
+      rawPlan,
+      start,
+      extend,
+    };
+  }, [emptyReason, extend, loadError, rawPlan, ready, record, start, tick]);
 
   return (
     <TrialContext.Provider value={value}>{children}</TrialContext.Provider>

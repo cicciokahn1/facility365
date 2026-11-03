@@ -24,13 +24,23 @@ import {
   SETUP_INCLUDED,
   yearlyPrice,
 } from '@/lib/packages/catalog';
-import { packageLabelKey } from '@/lib/packages/packages';
+import { disabledByPackage, packageLabelKey } from '@/lib/packages/packages';
 import { moduleByKey } from '@/lib/modules';
 import { useT } from '@/lib/i18n/provider';
 import type { IndustryPackage, ModuleKey } from '@/lib/types';
 import { formatMoney } from '@/lib/utils/format';
 
 type PackageKey = (typeof CATALOG_ORDER)[number];
+
+/** Pakete mit festem Jahrespreis, die direkt gekauft werden koennen. */
+const SELLABLE: PackageKey[] = [
+  'starter',
+  'property',
+  'industry',
+  'care',
+  'public',
+  'professional',
+];
 
 const money = (value: number | null): string =>
   value === null ? 'Auf Anfrage' : formatMoney(value);
@@ -40,6 +50,9 @@ const MonthlyPrice = ({ pkg }: { pkg: PackageKey }) => {
   if (monthly === null) return <p className="text-xl font-semibold">Individuelles Angebot</p>;
   return (
     <p>
+      {PACKAGE_INFO[pkg].priceFrom && (
+        <span className="text-sm font-medium text-muted-foreground">ab </span>
+      )}
       <span className="text-2xl font-semibold">{formatMoney(monthly)}</span>
       <span className="text-sm text-muted-foreground"> / Monat</span>
     </p>
@@ -48,7 +61,7 @@ const MonthlyPrice = ({ pkg }: { pkg: PackageKey }) => {
 
 export default function PricingPage() {
   const t = useT();
-  const [selectedPackage, setSelectedPackage] = useState<PackageKey>('professional');
+  const [selectedPackage, setSelectedPackage] = useState<PackageKey>('property');
   const [selectedAddons, setSelectedAddons] = useState<ModuleKey[]>([]);
   const [contact, setContact] = useState({ name: '', company: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
@@ -128,10 +141,19 @@ export default function PricingPage() {
           <p className="text-sm font-medium text-primary">Facility365</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">Preise und Pakete</h1>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Jedes Paket ist fuer eine Branche zugeschnitten. Waehlen Sie das passende Paket,
+            Jedes Paket ist fuer eine Branche zugeschnitten – vom Starter-Paket fuer einzelne
+            Hauswarte bis zum Komplettpaket Professional. Waehlen Sie das passende Paket,
             ergaenzen Sie bei Bedarf Zusatzmodule und fordern Sie ein persoenliches Angebot an.
             Alle Preise in CHF, exkl. MwSt.
           </p>
+          <div className="mx-auto mt-4 flex max-w-2xl flex-col items-center gap-1 text-sm">
+            <p className="font-medium text-primary">
+              30 Tage kostenlos testen – keine Kreditkarte erforderlich
+            </p>
+            <p className="text-muted-foreground">
+              Einfaches Jahres-Abo · Keine Gebühren pro Gebäude oder Liegenschaft
+            </p>
+          </div>
         </header>
 
         {/* Paketkarten */}
@@ -161,6 +183,7 @@ export default function PricingPage() {
                     {yearlyPrice(key) !== null && (
                       <p className="text-xs text-muted-foreground">
                         umgerechneter Monatspreis – Abrechnung erfolgt als Jahresrechnung (
+                        {PACKAGE_INFO[key].priceFrom ? 'ab ' : ''}
                         {formatMoney(yearlyPrice(key)!)}/Jahr)
                       </p>
                     )}
@@ -209,14 +232,15 @@ export default function PricingPage() {
                     </p>
                   </div>
                   <p className="text-xs text-muted-foreground">{pkg.whyThis}</p>
-                  <Button
-                    className="mt-auto"
-                    variant={selected ? 'default' : 'outline'}
-                    onClick={() => choosePackage(key)}
-                    aria-pressed={selected}
-                  >
-                    {selected ? 'Ausgewählt' : 'Paket wählen'}
-                  </Button>
+                  <div className="mt-auto flex flex-col gap-2">
+                    <Button
+                      variant={selected ? 'default' : 'outline'}
+                      onClick={() => choosePackage(key)}
+                      aria-pressed={selected}
+                    >
+                      {selected ? 'Ausgewählt' : 'Paket wählen'}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             );
@@ -257,6 +281,35 @@ export default function PricingPage() {
                     </tr>
                   ),
                 )}
+                {(
+                  [
+                    'contracts',
+                    'analytics',
+                    'portal',
+                    'vehicles',
+                    'visitors',
+                    'hazards',
+                    'waste',
+                    'parking',
+                  ] as ModuleKey[]
+                ).map((module) => (
+                  <tr key={module} className="border-b">
+                    <td className="px-3 py-3 font-medium">
+                      {t(moduleByKey(module).labelKey)}
+                    </td>
+                    {CATALOG_ORDER.map((key) => (
+                      <td key={key} className="px-3 py-3">
+                        {!disabledByPackage(key).includes(module) ? (
+                          <Check className="size-4 text-primary" aria-label="enthalten" />
+                        ) : module === 'waste' ? (
+                          <span className="text-muted-foreground">–</span>
+                        ) : (
+                          <Plus className="size-4 text-muted-foreground" aria-label="Zusatzmodul" />
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
                 <tr className="border-b">
                   <td className="px-3 py-3 font-medium">Monatspreis</td>
                   {CATALOG_ORDER.map((key) => (
@@ -269,7 +322,9 @@ export default function PricingPage() {
                   <td className="px-3 py-3 font-medium">Jahrespreis</td>
                   {CATALOG_ORDER.map((key) => (
                     <td key={key} className="px-3 py-3">
-                      {money(yearlyPrice(key))}
+                      {PACKAGE_INFO[key].priceFrom && yearlyPrice(key) !== null
+                        ? `ab ${money(yearlyPrice(key))}`
+                        : money(yearlyPrice(key))}
                     </td>
                   ))}
                 </tr>
