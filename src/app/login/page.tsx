@@ -302,14 +302,14 @@ function BrandPanel() {
   ];
   return (
     <aside
-      className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-primary p-10 text-primary-foreground lg:flex xl:w-[55%]"
+      className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-b from-primary via-primary to-primary/80 p-10 text-primary-foreground lg:flex xl:w-[55%]"
       data-testid="login-brand"
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- statische Marke ohne Groessenwechsel */}
       <img
         src={BRAND_LOGO_SRC}
         alt="Facility365"
-        className="h-16 w-auto max-w-[220px] self-start rounded-lg bg-white/95 p-2 object-contain"
+        className="h-24 w-auto max-w-[280px] self-start rounded-xl bg-white/95 p-3 object-contain shadow-lg"
       />
 
       <div className="relative z-10 flex flex-col gap-6">
@@ -326,6 +326,16 @@ function BrandPanel() {
             </li>
           ))}
         </ul>
+        <div className="flex flex-wrap gap-2">
+          {[t("auth.badgeSwiss"), t("auth.badgeDsg"), t("auth.badgeOffline")].map((badge) => (
+            <span
+              key={badge}
+              className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium"
+            >
+              {badge}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* eslint-disable-next-line @next/next/no-img-element -- Illustration des Marken-Panels */}
@@ -333,7 +343,7 @@ function BrandPanel() {
         src="/brand/login-hero.png"
         alt=""
         aria-hidden
-        className="relative -mb-10 -mr-10 mt-6 w-full max-w-[520px] self-end rounded-xl object-cover opacity-95"
+        className="relative -mb-10 -mr-10 mt-6 w-full max-w-[560px] self-end rounded-xl object-cover opacity-95 shadow-2xl ring-1 ring-white/20"
       />
     </aside>
   );

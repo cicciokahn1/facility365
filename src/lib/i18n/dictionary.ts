@@ -7203,6 +7203,24 @@ export const dictionary = {
     it: "Collaudi e consegne dal cellulare",
     en: "Inspections and handovers on mobile",
   },
+  "auth.badgeSwiss": {
+    de: "Schweizer SaaS",
+    fr: "SaaS suisse",
+    it: "SaaS svizzera",
+    en: "Swiss SaaS",
+  },
+  "auth.badgeDsg": {
+    de: "DSG-konform",
+    fr: "Conforme à la LPD",
+    it: "Conforme alla LPD",
+    en: "Data-protection compliant",
+  },
+  "auth.badgeOffline": {
+    de: "Offline-fähig",
+    fr: "Utilisable hors ligne",
+    it: "Utilizzabile offline",
+    en: "Works offline",
+  },
   "auth.resetTitle": {
     de: "Passwort zurücksetzen",
     fr: "Réinitialiser le mot de passe",
