@@ -105,14 +105,19 @@ export const supabaseRepository: Repository = {
       if (error && error.code !== '23505') throw new Error(error.message);
       return;
     }
-    const { error } = await (await client())
+    /** ignoreDuplicates verhindert einen 409, wenn ein anderer eindeutiger
+     *  Schluessel als das Konfliktziel (z. B. der Primaerschluessel user_id,id)
+     *  ausloest. Wurde die Zeile uebersprungen, liegt sie schon vor und wird
+     *  gezielt unter Mandanten-Bedingung aktualisiert. */
+    const { data: written, error } = await (await client())
       .from(tableOf(collection))
-      .upsert(rowOf(item, userId, tenantId), { onConflict: 'tenant_id,id' });
-    /** Manche Tabellen haben den Primaerschluessel nur auf id: liegt die id
-     *  schon vor, wird als Update unter Mandanten-Bedingung nachgeliefert.
-     *  Gehoert die Zeile einem fremden Mandanten, greift die Regel (RLS) und
-     *  der Eintrag bleibt mit lesbarem Fehler sichtbar. */
-    if (error?.code === '23505') {
+      .upsert(rowOf(item, userId, tenantId), {
+        onConflict: 'tenant_id,id',
+        ignoreDuplicates: true,
+      })
+      .select('id');
+    if (error) throw new Error(error.message);
+    if (!written || written.length === 0) {
       const { data: updated, error: updateError } = await (await client())
         .from(tableOf(collection))
         .update(rowOf(item, userId, tenantId))
@@ -121,11 +126,9 @@ export const supabaseRepository: Repository = {
         .select('id');
       if (updateError) throw new Error(updateError.message);
       if (!updated || updated.length === 0) {
-        throw new Error('23505:fremder Datensatz mit gleicher id');
+        throw new Error('fremder Datensatz mit gleicher id');
       }
-      return;
     }
-    if (error) throw new Error(error.message);
   },
 
   async removeOne(collection: CollectionKey, id: string): Promise<void> {
