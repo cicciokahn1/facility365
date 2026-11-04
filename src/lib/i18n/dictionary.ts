@@ -9027,6 +9027,12 @@ export const dictionary = {
     it: "Link copiato",
     en: "Link copied",
   },
+  "oncallQr.hint": {
+    de: "Pikett-QR an der Liegenschaft aufhängen – Bewohner melden Notfälle damit ohne Login direkt beim Pikettdienst.",
+    fr: "Accrochez le QR de piquet à la propriété – les locataires signalent les urgences sans connexion directement au service de piquet.",
+    it: "Appendi il codice QR di reperibilità sulla proprietà – gli inquilini segnalano le emergenze senza login direttamente al servizio di reperibilità.",
+    en: "Hang the on-call QR code at the property – tenants report emergencies without logging in directly to the on-call service.",
+  },
   "ms.noLinked": {
     de: "Keine E-Mails zugeordnet",
     fr: "Aucun e-mail associé",

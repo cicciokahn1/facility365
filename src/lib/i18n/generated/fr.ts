@@ -1748,6 +1748,7 @@ export const table: Record<string, string> = {
   "tenantReport.hint": "Accrochez le code QR à la propriété – les locataires signalent les dommages sans connexion.",
   "tenantReport.copyLink": "Copier le lien",
   "tenantReport.copied": "Lien copié",
+  "oncallQr.hint": "Accrochez le QR de piquet à la propriété – les locataires signalent les urgences sans connexion directement au service de piquet.",
   "ms.noLinked": "Aucun e-mail associé",
   "ms.assign": "Associer",
   "ms.assignTo": "Associer à",

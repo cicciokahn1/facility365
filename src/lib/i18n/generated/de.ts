@@ -1748,6 +1748,7 @@ export const table: Record<string, string> = {
   "tenantReport.hint": "QR-Code an der Liegenschaft aufhängen – Bewohner melden Schäden damit ohne Login direkt bei Ihnen.",
   "tenantReport.copyLink": "Link kopieren",
   "tenantReport.copied": "Link kopiert",
+  "oncallQr.hint": "Pikett-QR an der Liegenschaft aufhängen – Bewohner melden Notfälle damit ohne Login direkt beim Pikettdienst.",
   "ms.noLinked": "Keine E-Mails zugeordnet",
   "ms.assign": "Zuordnen",
   "ms.assignTo": "Zuordnen an",
