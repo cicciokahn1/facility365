@@ -141,9 +141,9 @@ export default function PricingPage() {
           <p className="text-sm font-medium text-primary">Facility365</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">Preise und Pakete</h1>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Jedes Paket ist fuer eine Branche zugeschnitten – vom Starter-Paket fuer einzelne
-            Hauswarte bis zum Komplettpaket Professional. Waehlen Sie das passende Paket,
-            ergaenzen Sie bei Bedarf Zusatzmodule und fordern Sie ein persoenliches Angebot an.
+            Jedes Paket ist für eine Branche zugeschnitten – vom Starter-Paket für einzelne
+            Hauswarte bis zum Komplettpaket Professional. Wählen Sie das passende Paket,
+            ergänzen Sie bei Bedarf Zusatzmodule und fordern Sie ein persönliches Angebot an.
             Alle Preise in CHF, exkl. MwSt.
           </p>
           <div className="mx-auto mt-4 flex max-w-2xl flex-col items-center gap-1 text-sm">
@@ -172,7 +172,7 @@ export default function PricingPage() {
                   <CardTitle className="flex items-start justify-between gap-2 text-lg">
                     <span>{t(packageLabelKey(key))}</span>
                     <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-normal text-muted-foreground">
-                      {pkg.target.includes('Gemeinden') ? 'Oeffentlich' : 'Unternehmen'}
+                      {pkg.target.includes('Gemeinden') ? 'Öffentlich' : 'Unternehmen'}
                     </span>
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">{pkg.summary}</p>
@@ -189,7 +189,10 @@ export default function PricingPage() {
                     )}
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">Fuer:</span> {pkg.target}
+                    <span className="font-medium">Für:</span> {pkg.target}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Benutzer:</span> {pkg.users}
                   </p>
                   <p className="text-sm text-muted-foreground">{pkg.benefit}</p>
                   <div className="text-sm">
@@ -339,9 +342,9 @@ export default function PricingPage() {
               </tbody>
             </table>
             <p className="mt-3 text-xs text-muted-foreground">
-              Legende: Haeckchen = im Paket enthalten, Plus = als Zusatzmodul zubuchbar.
+              Legende: Häkchen = im Paket enthalten, Plus = als Zusatzmodul zubuchbar.
               Grundfunktionen (Dashboard, Kalender, Kunden, Liegenschaften, Auftraege,
-              Schaeden, Rapporte, Benutzer) sind in jedem Paket enthalten.
+              Schäden, Rapporte, Benutzer) sind in jedem Paket enthalten.
             </p>
           </CardContent>
         </Card>
@@ -429,7 +432,7 @@ export default function PricingPage() {
               ))}
             </ul>
             <p className="mt-3 text-xs text-muted-foreground">
-              Datenuebernahme, umfangreiche Schulungen und individuelle Konfiguration werden
+              Datenübernahme, umfangreiche Schulungen und individuelle Konfiguration werden
               bei Bedarf separat offeriert. Die genauen Einrichtungsbeträge richten sich nach
               Paket und Aufwand und werden transparent im persoenlichen Angebot ausgewiesen.
             </p>

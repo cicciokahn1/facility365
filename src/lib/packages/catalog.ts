@@ -38,7 +38,7 @@ export interface ModuleGroup {
 export const MODULE_GROUPS: Record<string, ModuleGroup> = {
   structure: {
     title: 'Struktur und Partner',
-    description: 'Organisationen, Standorte, Lieferanten und Bezugsqüllen verwalten.',
+    description: 'Organisationen, Standorte, Lieferanten und Bezugsquellen verwalten.',
     modules: ['organizations', 'sites', 'suppliers', 'sources'],
   },
   technics: {
@@ -70,6 +70,8 @@ export interface PackageInfo {
   summary: string;
   /** Fuer wen es gedacht ist. */
   target: string;
+  /** Wie viele Benutzer das Paket nutzen koennen (Anzeige). */
+  users: string;
   /** Konkreter Nutzen fuer diese Zielgruppe. */
   benefit: string;
   /** Warum dieses Paket statt eines anderen. */
@@ -86,6 +88,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   starter: {
     summary: 'Der Einstieg für einzelne Hauswarte und kleine Betriebe.',
     target: 'Einzelne Hauswarte, kleine Hauswartungsbetriebe und kleine Organisationen.',
+    users: '1–3 Benutzer',
     benefit:
       'Liegenschaften, Aufträge, Wartungen, Schäden und Rapporte in einer App - mobil und offline nutzbar, ohne Einführungsprojekt.',
     whyThis:
@@ -96,6 +99,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   professional: {
     summary: 'Das Komplettpaket für Facility-Management- und Hauswartbetriebe.',
     target: 'Hauswartfirmen und FM-Dienstleister, die mehrere Liegenschaften für Kunden betreuen.',
+    users: 'bis 50 Benutzer',
     benefit:
       'Alle Module in einem System: vom Auftrag über Wartung, Kontrollen und Reinigung bis zu Offerten und Rechnungen.',
     whyThis:
@@ -106,6 +110,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   property: {
     summary: 'Das Paket für Immobilienverwaltungen und Bewirtschafter.',
     target: 'Verwaltungen, die Liegenschaften im eigenen oder fremden Auftrag bewirtschaften.',
+    users: 'bis 10 Benutzer',
     benefit:
       'Betreiberpflichten dokumentiert erfüllen: Kontrollen, Wartungen und Schäden je Liegenschaft lückenlos nachweisen - plus Verträge, Offerten und Rechnungen.',
     whyThis:
@@ -116,6 +121,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   care: {
     summary: 'Das Paket für Pflege- und Betreuungseinrichtungen.',
     target: 'Alters- und Pflegeheime sowie betreute Wohnformen. Für Spitäler und Kliniken ist Facility365 Hospital vorgesehen.',
+    users: 'bis 25 Benutzer',
     benefit:
       'Hygiene im Griff: Reinigungspläne und -kontrollen, Legionella- und Sicherheitsnachweise sowie einwandfreie Dokumentation für Audits.',
     whyThis:
@@ -127,6 +133,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   institution: {
     summary: 'Das Paket für soziale Institutionen und Wohnheime (nicht mehr verkauft).',
     target: 'Wohnheime, Werkstätten, Tagesstätten und gemeinnützige Trägerschaften.',
+    users: 'bis 25 Benutzer',
     benefit:
       'Betrieb, Technik und Reinigung in einem Werkzeug: Aufträge verteilen, Kontrollen führen und Reinigungsqualität sichern - auch mit wechselnden Teams.',
     whyThis:
@@ -137,6 +144,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   industry: {
     summary: 'Das Paket für Industrie- und Produktionsbetriebe.',
     target: 'Industrieunternehmen mit eigenem Unterhalts- und Facility-Team.',
+    users: 'bis 15 Benutzer',
     benefit:
       'Fuhrpark, Werkzeuge, Lager und Gefahrstoffe im Griff, dazu die gesetzlichen Kontrollen und das Kaufmännische für externe Aufträge.',
     whyThis:
@@ -148,6 +156,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
     summary: 'Das Paket für Gemeinden und öffentliche Verwaltungen.',
     target:
       'Gemeinden, Städte, Schulen, Werkhöfe sowie öffentliche und soziale Einrichtungen.',
+    users: 'bis 30 Benutzer',
     benefit:
       'Vom Schulhaus bis zur Werkhalle: Kontrollen (Spielplatz, Brandschutz, Legionella), Reinigung, Aufträge und ein Meldeportal für die Bevölkerung.',
     whyThis:
@@ -158,6 +167,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   hospital: {
     summary: 'Das Paket für Spitäler und Kliniken.',
     target: 'Spitäler, Kliniken und grössere Gesundheitseinrichtungen.',
+    users: 'nach Vereinbarung',
     benefit:
       'Hohe Dokumentations- und Kontrolltiefe: Audits, Begehungen, Nachweise und Reinigungsplanung - ergänzt um Besucher und Gefahrstoffe.',
     whyThis:
@@ -169,8 +179,9 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
   enterprise: {
     summary: 'Der freie Baukasten: Du wählst selbst, welche Module du brauchst.',
     target: 'Organisationen mit besonderen Anforderungen, die kein Standardpaket vollständig trifft.',
+    users: 'individuell',
     benefit:
-      'Statt ein festes Paket zu nehmen, stellst du aus allen verfügbaren Modulen deine eigene Lösung zusammen - Umfang und Preis werden individüll vereinbart.',
+      'Statt ein festes Paket zu nehmen, stellst du aus allen verfügbaren Modulen deine eigene Lösung zusammen - Umfang und Preis werden individuell vereinbart.',
     whyThis:
       'Für Kunden, die weder das Komplettpaket noch ein Standardpaket brauchen: maximal flexibel, alles auswählbar, Angebot nach Auswahl.',
     groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce'],
@@ -216,13 +227,13 @@ export const SETUP_INCLUDED = [
 export const SETUP_EXCLUDED = [
   'Übernahme bestehender Daten',
   'Umfangreiche Schulungen',
-  'Individülle Konfiguration und Anbindungen',
+  'Individuelle Konfiguration und Anbindungen',
 ];
 
 /**
  * Monatspreise (CHF) je Zusatzmodul, gestaffelt nach Umfang:
  * kleine Verwaltungsmodule 29, Kontrollen und mittlere Module 49,
- * Reinigung und Geschaeftliches 79, Portal 99.
+ * Reinigung und Geschäftliches 79, Portal 99.
  */
 export const ADDON_PRICES: Partial<Record<ModuleKey, number>> = {
   // Kleine Verwaltungsmodule
@@ -259,7 +270,7 @@ export const ADDON_PRICES: Partial<Record<ModuleKey, number>> = {
   cleaners: 79,
   cleaningchecks: 79,
   cleaningcomplaints: 79,
-  // Kaufmaennisches und Auswertung
+  // Kaufmännisches und Auswertung
   contracts: 79,
   quotes: 79,
   invoices: 79,
