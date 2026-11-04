@@ -266,9 +266,18 @@ export default function LoginPage() {
       {/* Marken-Panel: nur auf grossen Bildschirmen sichtbar. */}
       <BrandPanel />
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-8 p-4 sm:p-8">
+      <div className="relative flex flex-1 flex-col items-center justify-center gap-8 overflow-hidden p-4 sm:p-8">
+        {/* Dezenter Hintergrund: auf Mobil sichtbar, auf Desktop vom Marken-Panel abgedeckt. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/15 via-primary/5 to-transparent lg:hidden"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl lg:hidden"
+        />
         {/* Kompaktes Branding auf kleinen Bildschirmen. */}
-        <div className="flex flex-col items-center gap-2 text-center lg:hidden">
+        <div className="relative flex flex-col items-center gap-2 text-center lg:hidden">
           {/* eslint-disable-next-line @next/next/no-img-element -- statische Marke ohne Groessenwechsel */}
           <img
             src={BRAND_LOGO_SRC}
@@ -281,11 +290,13 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Suspense>
-          <LoginForm />
-        </Suspense>
+        <div className="relative w-full max-w-sm">
+          <Suspense>
+            <LoginForm />
+          </Suspense>
+        </div>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="relative text-xs text-muted-foreground">
           © {new Date().getFullYear()} Facility365
         </p>
       </div>
