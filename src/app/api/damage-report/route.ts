@@ -41,7 +41,7 @@ const fetchProperty = async (
   propertyId: string,
 ): Promise<EntityRow | null> => {
   const response = await fetch(
-    `${url}/rest/v1/properties?id=eq.${encodeURIComponent(propertyId)}&is=deleted_at.null&select=id,tenant_id,user_id,number,data&limit=1`,
+    `${url}/rest/v1/properties?id=eq.${encodeURIComponent(propertyId)}&deleted_at=is.null&select=id,tenant_id,user_id,number,data&limit=1`,
     { headers: headers(serviceKey), signal: AbortSignal.timeout(10000) },
   ).catch(() => null);
   if (!response || !response.ok) return null;
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
   if (!property) return NextResponse.json({ error: 'unknown' }, { status: 404 });
 
   const buildings = await fetch(
-    `${url}/rest/v1/buildings?tenant_id=eq.${encodeURIComponent(property.tenant_id)}&data->>propertyId=eq.${encodeURIComponent(propertyId)}&is=deleted_at.null&select=id,data&limit=200`,
+    `${url}/rest/v1/buildings?tenant_id=eq.${encodeURIComponent(property.tenant_id)}&data->>propertyId=eq.${encodeURIComponent(propertyId)}&deleted_at=is.null&select=id,data&limit=200`,
     { headers: headers(serviceKey), signal: AbortSignal.timeout(10000) },
   )
     .then((response) => (response.ok ? response.json() : []))
