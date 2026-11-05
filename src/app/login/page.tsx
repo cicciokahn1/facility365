@@ -17,14 +17,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth/provider";
 import { passwordProblem } from "@/lib/auth/errors";
 import { BRAND_LOGO_SRC } from "@/lib/branding/logo";
 import { useT } from "@/lib/i18n/provider";
-import { setStaySignedIn } from "@/lib/supabase/client";
 import { useTrial } from "@/lib/trial/provider";
 import Link from "next/link";
 
@@ -44,7 +42,6 @@ function LoginForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [hint, setHint] = useState("");
-  const [staySignedIn, setStay] = useState(true);
 
   useEffect(() => {
     if (auth.user) router.replace(target);
@@ -56,7 +53,6 @@ function LoginForm() {
     setError("");
     setHint("");
     const weak = mode === "signUp" ? passwordProblem(password) : null;
-    if (mode !== "reset") setStaySignedIn(staySignedIn);
     const message =
       weak ??
       (mode === "signIn"
@@ -188,19 +184,6 @@ function LoginForm() {
               ) : null}
             </div>
           )}
-
-          {mode !== "reset" ? (
-            <label
-              className="flex items-center gap-2 text-sm"
-              data-testid="auth-stay"
-            >
-              <Checkbox
-                checked={staySignedIn}
-                onCheckedChange={(value) => setStay(value === true)}
-              />
-              {t("auth.staySignedIn")}
-            </label>
-          ) : null}
 
           {error ? (
             <p className="text-sm text-destructive" data-testid="auth-error">
