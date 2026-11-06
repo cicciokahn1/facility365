@@ -185,6 +185,17 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         ],
         keywords: ["pdf", "export", "drucken", "teilen", "dokument"],
       },
+      {
+        id: "signin",
+        title: "Anmeldung und automatische Abmeldung",
+        summary: "Einmal anmelden - nach 30 Minuten Untätigkeit meldet die App selbst ab.",
+        paragraphs: [
+          "Die Anmeldung läuft mit E-Mail und Passwort. Wer angemeldet ist, bleibt es - auch nach dem Schliessen des Browsers - bis er sich selbst abmeldet oder 30 Minuten lang nichts in der App tut (keine Maus, Tastatur oder Berührung).",
+          "Die automatische Abmeldung schützt gemeinsam benutzte Geräte: Auf dem Werkhof-PC oder dem Stations-Tablet bleibt kein fremdes Konto offen. Zum manuellen Abmelden führt der Weg über das Profil oben rechts → «Abmelden».",
+        ],
+        path: "/settings",
+        keywords: ["anmeldung", "login", "abmelden", "automatisch", "sitzung", "passwort"],
+      },
     ],
   },
   {
@@ -320,6 +331,28 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         ],
         path: "/today",
         keywords: ["notfall", "alarm", "dringend", "wasserschaden"],
+      },
+      {
+        id: "oncall",
+        title: "Pikettdienst und Notfallmeldungen",
+        summary: "Pikettplan führen, Notfälle annehmen, Einsätze dokumentieren.",
+        paragraphs: [
+          "Der Pikettdienst bündelt Bereitschaftszeiten und Notfallmeldungen an einem Ort. Im Pikettplan wird erfasst, wer wann im Einsatz ist; unter Notfallmeldungen laufen alle eingehenden Fälle mit Status und Protokoll.",
+          "Auch Bewohner und Besucher können melden - ohne Login: Beim Gebäude hängt der Pikett-QR-Code (Reiter «Mieter-Meldung»). Wer ihn scannt, landet auf dem öffentlichen Notfallformular; die Meldung kommt direkt als Notfallmeldung herein.",
+        ],
+        path: "/oncall",
+        keywords: ["pikett", "bereitschaft", "notfall", "meldung", "qr", "notdienst"],
+      },
+      {
+        id: "tenant-report",
+        title: "Mieter-Meldung per QR-Code und Link",
+        summary: "Bewohner melden Schäden ohne Login - QR aufhängen, fertig.",
+        paragraphs: [
+          "Jede Liegenschaft hat einen eigenen Melde-QR: Liegenschaft öffnen → Reiter «Mieter-Meldung». Dort lässt sich das Etikett ausdrucken und im Treppenhaus aufhängen oder der Link per E-Mail oder WhatsApp an die Bewohner schicken.",
+          "Wer scannt, sieht ein einfaches Formular: Was ist defekt, Beschreibung, Name und Kontakt. Die Meldung landet als neuer Schaden im Modul «Schäden» - mit der Liegenschaft und dem Gebäude bereits verknüpft. Daneben liegt der Pikett-QR für dringende Fälle.",
+        ],
+        path: "/properties",
+        keywords: ["mieter", "meldung", "qr", "link", "bewohner", "schaden melden"],
       },
       {
         id: "walkthrough",
