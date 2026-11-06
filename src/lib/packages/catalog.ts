@@ -63,6 +63,11 @@ export const MODULE_GROUPS: Record<string, ModuleGroup> = {
     description: 'Verträge, Offerten, Rechnungen, Auswertungen und Kundenportal.',
     modules: ['contracts', 'quotes', 'invoices', 'analytics', 'portal'],
   },
+  oncall: {
+    title: 'Pikettdienst',
+    description: 'Pikettplan, Notfallmeldungen und öffentliches Meldeformular.',
+    modules: ['oncall', 'oncallperiods', 'oncallincidents'],
+  },
 };
 
 export interface PackageInfo {
@@ -104,7 +109,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
       'Alle Module in einem System: vom Auftrag über Wartung, Kontrollen und Reinigung bis zu Offerten und Rechnungen.',
     whyThis:
       'Das Komplettpaket: höchste Stufe mit festem Preis - alles enthalten, nichts dazubuchen, keine Überraschungen.',
-    groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce'],
+    groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce', 'oncall'],
     extraModules: ['visitors', 'parking', 'waste', 'hazards'],
   },
   property: {
@@ -161,7 +166,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
       'Vom Schulhaus bis zur Werkhalle: Kontrollen (Spielplatz, Brandschutz, Legionella), Reinigung, Aufträge und ein Meldeportal für die Bevölkerung.',
     whyThis:
       'Die breiteste Stufe nach Professional: enthält Reinigung und das Bürgermelde-Portal - die beiden Dinge, die eine Gemeinde braucht. Auch Flughäfen und Bahnhöfe sind mögliche Anwendungsfälle; sehr komplexe Betreiber betreuen wir über Enterprise.',
-    groups: ['structure', 'technics', 'controls', 'cleaning'],
+    groups: ['structure', 'technics', 'controls', 'cleaning', 'oncall'],
     extraModules: ['vehicles', 'contracts', 'analytics', 'portal', 'hazards'],
   },
   hospital: {
@@ -172,7 +177,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
       'Hohe Dokumentations- und Kontrolltiefe: Audits, Begehungen, Nachweise und Reinigungsplanung - ergänzt um Besucher und Gefahrstoffe.',
     whyThis:
       'Baut auf Care auf und ergänzt Besucher- und Gefahrstoff-Management - die Bereiche, die in Kliniken zusätzlich zum Pflege-Alltag dazukommen. Grössere Betreiber offerieren wir individuell.',
-    groups: ['structure', 'technics', 'controls', 'cleaning'],
+    groups: ['structure', 'technics', 'controls', 'cleaning', 'oncall'],
     extraModules: ['contracts', 'analytics', 'visitors', 'hazards'],
     priceFrom: true,
   },
@@ -184,7 +189,7 @@ export const PACKAGE_INFO: Record<Exclude<IndustryPackage, '' | 'custom'>, Packa
       'Statt ein festes Paket zu nehmen, stellst du aus allen verfügbaren Modulen deine eigene Lösung zusammen - Umfang und Preis werden individuell vereinbart.',
     whyThis:
       'Für Kunden, die weder das Komplettpaket noch ein Standardpaket brauchen: maximal flexibel, alles auswählbar, Angebot nach Auswahl.',
-    groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce'],
+    groups: ['structure', 'technics', 'controls', 'cleaning', 'commerce', 'oncall'],
     extraModules: ['visitors', 'parking', 'waste', 'hazards'],
   },
 };
@@ -277,10 +282,15 @@ export const ADDON_PRICES: Partial<Record<ModuleKey, number>> = {
   analytics: 79,
   // Kundenportal
   portal: 99,
+  // Pikettdienst: ein Preis fuer die ganze Einheit (Uebersicht, Plan, Meldungen)
+  oncall: 79,
 };
 
-/** Diese Module werden nicht als kostenpflichtige Zusatzmodule angeboten. */
-const NO_ADDON: ModuleKey[] = ['waste'];
+/**
+ * Diese Module werden nicht als kostenpflichtige Zusatzmodule angeboten:
+ * waste ist Grundleistung, die Pikett-Untermodule sind im oncall-Preis enthalten.
+ */
+const NO_ADDON: ModuleKey[] = ['waste', 'oncallperiods', 'oncallincidents'];
 
 /**
  * Module, die NICHT im gewaehlten Paket sind = zubuchbare Zusatzmodule.

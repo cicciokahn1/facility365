@@ -74,7 +74,13 @@ export const OPTIONAL_MODULES: ModuleKey[] = [
   'invoices',
   'analytics',
   'portal',
+  'oncall',
+  'oncallperiods',
+  'oncallincidents',
 ];
+
+/** Pikettdienst als Einheit: Uebersicht, Pikettplan und Notfallmeldungen. */
+const ONCALL: ModuleKey[] = ['oncall', 'oncallperiods', 'oncallincidents'];
 
 const CLEANING: ModuleKey[] = [
   'cleaning',
@@ -136,6 +142,7 @@ const PACKAGES: Record<Exclude<IndustryPackage, '' | 'custom'>, ModuleKey[]> = {
     'analytics',
     'portal',
     'hazards',
+    ...ONCALL,
   ],
   /** Spitaeler und Kliniken: wie Care, plus Besucher und Gefahrstoffe. */
   hospital: [
@@ -147,6 +154,7 @@ const PACKAGES: Record<Exclude<IndustryPackage, '' | 'custom'>, ModuleKey[]> = {
     'analytics',
     'visitors',
     'hazards',
+    ...ONCALL,
   ],
   /** Enterprise: vollständiger Umfang ohne individuelle Paketbeschränkung. */
   enterprise: OPTIONAL_MODULES,
