@@ -154,6 +154,19 @@ export default function PricingPage() {
               Einfaches Jahres-Abo · Keine Gebühren pro Gebäude oder Liegenschaft
             </p>
           </div>
+          <div className="mx-auto mt-5 grid max-w-3xl gap-2 text-left text-sm sm:grid-cols-2">
+            {[
+              'Fixpreis pro Firma – nicht pro Benutzer oder Gebäude',
+              'Pikett- & Notfallmeldung inklusive – einzigartig im Schweizer Markt',
+              'Alles in einem: Rechnungen, Reinigung, Zeiterfassung integriert',
+              'Offline-fähig, 4 Sprachen (DE/FR/IT/EN), ohne App-Installation',
+            ].map((point) => (
+              <p key={point} className="flex items-start gap-2">
+                <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                {point}
+              </p>
+            ))}
+          </div>
         </header>
 
         {/* Paketkarten */}
