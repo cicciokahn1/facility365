@@ -137,6 +137,7 @@ export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
   "tickets",
   "myArea",
   "favorites",
+  "today",
 ]);
 
 /**
@@ -836,7 +837,7 @@ export const groupOfPath = (pathname: string): NavGroup | undefined =>
 /** Vier Module in der Telefonnavigation; alles Weitere liegt unter «Mehr». */
 export const MOBILE_NAV_KEYS: ModuleKey[] = [
   "dashboard",
-  "today",
+  "damages",
   "orders",
   "calendar",
 ];

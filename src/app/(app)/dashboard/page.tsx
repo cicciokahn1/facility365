@@ -396,6 +396,7 @@ export default function DashboardPage() {
         <WeatherWidget />
       </div>
 
+      {!simple ? (
       <Link
         href="/today"
         className="flex min-h-20 items-center gap-4 rounded-xl border-2 border-primary/30 bg-primary/5 px-4 py-3 transition-colors hover:border-primary/60 hover:bg-primary/10"
@@ -406,6 +407,7 @@ export default function DashboardPage() {
         </span>
         <ArrowRight className="size-5 shrink-0 text-primary" aria-hidden />
       </Link>
+      ) : null}
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
