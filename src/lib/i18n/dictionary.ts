@@ -7203,6 +7203,12 @@ export const dictionary = {
     it: "Collaudi e consegne dal cellulare",
     en: "Inspections and handovers on mobile",
   },
+  "auth.heroPikett": {
+    de: "Pikettplan und Notfallmeldung eingebaut",
+    fr: "Plan de piquet et alertes d'urgence intégrés",
+    it: "Piano di picchetto e allarmi integrati",
+    en: "On-call schedule and emergency reporting built in",
+  },
   "auth.badgeSwiss": {
     de: "Schweizer SaaS",
     fr: "SaaS suisse",
@@ -7220,6 +7226,12 @@ export const dictionary = {
     fr: "Utilisable hors ligne",
     it: "Utilizzabile offline",
     en: "Works offline",
+  },
+  "auth.badgeTrial": {
+    de: "30 Tage kostenlos",
+    fr: "30 jours gratuits",
+    it: "30 giorni gratis",
+    en: "30 days free",
   },
   "auth.resetTitle": {
     de: "Passwort zurücksetzen",

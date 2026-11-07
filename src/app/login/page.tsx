@@ -7,7 +7,7 @@
  * das Konto, nicht ueber das Geraet.
  */
 import { Suspense, useEffect, useState } from "react";
-import { ClipboardCheck, Sparkles, Wrench } from "lucide-react";
+import { ClipboardCheck, ShieldAlert, Sparkles, Wrench } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -293,6 +293,7 @@ function BrandPanel() {
     { icon: Wrench, text: t("auth.heroWartung") },
     { icon: Sparkles, text: t("auth.heroReinigung") },
     { icon: ClipboardCheck, text: t("auth.heroUebergabe") },
+    { icon: ShieldAlert, text: t("auth.heroPikett") },
   ];
   return (
     <aside
@@ -321,7 +322,7 @@ function BrandPanel() {
           ))}
         </ul>
         <div className="flex flex-wrap gap-2">
-          {[t("auth.badgeSwiss"), t("auth.badgeDsg"), t("auth.badgeOffline")].map((badge) => (
+          {[t("auth.badgeSwiss"), t("auth.badgeDsg"), t("auth.badgeOffline"), t("auth.badgeTrial")].map((badge) => (
             <span
               key={badge}
               className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium"
