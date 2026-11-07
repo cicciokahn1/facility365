@@ -156,8 +156,8 @@ export default function PricingPage() {
           </div>
           <div className="mx-auto mt-5 grid max-w-3xl gap-2 text-left text-sm sm:grid-cols-2">
             {[
-              'Fixpreis pro Firma – nicht pro Benutzer oder Gebäude',
-              'Pikett- & Notfallmeldung inklusive – einzigartig im Schweizer Markt',
+              'Ein Fixpreis für die ganze Firma – alle Gebäude inklusive',
+              'Pikett- & Notfallmeldung direkt eingebaut',
               'Alles in einem: Rechnungen, Reinigung, Zeiterfassung integriert',
               'Offline-fähig, 4 Sprachen (DE/FR/IT/EN), ohne App-Installation',
             ].map((point) => (
