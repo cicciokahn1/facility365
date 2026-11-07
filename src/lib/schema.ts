@@ -367,7 +367,6 @@ export const ASSET_CATEGORY_OPTIONS: SelectOption[] = [
   option("security", "assetCategory.security"),
   option("fireAlarm", "assetCategory.fireAlarm"),
   option("automation", "assetCategory.automation"),
-  option("garden", "assetCategory.garden"),
   option("other", "assetCategory.other"),
 ];
 
