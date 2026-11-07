@@ -138,7 +138,6 @@ export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
   "tickets",
   "myArea",
   "favorites",
-  "microsoft",
 ]);
 
 /**
