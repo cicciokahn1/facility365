@@ -526,6 +526,41 @@ export function TodayView() {
         emergency
       />
 
+      {properties.length === 0 ? (
+        <section
+          data-testid="today-onboarding"
+          className="rounded-lg border bg-card px-4 py-4 text-sm"
+        >
+          <h2 className="font-semibold">Willkommen – so startest du</h2>
+          <ol className="mt-2 flex list-decimal flex-col gap-1.5 pl-5">
+            <li>
+              <Link className="text-primary underline underline-offset-2" href="/properties?new=1">
+                Liegenschaft anlegen
+              </Link>{" "}
+              – Name und Adresse genügen.
+            </li>
+            <li>
+              <Link className="text-primary underline underline-offset-2" href="/buildings">
+                Gebäude, Stockwerke und Räume
+              </Link>{" "}
+              – bei der Liegenschaft hinzufügen.
+            </li>
+            <li>
+              <Link className="text-primary underline underline-offset-2" href="/assets">
+                Anlagen eintragen
+              </Link>{" "}
+              – Heizung, Lift usw., dauert nur ein paar Felder.
+            </li>
+            <li>
+              Den <strong>Melde-QR-Code</strong> bei der Liegenschaft ausdrucken –
+              Bewohner melden Schäden damit ohne Login.
+            </li>
+          </ol>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Fragen? Hilfe-Center unter Menü → Hilfe.
+          </p>
+        </section>
+      ) : null}
       {filteredEmpty ? (
         <EmptyState icon={moduleByKey("today").icon} titleKey="today.empty" />
       ) : (
