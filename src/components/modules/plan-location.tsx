@@ -29,10 +29,13 @@ export function PlanLocation({
   assetId = '',
   roomId = '',
   outdoorAreaId = '',
+  hideEmpty = false,
 }: {
   assetId?: string;
   roomId?: string;
   outdoorAreaId?: string;
+  /** Bei false kein leerer Hinweis, wenn es keine Treffer gibt (z. B. neben eigenen Plaenen). */
+  hideEmpty?: boolean;
 }) {
   const t = useT();
   const buildings = useCollection('buildings');
@@ -71,7 +74,10 @@ export function PlanLocation({
     return found;
   }, [assetId, buildings.items, outdoorAreaId, properties.items, roomId]);
 
-  if (hits.length === 0) return <EmptyState icon={Map} titleKey="plan.empty" />;
+  if (hits.length === 0) {
+    if (hideEmpty) return null;
+    return <EmptyState icon={Map} titleKey="plan.empty" />;
+  }
 
   /** Aenderungen am Plan laufen zurueck in das Gebaeude bzw. die Liegenschaft. */
   const savePlan = (hit: Hit, plan: Plan) => {

@@ -16,10 +16,27 @@ import { AssetDocuments } from '@/components/modules/asset-documents';
 import { AssetPassport } from '@/components/modules/asset-passport';
 import { AssetServiceHistory } from '@/components/modules/asset-service-history';
 import { PlanLocation } from '@/components/modules/plan-location';
+import { PlanManager } from '@/components/modules/plan-manager';
 import { QrPanel } from '@/components/modules/qr-panel';
 import { findAsset } from '@/lib/assets/passport';
 import { useCollectionItems } from '@/lib/data/store';
-import { Asset, DocumentFile } from '@/lib/types';
+import { Asset, DocumentFile, Plan } from '@/lib/types';
+
+/** Eigene Plaene der Anlage plus die Plaene, auf denen sie markiert ist. */
+function AssetPlans({
+  asset,
+  onChange,
+}: {
+  asset: Asset;
+  onChange: (plans: Plan[]) => void;
+}) {
+  return (
+    <div className="grid gap-4">
+      <PlanManager plans={asset.plans ?? []} onChange={onChange} />
+      <PlanLocation assetId={asset.id} hideEmpty />
+    </div>
+  );
+}
 
 export function AssetDetail({ id }: { id: string }) {
   const router = useRouter();
@@ -49,11 +66,21 @@ export function AssetDetail({ id }: { id: string }) {
           labelKey: 'tab.service',
           content: <AssetServiceHistory asset={asset} />,
         },
-        {
-          value: 'plan',
-          labelKey: 'tab.plans',
-          content: <PlanLocation assetId={asset.id} />,
-        },
+        // Unteranlagen und Photovoltaik brauchen keinen Plan-Tab.
+        ...(asset.parentAssetId
+          ? []
+          : [
+              {
+                value: 'plan',
+                labelKey: 'tab.plans' as const,
+                content: (
+                  <AssetPlans
+                    asset={asset}
+                    onChange={(plans) => update({ plans } as Partial<Asset>, 'asset.plansChanged')}
+                  />
+                ),
+              },
+            ]),
         {
           value: 'qr',
           labelKey: 'tab.qr',

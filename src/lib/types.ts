@@ -518,6 +518,8 @@ export interface Asset extends BaseEntity {
   renewalPriority?: Priority;
   /** Optionale anlagenspezifische Erweiterungen der technischen Checkliste. */
   technicalChecklist?: TechnicalCheckpointDefinition[];
+  /** Anlageneigene Plaene, z. B. Schaltplan oder Einbauskizze der Anlage. */
+  plans?: Plan[];
 }
 
 export type EnergyType =
