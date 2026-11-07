@@ -34,7 +34,7 @@ function LoginForm() {
   const router = useRouter();
   const trial = useTrial();
   const params = useSearchParams();
-  const target = params.get("next") || "/dashboard";
+  const target = params.get("next") || "/today";
 
   const [mode, setMode] = useState<Mode>("signIn");
   const [email, setEmail] = useState("");

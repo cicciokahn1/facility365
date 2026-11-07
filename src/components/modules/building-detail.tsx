@@ -11,7 +11,7 @@ import { RelatedList } from '@/components/module/related-list';
 import { AreaOverview } from '@/components/modules/area-overview';
 import { FloorEditor } from '@/components/modules/floor-editor';
 import { PlanManager } from '@/components/modules/plan-manager';
-import { useCollection } from '@/lib/data/store';
+import { useCollection, useCollectionItems } from '@/lib/data/store';
 import { useT } from '@/lib/i18n/provider';
 import { parseIfcStructure, exportBuildingIfc } from '@/lib/integrations/ifc';
 import { newId } from '@/lib/utils/id';
@@ -76,6 +76,13 @@ function IfcTools({ building, update }: { building: Parameters<typeof exportBuil
 }
 
 export function BuildingDetail({ id }: { id: string }) {
+  const rooms = useCollectionItems('rooms');
+  const assets = useCollectionItems('assets');
+
+  /** Leere Verknuepfungslisten werden als Tab gar nicht erst angezeigt. */
+  const hasLinked = (items: readonly { buildingId?: string }[], value: string) =>
+    items.some((item) => item.buildingId === value);
+
   return (
     <EntityDetail
       collection="buildings"
@@ -92,11 +99,13 @@ export function BuildingDetail({ id }: { id: string }) {
           labelKey: 'tab.floors',
           content: <FloorEditor floors={building.floors} onChange={(floors) => update({ floors })} />,
         },
-        {
-          value: 'rooms',
-          labelKey: 'module.rooms',
-          content: <RelatedList collection="rooms" field="buildingId" value={building.id} />,
-        },
+        ...(hasLinked(rooms, building.id)
+          ? [{
+              value: 'rooms',
+              labelKey: 'module.rooms' as const,
+              content: <RelatedList collection="rooms" field="buildingId" value={building.id} />,
+            }]
+          : []),
         {
           value: 'areas',
           labelKey: 'tab.areas',
@@ -113,11 +122,13 @@ export function BuildingDetail({ id }: { id: string }) {
             />
           ),
         },
-        {
-          value: 'assets',
-          labelKey: 'module.assets',
-          content: <RelatedList collection="assets" field="buildingId" value={building.id} />,
-        },
+        ...(hasLinked(assets, building.id)
+          ? [{
+              value: 'assets',
+              labelKey: 'module.assets' as const,
+              content: <RelatedList collection="assets" field="buildingId" value={building.id} />,
+            }]
+          : []),
         {
           value: 'yearPlan',
           labelKey: 'tab.yearPlan',

@@ -94,9 +94,9 @@ function FormBody({
   const visibleFields =
     showAllFields
       ? availableFields
-      : simpleFields.length <= 6
+      : simpleFields.length <= 5
         ? simpleFields
-        : simpleFields.filter((field, index) => field.required || index < 6);
+        : simpleFields.filter((field, index) => field.required || index < 5);
 
   const missing = visibleFields
     .filter(
@@ -188,7 +188,7 @@ function FormBody({
         >
           {t("action.showMore")}
         </Button>
-      ) : showAllFields && availableFields.length > 6 ? (
+      ) : showAllFields && availableFields.length > 5 ? (
         <Button
           type="button"
           variant="ghost"

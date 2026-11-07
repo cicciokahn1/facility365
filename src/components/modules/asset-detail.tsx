@@ -41,9 +41,17 @@ function AssetPlans({
 export function AssetDetail({ id }: { id: string }) {
   const router = useRouter();
   const assets = useCollectionItems('assets');
+  const maintenances = useCollectionItems('maintenances');
+  const damages = useCollectionItems('damages');
+  const orders = useCollectionItems('orders');
+  const solarplants = useCollectionItems('solarplants');
   const asset = findAsset(assets, id);
   const resolved = asset?.id ?? id;
   const number = asset?.number;
+
+  /** Leere Verknuepfungslisten werden als Tab gar nicht erst angezeigt. */
+  const hasLinked = (items: readonly Record<string, unknown>[], field: string) =>
+    items.some((item) => item[field] === resolved);
 
   /** Die Adresse zeigt immer die dauerhafte Anlagen-ID, egal womit sie geoeffnet wurde. */
   useEffect(() => {
@@ -98,31 +106,41 @@ export function AssetDetail({ id }: { id: string }) {
             />
           ),
         },
-        {
-          value: 'maintenances',
-          labelKey: 'module.maintenances',
-          content: <RelatedList collection="maintenances" field="assetId" value={asset.id} />,
-        },
-        {
-          value: 'damages',
-          labelKey: 'module.damages',
-          content: <RelatedList collection="damages" field="assetId" value={asset.id} />,
-        },
-        {
-          value: 'orders',
-          labelKey: 'module.orders',
-          content: <RelatedList collection="orders" field="assetId" value={asset.id} />,
-        },
-        {
-          value: 'subassets',
-          labelKey: 'asset.subassets',
-          content: <RelatedList collection="assets" field="parentAssetId" value={asset.id} />,
-        },
-        {
-          value: 'solarplants',
-          labelKey: 'module.solarplants',
-          content: <RelatedList collection="solarplants" field="assetId" value={asset.id} />,
-        },
+        ...(hasLinked(maintenances as unknown as Record<string, unknown>[], 'assetId')
+          ? [{
+              value: 'maintenances',
+              labelKey: 'module.maintenances' as const,
+              content: <RelatedList collection="maintenances" field="assetId" value={asset.id} />,
+            }]
+          : []),
+        ...(hasLinked(damages as unknown as Record<string, unknown>[], 'assetId')
+          ? [{
+              value: 'damages',
+              labelKey: 'module.damages' as const,
+              content: <RelatedList collection="damages" field="assetId" value={asset.id} />,
+            }]
+          : []),
+        ...(hasLinked(orders as unknown as Record<string, unknown>[], 'assetId')
+          ? [{
+              value: 'orders',
+              labelKey: 'module.orders' as const,
+              content: <RelatedList collection="orders" field="assetId" value={asset.id} />,
+            }]
+          : []),
+        ...(hasLinked(assets as unknown as Record<string, unknown>[], 'parentAssetId')
+          ? [{
+              value: 'subassets',
+              labelKey: 'asset.subassets' as const,
+              content: <RelatedList collection="assets" field="parentAssetId" value={asset.id} />,
+            }]
+          : []),
+        ...(hasLinked(solarplants as unknown as Record<string, unknown>[], 'assetId')
+          ? [{
+              value: 'solarplants',
+              labelKey: 'module.solarplants' as const,
+              content: <RelatedList collection="solarplants" field="assetId" value={asset.id} />,
+            }]
+          : []),
       ]}
     />
   );
