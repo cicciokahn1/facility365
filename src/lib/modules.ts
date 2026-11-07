@@ -132,7 +132,6 @@ export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
   "documents",
   "contracts",
   "quotes",
-  "analytics",
   "users",
   "activities",
   "tickets",
