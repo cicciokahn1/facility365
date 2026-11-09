@@ -80,7 +80,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Wie ist die App aufgebaut?",
         summary: "Menü, Kopfzeile, Listen und Detailansichten.",
         paragraphs: [
-          "Im einfachen Modus ist das Menü eine flache Liste ohne Ordner: Heute, Kalender, Favoriten, Kunden, Liegenschaften, Wartungen, Schäden, Aufträge, Helpdesk, Reinigungsaufgaben, Aussenanlagen und darunter der Abschnitt «Administration» mit Rapporte, Rechnungen, Papierkorb, Hilfe und Einstellungen. Ist der einfache Modus aus, erscheinen Ordner: Objekte, Technik & Instandhaltung, Aufträge & Rapporte, Reinigung, Energie, Betrieb, Dokumente & Verträge, Auswertungen, Benutzer und Administration. Den einfachen Modus schaltet man in den Einstellungen ein und aus.",
+          "Im einfachen Modus ist das Menü eine flache Liste ohne Ordner: Dashboard, Kalender, Kunden, Liegenschaften, Gebäude, Anlagen, Wartungen, Schäden, Aufträge, Pikettdienst, Pikettplan, Notfallmeldungen, Arbeitszeit, Reinigungsaufgaben, Aussenanlagen, Lieferanten und Berichte - darunter der Abschnitt «Administration» mit Rapporte, Rechnungen, Papierkorb, Hilfe und Einstellungen. Die App startet direkt auf dem Dashboard. Ist der einfache Modus aus, erscheinen zusätzlich Ordner mit allen Modulen (Objekte, Technik & Instandhaltung, Aufträge & Rapporte, Reinigung, Energie, Betrieb, Dokumente & Verträge, Auswertungen, Benutzer und Administration) sowie die Seite «Heute». Den einfachen Modus schaltet man in den Einstellungen ein und aus.",
           "Oben in der Kopfzeile stehen die globale Suche (Lupe oder Strg + K), der QR-Scanner und das Brief-Symbol für die Outlook-Mails. Auf dem Telefon führt «Mehr» unten zum ganzen Menü.",
           "Jedes Modul zeigt eine Liste mit Suche, Filtern und Sortierung. Erledigte Einträge sind standardmässig ausgeblendet; mit dem Filter «Alle» werden sie wieder angezeigt. Ein Klick auf einen Eintrag öffnet die Detailansicht mit Reitern für Angaben, Fotos, Dokumente und Historie.",
         ],
@@ -127,8 +127,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Beispiel-Daten",
         summary: "Die App mit echten Beispielen ausprobieren.",
         paragraphs: [
-          "Auf einem leeren Gerät lädt Facility365 beim ersten Start automatisch Beispiel-Daten: mehrere Liegenschaften mit Kunden, Gebäuden, Anlagen, Wartungen, Schäden, Aufträgen, Terminen, Reinigungsaufgaben und Aussenanlagen - alles verknüpft wie im echten Betrieb.",
-          "Mit «Beispiel-Daten laden» in den Einstellungen lassen sie sich jederzeit erneut laden oder ersetzen.",
+          "Ein neues Konto startet bewusst leer - keine automatischen Beispieldaten. Wer die App mit echten Beispielen ausprobieren will, lädt sie in den Einstellungen über «Beispiel-Daten laden»: mehrere Liegenschaften mit Kunden, Gebäuden, Anlagen, Wartungen, Schäden, Aufträgen, Terminen, Reinigungsaufgaben und Aussenanlagen - alles verknüpft wie im echten Betrieb. So eignen sie sich auch für Kundenpräsentationen.",
         ],
         path: "/settings",
         keywords: ["beispiel", "demo", "testdaten", "probieren"],
@@ -206,9 +205,9 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: "today-page",
         title: "Heute-Seite",
-        summary: "Die persönliche Arbeit des Tages.",
+        summary: "Die persönliche Arbeit des Tages (nur im erweiterten Modus).",
         paragraphs: [
-          "«Heute» zeigt jeder Person ihre fälligen und zugewiesenen Arbeiten: Aufträge, Wartungen, Kontrollen und Termine des Tages. Mit den Filtern «Alle», «Überfällig» und «Heute» wird die Liste sofort kleiner.",
+          "«Heute» ist im einfachen Modus ausgeblendet - im erweiterten Modus ist sie über das Menü erreichbar. Sie zeigt jeder Person ihre fälligen und zugewiesenen Arbeiten: Aufträge, Wartungen, Kontrollen und Termine des Tages. Mit den Filtern «Alle», «Überfällig» und «Heute» wird die Liste sofort kleiner. Im einfachen Modus übernehmen diese Übersicht die Kacheln auf dem Dashboard.",
           "Oben stehen die Schnellaktionen: Schaden melden, Notfall, Rundgang und Pflanze erkennen - die wichtigsten Wege mit einem Tipp.",
         ],
         path: "/today",
@@ -283,7 +282,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Aufträge erstellen und bearbeiten",
         summary: "Vom neuen Auftrag bis zur Verrechnung.",
         paragraphs: [
-          "Ein Auftrag beschreibt eine Arbeit mit Zuständigem, Termin und Priorität. Der Status führt durch die Bearbeitung: Offen, In Arbeit, Erledigt, Verrechnet. Zugewiesene Aufträge erscheinen bei der zuständigen Person unter «Heute» und im Kalender.",
+          "Ein Auftrag beschreibt eine Arbeit mit Zuständigem, Termin und Priorität. Der Status führt durch die Bearbeitung: Offen, In Arbeit, Erledigt, Verrechnet. Zugewiesene Aufträge erscheinen bei der zuständigen Person auf dem Dashboard, unter «Heute» (erweiterter Modus) und im Kalender.",
           "Im Auftrag lassen sich Fotos, Material, Arbeitszeiten, Checkliste und Unterschrift erfassen. Der Knopf «Route» öffnet die Navigation zum Objekt, «PDF» erzeugt den Auftragsbericht.",
         ],
         steps: [
@@ -317,7 +316,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         summary: "Melden, beurteilen, beheben.",
         paragraphs: [
           "Ein Schaden hält fest, was defekt ist, wo er sich befindet und wer ihn gemeldet hat. Aus einem Schaden entsteht mit einem Klick ein Auftrag; beide bleiben verknüpft.",
-          "Am schnellsten geht es unterwegs: QR-Code der Anlage scannen, «Schaden melden» wählen - Ort und Anlage werden automatisch übernommen. Oder auf der Heute-Seite die Schnellaktion «Schaden» verwenden.",
+          "Am schnellsten geht es unterwegs: QR-Code der Anlage scannen, «Schaden melden» wählen - Ort und Anlage werden automatisch übernommen. Oder auf dem Dashboard die Schnellaktion «Neuer Schaden» verwenden.",
         ],
         path: "/damages",
         keywords: ["schaden", "defekt", "meldung", "qr"],
@@ -327,9 +326,9 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Notfall",
         summary: "Schnell melden, was brennt.",
         paragraphs: [
-          "Die Schnellaktion «Notfall» auf der Heute-Seite meldet dringende Ereignisse (Wasser, Strom, Aufzug, Zutritt usw.) mit wenigen Tipps. Die Meldung landet als Schaden mit hoher Priorität bei den Zuständigen.",
+          "Die Schnellaktion «Neuer Schaden» auf dem Dashboard meldet dringende Ereignisse (Wasser, Strom, Aufzug, Zutritt usw.) mit wenigen Tipps - Priorität «Dringend» setzen genügt. Zusätzlich gibt es den Pikett-QR-Code am Gebäude für Bewohner ohne Login.",
         ],
-        path: "/today",
+        path: "/dashboard",
         keywords: ["notfall", "alarm", "dringend", "wasserschaden"],
       },
       {
@@ -407,8 +406,9 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Anlagen und QR-Codes",
         summary: "Jede Anlage mit Pass und Code.",
         paragraphs: [
-          "Eine Anlage gehört zu einem Raum oder Gebäude und führt Typ, Hersteller, Baujahr, Seriennummer, Garantie, Wartungen, Dokumente und Fotos.",
+          "Eine Anlage gehört zu einem Raum oder Gebäude und führt Typ, Hersteller, Baujahr, Seriennummer, Garantie, Wartungen, Dokumente und Fotos. Beim Anlegen genügen Name, Kategorie und Ort - alles Weitere liegt unter «Mehr anzeigen».",
           "Zu jeder Anlage gehört ein QR-Code. Aufgeklebt am Gerät führt er beim Scannen direkt zum Anlagenpass - mit «Schaden melden» und «Auftrag erstellen». Der Scanner sitzt oben in der Kopfzeile neben dem Brief-Symbol.",
+          "Der Reiter «Pläne» bei der Anlage zeigt alle Pläne, auf denen sie markiert ist, und erlaubt den direkten Upload eines eigenen Plans (z. B. Schaltplan oder Einbauskizze als Bild oder PDF) - ohne Umweg über das Gebäude.",
         ],
         path: "/assets",
         keywords: ["anlage", "gerät", "qr", "anlagenpass", "scannen"],
@@ -435,7 +435,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Wartungen verwalten",
         summary: "Wiederkehrende Arbeiten planen.",
         paragraphs: [
-          "Eine Wartung gehört zu einer Anlage und hat ein Intervall (z. B. jährlich). Nach «Erledigt» wird der nächste Termin automatisch berechnet und erscheint im Kalender, unter «Heute» und in den Hinweisen.",
+          "Eine Wartung gehört zu einer Anlage und hat ein Intervall (z. B. jährlich). Nach «Erledigt» wird der nächste Termin automatisch berechnet und erscheint im Kalender, auf dem Dashboard und in den Hinweisen (sowie unter «Heute» im erweiterten Modus).",
         ],
         steps: [
           OPEN("«Wartungen»"),
@@ -562,7 +562,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         title: "Winterdienst",
         summary: "Schneeräumung und Glatteis dokumentieren.",
         paragraphs: [
-          "Der Reiter «Winterdienst» in jeder Aussenanlage deckt den Winter ab: Einsatzgebiet, zuständige Person und Kontrollgang alle X Tage planen. Die Kontrollen erscheinen automatisch im Kalender und unter «Heute».",
+          "Der Reiter «Winterdienst» in jeder Aussenanlage deckt den Winter ab: Einsatzgebiet, zuständige Person und Kontrollgang alle X Tage planen. Die Kontrollen erscheinen automatisch im Kalender und auf dem Dashboard (sowie unter «Heute» im erweiterten Modus).",
           "Erfasst werden Kontrollgang, Schneeräumung und Glatteisbekämpfung mit Datum, Uhrzeit, Wetter, erledigten Arbeiten, Fotos und Bemerkungen. Streumittel kommt aus dem Lager und wird automatisch abgebucht.",
           "Mängel werden mit einem bestehenden Auftrag verknüpft oder direkt als neuer Auftrag erstellt. Die Einsatzhistorie zeigt alle Einsätze pro Standort.",
         ],

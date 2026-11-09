@@ -58,7 +58,7 @@ export const HELP_INTRO_VIDEO: HelpVideo = {
     ),
     scene(
       'today',
-      '«Heute» listet alles, was heute oder überfällig ist. Antippen genügt, um eine Aufgabe zu öffnen.',
+      'Im erweiterten Modus listet «Heute» alles, was heute oder überfällig ist. Antippen genügt, um eine Aufgabe zu öffnen.',
       8,
       '/today',
     ),
@@ -135,8 +135,8 @@ export const HELP_SHORT_VIDEOS: HelpVideo[] = [
     title: 'Dashboard',
     summary: 'Was heute wichtig ist – auf einen Blick.',
     scenes: [
-      scene('dashboard', 'Oben: Heute, offene Aufträge, fällige Wartungen, Schäden. Darunter die grossen Schnellaktionen.', 9, '/dashboard'),
-      scene('today', 'Mit «Heute» sieht jede Person nur, was jetzt zu tun ist.', 7, '/today'),
+      scene('dashboard', 'Oben: offene Aufträge, fällige Wartungen, Schäden. Darunter die grossen Schnellaktionen.', 9, '/dashboard'),
+      scene('today', 'Im erweiterten Modus sieht jede Person unter «Heute» nur, was jetzt zu tun ist.', 7, '/today'),
     ],
   },
   {
