@@ -89,16 +89,20 @@ export function WeatherWidget() {
     const start = () => {
       void (async () => {
         const saved = readPlace();
-        if (saved) {
-          const permission =
-            typeof navigator !== 'undefined' && navigator.permissions
-              ? await navigator.permissions.query({ name: 'geolocation' })
-              : null;
-          if (permission?.state !== 'granted') {
-            setPlace(saved);
-            await load(saved);
-            return;
-          }
+        const permission =
+          typeof navigator !== 'undefined' && navigator.permissions
+            ? await navigator.permissions.query({ name: 'geolocation' }).catch(() => null)
+            : null;
+        if (saved && permission?.state !== 'granted') {
+          setPlace(saved);
+          await load(saved);
+          return;
+        }
+        // Ohne erteilte Erlaubnis kein Browser-Dialog beim ersten Besuch –
+        // der Nutzer waehlt den Ort selbst ueber «Ort waehlen».
+        if (permission && permission.state !== 'granted') {
+          setFailed(true);
+          return;
         }
         const position = await devicePlace();
         if (!position) {
