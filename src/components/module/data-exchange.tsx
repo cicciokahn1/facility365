@@ -9,6 +9,7 @@
 import { useRef, useState } from 'react';
 import { Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import * as XLSX from 'xlsx';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +23,7 @@ import {
 import { useAllCollections, useCollection } from '@/lib/data/store';
 import { fieldValue } from '@/lib/entity-values';
 import { useT } from '@/lib/i18n/provider';
-import { downloadText, parseCsv, toCsv } from '@/lib/integrations/csv';
+import { parseCsv } from '@/lib/integrations/csv';
 import { configOf, titleOfEntity } from '@/lib/module-config';
 import { FieldDef, FormValues, asNumber, asString, isAddressValue } from '@/lib/schema';
 import { useSettings } from '@/lib/settings/provider';
@@ -129,12 +130,26 @@ export function DataExchange({
             .join(' | ')]
         : []),
     ]);
-    downloadText(toCsv([header, ...rows]), `${collection}.csv`, 'text/csv');
+    const sheet = XLSX.utils.aoa_to_sheet([header, ...rows]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, sheet, collection);
+    XLSX.writeFile(workbook, `${collection}.xlsx`);
     toast.success(t('exchange.exported'));
   };
 
   const prepareImport = async (file: File) => {
-    const rows = parseCsv(await file.text());
+    let rows: string[][];
+    if (/\.xlsx?$/i.test(file.name)) {
+      const workbook = XLSX.read(await file.arrayBuffer());
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      rows = sheet
+        ? (XLSX.utils.sheet_to_json<string[]>(sheet, { header: 1, defval: '' }) as string[][])
+            .map((row) => row.map((cell) => String(cell ?? '')))
+            .filter((row) => row.some((cell) => cell.trim() !== ''))
+        : [];
+    } else {
+      rows = parseCsv(await file.text());
+    }
     const header = rows[0]?.map((cell) => cell.trim().toLowerCase()) ?? [];
     /** Spalten den Feldern zuordnen: Beschriftung oder Feldname zaehlen. */
     const columns = fields.map((field) => ({
@@ -228,7 +243,7 @@ export function DataExchange({
           <input
             ref={fileInput}
             type="file"
-            accept=".csv,text/csv"
+            accept=".csv,.xlsx,.xls,text/csv"
             className="hidden"
             data-testid="import-csv-input"
             onChange={(event) => {
