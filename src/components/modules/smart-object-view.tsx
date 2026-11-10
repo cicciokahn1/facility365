@@ -67,9 +67,12 @@ function related(items: BaseEntity[], field: string, ids: Set<string>) {
 export function SmartObjectView({
   collection,
   entity,
+  onOpenTab,
 }: {
   collection: ObjectCollection;
   entity: BaseEntity;
+  /** Oeffnet einen Reiter der Detailseite (z. B. 'dossier', 'documents'). */
+  onOpenTab?: (tab: string) => void;
 }) {
   const t = useT();
   const { settings } = useSettings();
@@ -186,17 +189,31 @@ export function SmartObjectView({
           label={t('smart.openItems')}
           value={String(open.length)}
           tone={overdue.length > 0 ? 'warning' : undefined}
+          onClick={onOpenTab ? () => onOpenTab('dossier') : undefined}
         />
         <InfoCard
           label={t('smart.overdue')}
           value={String(overdue.length)}
           tone={overdue.length > 0 ? 'danger' : undefined}
+          onClick={onOpenTab ? () => onOpenTab('dossier') : undefined}
         />
         {area ? <InfoCard label={t('smart.area')} value={`${area} m²`} /> : null}
         {condition ? <InfoCard label={t('smart.condition')} value={condition} /> : null}
-        <InfoCard label={t('smart.documents')} value={String(entity.documents.length)} />
-        <InfoCard label={t('smart.photos')} value={String(entity.photos.length)} />
-        <InfoCard label={t('smart.costs')} value={formatMoney(dossier.cost, settings.currency)} />
+        <InfoCard
+          label={t('smart.documents')}
+          value={String(entity.documents.length)}
+          onClick={onOpenTab ? () => onOpenTab('documents') : undefined}
+        />
+        <InfoCard
+          label={t('smart.photos')}
+          value={String(entity.photos.length)}
+          onClick={onOpenTab ? () => onOpenTab('photos') : undefined}
+        />
+        <InfoCard
+          label={t('smart.costs')}
+          value={formatMoney(dossier.cost, settings.currency)}
+          onClick={onOpenTab ? () => onOpenTab('dossier') : undefined}
+        />
       </div>
 
       {actions.length > 0 ? (
@@ -325,16 +342,26 @@ function InfoCard({
   label,
   value,
   tone,
+  onClick,
 }: {
   label: string;
   value: string;
   tone?: 'warning' | 'danger';
+  onClick?: () => void;
 }) {
-  return (
-    <div className={`rounded-lg border bg-card px-3 py-2 ${tone === 'danger' ? 'border-destructive/50 bg-destructive/5' : tone === 'warning' ? 'border-amber-500/50 bg-amber-500/5' : ''}`}>
+  const className = `w-full rounded-lg border bg-card px-3 py-2 text-left ${tone === 'danger' ? 'border-destructive/50 bg-destructive/5' : tone === 'warning' ? 'border-amber-500/50 bg-amber-500/5' : ''} ${onClick ? 'cursor-pointer transition-colors hover:border-primary/50 hover:bg-primary/5' : ''}`;
+  const content = (
+    <>
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="truncate text-lg font-semibold">{value}</p>
-    </div>
+    </>
+  );
+  return onClick ? (
+    <button type="button" onClick={onClick} className={className}>
+      {content}
+    </button>
+  ) : (
+    <div className={className}>{content}</div>
   );
 }
 

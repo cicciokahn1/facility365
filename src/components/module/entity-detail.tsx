@@ -388,13 +388,22 @@ export function EntityDetail<K extends CollectionKey>({
       </div>
 
       {smartObjectLevel ? (
-        <SmartObjectView collection={smartObjectLevel} entity={entity} />
+        <SmartObjectView
+          collection={smartObjectLevel}
+          entity={entity}
+          onOpenTab={(tab) => {
+            setActiveTab(tab);
+            document
+              .getElementById("entity-tabs")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+        />
       ) : null}
 
       {beforeTabs?.(entity, applyUpdate)}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="no-scrollbar -mx-1 overflow-x-auto px-1">
+        <div id="entity-tabs" className="no-scrollbar -mx-1 scroll-mt-20 overflow-x-auto px-1">
           <TabsList>
             <TabsTrigger value="master">{t("tab.master")}</TabsTrigger>
             {tabs.map((tab) => (
