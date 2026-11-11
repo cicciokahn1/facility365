@@ -84,7 +84,7 @@ export async function POST(request: Request) {
   const { error: mailError } = await service.auth.admin.inviteUserByEmail(
     email,
     {
-      redirectTo: `${origin}/login`,
+      redirectTo: `${origin}/`,
       data: { invited_role: role },
     },
   );
