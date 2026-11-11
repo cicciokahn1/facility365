@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { DemoDataButton } from '@/components/modules/demo-data';
+import { DemoDataButton, DemoDataRemoveButton } from '@/components/modules/demo-data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AlertDialog,
@@ -660,6 +660,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
             {t('settings.storageUsed')}: {formatBytes(usage)} / {formatBytes(STORAGE_BUDGET)}
           </p>
           <DemoDataButton />
+          <DemoDataRemoveButton />
           <Button variant="outline" onClick={() => setResetOpen(true)} data-testid="reset-data">
             {t('settings.reset')}
           </Button>

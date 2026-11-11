@@ -10,7 +10,7 @@
  * In den Einstellungen laesst sich der Satz per Knopfdruck erneut laden.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -73,6 +73,7 @@ interface DemoCollections {
   customers: CollectionApi<'customers'>;
   properties: CollectionApi<'properties'>;
   buildings: CollectionApi<'buildings'>;
+  rooms: CollectionApi<'rooms'>;
   assets: CollectionApi<'assets'>;
   maintenances: CollectionApi<'maintenances'>;
   damages: CollectionApi<'damages'>;
@@ -587,6 +588,7 @@ const useDemoCollections = (): DemoCollections => ({
   customers: useCollection('customers'),
   properties: useCollection('properties'),
   buildings: useCollection('buildings'),
+  rooms: useCollection('rooms'),
   assets: useCollection('assets'),
   maintenances: useCollection('maintenances'),
   damages: useCollection('damages'),
@@ -619,6 +621,89 @@ export function DemoDataButton() {
     <Button variant="outline" className="w-fit" onClick={load} disabled={busy} data-testid="load-demo-data">
       <Sparkles className="size-4" aria-hidden />
       {busy ? 'Wird erstellt…' : 'Beispiel-Daten laden'}
+    </Button>
+  );
+}
+
+/**
+ * Entfernt den ganzen Beispielsatz: Die markierten Kunden und Liegenschaften
+ * samt allem, was an ihnen haengt (Gebaeude, Raeume, Anlagen, Auftraege,
+ * Wartungen, Schaeden, Termine, Rapporte, Reinigung, Aussenanlagen).
+ * Alles landet im Papierkorb und bleibt wiederherstellbar.
+ */
+const LINK_FIELDS = ['propertyId', 'buildingId', 'roomId', 'assetId', 'customerId'] as const;
+
+export function DemoDataRemoveButton() {
+  const collections = useDemoCollections();
+  const [busy, setBusy] = useState(false);
+
+  const exampleCount = collections.properties.items.filter(
+    (item) => item.notes === DEMO_NOTE,
+  ).length;
+
+  const removeExamples = () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const seeded = (items: { id: string; notes?: string }[]) =>
+        new Set(items.filter((item) => item.notes === DEMO_NOTE).map((item) => item.id));
+      const propertyIds = seeded(collections.properties.items);
+      const customerIds = seeded(collections.customers.items);
+      /** Kennung tragen nur Kunden und Liegenschaften; Kinder haengen ueber die Verknuepfung. */
+      const buildingIds = new Set(
+        collections.buildings.items
+          .filter((item) => propertyIds.has(String(item.propertyId ?? '')))
+          .map((item) => item.id),
+      );
+      const roomIds = new Set(
+        collections.rooms.items
+          .filter((item) => buildingIds.has(String(item.buildingId ?? '')))
+          .map((item) => item.id),
+      );
+      const assetIds = new Set(
+        collections.assets.items
+          .filter(
+            (item) =>
+              propertyIds.has(String(item.propertyId ?? '')) ||
+              buildingIds.has(String(item.buildingId ?? '')) ||
+              roomIds.has(String(item.roomId ?? '')),
+          )
+          .map((item) => item.id),
+      );
+      const owners = new Set([...propertyIds, ...customerIds, ...buildingIds, ...roomIds, ...assetIds]);
+      const linked = (item: Record<string, unknown>) =>
+        owners.has(String(item.id)) ||
+        LINK_FIELDS.some((field) => owners.has(String(item[field] ?? '')));
+
+      let removed = 0;
+      Object.values(collections).forEach((collection) => {
+        (collection.items as { id: string }[])
+          .filter((item) => linked(item as unknown as Record<string, unknown>))
+          .forEach((item: { id: string }) => {
+            collection.remove(item.id);
+            removed += 1;
+          });
+      });
+      toast.success(
+        removed > 0
+          ? `${removed} Beispiel-Datensaetze in den Papierkorb gelegt`
+          : 'Keine Beispiel-Daten gefunden',
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Button
+      variant="outline"
+      className="w-fit"
+      onClick={removeExamples}
+      disabled={busy || exampleCount === 0}
+      data-testid="remove-demo-data"
+    >
+      <Trash2 className="size-4" aria-hidden />
+      {busy ? 'Wird gelöscht…' : 'Beispiel-Daten löschen'}
     </Button>
   );
 }
