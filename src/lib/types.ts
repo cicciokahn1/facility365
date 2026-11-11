@@ -74,7 +74,8 @@ export type ModuleKey =
   | "privateFiles"
   | "oncall"
   | "oncallperiods"
-  | "oncallincidents";
+  | "oncallincidents"
+  | "amok";
 
 /** Sammlungen, die Datensaetze fuehren. */
 export type CollectionKey = Exclude<
@@ -97,6 +98,7 @@ export type CollectionKey = Exclude<
   | "help"
   | "settings"
   | "oncall"
+  | "amok"
 >;
 
 export interface Photo {

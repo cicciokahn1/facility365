@@ -49,7 +49,7 @@ import { fieldValue, stringField } from "@/lib/entity-values";
 import { checklistTemplateFor } from "@/lib/cleaning/checklists";
 import { useT } from "@/lib/i18n/provider";
 import { configOf, defaultValuesOf, titleOfEntity } from "@/lib/module-config";
-import { moduleByCollection } from "@/lib/modules";
+import { moduleByCollection, moduleByKey } from "@/lib/modules";
 import { closedStatusValues } from "@/lib/module-status";
 import {
   type CompletableKey,
@@ -58,7 +58,7 @@ import {
 } from "@/lib/workflow/complete";
 import { FormValues, SelectField, asString } from "@/lib/schema";
 import { useSettings } from "@/lib/settings/provider";
-import { BaseEntity, CollectionKey, InvoicePaymentData, Supplier } from "@/lib/types";
+import { BaseEntity, CollectionKey, InvoicePaymentData, ModuleKey, Supplier } from "@/lib/types";
 import { referenceFor } from "@/lib/invoices/swiss-qr";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
@@ -83,6 +83,8 @@ export function ModuleList({
   extraFilter,
   initialStatus,
   exchangeOpen = false,
+  moduleKey,
+  defaults,
 }: {
   collection: CollectionKey;
   only?: ListRestriction;
@@ -92,10 +94,16 @@ export function ModuleList({
   initialStatus?: string;
   /** Der Austausch soll bei besonders import-/exportlastigen Modulen offen starten. */
   exchangeOpen?: boolean;
+  /** Bei geteilten Sammlungen: uebernimmt Titel und Rechtecke dieses Moduls. */
+  moduleKey?: ModuleKey;
+  /** Vorbelegte Feldwerte fuer neue Datensaetze in dieser Ansicht. */
+  defaults?: FormValues;
 }) {
   const t = useT();
   const router = useRouter();
-  const moduleDef = moduleByCollection(collection);
+  const moduleDef = moduleKey
+    ? moduleByKey(moduleKey)
+    : moduleByCollection(collection);
   const config = configOf(collection);
   const { items: all, create, update } = useCollection(collection);
   const markDone = useMarkDone(collection as CompletableKey);
@@ -204,15 +212,17 @@ export function ModuleList({
   const statusCounts = useMemo(() => {
     const counts = new Map<string, number>();
     if (!statusField) return counts;
-    items.forEach((item) => {
-      const value = stringField(item, statusField.name);
-      counts.set(value, (counts.get(value) ?? 0) + 1);
-      if (closed.includes(value))
-        counts.set(CLOSED_FILTER, (counts.get(CLOSED_FILTER) ?? 0) + 1);
-      else counts.set(OPEN_FILTER, (counts.get(OPEN_FILTER) ?? 0) + 1);
-    });
+    items
+      .filter((item) => !only || stringField(item, only.field) === only.value)
+      .forEach((item) => {
+        const value = stringField(item, statusField.name);
+        counts.set(value, (counts.get(value) ?? 0) + 1);
+        if (closed.includes(value))
+          counts.set(CLOSED_FILTER, (counts.get(CLOSED_FILTER) ?? 0) + 1);
+        else counts.set(OPEN_FILTER, (counts.get(OPEN_FILTER) ?? 0) + 1);
+      });
     return counts;
-  }, [closed, items, statusField]);
+  }, [closed, items, only, statusField]);
 
   const allSelected =
     filtered.length > 0 && filtered.every((item) => selected.includes(item.id));
@@ -230,8 +240,8 @@ export function ModuleList({
   };
 
   const initialValues = useMemo(
-    () => defaultValuesOf(collection),
-    [collection],
+    () => ({ ...defaultValuesOf(collection), ...defaults }),
+    [collection, defaults],
   );
 
   const handleCreate = (values: FormValues) => {

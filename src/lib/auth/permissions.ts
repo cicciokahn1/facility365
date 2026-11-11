@@ -83,6 +83,8 @@ const ROLES: Record<UserRole, RoleAccess> = {
       legionella: "write",
       rcd: "write",
       inspections: "write",
+      /** Amok-Eintraege sind Inspektionen; dieselben Rechte. */
+      amok: "write",
       playgroundchecks: "write",
       firechecks: "write",
       keys: "write",

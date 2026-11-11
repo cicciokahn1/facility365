@@ -522,6 +522,7 @@ export const INSPECTION_TYPE_OPTIONS: SelectOption[] = [
   option("ladder", "inspection.type.ladder"),
   option("playground", "inspection.type.playground"),
   option("emergencyEquipment", "inspection.type.emergencyEquipment"),
+  option("amok", "inspection.type.amok"),
   option("custom", "inspection.type.custom"),
 ];
 

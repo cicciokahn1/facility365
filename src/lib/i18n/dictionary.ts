@@ -2024,6 +2024,18 @@ export const dictionary = {
     it: "Reperibilità",
     en: "On-call duty",
   },
+  "module.amok": {
+    de: "Amok-Alarm & Evakuierung",
+    fr: "Alarme amok & évacuation",
+    it: "Allarme amok & evacuazione",
+    en: "Amok alarm & evacuation",
+  },
+  "module.amok.singular": {
+    de: "Amok-Eintrag",
+    fr: "Entrée amok",
+    it: "Voce amok",
+    en: "Amok entry",
+  },
   "module.oncallperiods": {
     de: "Pikettplan",
     fr: "Plan d'astreinte",
@@ -5627,6 +5639,12 @@ export const dictionary = {
     fr: "Équipement d'urgence (défibrillateur, douche oculaire, trousse de secours)",
     it: "Attrezzatura di emergenza (defibrillatore, doccia oculare, cassetta di pronto soccorso)",
     en: "Emergency equipment (defibrillator, eye wash, first-aid kit)",
+  },
+  "inspection.type.amok": {
+    de: "Amok-Alarm / Evakuierung",
+    fr: "Alarme amok / évacuation",
+    it: "Allarme amok / evacuazione",
+    en: "Amok alarm / evacuation",
   },
   "inspection.type.custom": {
     de: "Individuelle Prüfung",

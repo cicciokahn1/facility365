@@ -77,6 +77,7 @@ export const OPTIONAL_MODULES: ModuleKey[] = [
   'oncall',
   'oncallperiods',
   'oncallincidents',
+  'amok',
 ];
 
 /** Pikettdienst als Einheit: Uebersicht, Pikettplan und Notfallmeldungen. */
@@ -143,6 +144,7 @@ const PACKAGES: Record<Exclude<IndustryPackage, '' | 'custom'>, ModuleKey[]> = {
     'portal',
     'hazards',
     ...ONCALL,
+    'amok',
   ],
   /** Spitaeler und Kliniken: wie Care, plus Besucher und Gefahrstoffe. */
   hospital: [

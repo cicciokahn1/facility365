@@ -17,6 +17,7 @@ import {
   DoorClosed,
   Droplets,
   FileSignature,
+  BellRing,
   FileSpreadsheet,
   FileText,
   Files,
@@ -579,6 +580,15 @@ export const MODULES: ModuleDefinition[] = [
     group: "work",
     labelKey: "module.tickets",
     singularKey: "module.tickets.singular",
+  },
+  {
+    key: "amok",
+    collection: "inspections",
+    path: "/amok",
+    icon: BellRing,
+    group: "technics",
+    labelKey: "module.amok",
+    singularKey: "module.amok.singular",
   },
   {
     key: "oncall",
