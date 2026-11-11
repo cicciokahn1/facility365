@@ -81,20 +81,60 @@ export async function POST(request: Request) {
   }
 
   const origin = new URL(request.url).origin;
-  const { error: mailError } = await service.auth.admin.inviteUserByEmail(
-    email,
-    {
-      redirectTo: `${origin}/`,
-      data: { invited_role: role },
-    },
-  );
-  if (mailError) {
-    /** Bereits registrierte Adressen: Einladung trotzdem liegen lassen,
-        damit ein spaeterer Beitritt greift, aber offen melden. */
-    if (mailError.message.toLowerCase().includes('already')) {
-      return NextResponse.json({ ok: true, alreadyRegistered: true });
+
+  /**
+   * Konto anlegen: Der Trigger handle_new_user ordnet die Person dank der
+   * Einladungszeile oben sofort dem Mandanten zu. Danach bekommt sie eine
+   * Passwort-Mail; der Link oeffnet /reset, dort setzt sie ihr Passwort.
+   */
+  const tempPassword = `Fx${crypto.randomUUID()}aA!`;
+  const { data: created, error: createError } =
+    await service.auth.admin.createUser({
+      email,
+      password: tempPassword,
+      email_confirm: true,
+      user_metadata: { invited_role: role },
+    });
+
+  if (createError) {
+    if (!createError.message.toLowerCase().includes('already')) {
+      await service.from('invitations').delete().eq('email', email);
+      return NextResponse.json(
+        { error: createError.message },
+        { status: 500 },
+      );
     }
-    await service.from('invitations').delete().eq('email', email);
+    /** Konto existiert schon: Mitgliedschaft direkt setzen. */
+    const { data: list } = await service.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    });
+    const existing = list?.users.find(
+      (candidate) => candidate.email?.toLowerCase() === email,
+    );
+    if (existing) {
+      await service
+        .from('invitations')
+        .delete()
+        .eq('email', email);
+      await service.from('memberships').upsert(
+        {
+          tenant_id: membership.tenant_id,
+          auth_user_id: existing.id,
+          role,
+          status: 'active',
+        },
+        { onConflict: 'auth_user_id' },
+      );
+    }
+  } else if (!created.user) {
+    return NextResponse.json({ error: 'no_user' }, { status: 500 });
+  }
+
+  const { error: mailError } = await anon.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/reset`,
+  });
+  if (mailError) {
     return NextResponse.json({ error: mailError.message }, { status: 500 });
   }
 
