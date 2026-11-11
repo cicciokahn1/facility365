@@ -8784,6 +8784,12 @@ export const dictionary = {
     it: "Nessuna colonna corrispondente. Esportare prima e poi completare il file.",
     en: "No matching columns found. Export first and add rows to that file.",
   },
+  "exchange.mapping": {
+    de: "Erkannte Zuordnung",
+    fr: "Correspondances détectées",
+    it: "Associazioni rilevate",
+    en: "Detected mapping",
+  },
   "exchange.preview": {
     de: "Import prüfen",
     fr: "Vérifier l’importation",

@@ -1706,6 +1706,7 @@ export const table: Record<string, string> = {
   "exchange.exported": "Datei erstellt",
   "exchange.imported": "Eingelesene Datensätze",
   "exchange.noColumns": "Keine passenden Spalten gefunden. Am besten zuerst exportieren und die Datei ergänzen.",
+  "exchange.mapping": "Erkannte Zuordnung",
   "exchange.preview": "Import prüfen",
   "exchange.previewHint": "Vorschau vor dem Speichern. Bestehende Nummern werden übersprungen.",
   "exchange.validRows": "Neue Zeilen",
