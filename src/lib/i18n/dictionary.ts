@@ -688,10 +688,10 @@ export const dictionary = {
     en: "The invitation could not be saved.",
   },
   "user.inviteInfo": {
-    de: "Die Person öffnet die Login-Seite, wählt «Konto erstellen» und meldet sich mit dieser E-Mail an – sie wird diesem Konto automatisch zugeordnet.",
-    fr: "La personne ouvre la page de connexion, choisit «Créer un compte» et s'inscrit avec cet e-mail – elle est automatiquement rattachée à ce compte.",
-    it: "La persona apre la pagina di login, sceglie «Crea account» e si registra con questa e-mail – viene assegnata automaticamente a questo account.",
-    en: "The person opens the login page, chooses «Create account» and signs up with this email – they are automatically assigned to this account.",
+    de: "Die Person erhält eine E-Mail mit Einladungs-Link – Klick genügt, sie wird diesem Konto mit ihrer Rolle automatisch zugeordnet.",
+    fr: "La personne reçoit un e-mail avec un lien d'invitation – un clic suffit, elle est rattachée automatiquement à ce compte avec son rôle.",
+    it: "La persona riceve un'e-mail con il link di invito – basta un clic, viene assegnata automaticamente a questo account con il suo ruolo.",
+    en: "The person receives an email with an invitation link – one click is enough, they are automatically assigned to this account with their role.",
   },
   "user.signedInAs": {
     de: "Angemeldet als",

@@ -28,6 +28,7 @@ import {
 import type { TranslationKey } from '@/lib/i18n/dictionary';
 import { useT } from '@/lib/i18n/provider';
 import { useAccess } from '@/lib/auth/scope';
+import { useCollection } from '@/lib/data/store';
 import { USER_ROLE_OPTIONS } from '@/lib/schema';
 import { supabase } from '@/lib/supabase/client';
 
@@ -45,6 +46,7 @@ const INVITABLE_ROLES = USER_ROLE_OPTIONS.filter(
 export function UserInvite() {
   const t = useT();
   const access = useAccess();
+  const { create } = useCollection('users');
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('caretaker');
@@ -73,16 +75,26 @@ export function UserInvite() {
     try {
       const client = await supabase();
       if (!client) throw new Error('offline');
-      const { data: tenantId, error: tenantError } = await client.rpc(
-        'current_tenant',
-      );
-      if (tenantError || !tenantId) throw new Error('tenant');
-      /** Bereits eingeladene Adresse zuerst zuruecknehmen, dann neu setzen. */
-      await client.from('invitations').delete().eq('email', value);
-      const { error } = await client
-        .from('invitations')
-        .insert({ tenant_id: tenantId, email: value, role });
-      if (error) throw new Error(error.message);
+      const {
+        data: { session },
+      } = await client.auth.getSession();
+      if (!session?.access_token) throw new Error('session');
+      const response = await fetch('/api/invite', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ email: value, role }),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      /** Zugleich den Benutzerdatensatz anlegen, damit die Person sichtbar ist. */
+      create({
+        name: value.split('@')[0],
+        email: value,
+        role,
+        status: 'active',
+      } as never);
       toast.success(t('user.inviteSent'));
       setEmail('');
       setOpen(false);
