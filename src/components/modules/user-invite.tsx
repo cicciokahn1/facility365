@@ -10,7 +10,6 @@ import { MailPlus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -109,55 +108,49 @@ export function UserInvite() {
     }
   };
 
-  /** Einladen duerfen nur Mandanten-Admins; andere sehen die Karte nicht. */
+  /** Einladen duerfen nur Mandanten-Admins; andere sehen die Leiste nicht. */
   if (!access.scope.manageUsers) return null;
 
   return (
-    <Card className="mb-4">
-      <CardHeader>
-        <CardTitle className="text-base">{t('user.inviteTitle')}</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        <p className="text-sm text-muted-foreground">
-          {t('user.inviteHint')}
-        </p>
-        <Button className="w-fit" onClick={() => setOpen(true)}>
+    <div className="mb-4 flex flex-col gap-2">
+      <div>
+        <Button variant="outline" className="w-fit" onClick={() => setOpen(true)}>
           <MailPlus className="size-4" aria-hidden />
-          {t('user.invite')}
+          {t('user.inviteTitle')}
         </Button>
-        {pending.length > 0 && (
-          <ul className="flex flex-col gap-1.5 text-sm">
-            {pending.map((entry) => (
-              <li
-                key={entry.email}
-                className="flex items-center justify-between gap-2 rounded-md border px-3 py-1.5"
-              >
-                <span>
-                  {entry.email}{' '}
-                  <span className="text-muted-foreground">
-                    ·{' '}
-                    {USER_ROLE_OPTIONS.find((o) => o.value === entry.role)
-                      ? t(
-                          USER_ROLE_OPTIONS.find((o) => o.value === entry.role)!
-                            .labelKey,
-                        )
-                      : entry.role}{' '}
-                    · {t('user.invitePending')}
-                  </span>
+      </div>
+      {pending.length > 0 && (
+        <ul className="flex flex-col gap-1.5 text-sm">
+          {pending.map((entry) => (
+            <li
+              key={entry.email}
+              className="flex items-center justify-between gap-2 rounded-md border px-3 py-1.5"
+            >
+              <span>
+                {entry.email}{' '}
+                <span className="text-muted-foreground">
+                  ·{' '}
+                  {USER_ROLE_OPTIONS.find((o) => o.value === entry.role)
+                    ? t(
+                        USER_ROLE_OPTIONS.find((o) => o.value === entry.role)!
+                          .labelKey,
+                      )
+                    : entry.role}{' '}
+                  · {t('user.invitePending')}
                 </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => void remove(entry)}
-                  aria-label={t('action.delete')}
-                >
-                  <Trash2 className="size-4" aria-hidden />
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => void remove(entry)}
+                aria-label={t('action.delete')}
+              >
+                <Trash2 className="size-4" aria-hidden />
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
@@ -199,6 +192,6 @@ export function UserInvite() {
           </div>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   );
 }

@@ -6,8 +6,8 @@ export default function UsersPage() {
   return (
     <>
       <UserInvite />
-      <UserRateSettings />
       <ModuleList collection="users" />
+      <UserRateSettings />
     </>
   );
 }

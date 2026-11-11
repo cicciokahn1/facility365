@@ -27,11 +27,21 @@ function RoleRateCard({
   const t = useT();
   const [draft, setDraft] = useState<RateMap>(rates);
 
+  const [open, setOpen] = useState(false);
   return (
     <Card className="mb-4">
-      <CardHeader>
-        <CardTitle className="text-base">{t('settings.hourlyRates')}</CardTitle>
+      <CardHeader
+        className="cursor-pointer select-none"
+        onClick={() => setOpen((current) => !current)}
+      >
+        <CardTitle className="text-base">
+          {t('settings.hourlyRates')}
+          <span className="ml-2 text-sm font-normal text-muted-foreground">
+            {open ? '−' : '+'}
+          </span>
+        </CardTitle>
       </CardHeader>
+      {open && (
       <CardContent className="flex flex-col gap-3">
         <p className="text-sm text-muted-foreground">{t('settings.hourlyRatesHint')}</p>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -59,6 +69,7 @@ function RoleRateCard({
           {t('action.save')}
         </Button>
       </CardContent>
+      )}
     </Card>
   );
 }
