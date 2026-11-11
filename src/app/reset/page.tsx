@@ -6,7 +6,7 @@
  * Der Link aus der E-Mail oeffnet eine kurzlebige Sitzung; hier wird nur das
  * Passwort gesetzt. Danach geht es zur Anmeldung zurueck.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { passwordProblem } from '@/lib/auth/errors';
 import { useAuth } from '@/lib/auth/provider';
+import { supabase } from '@/lib/supabase/client';
 import { BRAND_LOGO_SRC } from '@/lib/branding/logo';
 import { useT } from '@/lib/i18n/provider';
 
@@ -26,11 +27,42 @@ export default function ResetPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [hint, setHint] = useState('');
+  const [ready, setReady] = useState(false);
+
+  /**
+   * Der E-Mail-Link bringt entweder ?code= (PKCE) oder #access_token mit.
+   * Beides hier eintauschen, damit updateUser eine gueltige Sitzung findet.
+   */
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const client = await supabase();
+      if (!client) {
+        if (active) setReady(true);
+        return;
+      }
+      const code = new URLSearchParams(window.location.search).get('code');
+      if (code) {
+        await client.auth.exchangeCodeForSession(code);
+      } else {
+        /** Hash-Token aufnehmen und die Sitzung ausbauen lassen. */
+        await client.auth.getSession();
+      }
+      if (active) setReady(true);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
     setHint('');
+    if (!ready) {
+      setError(t('auth.errorGeneric'));
+      return;
+    }
     const weak = passwordProblem(password);
     if (weak) {
       setError(t(weak));
@@ -85,7 +117,7 @@ export default function ResetPage() {
                 {hint}
               </p>
             ) : null}
-            <Button type="submit" className="h-11 w-full" disabled={busy} data-testid="reset-submit">
+            <Button type="submit" className="h-11 w-full" disabled={busy || !ready} data-testid="reset-submit">
               {t('action.save')}
             </Button>
           </form>
