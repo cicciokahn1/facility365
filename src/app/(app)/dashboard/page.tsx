@@ -19,6 +19,7 @@ import {
   ClipboardCheck,
   FileText,
   Plus,
+  QrCode,
   ShieldAlert,
   SprayCan,
   UserPlus,
@@ -70,6 +71,7 @@ const QUICK_ACTIONS: {
   { href: '/cleaning/tasks?new=1', module: 'cleaningtasks', labelKey: 'dashboard.quick.cleaning', icon: SprayCan, primary: true },
   { href: '/tickets?new=1', module: 'tickets', labelKey: 'module.tickets.singular', icon: Bell },
   { href: '/analytics', module: 'analytics', labelKey: 'report.openReport', icon: BarChart3 },
+  { href: '/melde-qr', module: 'damages', labelKey: 'tab.tenantReport', icon: QrCode },
 ];
 
 function dueUrgency(date: string) {
