@@ -4298,10 +4298,10 @@ export const dictionary = {
     en: "Delete all data",
   },
   "settings.resetConfirm": {
-    de: "Alle in diesem Browser gespeicherten Daten werden gelöscht.",
-    fr: "Toutes les données enregistrées dans ce navigateur seront supprimées.",
-    it: "Tutti i dati salvati in questo browser verranno eliminati.",
-    en: "All data stored in this browser will be deleted.",
+    de: "Alle Daten dieser Organisation werden unwiderruflich gelöscht – auch der Papierkorb. Benutzer bleiben erhalten.",
+    fr: "Toutes les données de cette organisation seront définitivement supprimées – y compris la corbeille. Les utilisateurs sont conservés.",
+    it: "Tutti i dati di questa organizzazione verranno eliminati definitivamente – compreso il cestino. Gli utenti restano.",
+    en: "All data of this organization will be permanently deleted – including the trash. Users are kept.",
   },
   "settings.saveFailed": {
     de: "Speichern fehlgeschlagen – die Einstellungen konnten nicht in der Datenbank abgelegt werden.",

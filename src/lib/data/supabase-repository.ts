@@ -12,6 +12,7 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { COLLECTIONS } from '@/lib/data/collections';
 import { Repository } from '@/lib/data/repository';
 import { supabase } from '@/lib/supabase/client';
 import {
@@ -211,28 +212,20 @@ export const supabaseRepository: Repository = {
     if (error) throw new Error(error.message);
   },
 
+  /**
+   * Kompletter Ruecksetzer: loescht wirklich alle Datensaetze des eigenen
+   * Mandanten in allen Sammlungen - auch den Papierkorb. Ausloeser ist der
+   * bestaetigte Reset-Knopf in den Einstellungen; danach ist nichts
+   * wiederherstellbar.
+   */
   async clear(): Promise<void> {
-    const collections: CollectionKey[] = [
-      'customers',
-      'properties',
-      'buildings',
-      'rooms',
-      'assets',
-      'documents',
-      'orders',
-      'maintenances',
-      'damages',
-      'reports',
-      'quotes',
-      'invoices',
-    ];
+    const collections = COLLECTIONS.filter((key) => key !== 'users');
     const tenantId = await currentTenantId();
     for (const collection of collections) {
       const { error } = await (await client())
         .from(tableOf(collection))
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('tenant_id', tenantId)
-        .is('deleted_at', null);
+        .delete()
+        .eq('tenant_id', tenantId);
       if (error) throw new Error(error.message);
     }
   },
