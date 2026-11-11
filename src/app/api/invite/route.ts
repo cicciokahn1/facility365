@@ -134,9 +134,12 @@ export async function POST(request: Request) {
   const { error: mailError } = await anon.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/reset`,
   });
-  if (mailError) {
-    return NextResponse.json({ error: mailError.message }, { status: 500 });
-  }
-
-  return NextResponse.json({ ok: true });
+  /** Mail-Probleme (z. B. Rate-Limit) sind kein Abbruch: Konto und
+      Mitgliedschaft stehen; die Person kann an der Anmeldung
+      «Passwort vergessen» nutzen. */
+  return NextResponse.json({
+    ok: true,
+    mailSent: !mailError,
+    mailError: mailError?.message ?? null,
+  });
 }

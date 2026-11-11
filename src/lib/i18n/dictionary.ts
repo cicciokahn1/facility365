@@ -687,6 +687,12 @@ export const dictionary = {
     it: "L'invito non è stato salvato.",
     en: "The invitation could not be saved.",
   },
+  "user.inviteNoMail": {
+    de: "Einladung gespeichert, aber die E-Mail konnte nicht gesendet werden – die Person nutzt an der Anmeldung «Passwort vergessen».",
+    fr: "Invitation enregistrée, mais l'e-mail n'a pas pu être envoyé – la personne utilise «Mot de passe oublié» à la connexion.",
+    it: "Invito salvato, ma l'e-mail non è stata inviata – la persona usa «Password dimenticata» al login.",
+    en: "Invitation saved, but the email could not be sent – the person uses «Forgot password» at sign-in.",
+  },
   "user.inviteInfo": {
     de: "Die Person erhält eine E-Mail mit Einladungs-Link – Klick genügt, sie wird diesem Konto mit ihrer Rolle automatisch zugeordnet.",
     fr: "La personne reçoit un e-mail avec un lien d'invitation – un clic suffit, elle est rattachée automatiquement à ce compte avec son rôle.",

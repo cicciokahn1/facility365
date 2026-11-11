@@ -87,7 +87,14 @@ export function UserInvite() {
         },
         body: JSON.stringify({ email: value, role }),
       });
-      if (!response.ok) throw new Error(await response.text());
+      const result = (await response.json().catch(() => null)) as {
+        ok?: boolean;
+        mailSent?: boolean;
+        error?: string;
+      } | null;
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error ?? `HTTP ${response.status}`);
+      }
       /** Zugleich den Benutzerdatensatz anlegen, damit die Person sichtbar ist. */
       create({
         name: value.split('@')[0],
@@ -95,12 +102,20 @@ export function UserInvite() {
         role,
         status: 'active',
       } as never);
-      toast.success(t('user.inviteSent'));
+      if (result.mailSent === false) {
+        toast.warning(t('user.inviteNoMail'));
+      } else {
+        toast.success(t('user.inviteSent'));
+      }
       setEmail('');
       setOpen(false);
       void load();
-    } catch {
-      toast.error(t('user.inviteFailed'));
+    } catch (failure) {
+      const detail =
+        failure instanceof Error && failure.message
+          ? ` (${failure.message.slice(0, 120)})`
+          : '';
+      toast.error(`${t('user.inviteFailed')}${detail}`);
     } finally {
       setBusy(false);
     }
