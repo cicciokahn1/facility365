@@ -99,6 +99,7 @@ export interface ModuleDefinition {
  * Die Seiten bleiben erreichbar; die Liste betrifft nur die Navigation.
  */
 export const SIMPLE_HIDDEN_KEYS: ReadonlySet<ModuleKey> = new Set([
+  "appointments",
   "organizations",
   "sites",
   "plans",
