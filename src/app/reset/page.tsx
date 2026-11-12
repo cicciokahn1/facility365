@@ -14,20 +14,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { passwordProblem } from '@/lib/auth/errors';
-import { useAuth } from '@/lib/auth/provider';
 import { supabase } from '@/lib/supabase/client';
 import { BRAND_LOGO_SRC } from '@/lib/branding/logo';
 import { useT } from '@/lib/i18n/provider';
 
 export default function ResetPage() {
   const t = useT();
-  const auth = useAuth();
   const router = useRouter();
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [hint, setHint] = useState('');
   const [ready, setReady] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
 
   /**
    * Der E-Mail-Link bringt entweder ?code= (PKCE) oder #access_token mit.
@@ -41,14 +40,27 @@ export default function ResetPage() {
         if (active) setReady(true);
         return;
       }
-      const code = new URLSearchParams(window.location.search).get('code');
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      const accessToken = hash.get('access_token');
+      const refreshToken = hash.get('refresh_token') ?? '';
       if (code) {
         await client.auth.exchangeCodeForSession(code);
+      } else if (accessToken) {
+        /** Token aus dem Mail-Link explizit als Sitzung setzen. */
+        await client.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
       } else {
-        /** Hash-Token aufnehmen und die Sitzung ausbauen lassen. */
         await client.auth.getSession();
       }
-      if (active) setReady(true);
+      if (active) {
+        const { data } = await client.auth.getSession();
+        setHasSession(Boolean(data.session));
+        setReady(true);
+      }
     })();
     return () => {
       active = false;
@@ -69,10 +81,13 @@ export default function ResetPage() {
       return;
     }
     setBusy(true);
-    const message = await auth.updatePassword(password);
+    const client = await supabase();
+    const { error: updateError } = client
+      ? await client.auth.updateUser({ password })
+      : { error: { message: 'no client' } as never };
     setBusy(false);
-    if (message) {
-      setError(t(message));
+    if (updateError) {
+      setError(updateError.message ?? t('auth.errorGeneric'));
       return;
     }
     setHint(t('auth.passwordSaved'));
@@ -107,6 +122,11 @@ export default function ResetPage() {
                 data-testid="reset-password"
               />
             </div>
+            {ready && !hasSession ? (
+              <p className="text-sm text-destructive" data-testid="reset-nosession">
+                {t('auth.resetLinkInvalid')}
+              </p>
+            ) : null}
             {error ? (
               <p className="text-sm text-destructive" data-testid="reset-error">
                 {error}

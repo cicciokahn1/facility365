@@ -7395,6 +7395,12 @@ export const dictionary = {
     it: "Non ha funzionato. Riprova.",
     en: "That did not work. Please try again.",
   },
+  "auth.resetLinkInvalid": {
+    de: "Dieser Link ist ungültig oder abgelaufen. Bitte eine neue Einladung oder über «Passwort vergessen» einen neuen Link anfordern.",
+    fr: "Ce lien est invalide ou expiré. Veuillez demander une nouvelle invitation ou un nouveau lien via «Mot de passe oublié».",
+    it: "Questo link non è valido o è scaduto. Richiedi un nuovo invito o un nuovo link tramite «Password dimenticata».",
+    en: "This link is invalid or expired. Please request a new invitation or a new link via 'Forgot password'.",
+  },
 
   "account.title": {
     de: "Benutzerkonto",
