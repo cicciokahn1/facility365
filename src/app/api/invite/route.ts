@@ -131,9 +131,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'no_user' }, { status: 500 });
   }
 
-  const { error: mailError } = await anon.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/reset`,
+  /**
+   * Passwort-Mail verschicken. Wichtig: Implicit-Flow – der PKCE-Flow wuerde
+   * den Code-Verifier hier auf dem Server speichern; der Browser der
+   * eingeladenen Person koennte den Link dann nicht einloesen. Implicit
+   * liefert das Token direkt im Link-Hash, die Reset-Seite uebernimmt es.
+   */
+  const mailClient = createClient(url, anonKey, {
+    auth: { flowType: 'implicit' },
   });
+  const { error: mailError } = await mailClient.auth.resetPasswordForEmail(
+    email,
+    {
+      redirectTo: `${origin}/reset`,
+    },
+  );
   /** Mail-Probleme (z. B. Rate-Limit) sind kein Abbruch: Konto und
       Mitgliedschaft stehen; die Person kann an der Anmeldung
       «Passwort vergessen» nutzen. */
