@@ -1863,10 +1863,22 @@ export interface OrganizationSubscription {
   currency: "CHF";
 }
 
+/**
+ * Gebuchte Lizenz des Mandanten: Paket plus zugebuchte Einzelmodule.
+ * Wird nicht in der App gepflegt, sondern beim Verkauf gesetzt - die App
+ * sperrt damit die Auswahl auf den gebuchten Umfang. Fehlt sie, gilt alles
+ * als freigegeben (Testphase, Bestandskunden).
+ */
+export interface LicenseConfig {
+  package: IndustryPackage;
+  addons: ModuleKey[];
+}
+
 export interface ModuleConfig {
   industryPackage: IndustryPackage;
   disabledModules: ModuleKey[];
   subscription?: OrganizationSubscription;
+  license?: LicenseConfig;
   /** Zeitpunkt der letzten Speicherung; entscheidet, welche Quelle gilt. */
   updatedAt?: string;
 }
@@ -1944,6 +1956,8 @@ export interface AppSettings {
   modulesUpdatedAt?: string;
   /** Organisationsbezogene Abo-Daten; die tenant_settings-Konfiguration ist führend. */
   subscription?: OrganizationSubscription;
+  /** Gebuchte Lizenz; sperrt die Modulauswahl auf den gekauften Umfang. */
+  license?: LicenseConfig;
 }
 
 /**

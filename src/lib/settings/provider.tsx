@@ -147,6 +147,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
           stamp: localModules?.updatedAt ?? '',
         },
       ].filter((entry) => entry.modules !== null);
+      /** Die Lizenz ist mandantenweit und wird nicht in der App gepflegt:
+          immer die Mandanten-Fassung nehmen, niemals die Geraetefassung. */
+      const license = remoteModules?.license;
       const newest = candidates.reduce<(typeof candidates)[number] | null>(
         (best, entry) => (best === null || entry.stamp > best.stamp ? entry : best),
         null,
@@ -171,6 +174,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
           disabledModules: source.modules,
           modulesUpdatedAt: source.stamp || undefined,
           subscription: source.subscription ?? defaultSettings.subscription,
+          license,
         },
       });
     });
@@ -201,6 +205,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         industryPackage: saved.industryPackage,
         disabledModules: saved.disabledModules,
         subscription: saved.subscription,
+        license: saved.license,
         updatedAt: stamp,
       };
       if (repository !== localRepository) {

@@ -42,10 +42,12 @@ import {
   OPTIONAL_MODULES,
   PACKAGE_KEYS,
   disabledByPackage,
+  packageModules,
   packagePrice,
   packageLabelKey,
   packageTargetKey,
 } from '@/lib/packages/packages';
+import { SUPPORT_EMAIL } from '@/lib/branding/support';
 import { useSettings } from '@/lib/settings/provider';
 import { useAccess } from '@/lib/auth/scope';
 import {
@@ -142,11 +144,38 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
     void persist({ ...live, industryPackage, disabledModules, subscription: nextSubscription });
   };
 
-  /** Paket = Ausgangskonfiguration; Schalter darunter sind die Ueberschreibung und haben Vorrang. */
-  const choosePackage = (key: IndustryPackage) =>
-    applyModules(key, key === 'custom' ? draft.disabledModules : disabledByPackage(key));
+  /**
+   * Gebuchte Lizenz: sobald ein Paket gekauft ist, duerfen nur dessen Module
+   * (plus zugebuchte Zusatzmodule) eingeschaltet werden. Ohne Lizenz bleibt
+   * alles waehlbar - Testphase und Bestandskunden unveraendert.
+   */
+  const licensedModules = draft.license
+    ? new Set<ModuleKey>([
+        ...packageModules(draft.license.package),
+        ...draft.license.addons,
+      ])
+    : null;
+  const presetAllowed = (key: IndustryPackage) =>
+    licensedModules === null ||
+    packageModules(key).every((module) => licensedModules.has(module));
+  const moduleLicensed = (module: ModuleKey) =>
+    licensedModules === null || licensedModules.has(module);
+  const upgradeMail = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(t('settings.upgradeSubject'))}`;
 
-  const toggleModule = (module: ModuleKey, active: boolean) =>
+  /** Paket = Ausgangskonfiguration; Schalter darunter sind die Ueberschreibung und haben Vorrang. */
+  const choosePackage = (key: IndustryPackage) => {
+    if (!presetAllowed(key)) {
+      toast.error(t('settings.packageLocked'));
+      return;
+    }
+    applyModules(key, key === 'custom' ? draft.disabledModules : disabledByPackage(key));
+  };
+
+  const toggleModule = (module: ModuleKey, active: boolean) => {
+    if (!moduleLicensed(module)) {
+      toast.error(t('settings.moduleLocked'));
+      return;
+    }
     applyModules(
       draft.industryPackage,
       active
@@ -155,6 +184,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
           ? draft.disabledModules
           : [...draft.disabledModules, module],
     );
+  };
 
   return (
     <div className="flex max-w-3xl flex-col gap-4">
@@ -433,7 +463,7 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
               </SelectTrigger>
               <SelectContent>
                 {PACKAGE_KEYS.map((key) => (
-                  <SelectItem key={key || 'all'} value={key || 'all'}>
+                  <SelectItem key={key || 'all'} value={key || 'all'} disabled={!presetAllowed(key)}>
                     <span className="flex flex-col">
                       <span>{t(packageLabelKey(key))}</span>
                       {packageTargetKey(key) && (
@@ -456,18 +486,30 @@ function SettingsForm({ settings }: { settings: AppSettings }) {
             {OPTIONAL_MODULES.map((module) => (
               <label
                 key={module}
-                className="flex items-center justify-between gap-4 rounded-lg border px-3 py-2"
+                className={cn(
+                  'flex items-center justify-between gap-4 rounded-lg border px-3 py-2',
+                  !moduleLicensed(module) && 'opacity-50',
+                )}
               >
                 <span className="text-sm">{t(moduleByKey(module).labelKey)}</span>
                 <Switch
                   checked={!draft.disabledModules.includes(module)}
                   onCheckedChange={(checked) => toggleModule(module, checked)}
+                  disabled={!moduleLicensed(module)}
                   data-testid={`package-module-${module}`}
                 />
               </label>
             ))}
           </div>
           <p className="text-xs text-muted-foreground">{t('settings.moduleOverrideHint')}</p>
+          {licensedModules !== null ? (
+            <p className="text-xs text-muted-foreground">
+              {t('settings.licenseHint')}{' '}
+              <a className="text-primary underline" href={upgradeMail}>
+                {t('settings.upgradeRequest')}
+              </a>
+            </p>
+          ) : null}
           <label className="mt-2 flex items-center justify-between gap-4 rounded-lg border px-3 py-2">
             <span className="text-sm">
               <span className="block font-medium">{t('settings.simpleMode')}</span>

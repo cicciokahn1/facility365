@@ -8566,6 +8566,36 @@ export const dictionary = {
     it: "Il pacchetto è la configurazione di partenza. I moduli modificati manualmente hanno la precedenza, vengono salvati subito e restano invariati al caricamento successivo; i dati dei moduli disattivati restano completamente salvati.",
     en: "The package is the starting configuration. Manually changed modules take precedence, are saved immediately and remain in place on the next load; data from disabled modules remains fully stored.",
   },
+  "settings.packageLocked": {
+    de: "Dieses Paket ist nicht in der gebuchten Lizenz enthalten.",
+    fr: "Ce pack n'est pas inclus dans la licence souscrite.",
+    it: "Questo pacchetto non è incluso nella licenza acquistata.",
+    en: "This package is not included in the licensed plan.",
+  },
+  "settings.moduleLocked": {
+    de: "Dieses Modul ist in der gebuchten Lizenz nicht enthalten.",
+    fr: "Ce module n'est pas inclus dans la licence souscrite.",
+    it: "Questo modulo non è incluso nella licenza acquistata.",
+    en: "This module is not included in the licensed plan.",
+  },
+  "settings.licenseHint": {
+    de: "Ausgegraute Pakete und Module sind nicht in deiner Lizenz enthalten.",
+    fr: "Les packs et modules grisés ne sont pas inclus dans votre licence.",
+    it: "I pacchetti e i moduli in grigio non sono inclusi nella tua licenza.",
+    en: "Greyed-out packages and modules are not included in your licence.",
+  },
+  "settings.upgradeRequest": {
+    de: "Upgrade anfordern",
+    fr: "Demander une mise à niveau",
+    it: "Richiedi upgrade",
+    en: "Request upgrade",
+  },
+  "settings.upgradeSubject": {
+    de: "Facility365 Paket-Upgrade",
+    fr: "Mise à niveau du pack Facility365",
+    it: "Upgrade pacchetto Facility365",
+    en: "Facility365 package upgrade",
+  },
   "settings.simpleMode": {
     de: "Einfacher Modus",
     fr: "Mode simple",

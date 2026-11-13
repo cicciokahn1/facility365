@@ -223,6 +223,12 @@ export const normalizePackage = (value: string | undefined): IndustryPackage => 
   return '';
 };
 
+/** Optionale Module, die ein Paket enthaelt (''/'custom'/unbekannt = alle). */
+export const packageModules = (key: IndustryPackage): ModuleKey[] => {
+  if (key === '' || key === 'custom' || !(key in PACKAGES)) return [...OPTIONAL_MODULES];
+  return [...PACKAGES[key as keyof typeof PACKAGES]];
+};
+
 /** Module, die ein Paket abschaltet. */
 export const disabledByPackage = (key: IndustryPackage): ModuleKey[] => {
   if (key === '' || key === 'custom') return [];
