@@ -217,9 +217,10 @@ export function EntityDetail<K extends CollectionKey>({
 
   const tabs = extraTabs?.(entity, applyUpdate) ?? [];
 
-  /** Datensaetze mit Checkliste (z. B. SUVA-Vorlagen) erhalten einen eigenen Reiter. */
+  /** Datensaetze mit Checkliste (z. B. SUVA-Vorlagen) erhalten einen eigenen Reiter,
+      ausser das Modul liefert bereits einen Checklisten-Reiter. */
   const checklist = (entity as { checklist?: ChecklistItem[] }).checklist;
-  if (Array.isArray(checklist) && checklist.length > 0) {
+  if (Array.isArray(checklist) && checklist.length > 0 && !tabs.some((tab) => tab.value === "checklist")) {
     tabs.unshift({
       value: "checklist",
       labelKey: "tab.checklist",
