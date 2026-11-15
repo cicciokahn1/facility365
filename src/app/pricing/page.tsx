@@ -362,6 +362,52 @@ export default function PricingPage() {
           </CardContent>
         </Card>
 
+        {/* Vergleich mit klassischen CAFM-Systemen – bewusst ohne Firmennamen */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Facility365 oder ein klassisches CAFM-System?</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <p className="text-sm text-muted-foreground">
+              Grosse CAFM-Plattformen sind für Konzerne und öffentliche Verwaltungen gebaut –
+              mit Beratungsprojekt, Schulung und individuellem Preis. Facility365 ist für
+              Hauswart-Firmen, Verwaltungen und KMU gemacht, die heute anfangen wollen.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[36rem] text-left text-sm">
+                <thead className="border-b text-muted-foreground">
+                  <tr>
+                    <th className="px-3 py-3 font-medium"></th>
+                    <th className="px-3 py-3 font-medium">Facility365</th>
+                    <th className="px-3 py-3 font-medium">Klassische CAFM-Systeme</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ['Einstieg', 'Heute registrieren, sofort loslegen', 'Beratungsprojekt über Wochen'],
+                    ['Preis', 'Fixes Jahres-Abo, transparent', 'Individuell, oft mehrere Tausend CHF'],
+                    ['Bedienung', 'Ohne Schulung verständlich', 'Schulung und Konfiguration nötig'],
+                    ['Schadenmeldung', 'QR-Code, ohne Login für Meldende', 'Meist nur mit Konto/Service Desk'],
+                    ['Pikett & Notfall', 'Eingebaut: Plan, Meldung, Aushang', 'Selten vorhanden oder Zusatzmodul'],
+                    ['Vertrag', 'Jährlich kündbar, keine Beraterpflicht', 'Meist mehrjährig, Berater nötig'],
+                  ].map(([label, ours, theirs]) => (
+                    <tr key={label} className="border-b">
+                      <td className="px-3 py-3 font-medium">{label}</td>
+                      <td className="px-3 py-3">
+                        <span className="flex items-start gap-2">
+                          <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                          {ours}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-muted-foreground">{theirs}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Zusatzmodule */}
         <Card>
           <CardHeader>
