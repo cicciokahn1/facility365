@@ -115,10 +115,24 @@ export function HelpCenter() {
       ) : null}
 
       <div className="flex flex-col gap-3">
-        {articles.map((article) => {
+        {articles.map((article, index) => {
           const expanded = open === `${article.categoryId}-${article.id}`;
+          const showCategoryHeader =
+            category === ALL &&
+            query.trim() === '' &&
+            (index === 0 || articles[index - 1].categoryId !== article.categoryId);
+          const cat = showCategoryHeader
+            ? helpCategories.find((item) => item.id === article.categoryId)
+            : undefined;
           return (
-            <Card key={`${article.categoryId}-${article.id}`}>
+            <div key={`${article.categoryId}-${article.id}`} className="flex flex-col gap-3">
+              {cat ? (
+                <div className="mt-4 first:mt-0">
+                  <h2 className="text-lg font-semibold">{cat.title}</h2>
+                  <p className="text-sm text-muted-foreground">{cat.description}</p>
+                </div>
+              ) : null}
+            <Card>
               <button
                 type="button"
                 onClick={() => setOpen(expanded ? null : `${article.categoryId}-${article.id}`)}
@@ -173,6 +187,7 @@ export function HelpCenter() {
                 </CardContent>
               ) : null}
             </Card>
+            </div>
           );
         })}
       </div>
