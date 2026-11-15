@@ -199,17 +199,17 @@ export const PACKAGE_PRICES: Partial<
   Record<Exclude<IndustryPackage, ''>, PackagePrice>
 > = {
   /** Einstiegspaket fuer einzelne Hauswarte und kleine Betriebe. */
-  starter: { currency: 'CHF', yearly: 1640 },
-  property: { currency: 'CHF', yearly: 5690 },
-  industry: { currency: 'CHF', yearly: 7390 },
-  care: { currency: 'CHF', yearly: 8190 },
+  starter: { currency: 'CHF', yearly: 1690 },
+  property: { currency: 'CHF', yearly: 5860 },
+  industry: { currency: 'CHF', yearly: 7560 },
+  care: { currency: 'CHF', yearly: 8420 },
   /** Legacy-Preis fuer bestehende Institution-Mandanten; nicht mehr verkauft. */
-  institution: { currency: 'CHF', yearly: 9790 },
-  public: { currency: 'CHF', yearly: 10690 },
+  institution: { currency: 'CHF', yearly: 10120 },
+  public: { currency: 'CHF', yearly: 10960 },
   /** Spitaeler: Einstiegspreis, groessere Betreiber individuell. */
-  hospital: { currency: 'CHF', yearly: 12290 },
+  hospital: { currency: 'CHF', yearly: 12660 },
   /** Komplettpaket: hoechste Stufe mit festem Preis. */
-  professional: { currency: 'CHF', yearly: 14790 },
+  professional: { currency: 'CHF', yearly: 15220 },
   /** Enterprise: Kunde stellt das Paket selbst zusammen, Preis individuell. */
   enterprise: { currency: 'CHF' },
 };
