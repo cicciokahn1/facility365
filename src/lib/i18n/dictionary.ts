@@ -10228,6 +10228,7 @@ export const dictionary = {
   "onboarding.step2Hint": { de: "Hauswart, Reinigung, Administration per E-Mail einladen.", fr: "Inviter concierge, nettoyage et administration par e-mail.", it: "Invita custode, pulizie e amministrazione via e-mail.", en: "Invite janitor, cleaning and admin staff by email." },
   "onboarding.step3": { de: "QR-Codes drucken", fr: "Imprimer les codes QR", it: "Stampa i codici QR", en: "Print QR codes" },
   "onboarding.step3Hint": { de: "Melde-QR pro Liegenschaft aushängen – Bewohner melden Schäden.", fr: "Afficher le QR de signalement par bien – les locataires signalent les dégâts.", it: "Affiggi il QR di segnalazione per immobile: gli inquilini segnalano i guasti.", en: "Post the report QR per property – residents report damage." },
+  "onboarding.video": { de: "Erklärvideo ansehen (1 Minute)", fr: "Voir la vidéo explicative (1 minute)", it: "Guarda il video esplicativo (1 minuto)", en: "Watch the intro video (1 minute)" },
   "suva.emlight.function": { de: "Alle Notleuchten funktionieren", fr: "Tous les éclairages de secours fonctionnent", it: "Tutte le luci di emergenza funzionano", en: "All emergency lights working" },
   "suva.emlight.signage": { de: "Fluchtweg- und Ausgangskennzeichnung sichtbar", fr: "Signalétique des issues et sorties visible", it: "Segnaletica delle vie di fuga visibile", en: "Escape route and exit signage visible" },
   "suva.emlight.battery": { de: "Batterie/Autonomie geprüft", fr: "Batterie/autonomie contrôlée", it: "Batteria/autonomia verificata", en: "Battery/autonomy checked" },

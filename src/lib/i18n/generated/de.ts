@@ -2037,6 +2037,7 @@ export const table: Record<string, string> = {
   "onboarding.step2Hint": "Hauswart, Reinigung, Administration per E-Mail einladen.",
   "onboarding.step3": "QR-Codes drucken",
   "onboarding.step3Hint": "Melde-QR pro Liegenschaft aushängen – Bewohner melden Schäden.",
+  "onboarding.video": "Erklärvideo ansehen (1 Minute)",
   "suva.emlight.function": "Alle Notleuchten funktionieren",
   "suva.emlight.signage": "Fluchtweg- und Ausgangskennzeichnung sichtbar",
   "suva.emlight.battery": "Batterie/Autonomie geprüft",

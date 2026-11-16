@@ -2037,6 +2037,7 @@ export const table: Record<string, string> = {
   "onboarding.step2Hint": "Invite janitor, cleaning and admin staff by email.",
   "onboarding.step3": "Print QR codes",
   "onboarding.step3Hint": "Post the report QR per property – residents report damage.",
+  "onboarding.video": "Watch the intro video (1 minute)",
   "suva.emlight.function": "All emergency lights working",
   "suva.emlight.signage": "Escape route and exit signage visible",
   "suva.emlight.battery": "Battery/autonomy checked",

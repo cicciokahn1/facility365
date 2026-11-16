@@ -2037,6 +2037,7 @@ export const table: Record<string, string> = {
   "onboarding.step2Hint": "Invita custode, pulizie e amministrazione via e-mail.",
   "onboarding.step3": "Stampa i codici QR",
   "onboarding.step3Hint": "Affiggi il QR di segnalazione per immobile: gli inquilini segnalano i guasti.",
+  "onboarding.video": "Guarda il video esplicativo (1 minuto)",
   "suva.emlight.function": "Tutte le luci di emergenza funzionano",
   "suva.emlight.signage": "Segnaletica delle vie di fuga visibile",
   "suva.emlight.battery": "Batteria/autonomia verificata",

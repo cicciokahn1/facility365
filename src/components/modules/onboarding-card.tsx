@@ -7,7 +7,7 @@
  */
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Building2, UserPlus, QrCode, X } from 'lucide-react';
+import { Building2, UserPlus, QrCode, X, PlayCircle } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCollectionItems } from '@/lib/data/store';
@@ -91,6 +91,13 @@ export function OnboardingCard() {
             </Link>
           );
         })}
+        <Link
+          href="/help"
+          className="flex items-center gap-2 rounded-lg border border-dashed p-3 text-sm font-medium text-primary transition-colors hover:border-primary/50 hover:bg-accent sm:col-span-3"
+        >
+          <PlayCircle className="size-4 shrink-0" aria-hidden />
+          {t('onboarding.video')}
+        </Link>
       </CardContent>
     </Card>
   );
