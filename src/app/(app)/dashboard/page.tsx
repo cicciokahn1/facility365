@@ -28,6 +28,7 @@ import {
 
 import { EmptyState } from '@/components/common/empty-state';
 import { OnboardingCard } from '@/components/modules/onboarding-card';
+import { FirstLoginTour } from '@/components/modules/first-login-tour';
 import { WeatherWidget } from '@/components/modules/weather-widget';
 import { StatusBadge } from '@/components/common/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -413,6 +414,7 @@ export default function DashboardPage() {
       ) : null}
 
       <OnboardingCard />
+      <FirstLoginTour />
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard

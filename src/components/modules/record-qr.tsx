@@ -11,10 +11,13 @@ import { Download, Printer } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
 import { Button } from '@/components/ui/button';
+import { logoOf } from '@/lib/branding/logo';
 import { useT } from '@/lib/i18n/provider';
+import { useSettings } from '@/lib/settings/provider';
 
 export function RecordQr({ path, number, title }: { path: string; number: string; title: string }) {
   const t = useT();
+  const { settings } = useSettings();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const value = typeof window === 'undefined' ? path : `${window.location.origin}${path}`;
 
@@ -41,7 +44,9 @@ export function RecordQr({ path, number, title }: { path: string; number: string
         justify-content:center;height:100vh;margin:0}
         img{width:60mm;height:60mm}
         p{margin:4px 0;text-align:center}
+        img.logo{max-width:70mm;max-height:25mm;object-fit:contain;margin-bottom:8mm}
        </style></head><body>
+        <img class="logo" src="${logoOf(settings.companyLogo)}" alt="" />
         <img src="${image}" alt="" />
         <p><strong>${title}</strong></p>
         <p>${number}</p>
