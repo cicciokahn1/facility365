@@ -1,6 +1,7 @@
 /** Oeffentliche Rechtsseite: AGB und Datenschutzerklaerung. */
 import Link from 'next/link';
 
+import { LegalBackButton } from '@/components/legal-back-button';
 import { AGB_MD, DPA_MD, PRIVACY_MD } from '@/lib/legal/texts';
 
 /** Schlichte Markdown-zu-HTML-Umwandlung fuer die zwei Rechtstexte. */
@@ -37,7 +38,8 @@ const htmlOf = (md: string): string => {
 export default function LegalPage() {
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-4 p-6 leading-relaxed">
-      <nav className="text-sm">
+      <nav className="flex items-center justify-between gap-3 text-sm">
+        <LegalBackButton />
         <Link href="/" className="text-primary underline-offset-4 hover:underline">
           Facility365
         </Link>
