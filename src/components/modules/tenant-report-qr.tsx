@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Copy } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { EmergencySheetButton } from '@/components/modules/emergency-sheet';
 import { RecordQr } from '@/components/modules/record-qr';
 import { useT } from '@/lib/i18n/provider';
 import { Property } from '@/lib/types';
@@ -38,6 +39,7 @@ export function TenantReportQr({ property }: { property: Property }) {
         <Copy className="size-4" aria-hidden />
         {t('tenantReport.copyLink')}
       </Button>
+      <EmergencySheetButton property={property} />
     </div>
   );
 }
