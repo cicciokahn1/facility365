@@ -8,7 +8,7 @@
  */
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Camera, CheckCircle2 } from 'lucide-react';
+import { Camera, CheckCircle2, ImagePlus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +36,7 @@ function ReportForm() {
   });
   const [photo, setPhoto] = useState<{ url: string; name: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const pickPhoto = (file: File | undefined) => {
     if (!file || !file.type.startsWith('image/')) return;
@@ -174,6 +175,13 @@ function ReportForm() {
               className="hidden"
               onChange={(event) => pickPhoto(event.target.files?.[0])}
             />
+            <input
+              ref={galleryInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => pickPhoto(event.target.files?.[0])}
+            />
             {photo ? (
               <img
                 src={photo.url}
@@ -181,15 +189,26 @@ function ReportForm() {
                 className="max-h-40 w-fit rounded-md border object-cover"
               />
             ) : null}
-            <Button
-              type="button"
-              variant="outline"
-              className="w-fit"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Camera className="size-4" aria-hidden />
-              {photo ? 'Anderes Foto' : 'Foto aufnehmen'}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-fit"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Camera className="size-4" aria-hidden />
+                {photo ? 'Neues Foto aufnehmen' : 'Foto aufnehmen'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-fit"
+                onClick={() => galleryInputRef.current?.click()}
+              >
+                <ImagePlus className="size-4" aria-hidden />
+                {photo ? 'Anderes Foto wählen' : 'Foto wählen'}
+              </Button>
+            </div>
           </div>
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           <Button type="submit" size="lg" disabled={busy || !form.title || !form.description}>
