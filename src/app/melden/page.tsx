@@ -34,6 +34,25 @@ function ReportForm() {
     reporter: '',
     contact: '',
   });
+  const [photo, setPhoto] = useState<{ url: string; name: string } | null>(null);
+
+  const pickPhoto = (file: File | undefined) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, 1024 / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        setPhoto({ url: canvas.toDataURL('image/jpeg', 0.72), name: file.name });
+      };
+      img.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     if (!propertyId) return;
@@ -52,7 +71,7 @@ function ReportForm() {
       const response = await fetch('/api/damage-report', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ propertyId, ...form }),
+        body: JSON.stringify({ propertyId, ...form, photo: photo?.url ?? '', photoName: photo?.name ?? '' }),
       });
       if (!response.ok) {
         setError('Die Meldung konnte nicht gesendet werden. Bitte erneut versuchen.');
@@ -144,6 +163,23 @@ function ReportForm() {
           ) : null}
           {field('reporter', 'Ihr Name')}
           {field('contact', 'Telefon oder E-Mail')}
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Foto vom Schaden (freiwillig)</span>
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="rounded-md border bg-background px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1 file:text-sm file:text-primary-foreground"
+              onChange={(event) => pickPhoto(event.target.files?.[0])}
+            />
+            {photo ? (
+              <img
+                src={photo.url}
+                alt="Foto vom Schaden"
+                className="mt-1 max-h-40 w-fit rounded-md border object-cover"
+              />
+            ) : null}
+          </label>
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           <Button type="submit" size="lg" disabled={busy || !form.title || !form.description}>
             {busy ? 'Wird gesendet …' : 'Meldung senden'}

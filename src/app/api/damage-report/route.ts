@@ -88,6 +88,10 @@ export async function POST(request: Request) {
   const reporter = clean(body?.reporter, 160);
   const contact = clean(body?.contact, 160);
   const buildingId = clean(body?.buildingId, 80);
+  const photo = typeof body?.photo === 'string' && body.photo.startsWith('data:image/') && body.photo.length < 4000000
+    ? body.photo
+    : '';
+  const photoName = clean(body?.photoName, 160);
   if (!propertyId || !title || !description) {
     return NextResponse.json({ error: 'invalid' }, { status: 400 });
   }
@@ -112,7 +116,16 @@ export async function POST(request: Request) {
     createdAt: now,
     updatedAt: now,
     notes: '',
-    photos: [],
+    photos: photo
+      ? [{
+          id: `pho-${crypto.randomUUID()}`,
+          url: photo,
+          name: photoName || 'schadenfoto.jpg',
+          caption: 'Meldung',
+          takenAt: now,
+          size: Math.round((photo.length * 3) / 4),
+        }]
+      : [],
     documents: [],
     history: [],
     title,
